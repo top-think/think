@@ -27,7 +27,6 @@ defined('CACHE_PATH')   or  define('CACHE_PATH',    RUNTIME_PATH.'Temp/');
 defined('VENDOR_PATH')  or  define('VENDOR_PATH',   THINK_PATH.'Vendor/');
 defined('EXT')          or  define('EXT',           '.php');
 defined('APP_DEBUG') 	or  define('APP_DEBUG',false); // 是否调试模式
-defined('RUNTIME_FILE') or  define('RUNTIME_FILE',  RUNTIME_PATH.'~runtime.php');
 
 // 为了方便导入第三方类库 设置Vendor目录到include_path
 set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);

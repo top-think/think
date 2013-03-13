@@ -220,8 +220,8 @@ class App {
             if(is_file(MODULE_PATH.'config'.EXT)) {
                 $config   =   Config::set(include MODULE_PATH.'config'.EXT);
             }
-            if(Config::get('app_debug')) {
-                // 读取调试模式的应用状态
+            if(Config::has('app_status')) {
+                // 读取应用状态配置文件
                 $status  =  Config::get('app_status');
                 // 加载对应的项目配置文件
                 if(is_file(MODULE_PATH.$status.EXT))
