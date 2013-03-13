@@ -44,7 +44,7 @@ define('IS_AJAX',       (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
 define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
 
 // 获取多语言变量
-function __($name){
+function L($name){
     return \Think\Lang::get($name);
 }
 
@@ -163,7 +163,7 @@ function parse_name($name, $type=0) {
  * @return boolean
  */
 function import($class, $baseUrl = '', $ext= EXT ) {
-    return Think\Loader::load($class,$baseUrl,$ext);
+    return Think\Loader::import($class,$baseUrl,$ext);
 }
 
 /**
@@ -188,7 +188,7 @@ function throw_exception($msg, $type='Think\Exception', $code=0) {
  * @return void|string
  */
 function dump($var, $echo=true, $label=null) {
-    return \Think\Debug::dump($var,$echo,$label);
+    return Think\Debug::dump($var,$echo,$label);
 }
 
 /**
