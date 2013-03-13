@@ -1,0 +1,97 @@
+<?php
+// +----------------------------------------------------------------------
+// | ThinkCache
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: liu21st <liu21st@gmail.com>
+// +----------------------------------------------------------------------
+namespace Think\Cache\Driver;
+/**
+ * 文件类型缓存类
+ * @author    liu21st <liu21st@gmail.com>
+ */
+class Simple {
+
+    protected $options  =   array(
+        'prefix'        =>  '',
+        'temp'          =>  '',
+    );
+
+    /**
+     * 架构函数
+     * @access public
+     */
+    public function __construct($options=array()) {
+        if(!empty($options)) {
+            $this->options =  array_merge($this->options,$options);
+        }
+        if(substr($this->options['temp'], -1) != '/')    $this->options['temp'] .= '/';
+    }
+
+    /**
+     * 取得变量的存储文件名
+     * @access private
+     * @param string $name 缓存变量名
+     * @return string
+     */
+    private function filename($name) {
+        return  $this->options['temp'].$this->options['prefix'].md5($name).'.php';
+    }
+
+    /**
+     * 读取缓存
+     * @access public
+     * @param string $name 缓存变量名
+     * @return mixed
+     */
+    public function get($name) {
+        $filename       = $this->filename($name);
+        if (is_file($filename)) {
+            return include $filename;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 写入缓存
+     * @access public
+     * @param string $name 缓存变量名
+     * @param mixed $value  存储数据
+     * @param int $expire  有效时间 0为永久
+     * @return boolen
+     */
+    public function set($name,$value,$expire=null) {
+        $filename       = $this->filename($name);
+        // 缓存数据
+        $dir            =   dirname($filename);
+        // 目录不存在则创建
+        //if (!is_dir($dir))
+          //  mkdir($dir,0755,true);
+        return file_put_contents($filename, ("<?php\treturn " . var_export($value, true) . ";?>"));
+    }
+
+    /**
+     * 删除缓存
+     * @access public
+     * @param string $name 缓存变量名
+     * @return boolen
+     */
+    public function rm($name) {
+        return unlink($this->filename($name));
+    }
+
+    /**
+     * 清除缓存
+     * @access public
+     * @param string $name 缓存变量名
+     * @return boolen
+     */
+    public function clear() {
+        $filename       = $this->filename('*');
+        array_map("unlink", glob($filename));
+    }
+}
