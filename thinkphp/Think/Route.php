@@ -83,7 +83,7 @@ class Route {
         if(isset($path)) {
             $_GET[Config::get('var_action')]  =   array_pop($path);
             if(!empty($path)) {
-                $_GET[Config::get('var_controll')] =   array_pop($path);
+                $_GET[Config::get('var_controller')] =   array_pop($path);
             }
             if(!empty($path)) {
                 $_GET[Config::get('var_module')]  =   array_pop($path);

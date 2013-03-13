@@ -40,15 +40,15 @@ class ContentReplace {
         }
         define('ROOT_URL',   rtrim(dirname(str_replace("\\","\/",$script_name)),'/'));
         define('MODULE_URL',    ROOT_URL.(Config::get('require_module')?'/'.MODULE_NAME:''));
-        define('CONTROLL_URL',  MODULE_URL.(Config::get('require_controll')?'/'.CONTROLL_NAME:''));
-        define('ACTION_URL',    CONTROLL_URL.'/'.ACTION_NAME);
+        define('CONTROLLER_URL',  MODULE_URL.(Config::get('require_controller')?'/'.CONTROLLER_NAME:''));
+        define('ACTION_URL',    CONTROLLER_URL.'/'.ACTION_NAME);
 
         // 系统默认的特殊变量替换
         $replace =  array(
             '__ROOT__'      =>  ROOT_URL,       // 当前网站地址
             '__APP__'       =>  MODULE_URL,        // 当前项目地址
-            '__CONTROLL__'  =>  CONTROLL_URL,     // 当前操作地址
-            '__URL__'       =>  CONTROLL_URL,
+            '__CONTROLL__'  =>  CONTROLLER_URL,     // 当前操作地址
+            '__URL__'       =>  CONTROLLER_URL,
             '__ACTION__'    =>  ACTION_URL,     // 当前操作地址
             '__SELF__'      =>  $_SERVER['PHP_SELF'],       // 当前页面地址
             '__PUBLIC__'    =>  ROOT_URL.'/Public',// 站点公共目录

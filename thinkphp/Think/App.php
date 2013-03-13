@@ -51,12 +51,12 @@ class App {
         self::dispatch($config);
 
         // 执行操作
-        $instance = Loader::controll(CONTROLL_NAME);
+        $instance = Loader::controller(CONTROLL_NAME);
         if(!$instance) {
             // 是否定义empty控制器
-            $instance = Loader::controll('empty');
+            $instance = Loader::controller('empty');
             if(!$instance){
-                _404('controll not exists :'.CONTROLL_NAME);
+                _404('controller not exists :'.CONTROLL_NAME);
             }
         }
 
@@ -127,13 +127,13 @@ class App {
      */
     static public function dispatch($config) {
         $var_module     =   $config['var_module'];
-        $var_controll   =   $config['var_controll'];
+        $var_controll   =   $config['var_controller'];
         $var_action     =   $config['var_action'];
         $var_pathinfo   =   $config['var_pathinfo'];
         if(!empty($_GET[$var_pathinfo])) { // 判断URL里面是否有兼容模式参数
             $_SERVER['PATH_INFO']   = $_GET[$var_pathinfo];
             unset($_GET[$var_pathinfo]);
-        }elseif(IS_CLI){ // CLI模式下 index.php module/controll/action/params/...
+        }elseif(IS_CLI){ // CLI模式下 index.php module/controller/action/params/...
             $_SERVER['PATH_INFO']   =   isset($_SERVER['argv'][1])?$_SERVER['argv'][1]:'';
         }
 
@@ -239,7 +239,7 @@ class App {
                 // 行为扩展文件
                 Tag::import(include MODULE_PATH.'tags'.EXT);
             }
-            $var_controll   =   $config['var_controll'];
+            $var_controll   =   $config['var_controller'];
             $var_action     =   $config['var_action'];
         }else{
             _404('module not exists :'.MODULE_NAME);
@@ -251,7 +251,7 @@ class App {
             // 模块路由检测
             if($config['url_route'] && !Route::check($url,$config['url_route_rules'])){
                 $paths = explode($config['pathinfo_depr'],$url);
-                if($config['require_controll'] && !isset($_GET[$var_controll])) {
+                if($config['require_controller'] && !isset($_GET[$var_controll])) {
                     $_GET[$var_controll]    =   array_shift($paths);
                 }
                 if(!isset($_GET[$var_action])) {
@@ -262,12 +262,12 @@ class App {
                 preg_replace('@(\w+)\/([^\/]+)@e', '$var[\'\\1\']=strip_tags(\'\\2\');', implode('/',$paths));
                 $_GET   =  array_merge($var,$_GET);
             }
-        }elseif(isset($_GET[$var_controll]) && !$config['require_controll']) {
+        }elseif(isset($_GET[$var_controll]) && !$config['require_controller']) {
             unset($_GET[$var_controll]);
         }
 
         // 获取控制器名
-        define('CONTROLL_NAME', strtolower(isset($_GET[$var_controll])?$_GET[$var_controll]:$config['default_controll']));
+        define('CONTROLLER_NAME', strtolower(isset($_GET[$var_controll])?$_GET[$var_controll]:$config['default_controll']));
 
         // 获取操作名
         define('ACTION_NAME',   strtolower(isset($_GET[$var_action])?$_GET[$var_action]:$config['default_action']));

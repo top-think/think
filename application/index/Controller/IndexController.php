@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 // $Id$
 
-namespace Index\Controll;
+namespace Index\Controller;
 use Think\View;
-class IndexControll {
+class IndexController {
 
     public function index(){
         $config['template_options'] =   array(

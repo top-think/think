@@ -22,8 +22,8 @@ return [
     'pathinfo_depr'     =>  '/',    // pathinfo分隔符
     'require_module'    =>  true,   // 是否显示模块
     'default_module'    =>  'index',  // 默认模块名
-    'require_controll'  =>  true,   // 是否显示控制器
-    'default_controll'  =>  'index',    // 默认控制器名
+    'require_controller'  =>  true,   // 是否显示控制器
+    'default_controller'  =>  'index',    // 默认控制器名
     'default_action'    =>  'index',    // 默认操作名
     'default_layer'     =>  'action', // 默认控制器层
     'action_suffix'     =>  '', // 操作方法后缀

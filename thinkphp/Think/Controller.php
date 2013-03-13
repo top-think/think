@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 // $Id$
 namespace Think;
-class Controll {
+class Controller {
     protected $view =   null;
 
     public function __construct(){

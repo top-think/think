@@ -13,7 +13,7 @@
 return array(
     'url_route'         =>  true,
         'require_module'    =>  false,
-            'require_controll'    =>  true,
+            'require_controller'    =>  true,
             'default_layer'     =>  'action',
             'url_html_suffix'       =>  '.html',
             'url_model' =>  1,

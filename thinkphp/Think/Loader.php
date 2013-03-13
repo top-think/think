@@ -168,8 +168,8 @@ class Loader {
      * @param string $layer 控制层名称
      * @return Action|false
      */
-    static public function controll($name,$layer='') {
-        $layer      =   $layer?$layer:'Controll';
+    static public function controller($name,$layer='') {
+        $layer      =   $layer?$layer:'Controller';
         static $_instance  =   [];
         if(isset($_instance[$name.$layer]))   return $_instance[$name.$layer];
         if(strpos($name,'/')) {
@@ -207,8 +207,8 @@ class Loader {
     static public function action($url,$vars=[],$layer='') {
         $info   =   pathinfo($url);
         $action =   $info['basename'];
-        $module =   '.' != $info['dirname']?$info['dirname']:CONTROLL_NAME;
-        $class  =   self::controll($module,$layer);
+        $module =   '.' != $info['dirname']?$info['dirname']:CONTROLLER_NAME;
+        $class  =   self::controller($module,$layer);
         if($class){
             if(is_string($vars)) {
                 parse_str($vars,$vars);

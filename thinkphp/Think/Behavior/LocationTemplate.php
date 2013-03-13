@@ -36,9 +36,9 @@ class LocationTemplate {
         $template   =   str_replace(':','/',$template);
         if(''==$template) {
             // 如果模板文件名为空 按照默认规则定位
-            $template = CONTROLL_NAME.'/'.ACTION_NAME;
+            $template = CONTROLLER_NAME.'/'.ACTION_NAME;
         }elseif(false === strpos($template,'/')){
-            $template = CONTROLL_NAME.'/'.$template;
+            $template = CONTROLLER_NAME.'/'.$template;
         }elseif(false === strpos($template,'.')) {
             $template   =  $template;
         }
