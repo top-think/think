@@ -10,15 +10,11 @@
 // +----------------------------------------------------------------------
 // $Id$
 
-if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
-if(version_compare(PHP_VERSION,'5.4.0','<')) {
-    ini_set('magic_quotes_runtime',0);
-    define('MAGIC_QUOTES_GPC',get_magic_quotes_gpc()?True:False);
-}else{
-    define('MAGIC_QUOTES_GPC',false);
-}
+if(version_compare(PHP_VERSION,'5.4.0','<'))  die('require PHP > 5.4.0 !');
+define('MAGIC_QUOTES_GPC',false);
+
 //  版本信息
-define('THINK_VERSION', '4.0');
+define('THINK_VERSION', '4.0beta');
 // 系统常量
 defined('THINK_PATH') 	or  define('THINK_PATH',    dirname(__FILE__).'/');
 defined('CORE_PATH') 	or  define('CORE_PATH',     THINK_PATH.'Think/');
