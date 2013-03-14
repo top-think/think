@@ -104,12 +104,12 @@ class App {
                 Tag::listen('action_end',$call);
             }else{
                 // 操作方法不是Public 抛出异常
-                throw new ReflectionException();
+                throw new \ReflectionException();
             }
-        } catch (ReflectionException $e) {
+        } catch (\ReflectionException $e) {
             // 操作不存在
             if(method_exists($instance,'_empty')) {
-                $method = new ReflectionMethod($instance,'_empty');
+                $method = new \ReflectionMethod($instance,'_empty');
                 $method->invokeArgs($instance,array($action,''));
             }else{
                 _404('action not exists :'.ACTION_NAME);
@@ -220,12 +220,10 @@ class App {
             if(is_file(MODULE_PATH.'config'.EXT)) {
                 $config   =   Config::set(include MODULE_PATH.'config'.EXT);
             }
-            if(Config::has('app_status')) {
-                // 读取应用状态配置文件
-                $status  =  Config::get('app_status');
+            if($config['app_status']) {
                 // 加载对应的项目配置文件
-                if(is_file(MODULE_PATH.$status.EXT))
-                    $config   =   Config::set(include MODULE_PATH.$status.EXT);
+                if(is_file(MODULE_PATH.$config['app_status'].EXT))
+                    $config   =   Config::set(include MODULE_PATH.$config['app_status'].EXT);
             }
             // 加载别名文件
             if(is_file(MODULE_PATH.'alias'.EXT)) {
@@ -249,29 +247,14 @@ class App {
             Tag::listen('path_info');
             $url   =   trim(substr_replace($_SERVER['PATH_INFO'],'',0,strlen($_GET[$var_m])+1),'/');
             // 模块路由检测
-            if(!Route::check($url,$config['url_route_rules'])){
+            if(!$config['url_route'] || !Route::check($url,$config['url_route_rules'])){
                 // PATHINFO URL规则 默认为 Controller/Action/
                 $paths = explode($config['pathinfo_depr'],$url);
-                if(Config::get('url_pathinfo_rule')) {
-                    // 按照定义的URL规则解析 c/a/id?var1=val1&var2=val2...
-                    $rules  =   parse_url(Config::get('url_pathinfo_rule'));
-                    if(!empty($rules['path'])) {
-                        $array  =   explode('/',$rules['path']);
-                        foreach($array as $val){
-                            $_GET[$val] =  array_shift($paths);
-                        }
-                    }
-                    if(!empty($rules['query'])) {
-                        parse_str($rules['query'],$params);
-                        $_GET   =  array_merge($_GET,$params);
-                    }
-                }else{
-                    if($config['require_controller'] && !isset($_GET[$var_c])) {
-                        $_GET[$var_c]    =   array_shift($paths);
-                    }
-                    if(!isset($_GET[$var_a])) {
-                        $_GET[$var_a]  =   array_shift($paths);
-                    }
+                if($config['require_controller'] && !isset($_GET[$var_c])) {
+                    $_GET[$var_c]  =   array_shift($paths);
+                }
+                if(!isset($_GET[$var_a])) {
+                    $_GET[$var_a]  =   array_shift($paths);
                 }
                 // 解析剩余的URL参数
                 $var  =  [];
@@ -281,7 +264,7 @@ class App {
         }elseif(isset($_GET[$var_c]) && !$config['require_controller']) {
             unset($_GET[$var_c]);
         }
-dump($_GET);
+
         // 获取控制器名
         define('CONTROLLER_NAME', strtolower(isset($_GET[$var_c])?$_GET[$var_c]:$config['default_controller']));
 

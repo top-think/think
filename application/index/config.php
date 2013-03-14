@@ -11,7 +11,7 @@
 // $Id$
 
 return array(
-    'url_route'         =>  true,
+    'url_route'         =>  false,
     'require_module'    =>  false,
     'require_controller'    =>  true,
     'default_layer'     =>  'action',
