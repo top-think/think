@@ -51,12 +51,12 @@ class App {
         self::dispatch($config);
 
         // 执行操作
-        $instance = Loader::controller(CONTROLL_NAME);
+        $instance = Loader::controller(CONTROLLER_NAME);
         if(!$instance) {
             // 是否定义empty控制器
             $instance = Loader::controller('empty');
             if(!$instance){
-                _404('controller not exists :'.CONTROLL_NAME);
+                _404('controller not exists :'.CONTROLLER_NAME);
             }
         }
 
@@ -267,7 +267,7 @@ class App {
         }
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strtolower(isset($_GET[$var_controll])?$_GET[$var_controll]:$config['default_controll']));
+        define('CONTROLLER_NAME', strtolower(isset($_GET[$var_controll])?$_GET[$var_controll]:$config['default_controller']));
 
         // 获取操作名
         define('ACTION_NAME',   strtolower(isset($_GET[$var_action])?$_GET[$var_action]:$config['default_action']));

@@ -92,7 +92,7 @@ class Url {
                 $var        =   array();
                 $var[Config::get('var_action')]       =   !empty($path)?array_pop($path):ACTION_NAME;
                 if(Config::get('require_controller')) {
-                    $var[Config::get('var_controller')]       =   !empty($path)?array_pop($path):CONTROLL_NAME;
+                    $var[Config::get('var_controller')]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;
                 }
                 if(Config::get('require_module')) {
                     $var[Config::get('var_module')]    =   !empty($path)?array_pop($path):MODULE_NAME;

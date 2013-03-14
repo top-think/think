@@ -27,9 +27,6 @@ return [
     'default_action'    =>  'index',    // 默认操作名
     'default_layer'     =>  'action', // 默认控制器层
     'action_suffix'     =>  '', // 操作方法后缀
-    'module_name'       =>  '', // 当前模块名
-    'controll_name'     =>  '', // 当前控制器名
-    'action_name'       =>  '', // 当前操作名
     'file_ext'          =>  '.php', // 文件后缀
     'url_model'         =>  1,  // URL模式
     'base_url'          =>  $_SERVER["SCRIPT_NAME"],    // 基础URL路径
