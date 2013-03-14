@@ -12,15 +12,15 @@
 
 return array(
     'url_route'         =>  true,
-        'require_module'    =>  false,
-            'require_controller'    =>  true,
-            'default_layer'     =>  'action',
-            'url_html_suffix'       =>  '.html',
-            'url_model' =>  1,
-            'base_url'=>'/test/index.php',
+    'require_module'    =>  false,
+    'require_controller'    =>  true,
+    'default_layer'     =>  'action',
+    'url_html_suffix'       =>  '.html',
+    'url_model' =>  1,
+    'base_url'=>'/test/index.php',
     'url_route_rules'   =>   array('a'=>'index/test?b=3','news/:id\d'=>array('index/test','status=1')),
     'pathinfo_depr'     =>  '/',
-
+    //'url_pathinfo_rule' =>  'id?a=index&c=index',
     'DB_TYPE'=>'mysql',
     'DB_HOST'=>'localhost',
     'DB_NAME'=>'examples',

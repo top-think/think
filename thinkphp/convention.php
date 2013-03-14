@@ -15,7 +15,7 @@ return [
     'app_debug'         =>  true,  // 调试模式
     'app_status'        =>  'debug',// 调试模式状态
     'var_module'        =>  'm',    // 模块变量名
-    'var_controll'      =>  'c',    // 控制器变量名
+    'var_controller'    =>  'c',    // 控制器变量名
     'var_action'        =>  'a',    // 操作变量名
     'var_pathinfo'      =>  's',    // PATHINFO变量名 用于兼容模式
     'pathinfo_fetch'    =>  'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
@@ -25,7 +25,6 @@ return [
     'require_controller'  =>  true,   // 是否显示控制器
     'default_controller'  =>  'index',    // 默认控制器名
     'default_action'    =>  'index',    // 默认操作名
-    'default_layer'     =>  'action', // 默认控制器层
     'action_suffix'     =>  '', // 操作方法后缀
     'file_ext'          =>  '.php', // 文件后缀
     'url_model'         =>  1,  // URL模式

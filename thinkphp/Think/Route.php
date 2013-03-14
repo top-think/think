@@ -15,6 +15,9 @@ class Route {
     static public function check($regx,$rules) {
         // 优先检测是否存在PATH_INFO
         if(empty($regx)) return true;
+        if(!Config::get('url_route')) {
+            return false;
+        }
         // 路由处理
         if(!empty($rules)) {
             // 分隔符替换 确保路由定义使用统一的分隔符

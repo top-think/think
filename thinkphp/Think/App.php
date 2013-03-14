@@ -126,13 +126,13 @@ class App {
      * @return void
      */
     static public function dispatch($config) {
-        $var_module     =   $config['var_module'];
-        $var_controll   =   $config['var_controller'];
-        $var_action     =   $config['var_action'];
-        $var_pathinfo   =   $config['var_pathinfo'];
-        if(!empty($_GET[$var_pathinfo])) { // 判断URL里面是否有兼容模式参数
-            $_SERVER['PATH_INFO']   = $_GET[$var_pathinfo];
-            unset($_GET[$var_pathinfo]);
+        $var_m  =   $config['var_module'];
+        $var_c  =   $config['var_controller'];
+        $var_a  =   $config['var_action'];
+        $var_p  =   $config['var_pathinfo'];
+        if(!empty($_GET[$var_p])) { // 判断URL里面是否有兼容模式参数
+            $_SERVER['PATH_INFO']   = $_GET[$var_p];
+            unset($_GET[$var_p]);
         }elseif(IS_CLI){ // CLI模式下 index.php module/controller/action/params/...
             $_SERVER['PATH_INFO']   =   isset($_SERVER['argv'][1])?$_SERVER['argv'][1]:'';
         }
@@ -165,7 +165,7 @@ class App {
             }
             if(!empty($rule)) {
                 // 子域名部署规则 '子域名'=>array('模块名'[,'var1=a&var2=b&var3=*']);
-                $_GET[$var_module]  =   $rule[0];
+                $_GET[$var_m]  =   $rule[0];
                 if(isset($rule[1])) { // 传入参数
                     parse_str($rule[1],$parms);
                     if(isset($panDomain)) {
@@ -202,14 +202,14 @@ class App {
             define('__EXT__', isset($part['extension'])?strtolower($part['extension']):'');
             $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim($config['url_html_suffix'],'.').')$/i', '',$_SERVER['PATH_INFO']);
             $paths = explode($config['pathinfo_depr'],trim($_SERVER['PATH_INFO'],'/'));
-            if($config['require_module'] && !isset($_GET[$var_module])) {
-                $_GET[$var_module]  =   array_shift($paths);
+            if($config['require_module'] && !isset($_GET[$var_m])) {
+                $_GET[$var_m]  =   array_shift($paths);
             }
-        }elseif(isset($_GET[$var_module]) && !$config['require_module']) {
-            unset($_GET[$var_module]);
+        }elseif(isset($_GET[$var_m]) && !$config['require_module']) {
+            unset($_GET[$var_m]);
         }
         // 获取模块名称
-        define('MODULE_NAME',strtolower(isset($_GET[$var_module])?$_GET[$var_module]:$config['default_module']));
+        define('MODULE_NAME',strtolower(isset($_GET[$var_m])?$_GET[$var_m]:$config['default_module']));
 
         // 加载模块的公共文件和配置
         if(is_dir(APP_PATH.MODULE_NAME)) {
@@ -239,40 +239,56 @@ class App {
                 // 行为扩展文件
                 Tag::import(include MODULE_PATH.'tags'.EXT);
             }
-            $var_controll   =   $config['var_controller'];
-            $var_action     =   $config['var_action'];
+            $var_c  =   $config['var_controller'];
+            $var_a  =   $config['var_action'];
         }else{
             _404('module not exists :'.MODULE_NAME);
         }
 
         if(!empty($_SERVER['PATH_INFO'])) {
             Tag::listen('path_info');
-            $url   =   trim(substr_replace($_SERVER['PATH_INFO'],'',0,strlen($_GET[$var_module])+1),'/');
+            $url   =   trim(substr_replace($_SERVER['PATH_INFO'],'',0,strlen($_GET[$var_m])+1),'/');
             // 模块路由检测
-            if($config['url_route'] && !Route::check($url,$config['url_route_rules'])){
+            if(!Route::check($url,$config['url_route_rules'])){
+                // PATHINFO URL规则 默认为 Controller/Action/
                 $paths = explode($config['pathinfo_depr'],$url);
-                if($config['require_controller'] && !isset($_GET[$var_controll])) {
-                    $_GET[$var_controll]    =   array_shift($paths);
-                }
-                if(!isset($_GET[$var_action])) {
-                    $_GET[$var_action]  =   array_shift($paths);
+                if(Config::get('url_pathinfo_rule')) {
+                    // 按照定义的URL规则解析 c/a/id?var1=val1&var2=val2...
+                    $rules  =   parse_url(Config::get('url_pathinfo_rule'));
+                    if(!empty($rules['path'])) {
+                        $array  =   explode('/',$rules['path']);
+                        foreach($array as $val){
+                            $_GET[$val] =  array_shift($paths);
+                        }
+                    }
+                    if(!empty($rules['query'])) {
+                        parse_str($rules['query'],$params);
+                        $_GET   =  array_merge($_GET,$params);
+                    }
+                }else{
+                    if($config['require_controller'] && !isset($_GET[$var_c])) {
+                        $_GET[$var_c]    =   array_shift($paths);
+                    }
+                    if(!isset($_GET[$var_a])) {
+                        $_GET[$var_a]  =   array_shift($paths);
+                    }
                 }
                 // 解析剩余的URL参数
                 $var  =  [];
                 preg_replace('@(\w+)\/([^\/]+)@e', '$var[\'\\1\']=strip_tags(\'\\2\');', implode('/',$paths));
                 $_GET   =  array_merge($var,$_GET);
             }
-        }elseif(isset($_GET[$var_controll]) && !$config['require_controller']) {
-            unset($_GET[$var_controll]);
+        }elseif(isset($_GET[$var_c]) && !$config['require_controller']) {
+            unset($_GET[$var_c]);
         }
-
+dump($_GET);
         // 获取控制器名
-        define('CONTROLLER_NAME', strtolower(isset($_GET[$var_controll])?$_GET[$var_controll]:$config['default_controller']));
+        define('CONTROLLER_NAME', strtolower(isset($_GET[$var_c])?$_GET[$var_c]:$config['default_controller']));
 
         // 获取操作名
-        define('ACTION_NAME',   strtolower(isset($_GET[$var_action])?$_GET[$var_action]:$config['default_action']));
+        define('ACTION_NAME',   strtolower(isset($_GET[$var_a])?$_GET[$var_a]:$config['default_action']));
 
-        unset($_GET[$var_action],$_GET[$var_controll],$_GET[$var_module]);
+        unset($_GET[$var_a],$_GET[$var_c],$_GET[$var_m]);
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
     }
