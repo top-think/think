@@ -9,15 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 // $Id$
-$v = 'c/a/id/name?var1=val1&var2=val2';
-$a = parse_url($v);
-var_dump($a);
-parse_str($a['query'],$b);
-var_dump($b);
 g1('1');
 define('APP_PATH',dirname(__DIR__).'/application/');
 require dirname(__DIR__).'/thinkphp/start.php';
-echo '<br/>run :'.g1('1','2',6).' | mem:'.g1('1','2','m').'b';
+echo '<br/>run :'.g1('1','2',6).' | mem:'.g1('1','2','m').'kb';
 dump(get_included_files());
 function G1($start,$end='',$dec=4) {
     static $_info       =   array();
