@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 // $Id$
-
-class ThinkValidate {
+namespace Think;
+class Validate {
 
     protected $validate        =   array();  // 自动验证定义
     // 是否批处理验证

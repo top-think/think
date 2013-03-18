@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 // $Id$
-
-class ThinkAuto {
+namespace Think;
+class Auto {
 
     protected $auto =   array();
 
