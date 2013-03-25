@@ -28,24 +28,27 @@ class App {
     static public function run() {
         // 监听app_init
         Tag::listen('app_init');
-        // 加载全局公共文件和配置
-
-        // 检测项目（或模块）配置文件
-        if(is_file(APP_PATH.'config'.EXT)) {
-            $config   =   Config::set(include APP_PATH.'config'.EXT);
-        }
-        // 加载别名文件
-        if(is_file(APP_PATH.'alias'.EXT)) {
-            Loader::import(include APP_PATH.'alias'.EXT);
-        }
-        // 加载公共文件
-        if(is_file(APP_PATH.'common'.EXT)) {
-            include APP_PATH.'common'.EXT;
-        }
-        
-        if(is_file(APP_PATH.'tags'.EXT)) {
-            // 行为扩展文件
-            Tag::import(include APP_PATH.'tags'.EXT);
+        // 加载全局初始化文件
+        if(is_file(APP_PATH.'init'.EXT)) {
+            include APP_PATH.'init'.EXT;
+            $config =   Config::get();
+        }else{
+            // 检测项目（或模块）配置文件
+            if(is_file(APP_PATH.'config'.EXT)) {
+                $config   =   Config::set(include APP_PATH.'config'.EXT);
+            }
+            // 加载别名文件
+            if(is_file(APP_PATH.'alias'.EXT)) {
+                Loader::import(include APP_PATH.'alias'.EXT);
+            }
+            // 加载公共文件
+            if(is_file(APP_PATH.'common'.EXT)) {
+                include APP_PATH.'common'.EXT;
+            }
+            if(is_file(APP_PATH.'tags'.EXT)) {
+                // 行为扩展文件
+                Tag::import(include APP_PATH.'tags'.EXT);
+            }
         }
         // 应用URL调度
         self::dispatch($config);
@@ -211,31 +214,36 @@ class App {
         // 获取模块名称
         define('MODULE_NAME',strtolower(isset($_GET[$var_m])?$_GET[$var_m]:$config['default_module']));
 
-        // 加载模块的公共文件和配置
-        if(is_dir(APP_PATH.MODULE_NAME)) {
+        // 模块初始化
+        if(MODULE_NAME && is_dir(APP_PATH.MODULE_NAME)) {
             define('MODULE_PATH',APP_PATH.MODULE_NAME.'/');
             Tag::listen('app_begin');
-            
-            // 检测项目（或模块）配置文件
-            if(is_file(MODULE_PATH.'config'.EXT)) {
-                $config   =   Config::set(include MODULE_PATH.'config'.EXT);
-            }
-            if($config['app_status']) {
-                // 加载对应的项目配置文件
-                if(is_file(MODULE_PATH.$config['app_status'].EXT))
-                    $config   =   Config::set(include MODULE_PATH.$config['app_status'].EXT);
-            }
-            // 加载别名文件
-            if(is_file(MODULE_PATH.'alias'.EXT)) {
-                Loader::import(include MODULE_PATH.'alias'.EXT);
-            }
-            // 加载公共文件
-            if(is_file(MODULE_PATH.'common'.EXT)) {
-                include MODULE_PATH.'common'.EXT;
-            }
-            if(is_file(MODULE_PATH.'tags'.EXT)) {
-                // 行为扩展文件
-                Tag::import(include MODULE_PATH.'tags'.EXT);
+            // 加载模块初始化文件
+            if(is_file(MODULE_PATH.'init'.EXT)) {
+                include MODULE_PATH.'init'.EXT;
+                $config =   Config::get();
+            }else{
+                // 检测项目（或模块）配置文件
+                if(is_file(MODULE_PATH.'config'.EXT)) {
+                    $config   =   Config::set(include MODULE_PATH.'config'.EXT);
+                }
+                if($config['app_status']) {
+                    // 加载对应的项目配置文件
+                    if(is_file(MODULE_PATH.$config['app_status'].EXT))
+                        $config   =   Config::set(include MODULE_PATH.$config['app_status'].EXT);
+                }
+                // 加载别名文件
+                if(is_file(MODULE_PATH.'alias'.EXT)) {
+                    Loader::import(include MODULE_PATH.'alias'.EXT);
+                }
+                // 加载公共文件
+                if(is_file(MODULE_PATH.'common'.EXT)) {
+                    include MODULE_PATH.'common'.EXT;
+                }
+                if(is_file(MODULE_PATH.'tags'.EXT)) {
+                    // 行为扩展文件
+                    Tag::import(include MODULE_PATH.'tags'.EXT);
+                }
             }
             $var_c  =   $config['var_controller'];
             $var_a  =   $config['var_action'];
