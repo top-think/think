@@ -20,12 +20,16 @@ class Route {
             'all'       =>  [],
         ];
 
-    // 路由规则映射
+    // 映射规则
     static private $map =   [];
 
-    // 添加映射规则
-    static public function map($url,$route){
-        self::$map[$url]    =   $route;
+    // 添加URL映射规则
+    static public function map($map,$route=''){
+        if(is_array($map)) {
+            self::$map  =   array_merge(self::$map,$map);
+        }else{
+            self::$map[$map]    =   $route;
+        }
     }
 
     // 添加某个路由规则
@@ -40,10 +44,8 @@ class Route {
     }
 
     // 导入路由规则 
-    static public function import($rules){
-        foreach ($rules as $type=>$rule){
-            self::$rules[$type]    =   array_merge(self::$rules[$type],$rule);
-        }
+    static public function import($rules,$type='get'){
+        self::$rules[$type]    =   array_merge(self::$rules[$type],$rules);
     }
 
     // 添加一条任意请求的路由规则
@@ -176,14 +178,14 @@ class Route {
     }
 
     // 解析规范的路由地址
-    // 地址格式 [模块/控制器/操作?]参数1=值1&参数2=值2...
+    // 地址格式 [控制器/操作?]参数1=值1&参数2=值2...
     static private function parseRoute($url) {
         $var  =  [];
-        if(false !== strpos($url,'?')) { // [模块/控制器/操作?]参数1=值1&参数2=值2...
+        if(false !== strpos($url,'?')) { // [控制器/操作?]参数1=值1&参数2=值2...
             $info   =  parse_url($url);
             $path   = explode('/',$info['path']);
             parse_str($info['query'],$var);
-        }elseif(strpos($url,'/')){ // [模块/控制器/操作]
+        }elseif(strpos($url,'/')){ // [控制器/操作]
             $path = explode('/',$url);
         }else{ // 参数1=值1&参数2=值2...
             parse_str($url,$var);
@@ -229,8 +231,8 @@ class Route {
     }
 
     // 解析规则路由
-    // '路由规则'=>'[模块/控制器/操作]?额外参数1=值1&额外参数2=值2...'
-    // '路由规则'=>array('[模块/控制器/操作]','额外参数1=值1&额外参数2=值2...')
+    // '路由规则'=>'[控制器/操作]?额外参数1=值1&额外参数2=值2...'
+    // '路由规则'=>array('[控制器/操作]','额外参数1=值1&额外参数2=值2...')
     // '路由规则'=>'外部地址'
     // '路由规则'=>array('外部地址','重定向代码')
     // 路由规则中 :开头 表示动态变量
@@ -291,8 +293,8 @@ class Route {
     }
 
     // 解析正则路由
-    // '路由正则'=>'[模块/控制器/操作]?参数1=值1&参数2=值2...'
-    // '路由正则'=>array('[模块/控制器/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...')
+    // '路由正则'=>'[控制器/操作]?参数1=值1&参数2=值2...'
+    // '路由正则'=>array('[控制器/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...')
     // '路由正则'=>'外部地址'
     // '路由正则'=>array('外部地址','重定向代码')
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
