@@ -11,16 +11,76 @@
 // $Id$
 namespace Think;
 class Route {
+    // 路由规则
+    static private $rules   =   [
+            'get'       =>  [],
+            'post'      =>  [],
+            'put'       =>  [],
+            'delete'    =>  [],
+            'all'       =>  [],
+        ];
 
-    static public function check($regx,$rules) {
+    // 添加某个路由规则
+    static public function add($rule,$route,$type='get'){
+        if(is_array($type)) {
+            foreach ($type as $val){
+                self::$rules[$val][$rule] =    $route;
+            }
+        }else{
+            self::$rules[$type][$rule] =    $route;
+        }
+    }
+
+    // 导入路由规则 
+    static public function import($rules){
+        foreach ($rules as $type=>$rule){
+            self::$rules[$type]    =   array_merge(self::$rules[$type],$rule);
+        }
+    }
+
+    // 添加一条任意请求的路由规则
+    static public function any($rule,$route){
+        self::add($rule,$route,'all');
+    }
+
+    // 添加一条get请求的路由规则
+    static public function get($rule,$route){
+        self::add($rule,$route,'get');
+    }
+
+    // 添加一条post请求的路由规则
+    static public function post($rule,$route){
+        self::add($rule,$route,'post');
+    }
+
+    // 添加一条put请求的路由规则
+    static public function put($rule,$route){
+        self::add($rule,$route,'put');
+    }
+
+    // 添加一条delete请求的路由规则
+    static public function delete($rule,$route){
+        self::add($rule,$route,'delete');
+    }
+
+    // 检测URL路由
+    static public function check($regx) {
         // 优先检测是否存在PATH_INFO
         if(empty($regx)) return true;
         // 路由处理
+        $rules  =   self::$rules[strtolower($_SERVER['REQUEST_METHOD'])];
+        if(!empty(self::$rules['all'])) {
+            $rules  =   array_merge(self::$rules['all'],$rules);
+        }
         if(!empty($rules)) {
             // 分隔符替换 确保路由定义使用统一的分隔符
             $regx = str_replace(Config::get('pathinfo_depr'),'/',$regx);
             foreach ($rules as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
+                    if($route instanceof \Closure) {
+                        call_user_func($route);
+                        exit;
+                    }
                     return self::parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
                     $len1   =   substr_count($regx,'/');
@@ -33,7 +93,11 @@ class Route {
                                 $rule =  substr($rule,0,-1);
                             }
                         }
-                        if(self::checkUrlMatch($regx,$rule)){
+                        if(self::match($regx,$rule)){
+                            if($route instanceof \Closure) {
+                                call_user_func($route);
+                                exit;
+                            }
                             return self::parseRule($rule,$route,$regx);
                         }
                     }
@@ -44,7 +108,7 @@ class Route {
     }
 
     // 检测URL和规则路由是否匹配
-    static private function checkUrlMatch($regx,$rule) {
+    static private function match($regx,$rule) {
         $m1 = explode('/',$regx);
         $m2 = explode('/',$rule);
         foreach ($m2 as $key=>$val){

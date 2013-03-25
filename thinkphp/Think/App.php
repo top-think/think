@@ -247,8 +247,7 @@ class App {
             Tag::listen('path_info');
             $url   =   trim(substr_replace($_SERVER['PATH_INFO'],'',0,strlen($_GET[$var_m])+1),'/');
             // 模块路由检测
-            if(!$config['url_route'] || !Route::check($url,$config['url_route_rules'])){
-                // PATHINFO URL规则 默认为 Controller/Action/
+            if(!$config['url_route'] || !Route::check($url)){
                 $paths = explode($config['pathinfo_depr'],$url);
                 if($config['require_controller'] && !isset($_GET[$var_c])) {
                     $_GET[$var_c]  =   array_shift($paths);
