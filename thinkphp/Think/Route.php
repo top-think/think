@@ -20,6 +20,14 @@ class Route {
             'all'       =>  [],
         ];
 
+    // 路由规则映射
+    static private $map =   [];
+
+    // 添加映射规则
+    static public function map($url,$route){
+        self::$map[$url]    =   $route;
+    }
+
     // 添加某个路由规则
     static public function add($rule,$route,$type='get'){
         if(is_array($type)) {
@@ -66,15 +74,18 @@ class Route {
     // 检测URL路由
     static public function check($regx) {
         // 优先检测是否存在PATH_INFO
-        if(empty($regx)) return true;
-        // 路由处理
+        if(empty($regx)) $regx  =   '/' ;
+        // 分隔符替换 确保路由定义使用统一的分隔符
+        $regx = str_replace(Config::get('pathinfo_depr'),'/',$regx);
+        if(isset(self::$map[$regx])) { // URL映射
+            return self::parseUrl(self::$map[$regx]);
+        }
+        // 路由规则检测
         $rules  =   self::$rules[strtolower($_SERVER['REQUEST_METHOD'])];
         if(!empty(self::$rules['all'])) {
             $rules  =   array_merge(self::$rules['all'],$rules);
         }
         if(!empty($rules)) {
-            // 分隔符替换 确保路由定义使用统一的分隔符
-            $regx = str_replace(Config::get('pathinfo_depr'),'/',$regx);
             foreach ($rules as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
@@ -104,7 +115,49 @@ class Route {
                 }
             }
         }
-        return false;
+        return self::parseUrl($regx);
+    }
+
+    // 解析模块的URL地址
+    static private function parseUrl($url) {
+        if('/'==$url) {
+            return ;
+        }
+        $paths = explode('/',$url);
+        $var_c  =   Config::get('var_controller');
+        $var_a  =   Config::get('var_action');
+        if(Config::get('require_controller') && !isset($_GET[$var_c])) {
+            $_GET[$var_c]  =   array_shift($paths);
+        }
+        if(!isset($_GET[$var_a])) {
+            $_GET[$var_a]  =   array_shift($paths);
+        }
+        // 解析剩余的URL参数
+        $var  =  [];
+        preg_replace('@(\w+)\/([^\/]+)@e', '$var[\'\\1\']=strip_tags(\'\\2\');', implode('/',$paths));
+        $_GET   =  array_merge($var,$_GET);
+    }
+
+    // 解析规范的路由地址
+    // 地址格式 [模块/控制器/操作?]参数1=值1&参数2=值2...
+    static private function parseRoute($url) {
+        $var  =  [];
+        if(false !== strpos($url,'?')) { // [模块/控制器/操作?]参数1=值1&参数2=值2...
+            $info   =  parse_url($url);
+            $path   = explode('/',$info['path']);
+            parse_str($info['query'],$var);
+        }elseif(strpos($url,'/')){ // [模块/控制器/操作]
+            $path = explode('/',$url);
+        }else{ // 参数1=值1&参数2=值2...
+            parse_str($url,$var);
+        }
+        if(isset($path)) {
+            $_GET[Config::get('var_action')]  =   array_pop($path);
+            if(!empty($path)) {
+                $_GET[Config::get('var_controller')] =   array_pop($path);
+            }
+        }
+        return $var;
     }
 
     // 检测URL和规则路由是否匹配
@@ -129,31 +182,6 @@ class Route {
             }
         }
         return true;
-    }
-
-    // 解析规范的路由地址
-    // 地址格式 [模块/控制器/操作?]参数1=值1&参数2=值2...
-    static private function parseUrl($url) {
-        $var  =  [];
-        if(false !== strpos($url,'?')) { // [模块/控制器/操作?]参数1=值1&参数2=值2...
-            $info   =  parse_url($url);
-            $path   = explode('/',$info['path']);
-            parse_str($info['query'],$var);
-        }elseif(strpos($url,'/')){ // [模块/控制器/操作]
-            $path = explode('/',$url);
-        }else{ // 参数1=值1&参数2=值2...
-            parse_str($url,$var);
-        }
-        if(isset($path)) {
-            $_GET[Config::get('var_action')]  =   array_pop($path);
-            if(!empty($path)) {
-                $_GET[Config::get('var_controller')] =   array_pop($path);
-            }
-            if(!empty($path)) {
-                $_GET[Config::get('var_module')]  =   array_pop($path);
-            }
-        }
-        return $var;
     }
 
     // 解析规则路由
@@ -196,7 +224,7 @@ class Route {
             exit;
         }else{
             // 解析路由地址
-            $var  =  self::parseUrl($url);
+            $var  =  self::parseRoute($url);
             // 解析路由地址里面的动态参数
             $values  =  array_values($matches);
             foreach ($var as $key=>$val){
@@ -216,7 +244,6 @@ class Route {
             }
             $_GET   =  array_merge($var,$_GET);
         }
-        return true;
     }
 
     // 解析正则路由
@@ -236,7 +263,7 @@ class Route {
             exit;
         }else{
             // 解析路由地址
-            $var  =  self::parseUrl($url);
+            $var  =  self::parseRoute($url);
             // 解析剩余的URL参数
             $regx =  substr_replace($regx,'',0,strlen($matches[0]));
             if($regx) {
@@ -249,6 +276,5 @@ class Route {
             }
             $_GET   =  array_merge($var,$_GET);
         }
-        return true;
     }
 }
