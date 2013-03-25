@@ -32,45 +32,42 @@ class Route {
         }
     }
 
-    // 注册某个路由规则
+    // 注册路由规则
     static public function register($rule,$route='',$type='GET'){
-        if(is_array($type)) {
-            foreach ($type as $val){
-                self::$rules[$val][$rule] =    $route;
+        if(strpos($type,'|')) {
+            foreach (explode('|',$type) as $val){
+                self::register($rule,$route,$val);
             }
-        }elseif(is_array($rule)) {
-            self::$rules[$type] =    array_merge(self::$rules[$type],$rule);
         }else{
-            self::$rules[$type][$rule] =    $route;
+            if(is_array($rule)) {
+                self::$rules[$type] =    array_merge(self::$rules[$type],$rule);
+            }else{
+                self::$rules[$type][$rule] =    $route;
+            }
         }
     }
 
-    // 导入路由规则 
-    static public function import($rules,$type='GET'){
-        self::$rules[$type]    =   array_merge(self::$rules[$type],$rules);
-    }
-
-    // 添加一条任意请求的路由规则
+    // 注册任意请求的路由规则
     static public function any($rule,$route=''){
         self::register($rule,$route,'*');
     }
 
-    // 添加一条get请求的路由规则
+    // 注册get请求的路由规则
     static public function get($rule,$route=''){
         self::register($rule,$route,'GET');
     }
 
-    // 添加一条post请求的路由规则
+    // 注册post请求的路由规则
     static public function post($rule,$route=''){
         self::register($rule,$route,'POST');
     }
 
-    // 添加一条put请求的路由规则
+    // 注册put请求的路由规则
     static public function put($rule,$route=''){
         self::register($rule,$route,'PUT');
     }
 
-    // 添加一条delete请求的路由规则
+    // 注册delete请求的路由规则
     static public function delete($rule,$route=''){
         self::register($rule,$route,'DELETE');
     }
