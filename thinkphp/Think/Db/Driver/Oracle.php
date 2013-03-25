@@ -157,4 +157,14 @@ class Oracle extends Driver{
         }
         return $limitStr?' WHERE '.$limitStr:'';
     }
+
+    /**
+     * 设置锁机制
+     * @access protected
+     * @return string
+     */
+    protected function parseLock($lock=false) {
+        if(!$lock) return '';
+        return ' FOR UPDATE NOWAIT ';
+    }
 }

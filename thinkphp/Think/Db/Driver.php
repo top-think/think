@@ -36,8 +36,6 @@ class Driver {
     protected $linkID     = [];
     // 当前连接ID
     protected $_linkID    = null;
-    // 当前查询ID
-    protected $queryID    = null;
     // 数据库连接参数配置
     protected $config     = [];
     // 数据库表达式
@@ -255,7 +253,7 @@ class Driver {
     public function error() {
         if($this->PDOStatement) {
             $error = $this->PDOStatement->errorInfo();
-            $this->error = $error[2];
+            $this->error = $error[1].':'.$error[2];
         }else{
             $this->error = '';
         }
@@ -934,7 +932,7 @@ class Driver {
      */
     public function __destruct() {
         // 释放查询
-        if ($this->queryID){
+        if ($this->PDOStatement){
             $this->free();
         }
         // 关闭连接
