@@ -13,11 +13,11 @@ namespace Think;
 class Route {
     // 路由规则
     static private $rules   =   [
-            'get'       =>  [],
-            'post'      =>  [],
-            'put'       =>  [],
-            'delete'    =>  [],
-            'all'       =>  [],
+            'GET'       =>  [],
+            'POST'      =>  [],
+            'PUT'       =>  [],
+            'DELETE'    =>  [],
+            '*'         =>  [],
         ];
 
     // 映射规则
@@ -32,45 +32,47 @@ class Route {
         }
     }
 
-    // 添加某个路由规则
-    static public function add($rule,$route,$type='get'){
+    // 注册某个路由规则
+    static public function register($rule,$route='',$type='GET'){
         if(is_array($type)) {
             foreach ($type as $val){
                 self::$rules[$val][$rule] =    $route;
             }
+        }elseif(is_array($rule)) {
+            self::$rules[$type] =    array_merge(self::$rules[$type],$rule);
         }else{
             self::$rules[$type][$rule] =    $route;
         }
     }
 
     // 导入路由规则 
-    static public function import($rules,$type='get'){
+    static public function import($rules,$type='GET'){
         self::$rules[$type]    =   array_merge(self::$rules[$type],$rules);
     }
 
     // 添加一条任意请求的路由规则
-    static public function any($rule,$route){
-        self::add($rule,$route,'all');
+    static public function any($rule,$route=''){
+        self::register($rule,$route,'*');
     }
 
     // 添加一条get请求的路由规则
-    static public function get($rule,$route){
-        self::add($rule,$route,'get');
+    static public function get($rule,$route=''){
+        self::register($rule,$route,'GET');
     }
 
     // 添加一条post请求的路由规则
-    static public function post($rule,$route){
-        self::add($rule,$route,'post');
+    static public function post($rule,$route=''){
+        self::register($rule,$route,'POST');
     }
 
     // 添加一条put请求的路由规则
-    static public function put($rule,$route){
-        self::add($rule,$route,'put');
+    static public function put($rule,$route=''){
+        self::register($rule,$route,'PUT');
     }
 
     // 添加一条delete请求的路由规则
-    static public function delete($rule,$route){
-        self::add($rule,$route,'delete');
+    static public function delete($rule,$route=''){
+        self::register($rule,$route,'DELETE');
     }
 
     // 检测URL路由
@@ -83,9 +85,9 @@ class Route {
             return self::parseUrl(self::$map[$regx]);
         }
         // 路由规则检测
-        $rules  =   self::$rules[strtolower($_SERVER['REQUEST_METHOD'])];
-        if(!empty(self::$rules['all'])) {
-            $rules  =   array_merge(self::$rules['all'],$rules);
+        $rules  =   self::$rules[$_SERVER['REQUEST_METHOD']];
+        if(!empty(self::$rules['*'])) {
+            $rules  =   array_merge(self::$rules['*'],$rules);
         }
         if(!empty($rules)) {
             foreach ($rules as $rule=>$route){
