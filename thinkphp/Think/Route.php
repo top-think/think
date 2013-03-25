@@ -89,7 +89,6 @@ class Route {
             foreach ($rules as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
-                        array_shift($matches);
                         // 执行闭包并中止
                         self::invokeRegx($route,$matches);
                         exit;
@@ -123,11 +122,12 @@ class Route {
         return self::parseUrl($regx);
     }
 
-    // 执行正则匹配下的闭包方法
+    // 执行正则匹配下的闭包方法 支持参数调用
     static private function invokeRegx($closure,$var=[]) {
         $reflect    =   new \ReflectionFunction($closure);
         $params     =   $reflect->getParameters();
         $args       =   [];
+        array_shift($var);
         foreach ($params as $param){
             $name = $param->getName();
             if(!empty($var)) {
@@ -139,7 +139,7 @@ class Route {
         $reflect->invokeArgs($args);
     }
 
-    // 执行规则匹配下的闭包方法
+    // 执行规则匹配下的闭包方法 支持参数调用
     static private function invokeRule($closure,$var=[]) {
         $reflect    =   new \ReflectionFunction($closure);
         $params     =   $reflect->getParameters();
