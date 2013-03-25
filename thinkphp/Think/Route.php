@@ -89,10 +89,13 @@ class Route {
             foreach ($rules as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
-                        call_user_func($route);
+                        array_shift($matches);
+                        // 执行闭包并中止
+                        self::invokeRegx($route,$matches);
                         exit;
+                    }else{
+                        return self::parseRegex($matches,$route,$regx);
                     }
-                    return self::parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
                     $len1   =   substr_count($regx,'/');
                     $len2   =   substr_count($rule,'/');
@@ -104,12 +107,14 @@ class Route {
                                 $rule =  substr($rule,0,-1);
                             }
                         }
-                        if(self::match($regx,$rule)){
+                        if($var = self::match($regx,$rule)){
                             if($route instanceof \Closure) {
-                                call_user_func($route);
+                                // 执行闭包并中止
+                                self::invokeRule($route,$var);
                                 exit;
+                            }else{
+                                return self::parseRule($rule,$route,$regx);
                             }
-                            return self::parseRule($rule,$route,$regx);
                         }
                     }
                 }
@@ -118,12 +123,44 @@ class Route {
         return self::parseUrl($regx);
     }
 
+    // 执行正则匹配下的闭包方法
+    static private function invokeRegx($closure,$var=[]) {
+        $reflect    =   new \ReflectionFunction($closure);
+        $params     =   $reflect->getParameters();
+        $args       =   [];
+        foreach ($params as $param){
+            $name = $param->getName();
+            if(!empty($var)) {
+                $args[] =  array_shift($var);
+            }elseif($param->isDefaultValueAvailable()){
+                $args[] = $param->getDefaultValue();
+            }
+        }
+        $reflect->invokeArgs($args);
+    }
+
+    // 执行规则匹配下的闭包方法
+    static private function invokeRule($closure,$var=[]) {
+        $reflect    =   new \ReflectionFunction($closure);
+        $params     =   $reflect->getParameters();
+        $args       =   [];
+        foreach ($params as $param){
+            $name = $param->getName();
+            if(isset($var[$name])) {
+                $args[] =  $var[$name];
+            }elseif($param->isDefaultValueAvailable()){
+                $args[] = $param->getDefaultValue();
+            }
+        }
+        $reflect->invokeArgs($args);
+    }
+
     // 解析模块的URL地址
     static private function parseUrl($url) {
         if('/'==$url) {
             return ;
         }
-        $paths = explode('/',$url);
+        $paths  = explode('/',$url);
         $var_c  =   Config::get('var_controller');
         $var_a  =   Config::get('var_action');
         if(Config::get('require_controller') && !isset($_GET[$var_c])) {
@@ -162,26 +199,33 @@ class Route {
 
     // 检测URL和规则路由是否匹配
     static private function match($regx,$rule) {
-        $m1 = explode('/',$regx);
-        $m2 = explode('/',$rule);
+        $m1     =   explode('/',$regx);
+        $m2     =   explode('/',$rule);
+        $var    =   [];
         foreach ($m2 as $key=>$val){
-            if(':' == substr($val,0,1)) {// 动态变量
+            if(0===strpos($val,':')) {// 动态变量
                 if(strpos($val,'\\')) {
                     $type = substr($val,-1);
                     if('d'==$type && !is_numeric($m1[$key])) {
                         return false;
                     }
-                }elseif(strpos($val,'^')){
+                    $name  =  substr($val,1,-2);
+                }elseif($pos = strpos($val,'^')){
                     $array   =  explode('|',substr(strstr($val,'^'),1));
                     if(in_array($m1[$key],$array)) {
                         return false;
                     }
+                    $name  =  substr($val,1,$pos-1);
+                }else{
+                    $name  =  substr($val,1);
                 }
+                $var[$name]  =   $m1[$key];
             }elseif(0 !== strcasecmp($val,$m1[$key])){
                 return false;
             }
         }
-        return true;
+        // 成功匹配后返回URL中的动态变量数组
+        return $var;
     }
 
     // 解析规则路由
