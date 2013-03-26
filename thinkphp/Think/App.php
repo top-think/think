@@ -39,7 +39,7 @@ class App {
             }
             // 加载别名文件
             if(is_file(APP_PATH.'alias'.EXT)) {
-                Loader::import(include APP_PATH.'alias'.EXT);
+                Loader::loadMap(include APP_PATH.'alias'.EXT);
             }
             // 加载公共文件
             if(is_file(APP_PATH.'common'.EXT)) {
@@ -201,12 +201,12 @@ class App {
         // 定位模块
         $part =  pathinfo($_SERVER['PATH_INFO']);
         define('__EXT__', isset($part['extension'])?strtolower($part['extension']):'');
-        $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim($config['url_html_suffix'],'.').')$/i', '',$_SERVER['PATH_INFO']);
-        $url    =   trim($_SERVER['PATH_INFO'],'/');
-        if($url) {
-            $paths = explode($config['pathinfo_depr'],$url);
+        $_SERVER['PATH_INFO'] = trim(preg_replace('/\.('.trim($config['url_html_suffix'],'.').')$/i', '',$_SERVER['PATH_INFO']),'/');
+        if($_SERVER['PATH_INFO']) {
+            $paths = explode($config['pathinfo_depr'],$_SERVER['PATH_INFO']);
+            // 获取URL中的模块名
             if($config['require_module'] && !isset($_GET[$var_m])) {
-                $_GET[$var_m]  =   array_shift($paths);
+                $_GET[$var_m]           =   array_shift($paths);
                 $_SERVER['PATH_INFO']   =   implode('/',$paths);
             }
         }
@@ -227,14 +227,13 @@ class App {
                 if(is_file(MODULE_PATH.'config'.EXT)) {
                     $config   =   Config::set(include MODULE_PATH.'config'.EXT);
                 }
-                if($config['app_status']) {
+                if($config['app_status'] && is_file(MODULE_PATH.$config['app_status'].EXT)) {
                     // 加载对应的项目配置文件
-                    if(is_file(MODULE_PATH.$config['app_status'].EXT))
-                        $config   =   Config::set(include MODULE_PATH.$config['app_status'].EXT);
+                    $config   =   Config::set(include MODULE_PATH.$config['app_status'].EXT);
                 }
                 // 加载别名文件
                 if(is_file(MODULE_PATH.'alias'.EXT)) {
-                    Loader::import(include MODULE_PATH.'alias'.EXT);
+                    Loader::loadMap(include MODULE_PATH.'alias'.EXT);
                 }
                 // 加载公共文件
                 if(is_file(MODULE_PATH.'common'.EXT)) {
@@ -250,8 +249,8 @@ class App {
         }else{
             _404('module not exists :'.MODULE_NAME);
         }
-        // 路由检测
-        Route::check(trim($_SERVER['PATH_INFO'],'/'));
+        // 路由检测和控制器、操作解析
+        Route::check($_SERVER['PATH_INFO']);
 
         // 获取控制器名
         define('CONTROLLER_NAME', strtolower(isset($_GET[$var_c])?$_GET[$var_c]:$config['default_controller']));
