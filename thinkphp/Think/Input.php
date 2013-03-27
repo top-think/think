@@ -56,7 +56,7 @@ class Input {
                 }else{
                     $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
                     if(false === $data) {
-                        $data	 =	 isset($args[2])?$args[2]:NULL;
+                        return	 isset($args[2])?$args[2]:NULL;
                     }
                 }
             }
