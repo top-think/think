@@ -284,10 +284,3 @@ function S($name,$value='',$options=null) {
         return Think\Cache::set($name, $value, $expire);
     }
 }
-
-// 过滤表单中的表达式
-function filter_exp(&$value){
-    if (in_array(strtolower($value),array('exp','or'))){
-        $value .= ' ';
-    }
-}

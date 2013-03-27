@@ -11,6 +11,8 @@
 // $Id$
 namespace Think;
 class Input {
+    // 全局过滤规则
+    static $filter  =   NULL;
 
     /**
      * 获取系统变量 支持过滤和默认值
@@ -43,6 +45,15 @@ class Input {
             case 'globals':   $input      =& $GLOBALS;break;
             default:return NULL;
         }
+        // 变量全局过滤
+        array_walk_recursive($input,'self::filter_exp');
+        if(self::$filter) {
+            $_filters    =   explode(',',self::$filter);
+            foreach($_filters as $_filter){
+                // 全局参数过滤
+                array_walk_recursive($input,$_filter);
+            }
+        }
         if(''== $args[0]) {
             // 返回全部数据
             return $input;
@@ -67,4 +78,10 @@ class Input {
         return $data;
     }
 
+    // 过滤表单中的表达式
+    static private filter_exp(&$value){
+        if (in_array(strtolower($value),array('exp','or'))){
+            $value .= ' ';
+        }
+    }
 }
