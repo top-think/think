@@ -48,6 +48,16 @@ function C($name='',$range='') {
     return \Think\Config::get($name,$range);
 }
 
+// 获取输入数据
+function I($key,$default,$filter) {
+    if(strpos($key,'.')) { // 指定参数来源
+        list($method,$key) =   explode('.',$key);
+    }else{ // 默认为自动判断
+        $method =   'param';
+    }
+    return \Think\Input::$method($key,$filter,$default);
+}
+
 /**
  * 记录和统计时间（微秒）和内存使用情况
  * 使用方法:
