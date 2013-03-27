@@ -13,16 +13,11 @@ namespace Think;
 class Input {
 
     /**
-     +----------------------------------------------------------
-     * 魔术方法 有不存在的操作的时候执行
-     +----------------------------------------------------------
+     * 获取系统变量 支持过滤和默认值
      * @access public
-     +----------------------------------------------------------
      * @param string $type 输入数据类型
      * @param array $args 参数 array(key,filter,default)
-     +----------------------------------------------------------
      * @return mixed
-     +----------------------------------------------------------
      */
     static public function __callStatic($type,$args=array()) {
         switch(strtolower($type)) {
@@ -46,7 +41,6 @@ class Input {
             case 'cookie':   $input      =& $_COOKIE;break;
             case 'session':  $input      =& $_SESSION;break;
             case 'globals':   $input      =& $GLOBALS;break;
-            case 'files':      $input      =& $_FILES;break;
             default:return NULL;
         }
         if(''== $args[0]) {
@@ -59,6 +53,11 @@ class Input {
             foreach($filters as $filter){
                 if(is_callable($filter)) {
                     $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                }else{
+                    $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
+                    if(false === $data) {
+                        $data	 =	 isset($args[2])?$args[2]:NULL;
+                    }
                 }
             }
         }else{
