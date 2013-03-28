@@ -43,7 +43,7 @@ class  Template {
 
     private     $literal        =   [];   
     private     $block          =   [];
-    protected   $handler        =   null;
+    protected   $storage        =   null;
 
     /**
      * 架构函数
