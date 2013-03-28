@@ -28,7 +28,7 @@ class  Template {
         'tpl_end'              =>  '}',			// 模板引擎普通标签结束标记
         'strip_space'      =>  false,       // 是否去除模板文件里面的html空格与换行
         'tpl_cache'			=>  true,        // 是否开启模板编译缓存,设为false则每次都会重新编译
-        'cache_type'        =>  'file',
+        'compile_type'        =>  'file',
         'cache_path'            =>  '',
         'cache_prefix'          =>  '',         // 模板缓存前缀标识，可以动态改变
         'cache_time'		    =>	0,         // 模板缓存有效期 0 为永久，(以数字为值，单位:秒)
@@ -59,7 +59,8 @@ class  Template {
         $this->config['tpl_end']           =   $this->stripPreg($this->config['tpl_end']);
 
         // 初始化模板编译存储器
-        $class  =   '\Think\Template\Driver\\'.$this->config['compile_type'];
+        $type   =   $this->config['compile_type']?$this->config['compile_type']:'File';
+        $class  =   '\Think\Template\Driver\\'.ucwords($type);
         $this->storage =   new $class();
     }
 
