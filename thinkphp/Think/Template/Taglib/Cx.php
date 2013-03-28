@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Template\Driver;
+namespace Think\Template\Taglib;
 use Think\TagLib;
 /**
  * CX标签库解析类

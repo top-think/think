@@ -57,9 +57,12 @@ class  Template {
         $this->config['taglib_end']         =   $this->stripPreg($this->config['taglib_end']);
         $this->config['tpl_begin']         =   $this->stripPreg($this->config['tpl_begin']);
         $this->config['tpl_end']           =   $this->stripPreg($this->config['tpl_end']);
-        if($this->config['cache_type']) {
+        if($this->config['display_cache']) {
             Cache::connect($this->config['cache_options']);
         }
+        // 初始化模板编译存储器
+        $class  =   '\Think\Template\Driver\\'.$this->config['compile_type'];
+        $this->storage =   new $class();
     }
 
     /**
@@ -120,17 +123,11 @@ class  Template {
         // 页面缓存
         ob_start();
         ob_implicit_flush(0);
-        // 模板阵列变量分解成为独立变量
-        extract($this->tVar, EXTR_OVERWRITE);
-        if($this->handler) {
-            echo substr(ThinkCache::get(md5($cacheFile)),12);
-        }else{
-            //载入模版缓存文件
-            include $cacheFile;
-        }
+        // 读取编译存储
+        $this->storage->read($cacheFile);
         // 获取并清空缓存
         $content = ob_get_clean();
-        if($cacheId && $this->config['display_cache'] && $this->handler) {
+        if($cacheId && $this->config['display_cache']) {
             // 缓存页面输出
             Cache::set($cacheId,$content,$this->config['cache_time']);
         }
@@ -152,18 +149,12 @@ class  Template {
             // 模板编译
             $this->compiler($content,$cacheFile);
         }
-        // 模板阵列变量分解成为独立变量
-        extract($this->tVar, EXTR_OVERWRITE);
-        if($this->handler) {
-            echo substr(Cache::get(md5($cacheFile)),12);
-        }else{
-            //载入模版缓存文件
-            include $cacheFile;
-        }
+        // 读取编译存储
+        $this->storage->read($cacheFile);
     }
 
     /**
-     * 检查缓存文件是否有效
+     * 检查编译缓存是否有效
      * 如果无效则需要重新编译
      * @access private
      * @param string $template  模板文件名
@@ -173,28 +164,12 @@ class  Template {
     private function checkCache($template,$cacheFile) {
         if (!$this->config['tpl_cache']) // 优先对配置设定检测
             return false;
-        if($this->handler) {
-            $data   =   Cache::get(md5($cacheFile));
-            if(!$data) {
-                return false;
-            }elseif(is_file($template) && filemtime($template) > (int)substr($data,0, 12) ) {
-                return false;
-            }
-        }else{
-            if(!is_file($cacheFile)|| (is_file($template) && filemtime($template) > filemtime($cacheFile))) {
-                // 模板文件如果有更新则缓存需要更新
-                return false;
-            }elseif ($this->config['cache_time'] != 0 && time() > filemtime($cacheFile)+$this->config['cache_time']) {
-                // 缓存是否在有效期
-                return false;
-            }
-        }
-        // 缓存有效
-        return true;
+        // 检查编译存储是否有效
+        return $this->storage->check($template,$cacheFile,$this->config['cache_time']);
     }
 
     public function isCache($cacheId){
-        if($cacheId && $this->config['display_cache'] && $this->handler) {
+        if($cacheId && $this->config['display_cache']) {
             // 缓存页面输出
             return Cache::get($cacheId)?true:false;
         }
@@ -223,17 +198,8 @@ class  Template {
         }
         // 优化生成的php代码
         $content =  str_replace('?><?php','',$content);
-        if($this->config['cache_type']) {
-            Cache::set(md5($cacheFile),sprintf('%012d',$_SERVER['REQUEST_TIME']).$content,$this->config['cache_time']);
-        }else{
-            // 检测模板目录
-            $dir     =  dirname($cacheFile);
-            if(!is_dir($dir))
-                mkdir($dir,0755,true);
-            // 生成模板缓存文件
-            if( false === file_put_contents($cacheFile,$content))
-                throw_exception('_CACHE_WRITE_ERROR_:'.$cacheFile);
-        }
+        // 编译存储
+        $this->storage->write($cacheFile,$content);
         return ;
     }
 
@@ -463,8 +429,7 @@ class  Template {
     protected function parseTagLib($tagLib,&$content,$hide=false) {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
-        include __DIR__.'/template/driver/'.$tagLib.'.php';
-        $className  =   'Think\\Template\\Driver\\'.ucwords($tagLib);
+        $className  =   'Think\\Template\\Taglib\\'.ucwords($tagLib);
         $tLib       =   new $className;
         foreach ($tLib->getTags() as $name=>$val){
             $tags   =   [$name];
