@@ -57,9 +57,7 @@ class  Template {
         $this->config['taglib_end']         =   $this->stripPreg($this->config['taglib_end']);
         $this->config['tpl_begin']         =   $this->stripPreg($this->config['tpl_begin']);
         $this->config['tpl_end']           =   $this->stripPreg($this->config['tpl_end']);
-        if($this->config['display_cache']) {
-            Cache::connect($this->config['cache_options']);
-        }
+
         // 初始化模板编译存储器
         $class  =   '\Think\Template\Driver\\'.$this->config['compile_type'];
         $this->storage =   new $class();
@@ -124,7 +122,7 @@ class  Template {
         ob_start();
         ob_implicit_flush(0);
         // 读取编译存储
-        $this->storage->read($cacheFile);
+        $this->storage->read($cacheFile,$this->tVar);
         // 获取并清空缓存
         $content = ob_get_clean();
         if($cacheId && $this->config['display_cache']) {
@@ -150,7 +148,7 @@ class  Template {
             $this->compiler($content,$cacheFile);
         }
         // 读取编译存储
-        $this->storage->read($cacheFile);
+        $this->storage->read($cacheFile,$this->tVar);
     }
 
     /**
