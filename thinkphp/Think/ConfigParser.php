@@ -11,11 +11,10 @@
 // $Id$
 
 namespace Think;
-// 内容解析类
-class Parser {
-
+// 配置文件解析类 解析成php数组
+class ConfigParser {
     public function __construct($content,$type){
-        $class  =   '\Think\Parser\Driver\\'.ucwords($type);
+        $class  =   '\Think\ConfigParser\Driver\\'.ucwords($type);
         $parse  =   new $class();
         return $parse->parse($content);
     }
@@ -24,5 +23,4 @@ class Parser {
     static public function parse($content,$type){
         return new static($content,$type);
     }
-
 }
