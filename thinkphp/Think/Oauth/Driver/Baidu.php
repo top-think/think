@@ -85,7 +85,7 @@ class Baidu extends Driver{
             $userInfo['avatar'] =   "http://tb.himg.baidu.com/sys/portrait/item/{$data['portrait']}";
             return $userInfo;
         } else {
-            throw_exception("获取百度用户信息失败：{$data['error_msg']}");
+            throw new Exception("获取百度用户信息失败：{$data['error_msg']}");
         }
     }
 

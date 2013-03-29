@@ -53,12 +53,17 @@ class Oauth {
         self::$handler->getAccessToken();
     }
     
+    // 设置保存过的token信息
+    static public function setToken($token){
+        self::$handler->setToken($token);
+    }
+
     // 获取oauth用户信息
     static public function getOauthInfo(){
         return self::$handler->getOauthInfo();
     }
 
-    // 获取oauth用户信息
+    // 获取openid信息
     static public function getOpenId(){
         return self::$handler->getOpenId();
     }
