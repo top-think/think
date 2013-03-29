@@ -103,18 +103,18 @@ class  Template {
     public function get($name){
         return $this->tVar[$name];
     }
+
     /**
      * 渲染模板文件
      * @access public
      * @param string $template 模板文件
-     * @param array  $var 模板变量
-     * @param string $prefix 模板标识前缀
+     * @param array  $vars 模板变量
+     * @param string $cacheId 模板缓存标识
      * @return void
      */
-    public function display($template,$prefix='',$cacheId='') {
-        $prefix     =   $prefix ? $prefix : $this->config['cache_prefix'];
+    public function display($template,$vars=[],$cacheId='') {
         $template   =   $this->parseTemplateFile($template);
-        $cacheFile  =   $this->config['cache_path'].$prefix.md5($template).$this->config['cache_suffix'];
+        $cacheFile  =   $this->config['cache_path'].$this->config['cache_prefix'].md5($template).$this->config['cache_suffix'];
         if(!$this->checkCache($template,$cacheFile)) { // 缓存无效
             // 模板编译
             $this->compiler(file_get_contents($template),$cacheFile);
@@ -123,7 +123,7 @@ class  Template {
         ob_start();
         ob_implicit_flush(0);
         // 读取编译存储
-        $this->storage->read($cacheFile,$this->tVar);
+        $this->storage->read($cacheFile,$vars?$vars:$this->tVar);
         // 获取并清空缓存
         $content = ob_get_clean();
         if($cacheId && $this->config['display_cache']) {
@@ -137,19 +137,17 @@ class  Template {
      * 渲染模板内容
      * @access public
      * @param string $content 模板内容
-     * @param array  $var 模板变量
-     * @param string $prefix 模板标识前缀
+     * @param array  $vars 模板变量
      * @return void
      */
-    public function fetch($content,$prefix='') {
-        $prefix     =   $prefix ? $prefix : $this->config['cache_prefix'];
-        $cacheFile  = $this->config['cache_path'].$prefix.md5($content).$this->config['cache_suffix'];
+    public function fetch($content,$vars=[]) {
+        $cacheFile  = $this->config['cache_path'].$this->config['cache_prefix'].md5($content).$this->config['cache_suffix'];
         if(!$this->checkCache($content,$cacheFile)) { // 缓存无效
             // 模板编译
             $this->compiler($content,$cacheFile);
         }
         // 读取编译存储
-        $this->storage->read($cacheFile,$this->tVar);
+        $this->storage->read($cacheFile,$vars?$vars:$this->tVar);
     }
 
     /**

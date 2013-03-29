@@ -13,16 +13,12 @@ namespace Think\View\Driver;
 use Think\Template;
 class Think {
     private $template   =   null;
-    public function __construct($config=array()){
-        $tpl = new Template($config);
-        $this->template =   $tpl;
-        //$tpl->tpl_path  =   MODULE_PATH.'view/';
-        //$tpl->cache_path    =   MODULE_PATH.'cache/';
+    public function __construct($config=[]){
+        $this->template =   new Template($config);
     }
 
-    public function fetch($template,$data=array()){
-        $this->template->assign($data);
-        $this->template->display($template);
+    public function fetch($template,$data=[]){
+        $this->template->display($template,$data);
     }
 
 }
