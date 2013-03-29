@@ -18,6 +18,16 @@ class Config {
         self::$_range   =   $range;
     }
 
+    // 解析其他格式的配置参数
+    static public function parse($config,$type,$range=''){
+        $class  =   '\Think\Config\Driver\\'.ucwords($type);
+        if(class_exists($class)) {
+            self::set((new $class())->parse($config),'',$range);
+        }else{
+            throw_exception('class not exists: ' . $class);
+        }
+    }
+
     // 加载配置文件
     static public function load($file,$range=''){
         return self::set(include $file,'',$range);
