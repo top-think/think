@@ -14,7 +14,7 @@ use Think\Config;
 use Think\Debug;
 use Think\Log;
 use PDO;
-class Driver {
+abstract class Driver {
     // PDO操作实例
     protected $PDOStatement = null;
     // 当前操作所属的模型名
@@ -26,8 +26,6 @@ class Driver {
     protected $lastInsID  = null;
     // 返回或者影响记录数
     protected $numRows    = 0;
-    // 返回字段数
-    protected $numCols    = 0;
     // 事务指令数
     protected $transTimes = 0;
     // 错误信息
@@ -42,7 +40,9 @@ class Driver {
     protected $comparison = ['eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN'];
     // 查询表达式
     protected $selectSql  = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%COMMENT%';
+    // 查询次数
     protected $queryTimes   =   0;
+    // 执行次数
     protected $executeTimes =   0;
     // PDO连接参数
 	protected $options = [
@@ -117,13 +117,14 @@ class Driver {
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->queryTimes++;
-        // 记录开始执行时间
-        Debug::remark('queryStartTime','time');
+        // 调试开始
+        $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
             throw_exception($this->error());
         $result =   $this->PDOStatement->execute($bind);
-        $this->debug();
+        // 调试结束
+        $this->debug(false);
         if ( false === $result ) {
             $this->error();
             return false;
@@ -146,13 +147,13 @@ class Driver {
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
         // 记录开始执行时间
-        Debug::remark('queryStartTime','time');
+        $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
             throw_exception($this->error());
         }
         $result	=	$this->PDOStatement->execute($bind);
-        $this->debug();
+        $this->debug(false);
         if ( false === $result) {
             $this->error();
             return false;
@@ -234,6 +235,25 @@ class Driver {
         $result =   $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
         $this->numRows = count( $result );
         return $result;
+    }
+
+    /**
+     * 获得查询次数
+     * @access public
+     * @param boolean $execute 是否包含所有查询
+     * @return integer
+     */
+    public function getQueryTimes($execute=false){
+        return $execute?$this->queryTimes+$this->executeTimes:$this->queryTimes;
+    }
+
+    /**
+     * 获得执行次数
+     * @access public
+     * @return integer
+     */
+    public function getExecuteTimes(){
+        return $this->executeTimes;
     }
 
     /**
@@ -858,13 +878,20 @@ class Driver {
     /**
      * 数据库调试 记录当前SQL
      * @access protected
+     * @param boolean $start  调试开始标记 true 开始 false 结束
      */
-    protected function debug() {
-        $this->modelSql[$this->model]   =  $this->queryStr;
-        $this->model  =   '_think_';
-        // 记录操作结束时间
-        Debug::remark('queryEndTime','time');
-        Log::record($this->queryStr.' [ RunTime:'.Debug::getUseTime('queryStartTime','queryEndTime').'s ]','SQL');
+    protected function debug($start) {
+        if($this->config['debug']) {// 开启数据库调试模式
+            if($start) {
+                Debug::remark('queryStartTime','time');
+            }else{
+                $this->modelSql[$this->model]   =  $this->queryStr;
+                $this->model  =   '_think_';
+                // 记录操作结束时间
+                Debug::remark('queryEndTime','time');
+                Log::record($this->queryStr.' [ RunTime:'.Debug::getUseTime('queryStartTime','queryEndTime').'s ]','SQL');
+            }
+        }
     }
 
     /**

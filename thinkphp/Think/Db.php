@@ -8,32 +8,34 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
-namespace Think;
 
+namespace Think;
 /**
  * ThinkPHP 数据库中间层实现类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class Db {
 
-    static private  $instance    =   [];
+    static private  $instance   =  [];     //  数据库连接实例
+    static private  $_instance  =  null;   //  当前数据库连接实例
+
     /**
      * 取得数据库类实例
      * @static
      * @access public
-     * @return mixed 返回数据库驱动类
+     * @param mixed $config 连接配置
+     * @param boolean $lite 是否lite方式
+     * @return Object 返回数据库驱动类
      */
-    public static function getInstance($config=[]) {
+    public static function instance($config=[],$lite=false) {
         $md5    =   md5(serialize($config));
         if(!isset(self::$instance[$md5])) {
+            // 解析连接参数 支持数组和字符串
             $options    =   self::parseConfig($config);
-            $class      =   'Think\\Db\\Driver\\'.ucwords($options['dbms']);
+            // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
+            $class  =   $lite?  'Think\Db\Lite' :   'Think\\Db\\Driver\\'.ucwords($options['dbms']);
             if(class_exists($class)) {
-                self::$instance[$md5]    =   new $class($options);
+                self::$instance[$md5]   =   new $class($options);
+                self::$_instance        =   self::$instance[$md5];
             }else{
                 Error::halt('_DB_TYPE_INVALID_:'.$options['dbms']);
             }
@@ -42,21 +44,13 @@ class Db {
     }
 
     /**
-     * Lite版本数据库引擎 仅支持原生SQL 包括query和execute方法
+     * 数据库连接参数解析
      * @static
      * @access public
-     * @return mixed 返回数据库驱动类
+     * @param mixed $config
+     * @return array
      */
-    public static function lite($config=[]) {
-        static $_instance   =   [];
-        $md5    =   md5(serialize($config));
-        if(!isset($_instance[$md5])) {
-            $_instance[$md5]    =   new Think\Db\Lite(self::parseConfig($config));
-        }
-        return $_instance[$md5];
-    }
-
-    static public function parseConfig($config=[]){
+    static public function parseConfig($config){
         if(empty($config)) {
             $config =   Config::get();
         }
@@ -64,17 +58,19 @@ class Db {
             return self::parseDsn($config);
         }
         return    [
-              'dbms'      =>  $config['db_type'],
-              'dsn'       =>  $config['db_dsn'],
-              'username'  =>  $config['db_user'],
-              'password'  =>  $config['db_pwd'],
-              'hostname'  =>  $config['db_host'],
-              'hostport'  =>  $config['db_port'],
-              'database'  =>  $config['db_name'],
-              'params'    =>  $config['db_params'],
-              'charset'   =>  $config['db_charset'],
-              'deploy'    =>  $config['db_deploy'],
-              'socket'    =>  $config['db_unix_socket'],
+              'dbms'        =>  $config['db_type'],
+              'dsn'         =>  $config['db_dsn'],
+              'username'    =>  $config['db_user'],
+              'password'    =>  $config['db_pwd'],
+              'hostname'    =>  $config['db_host'],
+              'hostport'    =>  $config['db_port'],
+              'database'    =>  $config['db_name'],
+              'params'      =>  $config['db_params'],
+              'charset'     =>  $config['db_charset'],
+              'deploy'      =>  $config['db_deploy'],
+              'socket'      =>  $config['db_unix_socket'],
+              'debug'       =>  $config['db_debug'],
+              'deploy'      =>  $config['db_deploy'],
          ];
     }
 
@@ -109,4 +105,9 @@ class Db {
         }
         return $dsn;
      }
+
+    // 调用驱动类的方法
+	public static function __callStatic($method, $params){
+		return call_user_func_array(array(self::$_instance, $method), $params);
+	}
 }

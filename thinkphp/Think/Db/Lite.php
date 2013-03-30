@@ -26,8 +26,6 @@ class Lite {
     protected $lastInsID  = null;
     // 返回或者影响记录数
     protected $numRows    = 0;
-    // 返回字段数
-    protected $numCols    = 0;
     // 事务指令数
     protected $transTimes = 0;
     // 错误信息
@@ -116,13 +114,12 @@ class Lite {
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->queryTimes++;
-        // 记录开始执行时间
-        Debug::remark('queryStartTime','time');
+        $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
             throw_exception($this->error());
         $result =   $this->PDOStatement->execute($bind);
-        $this->debug();
+        $this->debug(false);
         if ( false === $result ) {
             $this->error();
             return false;
@@ -145,13 +142,13 @@ class Lite {
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
         // 记录开始执行时间
-        Debug::remark('queryStartTime','time');
+        $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
             throw_exception($this->error());
         }
         $result	=	$this->PDOStatement->execute($bind);
-        $this->debug();
+        $this->debug(false);
         if ( false === $result) {
             $this->error();
             return false;
@@ -236,6 +233,25 @@ class Lite {
     }
 
     /**
+     * 获得查询次数
+     * @access public
+     * @param boolean $execute 是否包含所有查询
+     * @return integer
+     */
+    public function getQueryTimes($execute=false){
+        return $execute?$this->queryTimes+$this->executeTimes:$this->queryTimes;
+    }
+
+    /**
+     * 获得执行次数
+     * @access public
+     * @return integer
+     */
+    public function getExecuteTimes(){
+        return $this->executeTimes;
+    }
+
+    /**
      * 关闭数据库
      * @access public
      */
@@ -252,7 +268,7 @@ class Lite {
     public function error() {
         if($this->PDOStatement) {
             $error = $this->PDOStatement->errorInfo();
-            $this->error = $error[2];
+            $this->error = $error[1].':'.$error[2];
         }else{
             $this->error = '';
         }
@@ -304,13 +320,20 @@ class Lite {
     /**
      * 数据库调试 记录当前SQL
      * @access protected
+     * @param boolean $start  调试开始标记 true 开始 false 结束
      */
-    protected function debug() {
-        $this->modelSql[$this->model]   =  $this->queryStr;
-        $this->model  =   '_think_';
-        // 记录操作结束时间
-        Debug::remark('queryEndTime','time');
-        Log::record($this->queryStr.' [ RunTime:'.Debug::getUseTime('queryStartTime','queryEndTime').'s ]','SQL');
+    protected function debug($start) {
+        if($this->config['debug']) {// 开启数据库调试模式
+            if($start) {
+                Debug::remark('queryStartTime','time');
+            }else{
+                $this->modelSql[$this->model]   =  $this->queryStr;
+                $this->model  =   '_think_';
+                // 记录操作结束时间
+                Debug::remark('queryEndTime','time');
+                Log::record($this->queryStr.' [ RunTime:'.Debug::getUseTime('queryStartTime','queryEndTime').'s ]','SQL');
+            }
+        }
     }
 
     /**
