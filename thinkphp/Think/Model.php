@@ -781,7 +781,7 @@ class Model {
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
                 $config  =  Config::get($config);
             }
-            $_db[$linkNum]            =    Db::getInstance($config);
+            $_db[$linkNum]            =    Db::instance($config);
         }elseif(NULL === $config){
             $_db[$linkNum]->close(); // 关闭数据库连接
             unset($_db[$linkNum]);

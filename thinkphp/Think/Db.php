@@ -35,12 +35,12 @@ class Db {
             $class  =   $lite?  'Think\Db\Lite' :   'Think\\Db\\Driver\\'.ucwords($options['dbms']);
             if(class_exists($class)) {
                 self::$instance[$md5]   =   new $class($options);
-                self::$_instance        =   self::$instance[$md5];
             }else{
                 Error::halt('_DB_TYPE_INVALID_:'.$options['dbms']);
             }
         }
-        return self::$instance[$md5];
+        self::$_instance    =   self::$instance[$md5];
+        return self::$_instance;
     }
 
     /**
