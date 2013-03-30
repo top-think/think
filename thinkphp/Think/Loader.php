@@ -118,7 +118,7 @@ class Loader {
     }
 
     /**
-     * M函数用于实例化一个没有模型文件的Model
+     * 实例化一个没有模型文件的Model
      * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
      * @param string $tablePrefix 表前缀
      * @param mixed $connection 数据库连接信息
@@ -138,10 +138,10 @@ class Loader {
     }
 
     /**
-     * D函数用于实例化Model
+     * 实例化（分层）模型
      * @param string $name Model名称
      * @param string $layer 业务层名称
-     * @return Think\Model
+     * @return Object
      */
     static public function model($name='',$layer='Model') {
         if(empty($name)) return new Model;
@@ -163,13 +163,12 @@ class Loader {
     }
 
     /**
-     * A函数用于实例化控制器 格式：[分组/]模块
+     * 实例化（分层）控制器 格式：[分组/]模块
      * @param string $name 资源地址
      * @param string $layer 控制层名称
      * @return Action|false
      */
-    static public function controller($name,$layer='') {
-        $layer      =   $layer?$layer:'Controller';
+    static public function controller($name,$layer='Controller') {
         static $_instance  =   [];
         if(isset($_instance[$name.$layer]))   return $_instance[$name.$layer];
         if(strpos($name,'/')) {
@@ -189,12 +188,12 @@ class Loader {
 
     /**
      * 实例化数据库
-     * @param string $name 资源地址
-     * @param string $layer 控制层名称
-     * @return Action|false
+     * @param mixed $config 数据库配置
+     * @param boolean $lite 是否采用lite方式连接
+     * @return object
      */
-    static public function db($config) {
-        return Db::getInstance($config);
+    static public function db($config,$lite=false) {
+        return Db::instance($config,$lite);
     }
 
     /**
