@@ -85,7 +85,7 @@ abstract class Driver {
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
-                throw_exception($e->getMessage());
+                E($e->getMessage());
             }
             if(!empty($config['charset'])) {
                 $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
@@ -121,7 +121,7 @@ abstract class Driver {
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
-            throw_exception($this->error());
+            E($this->error());
         $result =   $this->PDOStatement->execute($bind);
         // 调试结束
         $this->debug(false);
@@ -150,7 +150,7 @@ abstract class Driver {
         $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            throw_exception($this->error());
+            E($this->error());
         }
         $result	=	$this->PDOStatement->execute($bind);
         $this->debug(false);
@@ -421,7 +421,7 @@ abstract class Driver {
                 }else{
                     // 查询字段的安全过滤
                     if(!preg_match('/^[A-Z_\|\&\-.a-z0-9\(\)\,]+$/',trim($key))){
-                        throw_exception(L('_EXPRESS_ERROR_').':'.$key);
+                        E(L('_EXPRESS_ERROR_').':'.$key);
                     }
                     // 多条件支持
                     $multi  = is_array($val) &&  isset($val['_multi']);
@@ -490,7 +490,7 @@ abstract class Driver {
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  ' ('.$key.' '.strtoupper($val[0]).' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]).' )';
                 }else{
-                    throw_exception(L('_EXPRESS_ERROR_').':'.$val[0]);
+                    E(L('_EXPRESS_ERROR_').':'.$val[0]);
                 }
             }else {
                 $count = count($val);

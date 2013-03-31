@@ -83,7 +83,7 @@ class Douban extends Driver{
             $userInfo['avatar'] =   $data['avatar'];
             return $userInfo;
         } else {
-            throw_exception("获取豆瓣用户信息失败：{$data['msg']}");
+            E("获取豆瓣用户信息失败：{$data['msg']}");
         }
     }
 

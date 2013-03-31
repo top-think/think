@@ -41,13 +41,13 @@ class Oracle extends Driver{
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
         // 记录开始执行时间
-        Debug::remark('queryStartTime','time');
+        $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            throw_exception($this->error());
+            E($this->error());
         }
         $result	=	$this->PDOStatement->execute($bind);
-        $this->debug();
+        $this->debug(false);
         if ( false === $result) {
             $this->error();
             return false;

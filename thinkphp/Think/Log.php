@@ -25,7 +25,7 @@ class Log {
                 return self::$handler;
             }else {
                 // 类没有定义
-                throw_exception(Lang::get('_CLASS_NOT_EXIST_').': ' . $class);
+                E(L('_CLASS_NOT_EXIST_').': ' . $class);
             }
         }
     }

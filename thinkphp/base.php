@@ -40,71 +40,35 @@ define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
 
 // 获取多语言变量
 function L($name){
-    return \Think\Lang::get($name);
+    return Think\Lang::get($name);
 }
 
 // 获取配置参数
 function C($name='',$range='') {
-    return \Think\Config::get($name,$range);
+    return Think\Config::get($name,$range);
 }
 
-// 获取输入数据
-function I($key,$default,$filter) {
+// 获取输入数据 支持默认值和过滤
+function I($key,$default='',$filter='') {
     if(strpos($key,'.')) { // 指定参数来源
         list($method,$key) =   explode('.',$key);
     }else{ // 默认为自动判断
         $method =   'param';
     }
-    return \Think\Input::$method($key,$filter,$default);
+    return Think\Input::$method($key,$filter,$default);
 }
 
 /**
- * 记录和统计时间（微秒）和内存使用情况
- * 使用方法:
- * <code>
- * G('begin'); // 记录开始标记位
- * // ... 区间运行代码
- * G('end'); // 记录结束标签位
- * echo G('begin','end',6); // 统计区间运行时间 精确到小数后6位
- * echo G('begin','end','m'); // 统计区间内存使用情况
- * 如果end标记位没有定义，则会自动以当前作为标记位
- * 其中统计内存使用需要 MEMORY_LIMIT_ON 常量为true才有效
- * </code>
- * @param string $start 开始标签
- * @param string $end 结束标签
- * @param integer|string $dec 小数位或者m 
- * @return mixed
+ * 记录时间（微秒）和内存使用情况
+ * @param string $label 记录标签
+ * @return void
  */
-function G($name) {
-    Think\Debug::remark($name);
+function G($label) {
+    Think\Debug::remark($label);
 }
 
 /**
- * 设置和获取统计数据
- * 使用方法:
- * <code>
- * N('db',1); // 记录数据库操作次数
- * N('read',1); // 记录读取次数
- * echo N('db'); // 获取当前页面数据库的所有操作次数
- * echo N('read'); // 获取当前页面读取次数
- * </code> 
- * @param string $key 标识位置
- * @param integer $step 步进值
- * @return mixed
- */
-function N($key, $step=0) {
-    static $_num    = array();
-    if (!isset($_num[$key])) {
-        $_num[$key] = 0;
-    }
-    if (empty($step))
-        return $_num[$key];
-    else
-        $_num[$key] = $_num[$key] + (int) $step;
-}
-
-/**
- * M函数用于实例化一个没有模型文件的Model
+ * 实例化一个没有模型文件的Model
  * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
  * @param string $tablePrefix 表前缀
  * @param mixed $connection 数据库连接信息
@@ -115,27 +79,27 @@ function M($name='', $tablePrefix='',$connection='') {
 }
 
 /**
- * D函数用于实例化Model
+ * 实例化Model
  * @param string $name Model名称
  * @param string $layer 业务层名称
- * @return ThinkModel
+ * @return object
  */
 function D($name='',$layer='model') {
     return Think\Loader::model($name,$layer);
 }
 
 /**
- * A函数用于实例化控制器 格式：[分组/]模块
+ * 实例化控制器 格式：[分组/]模块
  * @param string $name 资源地址
  * @param string $layer 控制层名称
- * @return Action|false
+ * @return object
  */
 function A($name,$layer='') {
     return Think\Loader::controll($name,$layer);
 }
 
 /**
- * 远程调用模块的操作方法 参数格式 [模块/控制器/]操作
+ * 调用模块的操作方法 参数格式 [模块/控制器/]操作
  * @param string $url 调用地址
  * @param string|array $vars 调用参数 支持字符串和数组 
  * @param string $layer 要调用的控制层名称
@@ -143,21 +107,6 @@ function A($name,$layer='') {
  */
 function R($url,$vars=array(),$layer='') {
     return Think\Loader::action($url,$vars,$layer);
-}
-
-/**
- * 字符串命名风格转换
- * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
- * @param string $name 字符串
- * @param integer $type 转换类型
- * @return string
- */
-function parse_name($name, $type=0) {
-    if ($type) {
-        return ucfirst(preg_replace("/_([a-zA-Z])/e", "strtoupper('\\1')", $name));
-    } else {
-        return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
-    }
 }
 
 /**
@@ -172,17 +121,13 @@ function import($class, $baseUrl = '', $ext= EXT ) {
 }
 
 /**
- * 自定义异常处理
+ * 抛出异常处理
  * @param string $msg 异常消息
- * @param string $type 异常类型 默认为ThinkException
  * @param integer $code 异常代码 默认为0
  * @return void
  */
-function throw_exception($msg, $type='Think\Exception', $code=0) {
-    if (class_exists($type))
-        throw new $type($msg, $code, true);
-    else
-        Think\Error::halt($msg);        // 异常类型不存在则输出错误信息字串
+function E($msg, $code=0) {
+    throw new Think\Exception($msg, $code);
 }
 
 /**
@@ -205,17 +150,17 @@ function dump($var, $echo=true, $label=null) {
  * @return void
  */
 function _404($msg='',$url='') {
-    Think\Config::get('app_debug') && throw_exception($msg);
+    Think\Config::get('app_debug') && E($msg);
     if($msg) Think\Log::record($msg,'ERR');
     $url    =   $url?$url:Think\Config::get('url_404_redirect');
     if($url) {
-        redirect($url);
+        header('Location: ' . $url);
     }else{
         header('HTTP/1.1 404 Not Found');
         // 确保FastCGI模式下正常
         header('Status:404 Not Found');
-        exit;
     }
+    exit;
 }
 
 /**
@@ -229,35 +174,6 @@ function W($name, $data=array()) {
 }
 
 /**
- * URL重定向
- * @param string $url 重定向的URL地址
- * @param integer $time 重定向的等待时间（秒）
- * @param string $msg 重定向前的提示信息
- * @return void
- */
-function redirect($url, $time=0, $msg='') {
-    //多行URL地址支持
-    $url        = str_replace(array("\n", "\r"), '', $url);
-    if (empty($msg))
-        $msg    = "系统将在{$time}秒之后自动跳转到{$url}！";
-    if (!headers_sent()) {
-        // redirect
-        if (0 === $time) {
-            header('Location: ' . $url);
-        } else {
-            header("refresh:{$time};url={$url}");
-            echo($msg);
-        }
-        exit();
-    } else {
-        $str    = "<meta http-equiv='Refresh' content='{$time};URL={$url}'>";
-        if ($time != 0)
-            $str .= $msg;
-        exit($str);
-    }
-}
-
-/**
  * 缓存管理
  * @param mixed $name 缓存名称，如果为数组表示进行缓存设置
  * @param mixed $value 缓存值
@@ -266,21 +182,39 @@ function redirect($url, $time=0, $msg='') {
  */
 function S($name,$value='',$options=null) {
     static $cache   =   null;
-    if(is_array($options)){
-        // 缓存操作的同时初始化
-        Think\Cache::connect($options);
+    if(is_array($options)){// 缓存操作的同时初始化
+        $cache  =   Think\Cache::connect($options);
     }elseif(is_array($name)) { // 缓存初始化
-        Think\Cache::connect($name);
-    }elseif(is_null($cache)) { // 自动初始化
-        Think\Cache::connect();
-        $cache  =   true;
+        $cache  =   Think\Cache::connect($name);
+        return $cache;
+    }elseif(is_null($cache)) {// 自动初始化
+        $cache  =   Think\Cache::connect();
     }
     if(''=== $value){ // 获取缓存
-        return Think\Cache::get($name);
+        return $cache->get($name);
     }elseif(is_null($value)) { // 删除缓存
-        return Think\Cache::rm($name);
+        return $cache->rm($name);
     }else { // 缓存数据
-        $expire     =   is_numeric($options)?$options:NULL;
-        return Think\Cache::set($name, $value, $expire);
+        if(is_array($options)) {
+            $expire =   is_numeric($options['expire'])?$options['expire']:NULL;	//修复查询缓存无法设置过期时间
+        }else{
+            $expire =   is_numeric($options)?$options:NULL;	//默认快捷缓存设置过期时间
+        }
+        return $cache->set($name, $value, $expire);
+    }
+}
+
+/**
+ * 字符串命名风格转换
+ * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
+ * @param string $name 字符串
+ * @param integer $type 转换类型
+ * @return string
+ */
+function parse_name($name, $type=0) {
+    if ($type) {
+        return ucfirst(preg_replace("/_([a-zA-Z])/e", "strtoupper('\\1')", $name));
+    } else {
+        return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
     }
 }

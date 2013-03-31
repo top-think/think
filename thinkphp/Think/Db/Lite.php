@@ -82,7 +82,7 @@ class Lite {
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
-                throw_exception($e->getMessage());
+                E($e->getMessage());
             }
             if(!empty($config['charset'])) {
                 $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
@@ -117,7 +117,7 @@ class Lite {
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
-            throw_exception($this->error());
+            E($this->error());
         $result =   $this->PDOStatement->execute($bind);
         $this->debug(false);
         if ( false === $result ) {
@@ -145,7 +145,7 @@ class Lite {
         $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            throw_exception($this->error());
+            E($this->error());
         }
         $result	=	$this->PDOStatement->execute($bind);
         $this->debug(false);

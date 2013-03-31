@@ -24,7 +24,7 @@ class Config {
         if(class_exists($class)) {
             self::set((new $class())->parse($config),'',$range);
         }else{
-            throw_exception('class not exists: ' . $class);
+            E('class not exists: ' . $class);
         }
     }
 

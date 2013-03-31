@@ -90,7 +90,7 @@ class Tencent extends Driver{
             $userInfo['avatar'] =   $data[0]['headurl'];
             return $userInfo;
         } else {
-            throw_exception("获取人人网用户信息失败：{$data['error_msg']}");
+            E("获取人人网用户信息失败：{$data['error_msg']}");
         }
     }
 

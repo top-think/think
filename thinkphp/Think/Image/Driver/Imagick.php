@@ -30,7 +30,7 @@ class Imagick{
      */
     public function __construct($imgname = null) {
         if ( !extension_loaded('Imagick') ) {
-            throw_exception(__('_NOT_SUPPERT_').':Imagick');
+            E(L('_NOT_SUPPERT_').':Imagick');
         }
         $imgname && $this->open($imgname);
     }

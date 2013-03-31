@@ -67,7 +67,7 @@ abstract class Rest {
             $this->$fun();
         }else{
             // 抛出异常
-            throw_exception(L('_ERROR_ACTION_:').ACTION_NAME);
+            E(L('_ERROR_ACTION_:').ACTION_NAME);
         }
     }
 

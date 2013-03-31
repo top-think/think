@@ -85,7 +85,7 @@ class Sohu extends Driver{
             $userInfo['avatar'] =   $data['data']['icon'];
             return $userInfo;
         } else {
-            throw_exception("获取搜狐用户信息失败：{$data['message']}");
+            E("获取搜狐用户信息失败：{$data['message']}");
         }
     }
 

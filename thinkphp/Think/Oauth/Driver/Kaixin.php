@@ -86,7 +86,7 @@ class Kaixin extends Driver{
             $userInfo['avatar'] =   $data['logo50'];
             return $userInfo;
         } else {
-            throw_exception("获取开心网用户信息失败：{$data['error']}");
+            E("获取开心网用户信息失败：{$data['error']}");
         }
     }
 

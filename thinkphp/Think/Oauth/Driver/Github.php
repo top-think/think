@@ -85,7 +85,7 @@ class Github extends Driver{
             $userInfo['avatar'] =   $data['avatar_url'];
             return $userInfo;
         } else {
-            throw_exception("获取Github用户信息失败：{$data}");
+            E("获取Github用户信息失败：{$data}");
         }
     }
 

@@ -85,7 +85,7 @@ class X360 extends Driver{
             $userInfo['avatar'] =   $data['avatar'];
             return $userInfo;
         } else {
-            throw_exception("获取360用户信息失败：{$data['error']}");
+            E("获取360用户信息失败：{$data['error']}");
         }
     }
 

@@ -92,7 +92,7 @@ class Msn extends Driver{
             $userInfo['avatar'] =   '微软暂未提供头像URL，请通过 me/picture 接口下载';
             return $userInfo;
         } else {
-            throw_exception("获取msn用户信息失败：{$data}");
+            E("获取msn用户信息失败：{$data}");
         }
     }
 

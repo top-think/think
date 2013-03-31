@@ -95,7 +95,7 @@ class Qq extends Driver{
             $userInfo['avatar'] =   $data['figureurl_2'];
             return $userInfo;
         } else {
-            throw_exception("获取腾讯QQ用户信息失败：{$data['msg']}");
+            E("获取腾讯QQ用户信息失败：{$data['msg']}");
         }
     }
 }

@@ -85,7 +85,7 @@ class Diandian extends Driver{
             $userInfo['avatar'] =   "https://api.diandian.com/v1/blog/{$data['response']['blogs'][0]['blogUuid']}/avatar/144";
             return $userInfo;
         } else {
-            throw_exception("获取点点用户信息失败：{$data}");
+            E("获取点点用户信息失败：{$data}");
         }
     }
 

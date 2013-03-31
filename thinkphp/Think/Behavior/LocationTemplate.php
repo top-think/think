@@ -44,7 +44,7 @@ class LocationTemplate {
         }
         $templateFile   =   MODULE_PATH.'view/'.$template.'.html';
         if(!is_file($templateFile))
-            throw_exception(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
+            E(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
         return $templateFile;
     }
 }

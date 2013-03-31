@@ -91,7 +91,7 @@ class Google extends Driver{
             $userInfo['avatar'] =   $data['picture'];
             return $userInfo;
         } else {
-            throw_exception("获取Google用户信息失败：{$data}");
+            E("获取Google用户信息失败：{$data}");
         }
     }
 

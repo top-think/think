@@ -87,7 +87,7 @@ class T163 extends Driver{
             $userInfo['avatar'] =   str_replace('w=48&h=48', 'w=180&h=180', $data['profile_image_url']);
             return $userInfo;
         } else {
-            throw_exception("获取网易微博用户信息失败：{$data['error']}");
+            E("获取网易微博用户信息失败：{$data['error']}");
         }
     }
 

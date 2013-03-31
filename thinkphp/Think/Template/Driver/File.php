@@ -20,7 +20,7 @@ class File {
             mkdir($dir,0755,true);
         // 生成模板缓存文件
         if( false === file_put_contents($cacheFile,$content))
-            throw_exception('_CACHE_WRITE_ERROR_:'.$cacheFile);
+            E('_CACHE_WRITE_ERROR_:'.$cacheFile);
     }
     
     // 读取编译编译
