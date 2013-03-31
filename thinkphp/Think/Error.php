@@ -19,20 +19,10 @@ class Error {
      */
     static public function appException($e) {
         $error = array();
-        $trace = $e->getTrace();
         $error['message']   = $e->getMessage();
         $error['file']      = $e->getFile();
-        $error['class']     = isset($trace[0]['class'])?$trace[0]['class']:'';
-        $error['function']  = isset($trace[0]['function'])?$trace[0]['function']:'';
         $error['line']      = $e->getLine();
-        $error['trace']     = '';
-        $time = date('y-m-d H:i:m');
-        foreach ($trace as $t) {
-            $error['trace'] .= '[' . $time . '] ' . $t['file'] . ' (' . $t['line'] . ') ';
-            $error['trace'] .= $t['class'] . $t['type'] . $t['function'] . '(';
-            $error['trace'] .= implode(', ', $t['args']);
-            $error['trace'] .=')<br/>';
-        }
+        $error['trace']     = $e->getTraceAsString();
         self::halt($error);
     }
 
@@ -52,9 +42,8 @@ class Error {
           case E_CORE_ERROR:
           case E_COMPILE_ERROR:
           case E_USER_ERROR:
-            ob_end_clean();
-            $errorStr = "$errstr ".$errfile." 第 $errline 行.";
-            Log::write("[$errno] ".$errorStr,'ERROR');
+            $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
+            Log::write($errorStr,'ERROR');
             self::halt($errorStr);
             break;
           case E_STRICT:
@@ -69,7 +58,6 @@ class Error {
 
     /**
      * 应用关闭处理
-     * @param mixed $error 错误
      * @return void
      */
     static public function appShutdown(){
@@ -87,7 +75,7 @@ class Error {
      */
     static public function halt($error) {
         if(IS_CLI) {
-            exit($error);
+            exit(is_array($error)?$error['message']:$error);
         }
         $e = array();
         if (Config::get('app_debug')) {
@@ -96,18 +84,10 @@ class Error {
                 $trace          = debug_backtrace();
                 $e['message']   = $error;
                 $e['file']      = $trace[0]['file'];
-                $e['class']     = isset($trace[0]['class'])?$trace[0]['class']:'';
-                $e['function']  = isset($trace[0]['function'])?$trace[0]['function']:'';
                 $e['line']      = $trace[0]['line'];
-                $traceInfo      = '';
-                $time = date('y-m-d H:i:m');
-                foreach ($trace as $t) {
-                    $traceInfo .= '[' . $time . '] ' . $t['file'] . ' (' . $t['line'] . ') ';
-                    $traceInfo .= $t['class'] . $t['type'] . $t['function'] . '(';
-                    $traceInfo .= implode(', ', $t['args']);
-                    $traceInfo .=')<br/>';
-                }
-                $e['trace']     = $traceInfo;
+                ob_start();
+                debug_print_backtrace();
+                $e['trace']     = ob_get_clean();
             } else {
                 $e              = $error;
             }
@@ -115,7 +95,7 @@ class Error {
             //否则定向到错误页面
             $error_page         = Config::get('error_page');
             if (!empty($error_page)) {
-                redirect($error_page);
+                header('Location: ' . $error_page);
             } else {
                 if (Config::get('show_error_msg'))
                     $e['message'] = is_array($error) ? $error['message'] : $error;
