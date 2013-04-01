@@ -31,7 +31,7 @@ class Log {
     }
     
     // 调用驱动类的方法
-	static public function __callStatic($method, $params){dump($params);
+	static public function __callStatic($method, $params){
 		return call_user_func_array(array(self::$handler, $method), $params);
 	}
 
