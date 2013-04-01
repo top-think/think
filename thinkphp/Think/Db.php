@@ -26,7 +26,7 @@ class Db {
      * @param boolean $lite 是否lite方式
      * @return Object 返回数据库驱动类
      */
-    public static function instance($config=[],$lite=false) {
+    static public function instance($config=[],$lite=false) {
         $md5    =   md5(serialize($config));
         if(!isset(self::$instance[$md5])) {
             // 解析连接参数 支持数组和字符串
@@ -36,7 +36,7 @@ class Db {
             if(class_exists($class)) {
                 self::$instance[$md5]   =   new $class($options);
             }else{
-                Error::halt('_DB_TYPE_INVALID_:'.$options['dbms']);
+                E('_DB_TYPE_INVALID_:'.$options['dbms']);
             }
         }
         self::$_instance    =   self::$instance[$md5];
@@ -107,7 +107,7 @@ class Db {
      }
 
     // 调用驱动类的方法
-	public static function __callStatic($method, $params){
+	static public function __callStatic($method, $params){
 		return call_user_func_array(array(self::$_instance, $method), $params);
 	}
 }

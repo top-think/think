@@ -60,7 +60,7 @@ class Image {
     }
 
     // 调用驱动类的方法
-	public static function __callStatic($method, $params){
+	static public function __callStatic($method, $params){
         if(empty(self::$im)) {
             self::init();
         }

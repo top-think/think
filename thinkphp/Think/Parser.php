@@ -14,15 +14,19 @@ namespace Think;
 // 内容解析类
 class Parser {
 
-    public function __construct($content,$type){
-        $class  =   '\Think\Parser\Driver\\'.ucwords($type);
-        $parse  =   new $class();
-        return $parse->parse($content);
-    }
-
     // 解析内容
     static public function parse($content,$type){
-        return new static($content,$type);
+        $class  =   '\Think\Parser\Driver\\'.ucwords($type);
+        if(class_exists($class)) {
+            $parse  =   new $class();
+            return $parse->parse($content);
+        }else{
+            E(L('_CLASS_NOT_EXIST_').': ' . $class);
+        }
     }
 
+    // 调用驱动类的方法
+	static public function __callStatic($method, $params){
+        return self::parse($params[0],$method);
+	}
 }

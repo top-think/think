@@ -35,7 +35,7 @@ class Cache {
         }
     }
 
-	public static function __callStatic($method, $params){
+	static public function __callStatic($method, $params){
 		return call_user_func_array(array(self::$handler, $method), $params);
 	}
 

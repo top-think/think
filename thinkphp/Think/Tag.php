@@ -20,7 +20,7 @@ class Tag {
      * @param array $behaviors 行为集
      * @return void
      */
-    public static function register($tag,$behaviors) {
+    static public function register($tag,$behaviors) {
         if(isset(self::$tags[$tag])) {
             self::$tags[$tag] =   array_merge(self::$tags[$tag],$behaviors);
         }else{
@@ -34,7 +34,7 @@ class Tag {
      * @param mixed $behavior 行为名称
      * @return void
      */
-    public static function add($tag,$behavior,$range='') {
+    static public function add($tag,$behavior,$range='') {
         $range  =   $range?$range:ucwords(MODULE_NAME);
         self::$tags[$tag][] =   [$behavior,$range];
     }
@@ -44,7 +44,7 @@ class Tag {
      * @param array $tags 标签行为
      * @return void
      */
-    public static function import($tags) {
+    static public function import($tags) {
         self::$tags =   array_merge(self::$tags,$tags);
     }
 
@@ -54,7 +54,7 @@ class Tag {
      * @param mixed $params 传入参数
      * @return void
      */
-    public static function listen($tag, &$params=NULL) {
+    static public function listen($tag, &$params=NULL) {
         Log::record($tag,'INFO');
         Debug::remark($tag,'time');
         if(isset(self::$tags[$tag])) {
@@ -78,7 +78,7 @@ class Tag {
      * @param Mixed $params 传人的参数
      * @return void
      */
-    public static function exec($name, &$params=NULL,$range='') {
+    static public function exec($name, &$params=NULL,$range='') {
         $class      =  '\\'.$range.'\Behavior\\'.$name;
         if(class_exists($class)) {
             $behavior   = new $class();

@@ -12,7 +12,7 @@
 namespace Think;
 class Filter {
     //html标签设置
-    public static $htmlTags = array(
+    static public $htmlTags = array(
         'allow' => 'table|td|th|tr|i|b|u|strong|img|p|br|div|strong|em|ul|ol|li|dl|dd|dt|a',
         'ban' => 'html|head|meta|link|base|basefont|body|bgsound|title|style|script|form|iframe|frame|frameset|applet|id|ilayer|layer|name|script|style|xml',
     );
