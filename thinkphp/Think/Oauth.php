@@ -12,7 +12,7 @@
 namespace Think;
 // oauth登录接口
 // <code>
-// Oauth::connect(['oauth_type'=>'qq','app_key'=>'','app_secret'=>'','callback'=>'','authorize'=>'']); // 链接QQ登录
+// Oauth::connect('qq',['app_key'=>'','app_secret'=>'','callback'=>'','authorize'=>'']); // 链接QQ登录
 // Oauth::login(); // 跳转到授权登录页面 或者 Oauth::login($callbackUrl);
 // Oauth::call('api','params'); // 调用API接口
 // </code>
@@ -28,18 +28,17 @@ class Oauth {
     /**
      * 连接oauth
      * @access public
+     * @param string $type  Oauth类型
      * @param array $options  配置数组
      * @return object
      */
-    static public function connect($options=[]) {
-        $type   =   $options['oauth_type'];
+    static public function connect($type,$options=[]) {
         $class = 'Think\\Oauth\\Driver\\'.ucwords($type);
         if(class_exists($class)) {
-            unset($options['oauth_type']);
             self::$handler = new $class($options);
             return self::$handler;
         }else{
-            Error::halt('_CACHE_TYPE_INVALID_:'.$type);
+            E('_OAUTH_TYPE_INVALID_:'.$type);
         }
     }
 
