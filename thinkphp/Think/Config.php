@@ -21,11 +21,7 @@ class Config {
     // 解析其他格式的配置参数
     static public function parse($config,$type,$range=''){
         $class  =   '\Think\Config\Driver\\'.ucwords($type);
-        if(class_exists($class)) {
-            self::set((new $class())->parse($config),'',$range);
-        }else{
-            E('class not exists: ' . $class);
-        }
+        self::set((new $class())->parse($config),'',$range);
     }
 
     // 加载配置文件

@@ -16,13 +16,9 @@ class Parser {
 
     // 解析内容
     static public function parse($content,$type){
-        $class  =   '\Think\Parser\Driver\\'.ucwords($type);
-        if(class_exists($class)) {
-            $parse  =   new $class();
-            return $parse->parse($content);
-        }else{
-            E(L('_CLASS_NOT_EXIST_').': ' . $class);
-        }
+        $class  =   '\\Think\\Parser\\Driver\\'.ucwords($type);
+        $parse  =   new $class();
+        return $parse->parse($content);
     }
 
     // 调用驱动类的方法

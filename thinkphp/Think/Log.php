@@ -19,14 +19,9 @@ class Log {
         if(!empty($config['type'])) { // 读取log驱动
             $class      = 'Think\\Log\\Driver\\'. ucwords(strtolower($config['type']));
             // 检查驱动类
-            if(class_exists($class)) {
-                unset($config['type']);
-                self::$handler = new $class($config);
-                return self::$handler;
-            }else {
-                // 类没有定义
-                E(L('_CLASS_NOT_EXIST_').': ' . $class);
-            }
+            unset($config['type']);
+            self::$handler = new $class($config);
+            return self::$handler;
         }
     }
     

@@ -12,8 +12,7 @@
 namespace Think;
 class View {
 
-    public $engine   =   null;       // 模板引擎
-    protected $template =   null;       // 模板文件
+    protected $engine   =   null;       // 模板引擎实例
     protected $data     =   [];    // 模板变量
     protected $config   =   [];    // 视图参数
     
@@ -38,7 +37,7 @@ class View {
      * @param mixed $name
      * @param mixed $value
      */
-    public function __set($name,$value){
+    public function __set($name,$value=''){
         $this->config[$name] = $value;
     }
 
@@ -50,7 +49,7 @@ class View {
     }
     
     public function engine($engine,$config=[]){
-        $class  =   '\Think\View\Driver\\'.ucwords($engine);
+        $class  =   '\\Think\\View\\Driver\\'.ucwords($engine);
         $this->engine =   new $class($config);
         return $this;
     }
@@ -59,13 +58,15 @@ class View {
      * 加载模板和页面输出 可以返回输出内容
      * @access public
      * @param string $template 模板文件名
+     * @param array $vars 模板输出变量
+     * @param string $cacheId 模板缓存标识
      * @param boolean $return 是否返回
      * @return mixed
      */
-    public function display($template='',$vars=[],$return=false) {
+    public function display($template='',$vars=[],$cacheId,$return=false) {
         Tag::listen('view_begin',$template);
         // 解析并获取模板内容
-        $content = $this->fetch($template,$vars);
+        $content = $this->fetch($template,$vars,$cacheId);
         // 输出模板内容
         if($return) {
             return $content;
@@ -79,23 +80,24 @@ class View {
      * @access protected
      * @param string $template 模板文件名或者内容
      * @param array $vars 模板输出变量
+     * @param string $cacheId 模板缓存标识
      * @return string
      */
-    protected function fetch($template,$vars=[]) {
+    protected function fetch($template,$vars=[],$cacheId='') {
         Tag::listen('view_template',$template);
         $vars   =   $vars?$vars:$this->data;
         // 页面缓存
         ob_start();
         ob_implicit_flush(0);
         if($this->engine) { // 指定模板引擎
-            $this->engine->fetch($template,$vars);
-        }else{
+            $this->engine->fetch($template,$vars,$cacheId);
+        }else{  // 原生PHP解析
             extract($vars, EXTR_OVERWRITE);
             is_file($template)?include $template:eval('?>'.$template);
         }
         // 获取并清空缓存
         $content = ob_get_clean();
-        Tag::listen('content_filter',$content);
+        Tag::listen('view_filter',$content);
         // 输出模板文件
         return $content;
     }

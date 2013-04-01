@@ -33,11 +33,7 @@ class Db {
             $options    =   self::parseConfig($config);
             // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
             $class  =   $lite?  'Think\Db\Lite' :   'Think\\Db\\Driver\\'.ucwords($options['dbms']);
-            if(class_exists($class)) {
-                self::$instance[$md5]   =   new $class($options);
-            }else{
-                E('_DB_TYPE_INVALID_:'.$options['dbms']);
-            }
+            self::$instance[$md5]   =   new $class($options);
         }
         self::$_instance    =   self::$instance[$md5];
         return self::$_instance;

@@ -426,7 +426,7 @@ class  Template {
     protected function parseTagLib($tagLib,&$content,$hide=false) {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
-        $className  =   'Think\\Template\\Taglib\\'.ucwords($tagLib);
+        $className  =   '\\Think\\Template\\Taglib\\'.ucwords($tagLib);
         $tLib       =   new $className;
         foreach ($tLib->getTags() as $name=>$val){
             $tags   =   [$name];
@@ -682,7 +682,9 @@ class  Template {
         $parseStr = $this->parseTemplateName($tmplPublicName);
         // 替换变量
         foreach ($vars as $key=>$val) {
-            $parseStr = str_replace('['.$key.']',$val,$parseStr);
+            if(strpos($val,'['.$key.']')) {
+                $parseStr = str_replace('['.$key.']',$val,$parseStr);
+            }
         }
         // 再次对包含文件进行模板分析
         return $this->parseInclude($parseStr);

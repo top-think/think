@@ -51,12 +51,8 @@ class Image {
     public function init($type = 'Gd', $imgname = null){
         /* 引入处理库，实例化图片处理对象 */
         $class  =    '\Think\Image\Driver\\'.ucwords($type);
-        if(class_exists($class)) {
-            self::$im = new $class($imgname);
-            return self::$im;
-        }else{
-            throw new Exception('不支持的图片处理库类型');
-        }
+        self::$im = new $class($imgname);
+        return self::$im;
     }
 
     // 调用驱动类的方法

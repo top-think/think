@@ -17,8 +17,12 @@ class Think {
         $this->template =   new Template($config);
     }
 
-    public function fetch($template,$data=[]){
-        $this->template->display($template,$data);
+    public function fetch($template,$data=[],$cacheId=''){
+        if(is_file($template)) {
+            $this->template->display($template,$data,$cacheId);
+        }else{
+            $this->template->fetch($template,$data);
+        }
     }
 
 }

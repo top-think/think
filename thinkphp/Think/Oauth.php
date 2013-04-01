@@ -34,12 +34,8 @@ class Oauth {
      */
     static public function connect($type,$options=[]) {
         $class = 'Think\\Oauth\\Driver\\'.ucwords($type);
-        if(class_exists($class)) {
-            self::$handler = new $class($options);
-            return self::$handler;
-        }else{
-            E('_OAUTH_TYPE_INVALID_:'.$type);
-        }
+        self::$handler = new $class($options);
+        return self::$handler;
     }
 
     // 跳转到授权登录页面

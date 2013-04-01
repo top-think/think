@@ -27,12 +27,8 @@ class Cache {
     static public function connect($options=[]) {
         $type   =   !empty($options['type'])?$options['type']:'File';
         $class = 'Think\\Cache\\Driver\\'.ucwords($type);
-        if(class_exists($class)) {
-            self::$handler = new $class($options);
-            return self::$handler;
-        }else{
-            E('_CACHE_TYPE_INVALID_:'.$type);
-        }
+        self::$handler = new $class($options);
+        return self::$handler;
     }
 
 	static public function __callStatic($method, $params){
