@@ -14,11 +14,15 @@ namespace Think;
 // 内容解析类
 class Parser {
 
+    static private  $handler    =   [];
+
     // 解析内容
     static public function parse($content,$type){
-        $class  =   '\\Think\\Parser\\Driver\\'.ucwords($type);
-        $parse  =   new $class();
-        return $parse->parse($content);
+        if(!isset(self::$handler[$type])) {
+            $class  =   '\\Think\\Parser\\Driver\\'.ucwords($type);
+            self::$handler[$type]  =   new $class();
+        }
+        return self::$handler[$type]->parse($content);
     }
 
     // 调用驱动类的方法
