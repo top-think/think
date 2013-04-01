@@ -15,6 +15,7 @@ use Think\View;
 class IndexController {
 
     public function index(){
+
         $config['template_options'] =   array(
             'tpl_path'         =>   MODULE_PATH.'view/',
             'cache_path'    =>   MODULE_PATH.'cache/',

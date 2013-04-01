@@ -95,7 +95,7 @@ function D($name='',$layer='model') {
  * @return object
  */
 function A($name,$layer='') {
-    return Think\Loader::controll($name,$layer);
+    return Think\Loader::controller($name,$layer);
 }
 
 /**
