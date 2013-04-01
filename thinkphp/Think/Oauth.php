@@ -48,8 +48,8 @@ class Oauth {
     }
 
     // 获取access_token
-    static public function getAccessToken(){
-        self::$handler->getAccessToken();
+    static public function getAccessToken($code){
+        self::$handler->getAccessToken($code);
     }
     
     // 设置保存过的token信息
