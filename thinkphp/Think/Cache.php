@@ -31,7 +31,7 @@ class Cache {
             self::$handler = new $class($options);
             return self::$handler;
         }else{
-            Error::halt('_CACHE_TYPE_INVALID_:'.$type);
+            E('_CACHE_TYPE_INVALID_:'.$type);
         }
     }
 

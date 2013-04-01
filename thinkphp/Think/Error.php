@@ -64,6 +64,7 @@ class Error {
         // 记录日志
         Log::save();
         if ($e = error_get_last()) {
+            ob_end_clean();
             self::appError($e['type'],$e['message'],$e['file'],$e['line']);
         }
     }

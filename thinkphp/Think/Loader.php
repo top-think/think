@@ -235,7 +235,7 @@ class Loader {
                     self::$_instance[$identify] = $o;
             }
             else
-                Error::halt(Lang::get('_CLASS_NOT_EXIST_').':'.$class);
+                E(Lang::get('_CLASS_NOT_EXIST_').':'.$class);
         }
         return self::$_instance[$identify];
     }
