@@ -18,9 +18,8 @@ class Controller {
         $config['template_options'] =   array(
             'tpl_path'         =>   MODULE_PATH.'view/',
             'cache_path'    =>   MODULE_PATH.'cache/',
-            'cache_type'    =>  '',
-            'taglib_pre_load'   => 'html',
-            'taglib_build_in'   =>  'cx,attr',
+            'compile_type'    =>  'File',
+            'taglib_build_in'   =>  'cx',
             'cache_options' =>  array(
                 'temp'          =>  APP_PATH.'runtime/temp/',
                 ),
