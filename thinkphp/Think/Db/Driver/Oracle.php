@@ -69,7 +69,7 @@ class Oracle extends Driver{
                   ."from user_tab_columns a,(select column_name from user_constraints c,user_cons_columns col "
           ."where c.constraint_name=col.constraint_name and c.constraint_type='P'and c.table_name='".strtoupper($tableName)
           ."') b where table_name='".strtoupper($tableName)."' and a.column_name=b.column_name(+)");
-        $info   =   array();
+        $info   =   [];
         if($result) {
             foreach ($result as $key => $val) {
                 $info[strtolower($val['column_name'])] = array(
@@ -91,7 +91,7 @@ class Oracle extends Driver{
      */
     public function getTables($dbName='') {
         $result = $this->query("select table_name from user_tables");
-        $info   =   array();
+        $info   =   [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }

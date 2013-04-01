@@ -36,7 +36,7 @@ class Db {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
@@ -101,7 +101,7 @@ class Db {
                 $queue  =   xcache_get('__info__');
                 if(!$result) {
                     $this->handler->execute('INSERT INTO '.$this->options['table'].' (`cachekey`,`data`,`expire`) VALUES (\'__info__\',\'\',0)');
-                    $queue  =   array();
+                    $queue  =   [];
                 }else{
                     $queue   =  unserialize($result[0]['data']);
                 }

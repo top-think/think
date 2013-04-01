@@ -29,7 +29,7 @@ class Memcache {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if ( !extension_loaded('memcache') ) {
             throw new Exception('_NOT_SUPPERT_:memcache');
         }
@@ -71,7 +71,7 @@ class Memcache {
                 // 记录缓存队列
                 $queue  =   $this->handler->get('__info__');
                 if(!$queue) {
-                    $queue  =   array();
+                    $queue  =   [];
                 }
                 if(false===array_search($name, $queue))  array_push($queue,$name);
                 if(count($queue) > $this->options['length']) {

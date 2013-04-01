@@ -26,7 +26,7 @@ class Mysql extends Driver{
         $this->initConnect(true);
         $sql   = 'SHOW COLUMNS FROM `'.$tableName.'`';
         $result = $this->query($sql);
-        $info   =   array();
+        $info   =   [];
         if($result) {
             foreach ($result as $key => $val) {
                 $info[$val['Field']] = array(
@@ -49,7 +49,7 @@ class Mysql extends Driver{
     public function getTables($dbName='') {
         $sql    = !empty($dbName)?'SHOW TABLES FROM '.$dbName:'SHOW TABLES ';
         $result = $this->query($sql);
-        $info   =   array();
+        $info   =   [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }

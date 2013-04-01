@@ -29,7 +29,7 @@ class File {
      * 架构函数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if(!empty($options)) {
             $this->options =  array_merge($this->options,$options);
         }
@@ -133,7 +133,7 @@ class File {
                 $queue_file =   dirname($filename).'/__info__.php';
                 $queue  =   unserialize(file_get_contents($queue_file));
                 if(!$queue) {
-                    $queue  =   array();
+                    $queue  =   [];
                 }
                 if(false===array_search($name, $queue))  array_push($queue,$name);
                 if(count($queue) > $this->options['length']) {

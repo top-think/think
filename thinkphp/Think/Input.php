@@ -21,7 +21,7 @@ class Input {
      * @param array $args 参数 array(key,filter,default)
      * @return mixed
      */
-    static public function __callStatic($type,$args=array()) {
+    static public function __callStatic($type,$args=[]) {
         switch(strtolower($type)) {
             case 'get':      $input      =& $_GET;break;
             case 'post':     $input      =& $_POST;break;

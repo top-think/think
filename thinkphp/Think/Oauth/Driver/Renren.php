@@ -61,7 +61,7 @@ class Renren extends Driver{
         
         /* 签名 */
         ksort($params);
-        $param = array();
+        $param = [];
         foreach ($params as $key => $value){
             $param[] = "{$key}={$value}";
         }

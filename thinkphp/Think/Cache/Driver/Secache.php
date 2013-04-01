@@ -29,7 +29,7 @@ class Secache {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
@@ -67,7 +67,7 @@ class Secache {
                 // 记录缓存队列
                 $queue  =   $this->handler->fetch(md5('__info__'));
                 if(!$queue) {
-                    $queue  =   array();
+                    $queue  =   [];
                 }
                 if(false===array_search($key, $queue))  array_push($queue,$key);
                 if(count($queue) > $this->options['length']) {
@@ -669,7 +669,7 @@ class secache{
     }
 
     function _all_schemas(){
-        $schema = array();
+        $schema = [];
         for($i=0;$i<16;$i++){
             $this->_seek(60+$i*$this->schema_item_size);
             $info = unpack('V1'.implode('/V1',$this->schema_struct),fread($this->_rs,$this->schema_item_size));
@@ -683,7 +683,7 @@ class secache{
     }
 
     function schemaStatus(){
-        $return = array();
+        $return = [];
         foreach($this->_all_schemas() as $k=>$schemaItem){
             if($schemaItem['free']){
                 $this->_dfollow($schemaItem['free'],$schemaItem['freecount']);

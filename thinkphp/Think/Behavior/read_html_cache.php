@@ -20,7 +20,7 @@ class ReadHtmlCacheBehavior {
     protected $options   =  array(
             'HTML_CACHE_ON'     =>  false,
             'HTML_CACHE_TIME'   =>  60,
-            'HTML_CACHE_RULES'  =>  array(),
+            'HTML_CACHE_RULES'  =>  [],
             'HTML_FILE_SUFFIX'  =>  '.html',
         );
 

@@ -29,7 +29,7 @@ class Sqlite {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if ( !extension_loaded('sqlite') ) {
             throw new Exception('_NOT_SUPPERT_:sqlite');
         }

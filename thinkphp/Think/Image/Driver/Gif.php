@@ -16,13 +16,13 @@ class Gif{
 	 * GIF帧列表
 	 * @var array
 	 */
-	private $frames = array();
+	private $frames = [];
 
 	/**
 	 * 每帧等待时间列表
 	 * @var array
 	 */
-	private $delays = array();
+	private $delays = [];
 
 	/**
 	 * 构造方法，用于解码GIF图片

@@ -26,7 +26,7 @@ class Wincache {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if ( !function_exists('wincache_ucache_info') ) {
             throw new Exception('_NOT_SUPPERT_:WinCache');
         }
@@ -64,7 +64,7 @@ class Wincache {
                 // 记录缓存队列
                 $queue  =   wincache_ucache_get('__info__');
                 if(!$queue) {
-                    $queue  =   array();
+                    $queue  =   [];
                 }
                 if(false===array_search($name, $queue))  array_push($queue,$name);
                 if(count($queue) > $this->options['length']) {

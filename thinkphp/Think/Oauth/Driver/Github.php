@@ -39,7 +39,7 @@ class Github extends Driver{
      */
     public function call($api, $param = '', $method = 'GET'){
         /* Github 调用公共参数 */
-        $params = array();
+        $params = [];
         $header = array("Authorization: bearer {$this->token['access_token']}");
 
         $data = $this->http($this->url($api), $this->param($params, $param), $method, $header);

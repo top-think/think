@@ -21,30 +21,30 @@ use Think\TagLib;
 class Cx extends TagLib {
 
     // 标签定义
-    protected $tags   =  array(
+    protected $tags   =  [
         // 标签定义： attr 属性列表 close 是否闭合（0 或者1 默认1） alias 标签别名 level 嵌套层次
-        'php'       =>  array(),
-        'volist'    =>  array('attr'=>'name,id,offset,length,key,mod','level'=>3,'alias'=>'iterate'),
-        'foreach'   =>  array('attr'=>'name,item,key','level'=>3),
-        'if'        =>  array('attr'=>'condition','level'=>2),
-        'elseif'    =>  array('attr'=>'condition','close'=>0),
-        'else'      =>  array('attr'=>'','close'=>0),
-        'switch'    =>  array('attr'=>'name','level'=>2),
-        'case'      =>  array('attr'=>'value,break'),
-        'default'   =>  array('attr'=>'','close'=>0),
-        'compare'   =>  array('attr'=>'name,value,type','level'=>3,'alias'=>'eq,equal,notequal,neq,gt,lt,egt,elt,heq,nheq'),
-        'range'     =>  array('attr'=>'name,value,type','level'=>3,'alias'=>'in,notin,between,notbetween'),
-        'empty'     =>  array('attr'=>'name','level'=>3),
-        'notempty'  =>  array('attr'=>'name','level'=>3),
-        'present'   =>  array('attr'=>'name','level'=>3),
-        'notpresent'=>  array('attr'=>'name','level'=>3),
-        'defined'   =>  array('attr'=>'name','level'=>3),
-        'notdefined'=>  array('attr'=>'name','level'=>3),
-        'import'    =>  array('attr'=>'file,href,type,value,basepath','close'=>0,'alias'=>'load,css,js'),
-        'assign'    =>  array('attr'=>'name,value','close'=>0),
-        'define'    =>  array('attr'=>'name,value','close'=>0),
-    	'for'       =>  array('attr'=>'start,end,name,comparison,step', 'level'=>3),
-        );
+        'php'       =>  [],
+        'volist'    =>  ['attr'=>'name,id,offset,length,key,mod','level'=>3,'alias'=>'iterate'],
+        'foreach'   =>  ['attr'=>'name,item,key','level'=>3],
+        'if'        =>  ['attr'=>'condition','level'=>2],
+        'elseif'    =>  ['attr'=>'condition','close'=>0],
+        'else'      =>  ['attr'=>'','close'=>0],
+        'switch'    =>  ['attr'=>'name','level'=>2],
+        'case'      =>  ['attr'=>'value,break'],
+        'default'   =>  ['attr'=>'','close'=>0],
+        'compare'   =>  ['attr'=>'name,value,type','level'=>3,'alias'=>'eq,equal,notequal,neq,gt,lt,egt,elt,heq,nheq'],
+        'range'     =>  ['attr'=>'name,value,type','level'=>3,'alias'=>'in,notin,between,notbetween'],
+        'empty'     =>  ['attr'=>'name','level'=>3],
+        'notempty'  =>  ['attr'=>'name','level'=>3],
+        'present'   =>  ['attr'=>'name','level'=>3],
+        'notpresent'=>  ['attr'=>'name','level'=>3],
+        'defined'   =>  ['attr'=>'name','level'=>3],
+        'notdefined'=>  ['attr'=>'name','level'=>3],
+        'import'    =>  ['attr'=>'file,href,type,value,basepath','close'=>0,'alias'=>'load,css,js'],
+        'assign'    =>  ['attr'=>'name,value','close'=>0],
+        'define'    =>  ['attr'=>'name,value','close'=>0],
+    	'for'       =>  ['attr'=>'start,end,name,comparison,step', 'level'=>3],
+        ];
 
     /**
      * php标签解析
@@ -498,10 +498,10 @@ class Cx extends TagLib {
                 list($val,$version) =   explode('?',$val);
                 switch($type) {
                 case 'js':
-                    $parseStr .= '<script type="text/javascript" src="'.$basepath.'/'.str_replace(array('.','#'), array('/','.'),$val).'.js'.($version?'?'.$version:'').'"></script>';
+                    $parseStr .= '<script type="text/javascript" src="'.$basepath.'/'.str_replace(['.','#'], ['/','.'],$val).'.js'.($version?'?'.$version:'').'"></script>';
                     break;
                 case 'css':
-                    $parseStr .= '<link rel="stylesheet" type="text/css" href="'.$basepath.'/'.str_replace(array('.','#'), array('/','.'),$val).'.css'.($version?'?'.$version:'').'" />';
+                    $parseStr .= '<link rel="stylesheet" type="text/css" href="'.$basepath.'/'.str_replace(['.','#'], ['/','.'],$val).'.css'.($version?'?'.$version:'').'" />';
                     break;
                 case 'php':
                     $parseStr .= '<?php import("'.$val.'"); ?>';

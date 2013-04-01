@@ -66,7 +66,7 @@ class Url {
         if(is_string($vars)) { // aaa=1&bbb=2 转换成数组
             parse_str($vars,$vars);
         }elseif(!is_array($vars)){
-            $vars = array();
+            $vars = [];
         }
         if(isset($info['query'])) { // 解析地址里面参数 合并到vars
             parse_str($info['query'],$params);
@@ -89,7 +89,7 @@ class Url {
                 // 解析分组、模块和操作
                 $url        =   trim($url,$depr);
                 $path       =   explode($depr,$url);
-                $var        =   array();
+                $var        =   [];
                 $var[Config::get('var_action')]       =   !empty($path)?array_pop($path):ACTION_NAME;
                 if(Config::get('require_controller')) {
                     $var[Config::get('var_controller')]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;

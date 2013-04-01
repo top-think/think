@@ -26,7 +26,7 @@ class Xcache {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if ( !function_exists('xcache_info') ) {
             throw new Exception('_NOT_SUPPERT_:Xcache');
         }
@@ -67,7 +67,7 @@ class Xcache {
                 // 记录缓存队列
                 $queue  =   xcache_get('__info__');
                 if(!$queue) {
-                    $queue  =   array();
+                    $queue  =   [];
                 }
                 if(false===array_search($name, $queue))  array_push($queue,$name);
                 if(count($queue) > $this->options['length']) {

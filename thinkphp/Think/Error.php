@@ -18,7 +18,7 @@ class Error {
      * @param mixed $e 异常对象
      */
     static public function appException($e) {
-        $error = array();
+        $error = [];
         $error['message']   = $e->getMessage();
         $error['file']      = $e->getFile();
         $error['line']      = $e->getLine();
@@ -77,7 +77,7 @@ class Error {
         if(IS_CLI) {
             exit(is_array($error)?$error['message']:$error);
         }
-        $e = array();
+        $e = [];
         if (Config::get('app_debug')) {
             //调试模式下输出错误信息
             if (!is_array($error)) {

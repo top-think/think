@@ -26,7 +26,7 @@ class Sqlite extends Driver {
      */
     public function getFields($tableName) {
         $result =   $this->query('PRAGMA table_info( '.$tableName.' )');
-        $info   =   array();
+        $info   =   [];
         if($result){
             foreach ($result as $key => $val) {
                 $info[$val['Field']] = array(
@@ -51,7 +51,7 @@ class Sqlite extends Driver {
         $result =   $this->query("SELECT name FROM sqlite_master WHERE type='table' "
              . "UNION ALL SELECT name FROM sqlite_temp_master "
              . "WHERE type='table' ORDER BY name");
-        $info   =   array();
+        $info   =   [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }

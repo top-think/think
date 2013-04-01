@@ -36,11 +36,11 @@ class ShowPageTrace {
     private function showTrace() {
          // 系统默认显示信息
         $files  =  get_included_files();
-        $info   =   array();
+        $info   =   [];
         foreach ($files as $key=>$file){
             $info[] = $file.' ( '.number_format(filesize($file)/1024,2).' KB )';
         }
-        $trace  =   array();
+        $trace  =   [];
         Debug::remark('START',$GLOBALS['startTime']);
         $base   =   array(
             '请求信息'  =>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.$_SERVER['PHP_SELF'],
@@ -70,9 +70,9 @@ class ShowPageTrace {
                     $name       =   strtoupper($name);
                     if(strpos($name,'|')) {// 多组信息
                         $array  =   explode('|',$name);
-                        $result =   array();
+                        $result =   [];
                         foreach($array as $name){
-                            $result   +=   isset($debug[$name])?$debug[$name]:array();
+                            $result   +=   isset($debug[$name])?$debug[$name]:[];
                         }
                         $trace[$title]  =   $result;
                     }else{

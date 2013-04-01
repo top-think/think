@@ -34,7 +34,7 @@ class Sqlsrv extends Driver{
         AND t.table_schema  = c.table_schema
         AND t.table_name    = c.table_name
         WHERE   t.table_name = '$tableName'");
-        $info   =   array();
+        $info   =   [];
         if($result) {
             foreach ($result as $key => $val) {
                 $info[$val['column_name']] = array(
@@ -60,7 +60,7 @@ class Sqlsrv extends Driver{
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_TYPE = 'BASE TABLE'
             ");
-        $info   =   array();
+        $info   =   [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }
@@ -117,7 +117,7 @@ class Sqlsrv extends Driver{
      * @param array $options 表达式
      * @return false | integer
      */
-    public function delete($options=array()) {
+    public function delete($options=[]) {
         $this->model  =   $options['model'];
         $sql   = 'DELETE FROM '
             .$this->parseTable($options['table'])

@@ -173,7 +173,7 @@ abstract class Driver {
      * @param  string $method 请求方法GET/POST
      * @return array  $data   响应数据
      */
-    protected function http($url, $params, $method = 'GET', $header = array()){
+    protected function http($url, $params, $method = 'GET', $header = []){
         $vars = http_build_query($params);
         $opts = array(
             CURLOPT_TIMEOUT        => 30,

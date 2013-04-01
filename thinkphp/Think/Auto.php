@@ -12,7 +12,7 @@
 namespace Think;
 class Auto {
 
-    protected $auto =   array();
+    protected $auto =   [];
 
     public function rule($rule){
         $this->auto =   $rule;
@@ -33,7 +33,7 @@ class Auto {
                 // array('field','填充内容','附加规则',[额外参数])
                 switch(trim($auto[2])) {
                     case 'callback': // 使用回调方法
-                        $args = isset($auto[3])?(array)$auto[3]:array();
+                        $args = isset($auto[3])?(array)$auto[3]:[];
                         if(isset($data[$auto[0]])) {
                             array_unshift($args,$data[$auto[0]]);
                         }

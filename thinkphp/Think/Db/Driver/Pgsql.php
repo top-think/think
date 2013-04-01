@@ -26,7 +26,7 @@ class Pgsql extends Driver{
      */
     public function getFields($tableName) {
         $result =   $this->query('select fields_name as "Field",fields_type as "Type",fields_not_null as "Null",fields_key_name as "Key",fields_default as "Default",fields_default as "Extra" from table_msg('.$tableName.');');
-        $info   =   array();
+        $info   =   [];
         if($result){
             foreach ($result as $key => $val) {
                 $info[$val['Field']] = array(
@@ -49,7 +49,7 @@ class Pgsql extends Driver{
      */
     public function getTables($dbName='') {
         $result =   $this->query("select tablename as Tables_in_test from pg_tables where  schemaname ='public'");
-        $info   =   array();
+        $info   =   [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }

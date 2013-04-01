@@ -24,7 +24,7 @@ class Simple {
      * 架构函数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if(!empty($options)) {
             $this->options =  array_merge($this->options,$options);
         }

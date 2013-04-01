@@ -45,7 +45,7 @@ class Google extends Driver{
      */
     public function call($api, $param = '', $method = 'GET'){
         /*  Google 调用公共参数 */
-        $params = array();
+        $params = [];
         $header = array("Authorization: Bearer {$this->token['access_token']}");
 
         $data = $this->http($this->url($api), $this->param($params, $param), $method, $header);

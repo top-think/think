@@ -28,7 +28,7 @@ class Apc {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=array()) {
+    public function __construct($options=[]) {
         if(!function_exists('apc_cache_info')) {
             throw New Exception('_NOT_SUPPERT_:Apc');
         }
@@ -65,7 +65,7 @@ class Apc {
                 // 记录缓存队列
                 $queue  =   apc_fetch('__info__');
                 if(!$queue) {
-                    $queue  =   array();
+                    $queue  =   [];
                 }
                 if(false===array_search($name, $queue))  array_push($queue,$name);
                 if(count($queue) > $this->options['length']) {

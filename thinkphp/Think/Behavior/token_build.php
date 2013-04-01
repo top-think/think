@@ -45,7 +45,7 @@ class TokenBuildBehavior extends Behavior {
         $tokenName  = C('TOKEN_NAME');
         $tokenType  = C('TOKEN_TYPE');
         if(!isset($_SESSION[$tokenName])) {
-            $_SESSION[$tokenName]  = array();
+            $_SESSION[$tokenName]  = [];
         }
         // 标识当前页面唯一性
         $tokenKey   =  md5($_SERVER['REQUEST_URI']);

@@ -12,7 +12,7 @@
 namespace Think;
 class Validate {
 
-    protected $validate        =   array();  // 自动验证定义
+    protected $validate        =   [];  // 自动验证定义
     // 是否批处理验证
     protected $patchValidate    =   false;
     protected $error            =   '';
@@ -29,12 +29,12 @@ class Validate {
      * @param string $type 创建类型
      * @return boolean
      */
-    public function valid($data,$rule=array()) {
+    public function valid($data,$rule=[]) {
         $validate   =   $rule?$rule:$this->validate;
         // 属性验证
         if($validate) { // 如果设置了数据自动验证则进行数据验证
             if($this->patchValidate) { // 重置验证错误信息
-                $this->error = array();
+                $this->error = [];
             }
             foreach($validate as $key=>$val) {
                 // 验证因子定义格式
@@ -87,7 +87,7 @@ class Validate {
     protected function _validationFieldItem($data,$val) {
         switch(strtolower(trim($val[4]))) {
             case 'callback':// 调用方法进行验证
-                $args = isset($val[5])?(array)$val[5]:array();
+                $args = isset($val[5])?(array)$val[5]:[];
                 if(is_string($val[0]) && strpos($val[0], ','))
                     $val[0] = explode(',', $val[0]);
                 if(is_array($val[0])){

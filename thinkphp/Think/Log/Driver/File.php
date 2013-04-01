@@ -20,14 +20,14 @@ class File {
     const SAPI      = 4;
 
     // 日志信息
-    protected $log     =  array();
+    protected $log     =  [];
     protected $config  =   array(
         'log_time_format'   =>  '[ c ]',
         'log_file_size'     =>  2097152,
         'log_allow_level'   =>  array('ERR','NOTIC','DEBUG','SQL','INFO'),
     );
 
-    public function __construct($config=array()){
+    public function __construct($config=[]){
         $this->config   =   array_merge($this->config,$config);
     }
 
@@ -75,12 +75,12 @@ class File {
         $message    =   date($this->config['log_time_format']).' '.$_SERVER['REMOTE_ADDR'].' '.$_SERVER['REQUEST_URI']."\r\n";
         if($level) {
             $message    .=   implode('',$log)."\r\n";
-            $this->log[$level]  =   array();
+            $this->log[$level]  =   [];
         }else{
             foreach($log as $info){
                 $message    .=   implode('',$info)."\r\n";
             }
-            $this->log = array();
+            $this->log = [];
         }
         error_log($message, 3,$destination);
         //clearstatcache();
