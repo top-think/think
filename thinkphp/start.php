@@ -40,15 +40,13 @@ Config::load(THINK_PATH.'convention.php');
 Log::init(['type'=>Config::get('log_type'),'log_path'=> Config::get('log_path')]);
 
 // 缓存初始化
-Cache::connect(['type'=>Config::get('cache_type'),'temp'=> CACHE_PATH]);
+//Cache::connect(['type'=>Config::get('cache_type'),'temp'=> CACHE_PATH]);
 
 // 注册行为扩展
-//ThinkTag::add('route_check','route_check');
-Tag::add('content_filter','ContentReplace','Think');
+//Tag::add('content_filter','ContentReplace','Think');
 //Tag::add('app_end','ShowPageTrace','Think');
 Tag::add('view_template','LocationTemplate','Think');
-//Tag::add('action_begin','BeforeAction','Index');
-//Tag::add('app_end','test','Index');
+
 
 // 启动session
 if(!IS_CLI) {
@@ -57,6 +55,3 @@ if(!IS_CLI) {
 
 // 执行应用
 App::run();
-
-// 保存日志
-//Log::save();

@@ -126,7 +126,19 @@ function import($class, $baseUrl = '', $ext= EXT ) {
  * @param integer $code 异常代码 默认为0
  * @return void
  */
-function E($msg, $code=0) {
+function E($msg, $code=0,$url='') {
+    if(404 == $code && !C('app_debug')) {
+        if($msg) Think\Log::record($msg,'ERR');
+        $url    =   $url?$url:C('url_404_redirect');
+        if($url) {
+            header('Location: ' . $url);
+        }else{
+            header('HTTP/1.1 404 Not Found');
+            // 确保FastCGI模式下正常
+            header('Status:404 Not Found');
+        }
+        exit;
+    }
     throw new Think\Exception($msg, $code);
 }
 
@@ -139,28 +151,6 @@ function E($msg, $code=0) {
  */
 function dump($var, $echo=true, $label=null) {
     return Think\Debug::dump($var,$echo,$label);
-}
-
-/**
- * 404处理 
- * 调试模式会抛异常 
- * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
- * @param string $msg 提示信息
- * @param string $url 跳转URL地址
- * @return void
- */
-function _404($msg='',$url='') {
-    Think\Config::get('app_debug') && E($msg);
-    if($msg) Think\Log::record($msg,'ERR');
-    $url    =   $url?$url:Think\Config::get('url_404_redirect');
-    if($url) {
-        header('Location: ' . $url);
-    }else{
-        header('HTTP/1.1 404 Not Found');
-        // 确保FastCGI模式下正常
-        header('Status:404 Not Found');
-    }
-    exit;
 }
 
 /**

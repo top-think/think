@@ -59,7 +59,7 @@ class App {
             // 是否定义empty控制器
             $instance = Loader::controller('empty');
             if(!$instance){
-                _404('controller not exists :'.CONTROLLER_NAME);
+                E('controller not exists :'.CONTROLLER_NAME,404);
             }
         }
 
@@ -96,7 +96,7 @@ class App {
                         }elseif($param->isDefaultValueAvailable()){
                             $args[] = $param->getDefaultValue();
                         }else{
-                            _404('_PARAM_ERROR_:'.$name);
+                            E('_PARAM_ERROR_:'.$name);
                         }
                     }
                     $method->invokeArgs($instance,$args);
@@ -115,7 +115,7 @@ class App {
                 $method = new \ReflectionMethod($instance,'_empty');
                 $method->invokeArgs($instance,array($action,''));
             }else{
-                _404('action not exists :'.ACTION_NAME);
+                E('action not exists :'.ACTION_NAME,404);
             }
         }
         // 监听app_end
@@ -247,7 +247,7 @@ class App {
             $var_c  =   $config['var_controller'];
             $var_a  =   $config['var_action'];
         }else{
-            _404('module not exists :'.MODULE_NAME);
+            E('module not exists :'.MODULE_NAME,404);
         }
         // 路由检测和控制器、操作解析
         Route::check($_SERVER['PATH_INFO']);
