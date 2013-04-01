@@ -65,7 +65,7 @@ class Error {
         Log::save();
         if ($e = error_get_last()) {
             ob_end_clean();
-            self::appError($e['type'],$e['message'],$e['file'],$e['line']);
+            self::halt($e);
         }
     }
 
