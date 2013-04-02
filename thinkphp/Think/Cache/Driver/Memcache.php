@@ -31,13 +31,13 @@ class Memcache {
      */
     public function __construct($options=[]) {
         if ( !extension_loaded('memcache') ) {
-            throw new Exception('_NOT_SUPPERT_:memcache');
+            E('_NOT_SUPPERT_:memcache');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
         $func               =   $this->options['persistent'] ? 'pconnect' : 'connect';
-        $this->handler      =   new Memcache;
+        $this->handler      =   new \Memcache;
         $options['timeout'] === false ?
             $this->handler->$func($options['host'], $options['port']) :
             $this->handler->$func($options['host'], $options['port'], $options['timeout']);

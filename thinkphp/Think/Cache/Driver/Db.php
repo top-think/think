@@ -40,7 +40,7 @@ class Db {
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
-        $this->handler   = ThinkDB::getInstance();
+        $this->handler   = \Think\Db::instance();
     }
 
     /**

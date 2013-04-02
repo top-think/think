@@ -34,7 +34,7 @@ class Secache {
             $this->options      =   array_merge($this->options,$options);
         }
         if(substr($this->options['temp'], -1) != '/')    $this->options['temp'] .= '/';
-        $this->handler  =   new secache;
+        $this->handler  =   new SecacheClient;
         $this->handler->workat($this->options['temp'].$this->options['project']);
     }
 
@@ -108,7 +108,7 @@ class Secache {
 if(!defined('SECACHE_SIZE')){
     define('SECACHE_SIZE','15M');
 }
-class secache{
+class SecacheClient{
 
     var $idx_node_size = 40;
     var $data_base_pos = 262588; //40+20+24*16+16*16*16*16*4;

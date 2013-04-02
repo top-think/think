@@ -31,7 +31,7 @@ class Sqlite {
      */
     public function __construct($options=[]) {
         if ( !extension_loaded('sqlite') ) {
-            throw new Exception('_NOT_SUPPERT_:sqlite');
+            E('_NOT_SUPPERT_:sqlite');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);

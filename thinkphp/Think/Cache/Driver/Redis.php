@@ -32,13 +32,13 @@ class Redis {
      */
     public function __construct($options=[]) {
         if ( !extension_loaded('redis') ) {
-            throw new Exception('_NOT_SUPPERT_:redis');
+            E('_NOT_SUPPERT_:redis');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
         $func = $options['persistent'] ? 'pconnect' : 'connect';
-        $this->handler  = new Redis;
+        $this->handler  = new \Redis;
         $options['timeout'] === false ?
             $this->handler->$func($options['host'], $options['port']) :
             $this->handler->$func($options['host'], $options['port'], $options['timeout']);

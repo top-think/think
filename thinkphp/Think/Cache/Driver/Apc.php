@@ -30,7 +30,7 @@ class Apc {
      */
     public function __construct($options=[]) {
         if(!function_exists('apc_cache_info')) {
-            throw New Exception('_NOT_SUPPERT_:Apc');
+            E('_NOT_SUPPERT_:Apc');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
