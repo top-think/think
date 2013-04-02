@@ -195,16 +195,6 @@ function S($name,$value='',$options=null) {
 }
 
 /**
- * 日志记录
- * @param string $log 日志信息
- * @param string $type 日志类型
- * @return void
- */
-function log($log,$type='DEBUG') {
-    Think\Log::record($log,$type);
-}
-
-/**
  * 字符串命名风格转换
  * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
  * @param string $name 字符串
