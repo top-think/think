@@ -63,7 +63,7 @@ class View {
      * @param boolean $return 是否返回
      * @return mixed
      */
-    public function display($template='',$vars=[],$cacheId,$return=false) {
+    public function display($template='',$vars=[],$cacheId='',$return=false) {
         Tag::listen('view_begin',$template);
         // 解析并获取模板内容
         $content = $this->fetch($template,$vars,$cacheId);

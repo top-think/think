@@ -43,7 +43,7 @@ class Error {
           case E_COMPILE_ERROR:
           case E_USER_ERROR:
             $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
-            Log::write($errorStr,'ERROR');
+            Log::record($errorStr,'ERROR');
             self::halt($errorStr);
             break;
           case E_STRICT:

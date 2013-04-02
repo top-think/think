@@ -133,7 +133,7 @@ class App {
         $var_c  =   $config['var_controller'];
         $var_a  =   $config['var_action'];
         $var_p  =   $config['var_pathinfo'];
-        if(!empty($_GET[$var_p])) { // 判断URL里面是否有兼容模式参数
+        if(isset($_GET[$var_p])) { // 判断URL里面是否有兼容模式参数
             $_SERVER['PATH_INFO']   = $_GET[$var_p];
             unset($_GET[$var_p]);
         }elseif(IS_CLI){ // CLI模式下 index.php module/controller/action/params/...
@@ -185,7 +185,7 @@ class App {
         // 监听path_info
         Tag::listen('path_info');
         // 分析PATHINFO信息
-        if(empty($_SERVER['PATH_INFO']) && $_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
+        if(!isset($_SERVER['PATH_INFO']) && $_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
             $types   =  explode(',',$config['pathinfo_fetch']);
             foreach ($types as $type){
                 if(0===strpos($type,':')) {// 支持函数判断
@@ -199,6 +199,9 @@ class App {
             }
         }
         // 定位模块
+        if(empty($_SERVER['PATH_INFO'])) {
+            $_SERVER['PATH_INFO']   =   '';
+        }
         $part =  pathinfo($_SERVER['PATH_INFO']);
         define('__EXT__', isset($part['extension'])?strtolower($part['extension']):'');
         $_SERVER['PATH_INFO'] = trim(preg_replace('/\.('.trim($config['url_html_suffix'],'.').')$/i', '',$_SERVER['PATH_INFO']),'/');
