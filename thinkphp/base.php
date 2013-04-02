@@ -186,12 +186,22 @@ function S($name,$value='',$options=null) {
         return $cache->rm($name);
     }else { // 缓存数据
         if(is_array($options)) {
-            $expire =   is_numeric($options['expire'])?$options['expire']:NULL;	//修复查询缓存无法设置过期时间
+            $expire =   isset($options['expire'])?$options['expire']:NULL;	//修复查询缓存无法设置过期时间
         }else{
             $expire =   is_numeric($options)?$options:NULL;	//默认快捷缓存设置过期时间
         }
         return $cache->set($name, $value, $expire);
     }
+}
+
+/**
+ * 日志记录
+ * @param string $log 日志信息
+ * @param string $type 日志类型
+ * @return void
+ */
+function log($log,$type='DEBUG') {
+    Think\Log::record($log,$type);
 }
 
 /**
