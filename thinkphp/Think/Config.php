@@ -19,7 +19,10 @@ class Config {
     }
 
     // 解析其他格式的配置参数
-    static public function parse($config,$type,$range=''){
+    static public function parse($config,$type='',$range=''){
+        if(empty($type)) {
+            $type   =   strtolower(substr(strrchr($config, '.'),1));
+        }
         $class  =   '\Think\Config\Driver\\'.ucwords($type);
         self::set((new $class())->parse($config),'',$range);
     }
