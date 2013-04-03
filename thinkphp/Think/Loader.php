@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 namespace Think;
 use Think\Config;
 
@@ -21,11 +20,11 @@ class Loader {
         'Vendor'    =>  VENDOR_PATH,
     ];
 
+    // 自动加载
     static public function autoload($class){
         // 检查是否定义classmap
         if(isset(self::$map[$class])) {
             include self::$map[$class];
-            return ;
         }else{ // 命名空间自动加载
             $find   =   false;
             foreach (self::$namespace as $name=>$path){
@@ -38,23 +37,8 @@ class Loader {
             $filename   =   $path.str_replace('\\','/',$class).'.php';
             if(is_file($filename)) {
                 include $filename;
-                return ;
             }
         }
-        // 扫描模块目录
-        /*
-        //if(defined(\MODULE_PATH)) {
-            $dir    =   glob(MODULE_PATH.'*');
-            foreach ($dir as $path){
-                if(false === strpos($path,'.') && $pos = strripos($class,basename($path))) {
-                    $name   =   parse_name(substr($class,0,$pos));
-                    if(is_file($path.'/'.$name.EXT)) {
-                        include $path.'/'.$name.EXT;
-                        return ;
-                    }
-                }
-            }
-        //}*/
     }
 
     // 注册classmap
@@ -72,6 +56,7 @@ class Loader {
         self::$map  =   array_merge(self::$map,$map);
     }
 
+    // 注册自动加载机制
     static public function register($autoload=''){
         spl_autoload_register($autoload?$autoload:['Think\Loader','autoload']);
     }
@@ -225,19 +210,20 @@ class Loader {
      * @return object
      */
     static public function instance($class,$method='') {
+        static $_instance   =   [];
         $identify   =   $class.$method;
-        if(!isset(self::$_instance[$identify])) {
+        if(!isset($_instance[$identify])) {
             if(class_exists($class)){
                 $o = new $class();
                 if(!empty($method) && method_exists($o,$method))
-                    self::$_instance[$identify] = call_user_func_array(array(&$o, $method));
+                    $_instance[$identify] = call_user_func_array(array(&$o, $method));
                 else
-                    self::$_instance[$identify] = $o;
+                    $_instance[$identify] = $o;
             }
             else
-                E(Lang::get('_CLASS_NOT_EXIST_').':'.$class);
+                E('_CLASS_NOT_EXIST_:'.$class);
         }
-        return self::$_instance[$identify];
+        return $_instance[$identify];
     }
 
 }

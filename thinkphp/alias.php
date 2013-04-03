@@ -8,25 +8,33 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 
-return array(/*
-    'Think\App'      =>  CORE_PATH.'app.php',
-    'Think\Log'      =>  CORE_PATH.'log.php',
-    'Think\Config'   =>  CORE_PATH.'config.php',
-    'Think\Route'    =>  CORE_PATH.'route.php',
-    'Think\Exception'=>  CORE_PATH.'exception.php',
-    'Think\Model'    =>  CORE_PATH.'model.php',
-    'Think\Db'       =>  CORE_PATH.'db.php',
-    'Think\Template' =>  CORE_PATH.'template.php',
-    'Think\Error'    =>  CORE_PATH.'error.php',
-    'Think\Cache'    =>  CORE_PATH.'cache.php',
-    'Think\Tag'      =>  CORE_PATH.'tag.php',
-    'Think\Session'  =>  CORE_PATH.'session.php',
-    'Think\Cookie'   =>  CORE_PATH.'cookie.php',
-    'Think\Controll' =>  CORE_PATH.'controll.php',
-    'Think\View'     =>  CORE_PATH.'view.php',
-    'Think\Auth'     =>  CORE_PATH.'auth.php',
+// 系统类库映射定义
+return array(
+    'Think\App'      =>  CORE_PATH.'App.php',
+    'Think\Log'      =>  CORE_PATH.'Log.php',
+    'Think\Log\Driver\File' =>  CORE_PATH.'Log\Driver\File.php',
+    'Think\Config'   =>  CORE_PATH.'Config.php',
+    'Think\Route'    =>  CORE_PATH.'Route.php',
+    'Think\Exception'=>  CORE_PATH.'Exception.php',
+    'Think\Model'    =>  CORE_PATH.'Model.php',
+    'Think\Db'       =>  CORE_PATH.'Db.php',
+    'Think\Db\Driver'   =>  CORE_PATH.'Db\Driver.php',
+    'Think\Template' =>  CORE_PATH.'Template.php',
+    'Think\Error'    =>  CORE_PATH.'Error.php',
+    'Think\Cache'    =>  CORE_PATH.'Cache.php',
+    'Think\Tag'      =>  CORE_PATH.'Tag.php',
+    'Think\Session'  =>  CORE_PATH.'Session.php',
+    'Think\Cookie'   =>  CORE_PATH.'Cookie.php',
+    'Think\Controller' =>  CORE_PATH.'Controller.php',
+    'Think\View'     =>  CORE_PATH.'View.php',
     'Think\Url'      =>  CORE_PATH.'url.php',
-    'Think\Verify'   =>  CORE_PATH.'verify.php',*/
+    'Think\Verify'   =>  CORE_PATH.'Verify.php',
+    'Think\Debug'   =>  CORE_PATH.'Debug.php',
+    'Think\Input'   =>  CORE_PATH.'Input.php',
+    'Think\Parser'  =>  CORE_PATH.'Parser.php',
+    'Think\Lang'   =>  CORE_PATH.'Lang.php',
+    'Think\Filter'  =>  CORE_PATH.'Filter.php',
+    'Think\Oauth'   =>  CORE_PATH.'Oauth.php',
+    'Think\Rest'    =>  CORE_PATH.'Rest.php',
 );
