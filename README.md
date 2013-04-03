@@ -1,3 +1,4 @@
-think
+thinkphp4 beta
 =====
-ThinkPHP 4 Beta
+ThinkPHP4 充分利用了PHP的新版语言特性，采用了全新的架构思想，并且保持快速开发的理念。
+目前仅供开发人员测试^_^
