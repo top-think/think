@@ -22,10 +22,13 @@ class View {
         'http_cache_control'    =>  'private',
         'http_render_content'   =>  false,
         'theme_on'              =>  false,
+        'auto_detect_theme'     =>  false,
+        'var_theme'             =>  't',
         'default_theme'         =>  'default',
         'http_cache_id'         =>  null,
         'view_path'             =>  '',
         'view_suffix'           =>  '.html',
+
     ];
     
     /**
@@ -143,10 +146,13 @@ class View {
     /**
      * 自动定位模板文件
      * @access private
-     * @param string $template 模板规则
+     * @param string $template 模板文件规则
      * @return string
      */
     private function parseTemplate($template) {
+        if(is_file($template)) {
+            return $template;
+        }
         $template   =   str_replace(':','/',$template);
         // 获取当前主题名称
         $theme  =   $this->getTemplateTheme();
@@ -156,8 +162,6 @@ class View {
             $template = CONTROLLER_NAME.'/'.ACTION_NAME;
         }elseif(false === strpos($template,'/')){
             $template = CONTROLLER_NAME.'/'.$template;
-        }elseif(false === strpos($template,'.')) {
-            $template   =  $template;
         }
         return ($this->config['view_path']?$this->config['view_path']:MODULE_PATH.'View/').$theme.$template.$this->config['view_suffix'];
     }
@@ -173,7 +177,7 @@ class View {
                 $theme  =   $this->theme;
             }elseif($this->config['auto_detect_theme']){
                 // 自动侦测模板主题
-                $t = C('var_theme');
+                $t = $this->config['var_theme'];
                 if (isset($_GET[$t])){
                     $theme = $_GET[$t];
                 }elseif(Cookie::get('think_theme')){
