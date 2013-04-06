@@ -103,6 +103,21 @@ class View {
     }
 
     /**
+     * 视图输出参数设置
+     * @access public
+     * @param mixed $config
+     * @param mixed $value
+     */
+    public function http($config=[],$value=''){
+        if(is_array($config)) {
+            $this->config   =   array_merge($this->config,$config);
+        }else{
+            $this->config[$config]  =   $value;
+        }
+        return $this;
+    }
+
+    /**
      * 输出内容文本可以包括Html
      * @access private
      * @param string $content 输出内容
