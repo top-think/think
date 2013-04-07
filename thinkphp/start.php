@@ -52,6 +52,8 @@ Tag::add('view_template','LocationTemplate','Think');
 if(!IS_CLI) {
     Session::init(['prefix'=>'think','auto_start'=>true]);
 }
-
+if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
+    Create::build(include APP_PATH.'build.php');
+}
 // 执行应用
 App::run();
