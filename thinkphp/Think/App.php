@@ -139,49 +139,12 @@ class App {
         }elseif(IS_CLI){ // CLI模式下 index.php module/controller/action/params/...
             $_SERVER['PATH_INFO']   =   isset($_SERVER['argv'][1])?$_SERVER['argv'][1]:'';
         }
-
-        // 开启子域名部署 支持二级和三级域名
-        if($config['app_domain_deploy']) {
-            $rules = $config['app_domain_rules'];
-            if(isset($rules[$_SERVER['HTTP_HOST']])) { // 完整域名或者IP配置
-                $rule =  $rules[$_SERVER['HTTP_HOST']];
-            }else{// 子域名配置
-                $domain = array_slice(explode('.',$_SERVER['HTTP_HOST']),0,-2);
-                if(!empty($domain)) {
-                    $subDomain    = implode('.',$domain);
-                    $domain2 = array_pop($domain); // 二级域名
-                    if($domain) { // 存在三级域名
-                        $domain3   =  array_pop($domain);
-                    }
-                    if($subDomain && isset($rules[$subDomain])) { // 子域名配置
-                        $rule =  $rules[$subDomain];
-                    }elseif(isset($rules['*.'.$domain2]) && !empty($domain3)){ // 泛三级域名
-                        $rule =  $rules['*.'.$domain2];
-                        $panDomain = $domain3;
-                    }elseif(isset($rules['*']) && !empty($domain2)){ // 泛二级域名
-                        if('www' != $domain2 && !in_array($domain2,$config['app_doamin_deny'])) {
-                            $rule =  $rules['*'];
-                            $panDomain = $domain2;
-                        }
-                    }
-                }
-            }
-            if(!empty($rule)) {
-                // 子域名部署规则 '子域名'=>array('模块名'[,'var1=a&var2=b&var3=*']);
-                $_GET[$var_m]  =   $rule[0];
-                if(isset($rule[1])) { // 传入参数
-                    parse_str($rule[1],$parms);
-                    if(isset($panDomain)) {
-                        $pos =  array_search('*',$parms);
-                        if(false !== $pos) {
-                            // 泛域名作为参数
-                            $parms[$pos] =  $panDomain;
-                        }
-                    }
-                    $_GET   =  array_merge($_GET,$parms);
-                }
-            }
+        
+        // 检测子域名部署
+        if(!IS_CLI) {
+            Route::checkDomain();
         }
+
         // 监听path_info
         Tag::listen('path_info');
         // 分析PATHINFO信息

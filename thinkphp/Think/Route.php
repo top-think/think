@@ -20,8 +20,10 @@ class Route {
             '*'         =>  [],
         ];
 
-    // 映射规则
-    static private $map =   [];
+    // URL映射规则
+    static private $map     =   [];
+    // 子域名部署规则
+    static private $domain  =   [];
 
     // 添加URL映射规则
     static public function map($map,$route=''){
@@ -29,6 +31,15 @@ class Route {
             self::$map  =   array_merge(self::$map,$map);
         }else{
             self::$map[$map]    =   $route;
+        }
+    }
+
+    // 添加子域名部署规则
+    static public function domain($domain,$rule=''){
+        if(is_array($domain)) {
+            self::$domain  =   array_merge(self::$domain,$domain);
+        }else{
+            self::$domain[$domain]    =   $rule;
         }
     }
 
@@ -70,6 +81,58 @@ class Route {
     // 注册delete请求的路由规则
     static public function delete($rule,$route=''){
         self::register($rule,$route,'DELETE');
+    }
+
+    // 检测子域名部署
+    static public function checkDomain(){
+        // 开启子域名部署 支持二级和三级域名
+        if(!empty(self::$domain)) {
+            $rules = self::$domain;
+            if(isset($rules[$_SERVER['HTTP_HOST']])) { // 完整域名或者IP配置
+                $rule =  $rules[$_SERVER['HTTP_HOST']];
+            }else{// 子域名配置
+                $domain = array_slice(explode('.',$_SERVER['HTTP_HOST']),0,-2);
+                if(!empty($domain)) {
+                    $subDomain    = implode('.',$domain);
+                    $domain2 = array_pop($domain); // 二级域名
+                    if($domain) { // 存在三级域名
+                        $domain3   =  array_pop($domain);
+                    }
+                    if($subDomain && isset($rules[$subDomain])) { // 子域名配置
+                        $rule =  $rules[$subDomain];
+                    }elseif(isset($rules['*.'.$domain2]) && !empty($domain3)){ // 泛三级域名
+                        $rule =  $rules['*.'.$domain2];
+                        $panDomain = $domain3;
+                    }elseif(isset($rules['*']) && !empty($domain2)){ // 泛二级域名
+                        if('www' != $domain2 ) {
+                            $rule =  $rules['*'];
+                            $panDomain = $domain2;
+                        }
+                    }
+                }
+            }
+            if(!empty($rule)) {
+                // 子域名部署规则 
+                // '子域名'=>'模块名'
+                // '子域名'=>['模块名','var1=a&var2=b&var3=*'];
+                if(is_array($rule)) {
+                    $_GET[Config::get('var_module')]  =   $rule[0];
+                    if(isset($rule[1])) { // 传入参数
+                        parse_str($rule[1],$parms);
+                        if(isset($panDomain)) {
+                            $pos =  array_search('*',$parms);
+                            if(false !== $pos) {
+                                // 泛域名作为参数
+                                $parms[$pos] =  $panDomain;
+                            }
+                        }
+                        $_GET   =  array_merge($_GET,$parms);
+                    }
+                }else{
+                    $_GET[Config::get('var_module')]  =   $rule;
+                }
+            }
+        }
     }
 
     // 检测URL路由
