@@ -46,13 +46,13 @@ class Create {
                         case 'Controller':// 控制器
                             $filename   =   ucwords($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
-                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path}\nclass {$filename} {\n}");
+                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
                             }
                             break;
                         case 'Model': // 模型
                             $filename   =   ucwords($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
-                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path}\nclass {$filename} extends Model{\n}");
+                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends Model{\n}");
                             }
                             break;
                         case 'View': // 视图
@@ -60,7 +60,7 @@ class Create {
                         default:
                             $filename   =   ucwords($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
-                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path}\nclass {$filename} {\n}");
+                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
                             }
                         }
 
