@@ -115,6 +115,11 @@ class Route {
                 // 子域名部署规则 
                 // '子域名'=>'模块名'
                 // '子域名'=>['模块名','var1=a&var2=b&var3=*'];
+                if($rule instanceof \Closure) {
+                    // 执行闭包并中止
+                    self::invokeRule($rule);
+                    exit;
+                }
                 if(is_array($rule)) {
                     $_GET[Config::get('var_module')]  =   $rule[0];
                     if(isset($rule[1])) { // 传入参数
