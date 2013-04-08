@@ -67,6 +67,9 @@ class Tag {
      * @return void
      */
     static public function exec($name, &$params=NULL) {
+        if($name instanceof \Closure) {
+            return $name($params);
+        }
         if(false === strpos($name,'\\')) {
             $class      =  '\\'.ucwords(MODULE_NAME).'\\Behavior\\'.$name;
         }else{
