@@ -11,6 +11,10 @@
 # <http://daringfireball.net/projects/markdown/>
 #
 
+/**
+ * 应用到ThinkPHP中，因而修改为ThinkPHP规范的命名空间
+ */
+# namespace Michelf;
 namespace Think\Parser\Driver;
 
 #
@@ -32,7 +36,7 @@ class Markdown {
 
 	### Version ###
 
-	const MARKDOWNLIB_VERSION  =  "1.3-beta4";
+	public const MARKDOWNLIB_VERSION  =  "1.3-beta4";
 
 	### Simple Function Interface ###
 
@@ -53,7 +57,7 @@ class Markdown {
 			$parser = new $parser_class;
 
 		# Transform text using parser.
-		return $parser->parse($text);
+		return $parser->transform($text);
 	}
 
 	### Configuration Variables ###
@@ -142,8 +146,17 @@ class Markdown {
 		$this->html_hashes = array();
 	}
 
+	/**
+	 * 提供给ThinkPHP外部调用的方法，麦当苗儿为ThinkPHP添加
+	 * @author <zuojiazi.cn@gmail.com>
+	 * @param  string $content 需要解析的Markdown字符串
+	 * @return string          解析后的HTML字符串
+	 */
+	public function parse($content){
+		return $this->transform($content);
+	}
 
-	public function parse($text) {
+	protected function transform($text) {
 	#
 	# Main function. Performs some preprocessing on the input text
 	# and pass it through the document gamut.
