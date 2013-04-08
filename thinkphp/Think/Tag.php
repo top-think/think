@@ -15,28 +15,17 @@ class Tag {
     static private $tags =   [];
 
     /**
-     * 给某个tag注册行为
-     * @param string $tag 标签名称
-     * @param array $behaviors 行为集
-     * @return void
-     */
-    static public function register($tag,$behaviors) {
-        if(isset(self::$tags[$tag])) {
-            self::$tags[$tag] =   array_merge(self::$tags[$tag],$behaviors);
-        }else{
-            self::$tags[$tag] =   $behaviors;
-        }
-    }
-
-    /**
      * 动态添加行为扩展到某个标签
      * @param string $tag 标签名称
      * @param mixed $behavior 行为名称
      * @return void
      */
-    static public function add($tag,$behavior,$range='') {
-        $range  =   $range?$range:ucwords(MODULE_NAME);
-        self::$tags[$tag][] =   [$behavior,$range];
+    static public function add($tag,$behavior) {
+        if(is_array($hehavior)) {
+            self::$tags[$tag] =   array_merge(self::$tags[$tag],$hehavior);
+        }else{
+            self::$tags[$tag][] =   $behavior;
+        }
     }
 
     /**
@@ -55,13 +44,12 @@ class Tag {
      * @return void
      */
     static public function listen($tag, &$params=NULL) {
-        Log::record($tag,'INFO');
-        Debug::remark($tag,'time');
         if(isset(self::$tags[$tag])) {
             foreach (self::$tags[$tag] as $val) {
-                Debug::remark($val[0].'start','time');
-                $result =   self::exec($val[0], $params,$val[1]);
-                Log::record('Run '.$val[0].' Behavior [ RunTime:'.Debug::getUseTime($val[0].'start',$val[0].'end').'s ]','INFO');
+                Debug::remark('behavior_start','time');
+                $result =   self::exec($val, $params);
+                Debug::remark('behavior_end','time');
+                Log::record('Run '.$val.' Behavior [ RunTime:'.Debug::getUseTime('behavior_start','behavior_end').'s ]','INFO');
                 if(false === $result) {
                     // 如果返回false 则中断行为执行
                     return ;
@@ -78,8 +66,12 @@ class Tag {
      * @param Mixed $params 传人的参数
      * @return void
      */
-    static public function exec($name, &$params=NULL,$range='') {
-        $class      =  '\\'.$range.'\Behavior\\'.$name;
+    static public function exec($name, &$params=NULL) {
+        if(false === strpos($name,'\\')) {
+            $class      =  '\\'.ucwords(MODULE_NAME).'\\Behavior\\'.$name;
+        }else{
+            $class      =  $name;
+        }
         if(class_exists($class)) {
             $behavior   = new $class();
             return $behavior->run($params);
