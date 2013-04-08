@@ -89,7 +89,7 @@ class Ubb{
 				return $data[1] . $data[$num-2];
 			} else { //不存在嵌套，直接解析内容
 				$parse = '_' . $func;
-				$data[$num-2] = trim($data[$num-2], "\r\n"); //去掉标签内容两端的空格
+				$data[$num-2] = trim($data[$num-2], "\r\n"); //去掉标签内容两端的换行符
 				return $this->$parse($tag, $data);
 			}
 		}
