@@ -12,14 +12,7 @@
 namespace Think;
 class Route {
     // 路由规则
-    static private $rules   =   [
-            'GET'       =>  [],
-            'POST'      =>  [],
-            'PUT'       =>  [],
-            'DELETE'    =>  [],
-            '*'         =>  [],
-        ];
-
+    static private $rules   =   [];
     // URL映射规则
     static private $map     =   [];
     // 子域名部署规则
@@ -44,43 +37,39 @@ class Route {
     }
 
     // 注册路由规则
-    static public function register($rule,$route='',$type='GET'){
-        if(strpos($type,'|')) {
-            foreach (explode('|',$type) as $val){
-                self::register($rule,$route,$val);
+    static public function register($rule,$route='',$option=[]){
+        if(is_array($rule)) {
+            foreach ($rule as $key=>$val){
+                self::$rules[$key] =    ['route'=>$val,'option'=>$option];
             }
         }else{
-            if(is_array($rule)) {
-                self::$rules[$type] =    array_merge(self::$rules[$type],$rule);
-            }else{
-                self::$rules[$type][$rule] =    $route;
-            }
+            self::$rules[$rule] =    ['route'=>$route,'option'=>$option];
         }
     }
 
     // 注册任意请求的路由规则
-    static public function any($rule,$route=''){
-        self::register($rule,$route,'*');
+    static public function any($rule,$route='',$option=[]){
+        self::register($rule,$route,array_diff_key($option,['method'=>'']));
     }
 
     // 注册get请求的路由规则
-    static public function get($rule,$route=''){
-        self::register($rule,$route,'GET');
+    static public function get($rule,$route='',$option=[]){
+        self::register($rule,$route,array_merge($option,['method'=>'GET']));
     }
 
     // 注册post请求的路由规则
-    static public function post($rule,$route=''){
-        self::register($rule,$route,'POST');
+    static public function post($rule,$route='',$option=[]){
+        self::register($rule,$route,array_merge($option,['method'=>'POST']));
     }
 
     // 注册put请求的路由规则
-    static public function put($rule,$route=''){
-        self::register($rule,$route,'PUT');
+    static public function put($rule,$route='',$option=[]){
+        self::register($rule,$route,array_merge($option,['method'=>'PUT']));
     }
 
     // 注册delete请求的路由规则
-    static public function delete($rule,$route=''){
-        self::register($rule,$route,'DELETE');
+    static public function delete($rule,$route='',$option=[]){
+        self::register($rule,$route,array_merge($option,['method'=>'DELETE']));
     }
 
     // 检测子域名部署
@@ -150,12 +139,23 @@ class Route {
             return self::parseUrl(self::$map[$regx]);
         }
         // 路由规则检测
-        $rules  =   self::$rules[$_SERVER['REQUEST_METHOD']];
-        if(!empty(self::$rules['*'])) {
-            $rules  =   array_merge(self::$rules['*'],$rules);
-        }
-        if(!empty($rules)) {
-            foreach ($rules as $rule=>$route){
+        if(!empty(self::$rules)) {
+            foreach (self::$rules as $rule=>$val){
+                $route  =   $val['route'];
+                $option =   $val['option'];
+
+                // 请求类型检测
+                if(isset($option['method']) && false === stripos($option['method'],$_SERVER['REQUEST_METHOD'])) {
+                    continue;
+                }
+                // 伪静态后缀检测
+                if(isset($option['ext']) && __EXT__ != $option['ext']) {
+                    continue;
+                }
+                // https检测
+                if(!empty($option['https']) && !self::isSsl()) {
+                    continue;
+                }
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
                         // 执行闭包并中止
@@ -175,7 +175,7 @@ class Route {
                                 $rule =  substr($rule,0,-1);
                             }
                         }
-                        if($var = self::match($regx,$rule)){
+                        if(false !== $var = self::match($regx,$rule)){
                             if($route instanceof \Closure) {
                                 // 执行闭包并中止
                                 self::invokeRule($route,$var);
@@ -189,6 +189,19 @@ class Route {
             }
         }
         return self::parseUrl($regx);
+    }
+
+    /**
+     * 判断是否SSL协议
+     * @return boolean
+     */
+    static public function isSsl() {
+        if(isset($_SERVER['HTTPS']) && ('1' == $_SERVER['HTTPS'] || 'on' == strtolower($_SERVER['HTTPS']))){
+            return true;
+        }elseif(isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT'] )) {
+            return true;
+        }
+        return false;
     }
 
     // 执行正则匹配下的闭包方法 支持参数调用
