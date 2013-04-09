@@ -54,39 +54,47 @@ class Model {
     // 链操作方法列表
     protected $methods          =   ['table','order','alias','having','group','lock','distinct','auto','filter','validate'];
     // 配置参数
-    protected $config =   [];
+    protected $config           =   [];
 
     /**
      * 架构函数
      * 取得DB类的实例对象 字段检查
      * @access public
      * @param string $name 模型名称
-     * @param string $tablePrefix 表前缀
-     * @param mixed $connection 数据库连接信息
+     * @param array $config 模型配置
      */
-    public function __construct($name='',$tablePrefix='',$connection='') {
+    public function __construct($name='',$config=[]) {
         // 模型初始化
         $this->_initialize();
-        // 读取配置参数
-        $this->config   =   Config::get();
-
-        // 获取模型名称
-        if(!empty($name)) {
-            if(strpos($name,'.')) { // 支持 数据库名.模型名的 定义
-                list($this->dbName,$this->name) = explode('.',$name);
-            }else{
-                $this->name   =  $name;
-            }
+        // 传入模型参数
+        if(!empty($name)){
+            $this->name =   $name;
         }elseif(empty($this->name)){
             $this->name =   $this->getModelName();
         }
+        if(strpos($this->name,'.')) { // 支持 数据库名.模型名的 定义
+            list($this->dbName,$this->name) = explode('.',$this->name);
+        }
+
+        if(isset($config['table_prefix'])) {
+            $this->tablePrefix  =   $config['table_prefix'];
+        }
+        if(isset($config['connection'])) {
+            $this->connection   =   $config['connection'];
+        }
+        if(isset($config['table_name'])) {
+            $this->tableName    =   $config['table_name'];
+        }
+        if(isset($config['true_table_name'])) {
+            $this->trueTableName    =   $config['true_table_name'];
+        }
+        if(isset($config['db_name'])) {
+            $this->dbName    =   $config['db_name'];
+        }
+
         // 设置表前缀
-        if(is_null($tablePrefix)) {// 前缀为Null表示没有前缀
-            $this->tablePrefix = '';
-        }elseif('' != $tablePrefix) {
-            $this->tablePrefix = $tablePrefix;
-        }else{
-            $this->tablePrefix = $this->tablePrefix?$this->tablePrefix:$this->config['db_prefix'];
+        if(empty($this->tablePrefix)) {
+            $this->tablePrefix  =   is_null($this->tablePrefix)?'':C('db_prefix');
         }
 
         // 数据库初始化操作
@@ -149,7 +157,7 @@ class Model {
             // 连贯操作的实现
             $this->options[strtolower($method)] =   $args[0];
             return $this;
-        }elseif(in_array(strtolower($method),array('count','sum','min','max','avg'),true)){
+        }elseif(in_array(strtolower($method),['count','sum','min','max','avg'],true)){
             // 统计查询的实现
             $field =  isset($args[0])?$args[0]:'*';
             return $this->getField(strtoupper($method).'('.$field.') AS tp_'.$method);
@@ -361,7 +369,7 @@ class Model {
             // 根据主键删除记录
             $pk   =  $this->getPk();
             if(strpos($options,',')) {
-                $where[$pk]     =  array('IN', $options);
+                $where[$pk]     =  ['IN', $options];
             }else{
                 $where[$pk]     =  $options;
             }
@@ -394,7 +402,7 @@ class Model {
             // 根据主键查询
             $pk   =  $this->getPk();
             if(strpos($options,',')) {
-                $where[$pk]     =  array('IN',$options);
+                $where[$pk]     =  ['IN',$options];
             }else{
                 $where[$pk]     =  $options;
             }
@@ -489,13 +497,15 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        $fieldType = strtolower($this->fields['_type'][$key]);
-        if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
-            $data[$key]   =  intval($data[$key]);
-        }elseif(false !== strpos($fieldType,'float') || false !== strpos($fieldType,'double')){
-            $data[$key]   =  floatval($data[$key]);
-        }elseif(false !== strpos($fieldType,'bool')){
-            $data[$key]   =  (bool)$data[$key];
+        if(isset($this->fields['_type'][$key])) {
+            $fieldType = strtolower($this->fields['_type'][$key]);
+            if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
+                $data[$key]   =  intval($data[$key]);
+            }elseif(false !== strpos($fieldType,'float') || false !== strpos($fieldType,'double')){
+                $data[$key]   =  floatval($data[$key]);
+            }elseif(false !== strpos($fieldType,'bool')){
+                $data[$key]   =  (bool)$data[$key];
+            }
         }
     }
 
@@ -581,7 +591,7 @@ class Model {
      * @return boolean
      */
     public function setInc($field,$step=1) {
-        return $this->setField($field,array('exp',$field.'+'.$step));
+        return $this->setField($field,['exp',$field.'+'.$step]);
     }
 
     /**
@@ -592,7 +602,7 @@ class Model {
      * @return boolean
      */
     public function setDec($field,$step=1) {
-        return $this->setField($field,array('exp',$field.'-'.$step));
+        return $this->setField($field,['exp',$field.'-'.$step]);
     }
 
     /**
@@ -756,7 +766,7 @@ class Model {
         }elseif(is_array($parse)){ // SQL预处理
             $sql  = vsprintf($sql,$parse);
         }else{
-            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->config['DB_PREFIX']));
+            $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
         }
         $this->db->setModel($this->name);
         return $sql;
@@ -779,7 +789,7 @@ class Model {
         if(!isset($_db[$linkNum]) || (isset($_db[$linkNum]) && $config && $_linkNum[$linkNum]!=$config) ) {
             // 创建一个新的实例
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
-                $config  =  Config::get($config);
+                $config  =  C($config);
             }
             $_db[$linkNum]            =    Db::instance($config);
         }elseif(NULL === $config){
@@ -1023,7 +1033,7 @@ class Model {
      */
     public function cache($key=true,$expire=null,$type=''){
         if(false !== $key)
-            $this->options['cache']  =  array('key'=>$key,'expire'=>$expire,'type'=>$type);
+            $this->options['cache']  =  ['key'=>$key,'expire'=>$expire,'type'=>$type];
         return $this;
     }
 
@@ -1097,7 +1107,7 @@ class Model {
                 $parse = func_get_args();
                 array_shift($parse);
             }
-            $parse = array_map(array($this->db,'escapeString'),$parse);
+            $parse = array_map([$this->db,'escapeString'],$parse);
             $where =   vsprintf($where,$parse);
         }elseif(is_object($where)){
             $where  =   get_object_vars($where);

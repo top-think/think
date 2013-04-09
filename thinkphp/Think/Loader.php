@@ -18,6 +18,7 @@ class Loader {
     static protected $namespace    =    [
         'Think'     =>  CORE_PATH,
         'Vendor'    =>  VENDOR_PATH,
+        'Library'   =>  LIB_PATH,
     ];
 
     // 自动加载
@@ -118,7 +119,7 @@ class Loader {
         }
         $guid           =   $tablePrefix . $name . '_' . $class;
         if (!isset($_model[$guid]))
-            $_model[$guid] = new $class($name,$tablePrefix,$connection);
+            $_model[$guid] = new $class($name,['table_prefix'=>$tablePrefix,'connection'=>$connection]);
         return $_model[$guid];
     }
 
@@ -129,7 +130,7 @@ class Loader {
      * @return Object
      */
     static public function model($name='',$layer='Model') {
-        if(empty($name)) return new Model;
+        if(empty($name)) return new Think\Model;
         static $_model  =   [];
         if(isset($_model[$name.$layer]))   return $_model[$name.$layer];
         if(strpos($name,'/')) {
@@ -141,14 +142,14 @@ class Loader {
         if(class_exists($class)) {
             $model      =   new $class($name);
         }else {
-            $model      =   new Model($name);
+            $model      =   new Think\Model($name);
         }
         $_model[$name.$layer]  =  $model;
         return $model;
     }
 
     /**
-     * 实例化（分层）控制器 格式：[分组/]模块
+     * 实例化（分层）控制器 格式：[模块名/]控制器名
      * @param string $name 资源地址
      * @param string $layer 控制层名称
      * @return Action|false

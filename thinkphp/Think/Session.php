@@ -51,13 +51,7 @@ class Session {
         if(!empty($config['type'])) { // 读取session驱动
             $class      = 'Think\\Session\\Driver\\'. ucwords(strtolower($config['type']));
             // 检查驱动类
-            if(class_exists($class)) {
-                $hander = new $class();
-                $hander->execute();
-            }else {
-                // 类没有定义
-                E(L('_CLASS_NOT_EXIST_').': ' . $class);
-            }
+            session_set_save_handler(new $class());
         }
         // 启动session
         if($config['auto_start'])  session_start();

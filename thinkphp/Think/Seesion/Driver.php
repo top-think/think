@@ -2,26 +2,20 @@
 // +----------------------------------------------------------------------
 // | TOPThink [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2013 http://topthink.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 // $Id$
-namespace Think\View\Driver;
-use Think\Template;
-class Think {
-    private $template   =   null;
+namespace Think\Session\Driver;
+use SessionHandler;
+class Driver extends SessionHandler {
+    protected $config   =   [];
+
     public function __construct($config=[]){
-        $this->template =   new Template($config);
+        $this->config   =   array_merge($this->config,$config);
     }
 
-    public function fetch($template,$data=[],$cacheId=''){
-        if(is_file($template)) {
-            $this->template->display($template,$data,$cacheId);
-        }else{
-            $this->template->fetch($template,$data);
-        }
-    }
 }

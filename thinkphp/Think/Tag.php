@@ -54,7 +54,6 @@ class Tag {
                     // 如果返回false 则中断行为执行
                     return ;
                 }
-                
             }
         }
         return;

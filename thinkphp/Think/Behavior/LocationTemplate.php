@@ -42,9 +42,7 @@ class LocationTemplate {
         }elseif(false === strpos($template,'.')) {
             $template   =  $template;
         }
-        $templateFile   =   MODULE_PATH.'view/'.$template.'.html';
-        if(!is_file($templateFile))
-            E(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
+        $templateFile   =   MODULE_PATH.'View/'.$template.'.html';
         return $templateFile;
     }
 }
