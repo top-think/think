@@ -40,7 +40,7 @@ Config::load(THINK_PATH.'convention.php');
 Log::init(['type'=>Config::get('log_type'),'log_path'=> Config::get('log_path')]);
 
 // 缓存初始化
-//Cache::connect(['type'=>Config::get('cache_type'),'temp'=> CACHE_PATH]);
+Cache::connect(['type'=>'File','temp'=> CACHE_PATH]);
 
 // 注册行为扩展
 //Tag::add('content_filter','ContentReplace','Think');

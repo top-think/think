@@ -231,7 +231,7 @@ class Model {
             }
         }
         // 分析表达式
-        $options    =   $this->_parseOptions();
+        $options    =   $this->_parseOptions();dump($this->fields);
         // 数据处理
         $data       =   $this->_facade($data);
         if(false === $this->_before_insert($data,$options)) {
@@ -927,9 +927,9 @@ class Model {
      */
     public function getDbFields(){
         if($this->fields) {
-            $fields     =  $this->fields;
+            $fields =  $this->fields;
             unset($fields['_pk'],$fields['_type']);
-            return array_keys($fields);
+            return $fields;
         }else{
             $fields =   Cache::get(md5($this->getTableName()));
             if(!$fields) {
@@ -946,9 +946,9 @@ class Model {
                 Cache::set(md5($this->trueTableName),$fields);
             }
             if($fields) {
-                $this->fields   =   $fields;
-                // 永久缓存
-                unset($fields['_pk'],$fields['_type']);
+                $this->fields   =   array_keys($fields);
+                $this->fields['_pk'] = $fields['_pk'];
+                $this->fields['_type']  =   $fields['_type'];
                 return array_keys($fields);
             }
             return false;
