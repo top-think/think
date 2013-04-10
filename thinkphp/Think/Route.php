@@ -44,12 +44,18 @@ class Route {
 
     // 注册路由规则
     static public function register($rule,$route='',$type='GET',$option=[]){
-        if(is_array($rule)) {
-            foreach ($rule as $key=>$val){
-                self::$rules[$type][$key] =    ['route'=>$val,'option'=>$option];
+        if(strpos($type,'|')) {
+            foreach (explode('|',$type) as $val){
+                self::register($rule,$route,$val,$option);
             }
         }else{
-            self::$rules[$type][$rule] =    ['route'=>$route,'option'=>$option];
+            if(is_array($rule)) {
+                foreach ($rule as $key=>$val){
+                    self::$rules[$type][$key] =    ['route'=>$val,'option'=>$option];
+                }
+            }else{
+                self::$rules[$type][$rule] =    ['route'=>$route,'option'=>$option];
+            }
         }
     }
 
