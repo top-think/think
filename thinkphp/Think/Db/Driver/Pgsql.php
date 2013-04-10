@@ -25,17 +25,17 @@ class Pgsql extends Driver{
      * @return array
      */
     public function getFields($tableName) {
-        $result =   $this->query('select fields_name as "Field",fields_type as "Type",fields_not_null as "Null",fields_key_name as "Key",fields_default as "Default",fields_default as "Extra" from table_msg('.$tableName.');');
+        $result =   $this->query('select fields_name as "field",fields_type as "type",fields_not_null as "null",fields_key_name as "key",fields_default as "default",fields_default as "extra" from table_msg('.$tableName.');');
         $info   =   [];
         if($result){
             foreach ($result as $key => $val) {
-                $info[$val['Field']] = array(
-                    'name'    => $val['Field'],
-                    'type'    => $val['Type'],
-                    'notnull' => (bool) ($val['Null'] === ''), // not null is empty, null is yes
-                    'default' => $val['Default'],
-                    'primary' => (strtolower($val['Key']) == 'pri'),
-                    'autoinc' => (strtolower($val['Extra']) == 'auto_increment'),
+                $info[$val['field']] = array(
+                    'name'    => $val['field'],
+                    'type'    => $val['type'],
+                    'notnull' => (bool) ($val['null'] === ''), // not null is empty, null is yes
+                    'default' => $val['default'],
+                    'primary' => (strtolower($val['key']) == 'pri'),
+                    'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
                 );
             }
         }
