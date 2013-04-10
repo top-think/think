@@ -35,8 +35,12 @@ class Loader {
                 }
             }
             $path   =   $find?dirname($path).'/':APP_PATH;
-            $filename   =   $path.str_replace('\\','/',$class).'.php';
+            $filename   =   $path.str_replace('\\','/',$class).EXT;
             if(is_file($filename)) {
+                // Win环境下面严格区分大小写
+                if (IS_WIN && !strstr(str_replace('/','\\',realpath($filename)),$class.EXT,true)){
+                    return ;
+                }
                 include $filename;
             }
         }
@@ -71,7 +75,7 @@ class Loader {
      */
     static public function import($class, $baseUrl = '', $ext= EXT ) {
         static $_file = [];
-        $class = str_replace(array('.', '#'), array('/', '.'), $class);
+        $class = str_replace(['.', '#'], ['/', '.'], $class);
         if (isset($_file[$class . $baseUrl]))
             return true;
         else
@@ -82,11 +86,11 @@ class Loader {
                 //加载当前项目应用类库
                 $class   =  substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl =  MODULE_PATH;
-            }elseif (in_array(strtolower($class_strut[0]), array('org','com'))) {
+            }elseif (in_array($class_strut[0], ['Org','Com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl =  LIB_PATH;
-            }elseif('vendor' == strtolower($class_strut[0])){
-                $baseUrl =  VENDOR_PATH;
+            }elseif(in_array($class_strut[0], ['Think','Vendor','Traits'])){
+                $baseUrl =  THINK_PATH;
             }else { // 加载其他项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = APP_PATH . $class_strut[0] .'/';

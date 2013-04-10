@@ -426,7 +426,7 @@ class  Template {
     protected function parseTagLib($tagLib,&$content,$hide=false) {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
-        $className  =   '\\Think\\Template\\Taglib\\'.ucwords($tagLib);
+        $className  =   '\\Think\\Template\\TagLib\\'.ucwords($tagLib);
         $tLib       =   new $className;
         foreach ($tLib->getTags() as $name=>$val){
             $tags   =   [$name];

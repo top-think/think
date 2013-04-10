@@ -178,7 +178,7 @@ class App {
         }
 
         // 获取模块名称
-        define('MODULE_NAME',strtolower(isset($_GET[$var_m])?$_GET[$var_m]:$config['default_module']));
+        define('MODULE_NAME',ucwords(strtolower(isset($_GET[$var_m])?$_GET[$var_m]:$config['default_module'])));
 
         // 模块初始化
         if(MODULE_NAME && is_dir(APP_PATH.MODULE_NAME)) {
