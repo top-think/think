@@ -9,20 +9,20 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think;
+namespace Think\Controller;
 abstract class Rest {
 
     protected   $_method    =   ''; // 当前请求类型
     protected   $_type      =   ''; // 当前资源类型
     // 输出类型
-    protected   $rest_method_list           =   'get,post,put,delete';
-    protected   $rest_default_method        =   'get';
-    protected   $rest_type_list             =   'html,xml,json,rss';
-    protected   $rest_default_type          =   'html';
-    protected   $rest_output_type           =   [ // REST允许输出的资源类型列表
-            'xml' => 'application/xml',
-            'json' => 'application/json',
-            'html' => 'text/html',
+    protected   $restMethodList           =   'get|post|put|delete';
+    protected   $restDefaultMethod        =   'get';
+    protected   $restTypeList             =   'html|xml|json|rss';
+    protected   $restDefaultType          =   'html';
+    protected   $restOutputType           =   [ // REST允许输出的资源类型列表
+            'xml'   =>  'application/xml',
+            'json'  =>  'application/json',
+            'html'  =>  'text/html',
         ];
     
    /**
@@ -31,19 +31,19 @@ abstract class Rest {
      */
     public function __construct() {
         // 资源类型检测
-        if(!defined('__EXT__') || ''==__EXT__) { // 自动检测资源类型
+        if(''==__EXT__) { // 自动检测资源类型
             $this->_type   =  $this->getAcceptType();
-        }elseif(false === stripos($this->rest_type_list,__EXT__)) {
+        }elseif(!preg_match('/\('.$this->restTypeList.')$/i',__EXT__)) {
             // 资源类型非法 则用默认资源类型访问
-            $this->_type   =  $this->rest_default_type;
+            $this->_type   =  $this->restDefaultType;
         }else{
             $this->_type   =  __EXT__;
         }
         // 请求方式检测
         $method  =  strtolower($_SERVER['REQUEST_METHOD']);
-        if(false === stripos($this->rest_method_list,$method)) {
+        if(false === stripos($this->restMethodList,$method)) {
             // 请求方式非法 则用默认请求方法
-            $method = $this->rest_default_method;
+            $method = $this->restDefaultMethod;
         }
         $this->_method = $method;
     }
@@ -58,9 +58,9 @@ abstract class Rest {
     public function _empty($method,$args) {
         if(method_exists($this,$method.'_'.$this->_method.'_'.$this->_type)) { // RESTFul方法支持
             $fun  =  $method.'_'.$this->_method.'_'.$this->_type;
-        }elseif($this->_method == $this->rest_default_method && method_exists($this,$method.'_'.$this->_type) ){
+        }elseif($this->_method == $this->restDefaultMethod && method_exists($this,$method.'_'.$this->_type) ){
             $fun  =  $method.'_'.$this->_type;
-        }elseif($this->_type == $this->rest_default_type && method_exists($this,$method.'_'.$this->_method) ){
+        }elseif($this->_type == $this->restDefaultType && method_exists($this,$method.'_'.$this->_method) ){
             $fun  =  $method.'_'.$this->_method;
         }
         if(isset($fun)) {
@@ -78,12 +78,11 @@ abstract class Rest {
      * @param string $charset 页面输出编码
      * @return void
      */
-    public function setContentType($type, $charset=''){
+    public function setContentType($type, $charset='utf-8'){
         if(headers_sent()) return;
-        if(empty($charset))  $charset = ThinkConfig::get('default_charset');
         $type = strtolower($type);
-        if(isset($this->rest_output_type[$type])) //过滤content_type
-            header('Content-Type: '.$this->rest_output_type[$type].'; charset='.$charset);
+        if(isset($this->restOutputType[$type])) //过滤content_type
+            header('Content-Type: '.$this->restOutputType[$type].'; charset='.$charset);
     }
 
     /**
