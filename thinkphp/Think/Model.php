@@ -174,7 +174,7 @@ class Model {
         }elseif(isset($this->_scope[$method])){// 命名范围的单独调用支持
             return $this->scope($method,$args[0]);
         }else{
-            throw exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             return;
         }
     }
