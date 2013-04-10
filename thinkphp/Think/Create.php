@@ -18,7 +18,10 @@ class Create {
         if(is_writable($lockfile)) {
             return ;
         } else {
-            touch($lockfile);
+            if(!touch($lockfile)){
+                header('Content-Type:text/html; charset=utf-8');
+                exit('目录 [ '.APP_PATH.' ] 不可写！');
+            }
         }
         foreach ($build as $module=>$list){
             if(!is_dir(APP_PATH.$module)) {// 创建模块目录
