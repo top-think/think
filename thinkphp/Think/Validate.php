@@ -22,6 +22,10 @@ class Validate {
         return $this;
     }
 
+    public function getError(){
+        return $this->error;
+    }
+
     /**
      * 自动表单验证
      * @access protected
