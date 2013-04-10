@@ -37,8 +37,11 @@ return [
     'app_domain_deploy' =>  false,  // 开启域名部署
     'app_domain_rules'  =>  '',     // 域名部署规则
     'app_doamin_deny'   =>  '',     // 域名禁止列表
-    'exception_tmpl'    =>  THINK_PATH.'tpl/think_exception.tpl',// 异常页面的模板文件
+    'exception_tmpl'    =>  THINK_PATH.'Tpl/think_exception.tpl',// 异常页面的模板文件
     'http_cache_control'    =>  'private',
+    'tmpl_action_error'     => THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
+    'tmpl_action_success'   => THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
+
 
     /* 错误设置 */
     'ERROR_MESSAGE'         => '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
