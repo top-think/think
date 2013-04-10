@@ -57,20 +57,22 @@ class Input {
         if(''== $args[0]) {
             // 返回全部数据
             return $input;
-        }elseif(array_key_exists($args[0],$input)) {
-            $filters    =   isset($args[1])?$args[1]:'';
-            $filters    =   explode(',',$filters);
+        }elseif(isset($input[$args[0]])) {
             $data       =   $input[$args[0]];
-            foreach($filters as $filter){
-                if(is_callable($filter)) {
-                    $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
-                }elseif(!empty($filter)){
-                    $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
-                    if(false === $data) {
-                        return	 isset($args[2])?$args[2]:NULL;
+            if(!empty($args[1])) {
+                $filters    =   explode(',',$args[1]);
+                foreach($filters as $filter){
+                    if(is_callable($filter)) {
+                        $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                    }else{
+                        $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
+                        if(false === $data) {
+                            return	 isset($args[2])?$args[2]:NULL;
+                        }
                     }
                 }
             }
+            
         }else{
             // 不存在指定输入
             $data	 =	 isset($args[2])?$args[2]:NULL;
