@@ -130,7 +130,7 @@ class Loader {
      * @return Object
      */
     static public function model($name='',$layer='Model') {
-        if(empty($name)) return new Think\Model;
+        if(empty($name)) return new Model;
         static $_model  =   [];
         if(isset($_model[$name.$layer]))   return $_model[$name.$layer];
         if(strpos($name,'/')) {
@@ -142,7 +142,7 @@ class Loader {
         if(class_exists($class)) {
             $model      =   new $class($name);
         }else {
-            $model      =   new Think\Model($name);
+            $model      =   new Model($name);
         }
         $_model[$name.$layer]  =  $model;
         return $model;
