@@ -231,7 +231,7 @@ class Model {
             }
         }
         // 分析表达式
-        $options    =   $this->_parseOptions();dump($this->fields);
+        $options    =   $this->_parseOptions();
         // 数据处理
         $data       =   $this->_facade($data);
         if(false === $this->_before_insert($data,$options)) {
@@ -934,24 +934,23 @@ class Model {
             $fields =   Cache::get(md5($this->getTableName()));
             if(!$fields) {
                 $fields =   $this->db->getFields($this->getTableName());
+                $this->fields   =   array_keys($fields);
                 foreach ($fields as $key=>$val){
                     // 记录字段类型
                     $type[$key]    =   $val['type'];
                     if($val['primary']) {
-                        $fields['_pk'] = $key;
+                        $this->fields['_pk'] = $key;
                     }
                 }
                 // 记录字段类型信息
-                $fields['_type'] =  $type;
-                Cache::set(md5($this->trueTableName),$fields);
-            }
-            if($fields) {
-                $this->fields   =   array_keys($fields);
-                $this->fields['_pk'] = $fields['_pk'];
-                $this->fields['_type']  =   $fields['_type'];
+                $this->fields['_type'] =  $type;
+                Cache::set(md5($this->trueTableName),$this->fields);
+                return array_keys($fields);
+            }else{
+                $this->fields   =   $fields;
+                unset($fields['_pk'],$fields['_type']);
                 return array_keys($fields);
             }
-            return false;
         }
     }
 
