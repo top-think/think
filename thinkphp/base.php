@@ -80,7 +80,7 @@ function G($label) {
  * @return Model
  */
 function M($name='', $tablePrefix='',$connection='') {
-    return Think\Loader::table($name,$tablePrefix,$connection);
+    return Think\Loader::table($name,['table_prefix'=>$tablePrefix,'connection'=>$connection]);
 }
 
 /**
