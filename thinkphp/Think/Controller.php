@@ -11,33 +11,56 @@
 // $Id$
 namespace Think;
 class Controller {
+    // 视图类实例
     protected $view =   null;
 
+   /**
+     * 架构函数 初始化视图类 并采用内置模板引擎
+     * @access public
+     */
     public function __construct(){
-
-        $config['template_options'] =   [
-            'tpl_path'         =>   MODULE_PATH.'View/',
-            'cache_path'    =>   RUNTIME_PATH.'Cache/',
-            'compile_type'    =>  'File',
-            'taglib_build_in'   =>  'cx',
-            'cache_options' =>  [
-                'temp'          =>  RUNTIME_PATH.'Temp/',
-                ],
+        // 模板引擎参数
+        $config =   [
+            'tpl_path'          =>  MODULE_PATH.'View/',
+            'cache_path'        =>  RUNTIME_PATH.'Cache/',
         ];
-        $config['http_content_type']    =   'text/html';
-        $config['http_cache_control']    =   'private';
-        $config['http_charset'] =   'utf-8';
-        $this->view   =   new View($config);
-        $this->view->engine('think',$config['template_options']);
+        $this->view   =   new View();
+        $this->view->engine('think',$config);
         //控制器初始化
         if(method_exists($this,'_initialize'))
             $this->_initialize();
     }
 
-    public function display($template=''){
-        $this->view->display($template);
+    /**
+     * 加载模板和页面输出 可以返回输出内容
+     * @access public
+     * @param string $template 模板文件名
+     * @param array $vars 模板输出变量
+     * @param string $cacheId 模板缓存标识
+     * @return mixed
+     */
+    public function display($template='',$vars=[],$cacheId=''){
+        $this->view->display($template,$vars,$cacheId);
     }
 
+    /**
+     * 渲染内容输出
+     * @access public
+     * @param string $content 内容
+     * @param array $vars 模板输出变量
+     * @return mixed
+     */
+    public function show($content,$vars=[]){
+        $this->view->http('http_render_content',true)->display($content,$vars);
+    }
+
+    /**
+     * 模板变量赋值
+     * @access protected
+     * @param mixed $name 要显示的模板变量
+     * @param mixed $value 变量的值
+     * @return void
+     */
     public function assign($name,$value=''){
         $this->view->assign($name,$value);
     }
@@ -54,7 +77,7 @@ class Controller {
      * @return void
      */
     protected function ajaxReturn($data,$type='') {
-        if(empty($type)) $type  =   C('DEFAULT_AJAX_RETURN');
+        if(empty($type)) $type  =   C('default_ajax_return');
         switch (strtoupper($type)){
             case 'JSON' :
                 // 返回JSON数据格式到客户端 包含状态信息
@@ -67,7 +90,7 @@ class Controller {
             case 'JSONP':
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
-                $handler  =   isset($_GET[C('VAR_JSONP_HANDLER')]) ? $_GET[C('VAR_JSONP_HANDLER')] : C('DEFAULT_JSONP_HANDLER');
+                $handler  =   isset($_GET[C('var_jsonp_handler')]) ? $_GET[C('var_jsonp_handler')] : C('default_jsonp_handler');
                 exit($handler.'('.json_encode($data).');');  
             case 'EVAL' :
                 // 返回可执行的js脚本
@@ -135,14 +158,14 @@ class Controller {
             $this->view->assign('waitSecond','1');
             // 默认操作成功自动返回操作前页面
             if(!$jumpUrl) $this->view->assign("jumpUrl",$_SERVER["HTTP_REFERER"]);
-            $this->display(C('TMPL_ACTION_SUCCESS'));
+            $this->display(C('success_tmpl'));
         }else{
             $this->view->assign('error',$message);// 提示信息
             //发生错误时候默认停留3秒
             $this->view->assign('waitSecond','3');
             // 默认发生错误的话自动返回上页
             if(!$jumpUrl) $this->view->assign('jumpUrl',"javascript:history.back(-1);");
-            $this->display(C('TMPL_ACTION_ERROR'));
+            $this->display(C('error_tmpl'));
             // 中止执行  避免出错后继续执行
             exit ;
         }
