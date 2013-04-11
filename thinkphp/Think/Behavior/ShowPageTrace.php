@@ -42,7 +42,7 @@ class ShowPageTrace {
         }
         $trace  =   [];
         Debug::remark('START',$GLOBALS['startTime']);
-        $base   =   array(
+        $base   =   [
             '请求信息'  =>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.$_SERVER['PHP_SELF'],
             '运行时间'  =>  Debug::getUseTime('START','END',6).'s',
             '内存开销'  =>  MEMORY_LIMIT_ON?G('START','END','m').'b':'不支持',
@@ -50,7 +50,7 @@ class ShowPageTrace {
             '文件加载'  =>  count($files),
             '缓存信息'  =>  N('cache_read').' gets '.N('cache_write').' writes ',
             '配置加载'  =>  count(Config::get()),
-            );
+            ];
         // 读取项目定义的Trace文件
         $traceFile  =   MODULE_PATH.'trace.php';
         if(is_file($traceFile)) {

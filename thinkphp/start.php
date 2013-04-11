@@ -16,7 +16,7 @@ namespace Think;
 //--------------------------
 
 // 加载基础文件
-require dirname(__FILE__).'/base.php';
+require __DIR__.'/base.php';
 require CORE_PATH.'Loader.php';
 
 // 注册自动加载
@@ -36,17 +36,14 @@ set_exception_handler(['Think\Error','appException']);
 // 导入系统惯例
 Config::load(THINK_PATH.'convention.php');
 
+// 初始化操作可以在应用的公共文件中处理 下面只是示例
+//---------------------------------------------------
 // 日志初始化
 Log::init(['type'=>Config::get('log_type'),'log_path'=> Config::get('log_path')]);
 
 // 缓存初始化
 Cache::connect(['type'=>'File','temp'=> CACHE_PATH]);
-
-// 注册行为扩展
-//Tag::add('content_filter','ContentReplace','Think');
-//Tag::add('app_end','ShowPageTrace','Think');
-Tag::add('view_template','LocationTemplate','Think');
-
+//------------------------------------------------------
 
 // 启动session
 if(!IS_CLI) {

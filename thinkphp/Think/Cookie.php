@@ -52,7 +52,7 @@ class Cookie {
         // 参数设置(会覆盖黙认设置)
         if (!is_null($option)) {
             if (is_numeric($option))
-                $option = array('expire' => $option);
+                $option = ['expire' => $option];
             elseif (is_string($option))
                 parse_str($option, $option);
             $config =   array_merge(self::$config, array_change_key_case($option));

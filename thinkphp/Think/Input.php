@@ -82,7 +82,7 @@ class Input {
 
     // 过滤表单中的表达式
     static private function filter_exp(&$value){
-        if (in_array(strtolower($value),array('exp','or'))){
+        if (in_array(strtolower($value),['exp','or'])){
             $value .= ' ';
         }
     }

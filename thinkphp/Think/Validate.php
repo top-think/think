@@ -169,7 +169,7 @@ class Validate {
      * @return boolean
      */
     public function regex($value,$rule) {
-        $validate = array(
+        $validate = [
             'require'   =>  '/.+/',
             'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
             'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
@@ -179,7 +179,7 @@ class Validate {
             'integer'   =>  '/^[-\+]?\d+$/',
             'double'    =>  '/^[-\+]?\d+(\.\d+)?$/',
             'english'   =>  '/^[A-Za-z]+$/',
-        );
+        ];
         // 检查是否有内置的正则表达式
         if(isset($validate[strtolower($rule)]))
             $rule       =   $validate[strtolower($rule)];

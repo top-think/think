@@ -23,13 +23,13 @@ namespace Think\Cache\Driver;
 class Db {
 
     protected $handler  =   null;
-    protected $options  =   array(
+    protected $options  =   [
         'db'            =>  '',
         'table'         =>  '',
         'prefix'        =>  '',
         'expire'        =>  0,
         'length'        =>  0,
-    );
+    ];
 
     /**
      * 架构函数

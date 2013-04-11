@@ -89,7 +89,7 @@ class Loader {
             }elseif (in_array($class_strut[0], ['Org','Com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl =  LIB_PATH;
-            }elseif(in_array($class_strut[0], ['Think','Vendor','Traits'])){
+            }elseif(in_array($class_strut[0], ['Think','Vendor','Library','Traits'])){
                 $baseUrl =  THINK_PATH;
             }else { // 加载其他项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
@@ -206,7 +206,7 @@ class Loader {
             if(is_string($vars)) {
                 parse_str($vars,$vars);
             }
-            return call_user_func_array(array(&$class,$action.Config::get('action_suffix')),$vars);
+            return call_user_func_array([&$class,$action.Config::get('action_suffix')],$vars);
         }else{
             return false;
         }
@@ -225,7 +225,7 @@ class Loader {
             if(class_exists($class)){
                 $o = new $class();
                 if(!empty($method) && method_exists($o,$method))
-                    $_instance[$identify] = call_user_func_array(array(&$o, $method));
+                    $_instance[$identify] = call_user_func_array([&$o, $method]);
                 else
                     $_instance[$identify] = $o;
             }

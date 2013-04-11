@@ -63,7 +63,7 @@ class App {
         $action =  ACTION_NAME.$config['action_suffix'];
         try{
             // 操作方法开始监听
-            $call  =   array($instance,$action);
+            $call  =   [$instance,$action];
             Tag::listen('action_begin',$call);
             if(!preg_match('/^[A-Za-z](\w)*$/',$action)){
                 // 非法操作
@@ -109,7 +109,7 @@ class App {
             // 操作不存在
             if(method_exists($instance,'_empty')) {
                 $method = new \ReflectionMethod($instance,'_empty');
-                $method->invokeArgs($instance,array($action,''));
+                $method->invokeArgs($instance,[$action,'']);
             }else{
                 E('[ '.(new \ReflectionClass($instance))->getName().':'.$action.' ] not exists ',404);
             }

@@ -15,11 +15,11 @@ namespace Think\Cache\Driver;
  */
 class Xcache {
 
-    protected $options  =   array(
+    protected $options  =   [
         'prefix'        =>  '',
         'expire'        =>  0,
         'length'        =>  0,
-    );
+    ];
 
     /**
      * 架构函数

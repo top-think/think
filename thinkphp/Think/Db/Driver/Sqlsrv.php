@@ -37,14 +37,14 @@ class Sqlsrv extends Driver{
         $info   =   [];
         if($result) {
             foreach ($result as $key => $val) {
-                $info[$val['column_name']] = array(
+                $info[$val['column_name']] = [
                     'name'    => $val['column_name'],
                     'type'    => $val['data_type'],
                     'notnull' => (bool) ($val['is_nullable'] === ''), // not null is empty, null is yes
                     'default' => $val['column_default'],
                     'primary' => false,
                     'autoinc' => false,
-                );
+                ];
             }
         }
         return $info;

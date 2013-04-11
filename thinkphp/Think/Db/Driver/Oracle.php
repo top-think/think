@@ -72,14 +72,14 @@ class Oracle extends Driver{
         $info   =   [];
         if($result) {
             foreach ($result as $key => $val) {
-                $info[strtolower($val['column_name'])] = array(
+                $info[strtolower($val['column_name'])] = [
                     'name'    => strtolower($val['column_name']),
                     'type'    => strtolower($val['data_type']),
                     'notnull' => $val['notnull'],
                     'default' => $val['data_default'],
                     'primary' => $val['pk'],
                     'autoinc' => $val['pk'],
-                );
+                ];
             }
         }
         return $info;

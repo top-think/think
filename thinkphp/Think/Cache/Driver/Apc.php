@@ -17,11 +17,11 @@ namespace Think\Cache\Driver;
  */
 class Apc {
 
-    protected $options  =   array(
+    protected $options  =   [
         'expire'        =>  0,
         'prefix'        =>  '',
         'length'        =>  0,
-    );
+    ];
 
     /**
      * 架构函数

@@ -16,13 +16,13 @@ namespace Think\Cache\Driver;
 class Secache {
 
     protected $handler  =   null;
-    protected $options  =   array(
+    protected $options  =   [
         'project'       =>  '',
         'temp'          =>  '',
         'expire'        =>  0,
         'prefix'        =>  '',
         'length'        =>  0,
-    );
+    ];
 
     /**
      * 架构函数

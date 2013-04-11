@@ -11,11 +11,14 @@
 // $Id$
 
 namespace Think;
+
 class Model {
+    //use Think\Model\Traits\ActiveRecord;
     // 操作状态
     const MODEL_INSERT          =   1;      //  插入模型数据
     const MODEL_UPDATE          =   2;      //  更新模型数据
     const MODEL_BOTH            =   3;      //  包含上面两种方式
+
 
     // 当前使用的扩展模型
     private   $_extModel        =   null;

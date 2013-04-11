@@ -15,14 +15,14 @@ namespace Think\Cache\Driver;
  */
 class Sqlite {
 
-    protected $options  =   array(
+    protected $options  =   [
         'db'            =>  ':memory:',
         'table'         =>  'sharedmemory',
         'prefix'        =>  '',
         'expire'        =>  0,
         'length'        =>  0,
         'persistent'    =>  false,
-    );
+    ];
 
     /**
      * 架构函数
