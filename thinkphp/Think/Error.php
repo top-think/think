@@ -20,8 +20,14 @@ class Error {
     static public function appException($e) {
         $error = [];
         $error['message']   = $e->getMessage();
-        $error['file']      = $e->getFile();
-        $error['line']      = $e->getLine();
+        $trace  =   $e->getTrace();
+        if('E'==$trace[0]['function']) {
+            $error['file']  =   $trace[0]['file'];
+            $error['line']  =   $trace[0]['line'];
+        }else{
+            $error['file']      = $e->getFile();
+            $error['line']      = $e->getLine();
+        }
         $error['trace']     = $e->getTraceAsString();
         self::halt($error);
     }
