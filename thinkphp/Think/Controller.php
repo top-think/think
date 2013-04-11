@@ -16,12 +16,12 @@ class Controller {
     public function __construct(){
 
         $config['template_options'] =   [
-            'tpl_path'         =>   MODULE_PATH.'view/',
-            'cache_path'    =>   MODULE_PATH.'cache/',
+            'tpl_path'         =>   MODULE_PATH.'View/',
+            'cache_path'    =>   RUNTIME_PATH.'Cache/',
             'compile_type'    =>  'File',
             'taglib_build_in'   =>  'cx',
             'cache_options' =>  [
-                'temp'          =>  APP_PATH.'runtime/temp/',
+                'temp'          =>  RUNTIME_PATH.'Temp/',
                 ],
         ];
         $config['http_content_type']    =   'text/html';
