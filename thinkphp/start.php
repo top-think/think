@@ -17,16 +17,16 @@ namespace Think;
 
 // 加载基础文件
 require dirname(__FILE__).'/base.php';
-require CORE_PATH.'loader.php';
+require CORE_PATH.'Loader.php';
 
 // 注册自动加载
 Loader::register();
 // 导入系统别名
 Loader::loadMap(include THINK_PATH.'alias.php');
 // 加载应用类
-//require CORE_PATH.'app.php';
+//require CORE_PATH.'App.php';
 // 加载错误类
-//require CORE_PATH.'error.php';
+//require CORE_PATH.'Error.php';
 
 // 注册错误和异常处理机制
 register_shutdown_function(['Think\Error','appShutdown']);
