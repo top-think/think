@@ -89,7 +89,7 @@ function M($name='', $tablePrefix='',$connection='') {
  * @param string $layer 业务层名称
  * @return object
  */
-function D($name='',$layer='model') {
+function D($name='',$layer='Model') {
     return Think\Loader::model($name,$layer);
 }
 
