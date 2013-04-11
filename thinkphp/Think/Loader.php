@@ -156,7 +156,7 @@ class Loader {
      * 实例化（分层）控制器 格式：[模块名/]控制器名
      * @param string $name 资源地址
      * @param string $layer 控制层名称
-     * @return Action|false
+     * @return Object|false
      */
     static public function controller($name,$layer='Controller') {
         static $_instance  =   [];
@@ -168,9 +168,12 @@ class Loader {
         }
         $class      =   $module.'\\'.$layer.'\\'.parse_name($name,1).$layer;
         if(class_exists($class)) {
-            $action  =   new $class();
+            $action  =   new $class;
             $_instance[$name.$layer]    =   $action;
             return $action;
+        }elseif(class_exists($module.'\\'.$layer.'\\Empty'.$layer)){
+            $class  =   $module.'\\'.$layer.'\\Empty'.$layer;
+            return  new $class;
         }else{
             return false;
         }

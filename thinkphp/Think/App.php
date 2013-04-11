@@ -56,11 +56,7 @@ class App {
         // 执行操作
         $instance = Loader::controller(CONTROLLER_NAME);
         if(!$instance) {
-            // 是否定义empty控制器
-            $instance = Loader::controller('empty');
-            if(!$instance){
-                E('controller not exists :'.CONTROLLER_NAME,404);
-            }
+            E('controller not exists : [ '.MODULE_NAME.'\\Controller\\'.parse_name(CONTROLLER_NAME,1).'Controller ]',404);
         }
 
         // 获取当前操作名
