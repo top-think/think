@@ -8,26 +8,13 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 
 namespace Index\Controller;
 use Think\View;
 class IndexController {
 
     public function index(){
-
-        $config['template_options'] =   array(
-            'tpl_path'         =>   MODULE_PATH.'view/',
-            'cache_path'    =>   MODULE_PATH.'cache/',
-            'cache_type'    =>  '',
-            'cache_options' =>  array(
-                'temp'          =>  APP_PATH.'runtime/temp/',
-                ),
-        );
-        $config['http_content_type']    =   'text/html';
-        $config['http_charset'] =   'utf-8';
-        $view   =   new View($config);
-        //$view->engine('think',$config['template_options']);
+        $view   =   new View();
         $view->display();
     }
 
