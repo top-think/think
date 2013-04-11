@@ -56,7 +56,7 @@ class App {
         // 执行操作
         $instance = Loader::controller(CONTROLLER_NAME);
         if(!$instance) {
-            E('controller not exists : [ '.MODULE_NAME.'\\Controller\\'.parse_name(CONTROLLER_NAME,1).'Controller ]',404);
+            E('[ '.MODULE_NAME.'\\Controller\\'.parse_name(CONTROLLER_NAME,1).'Controller ] not exists',404);
         }
 
         // 获取当前操作名
@@ -111,7 +111,7 @@ class App {
                 $method = new \ReflectionMethod($instance,'_empty');
                 $method->invokeArgs($instance,array($action,''));
             }else{
-                E('action not exists :'.ACTION_NAME,404);
+                E('[ '.(new \ReflectionClass($instance))->getName().':'.$action.' ] not exists ',404);
             }
         }
         // 监听app_end
