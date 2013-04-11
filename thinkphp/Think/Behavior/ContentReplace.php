@@ -44,7 +44,7 @@ class ContentReplace {
         define('ACTION_URL',    CONTROLLER_URL.'/'.ACTION_NAME);
 
         // 系统默认的特殊变量替换
-        $replace =  array(
+        $replace =  [
             '__ROOT__'      =>  ROOT_URL,       // 当前网站地址
             '__APP__'       =>  MODULE_URL,        // 当前项目地址
             '__CONTROLL__'  =>  CONTROLLER_URL,     // 当前操作地址
@@ -52,7 +52,7 @@ class ContentReplace {
             '__ACTION__'    =>  ACTION_URL,     // 当前操作地址
             '__SELF__'      =>  $_SERVER['PHP_SELF'],       // 当前页面地址
             '__PUBLIC__'    =>  ROOT_URL.'/Public',// 站点公共目录
-        );
+        ];
         // 允许用户自定义模板的字符串替换
         if(is_array(Config::get('tmpl_parse_string')) )
             $replace =  array_merge($replace,Config::get('tmpl_parse_string'));

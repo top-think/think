@@ -16,14 +16,14 @@ namespace Think\Cache\Driver;
  */
 class Redis {
     protected $handler  =   null;
-    protected $options  =   array(
+    protected $options  =   [
         'host'          =>  '127.0.0.1',
         'port'          =>  6379,
         'timeout'       =>  false,
         'expire'        =>  0,
         'persistent'    =>  false,
         'length'        =>  0,
-    );
+    ];
 
 	 /**
 	 * 架构函数

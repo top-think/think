@@ -18,10 +18,10 @@ body{ background: #fff; font-family: '微软雅黑'; color: #333; font-size: 16p
 <div class="system-message">
 <present name="message">
 <h1>:)</h1>
-<p class="success"><?php echo($message); ?></p>
+<p class="success"><?php echo(strip_tags($message)); ?></p>
 <else/>
 <h1>:(</h1>
-<p class="error"><?php echo($error); ?></p>
+<p class="error"><?php echo(strip_tags($error)); ?></p>
 </present>
 <p class="detail"></p>
 <p class="jump">

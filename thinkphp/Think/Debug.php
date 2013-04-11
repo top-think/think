@@ -53,7 +53,7 @@ class Debug {
         if(!isset(self::$_mem['mem'][$end])) 
             self::$_mem['mem'][$end]     =  memory_get_usage();
         $size   =   self::$_mem['mem'][$end]-self::$_mem['mem'][$start];
-        $a = array('B', 'KB', 'MB', 'GB', 'TB');
+        $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
         while ($size >= 1024) {
              $size /= 1024;
@@ -72,7 +72,7 @@ class Debug {
     static public function getMemPeak($start,$end,$dec=2) {
         if(!isset(self::$_mem['peak'][$end])) self::$_mem['peak'][$end]     =  function_exists('memory_get_peak_usage')?memory_get_peak_usage():memory_get_usage();
         $size   =   self::$_mem['peak'][$end]-self::$_mem['peak'][$start];
-        $a = array('B', 'KB', 'MB', 'GB', 'TB');
+        $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
         while ($size >= 1024) {
              $size /= 1024;

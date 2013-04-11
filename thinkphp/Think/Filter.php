@@ -12,10 +12,10 @@
 namespace Think;
 class Filter {
     //html标签设置
-    static public $htmlTags = array(
+    static public $htmlTags = [
         'allow' => 'table|td|th|tr|i|b|u|strong|img|p|br|div|strong|em|ul|ol|li|dl|dd|dt|a',
         'ban' => 'html|head|meta|link|base|basefont|body|bgsound|title|style|script|form|iframe|frame|frameset|applet|id|ilayer|layer|name|script|style|xml',
-    );
+    ];
 
     static public function filter($data,$filter,$option=''){
         return filter_var($data,is_int($filter)?$filter:filter_id($filter),$option);
@@ -48,7 +48,7 @@ class Filter {
      * @return string
      */
     static public function forSearch($string) {
-        return str_replace( array('%','_'), array('\%','\_'), $string );
+        return str_replace( ['%','_'], ['\%','\_'], $string );
     }
 
     /**
@@ -67,7 +67,7 @@ class Filter {
      * @return string
      */
     static public function forTarea($string) {
-        return str_ireplace(array('<textarea>','</textarea>'), array('&lt;textarea>','&lt;/textarea>'), $string);
+        return str_ireplace(['<textarea>','</textarea>'], ['&lt;textarea>','&lt;/textarea>'], $string);
     }
 
     /**
@@ -77,7 +77,7 @@ class Filter {
      * @return string
      */
     static public function forTag($string) {
-        return str_replace(array('"',"'"), array('&quot;','&#039;'), $string);
+        return str_replace(['"',"'"], ['&quot;','&#039;'], $string);
     }
 
     /**
@@ -107,7 +107,7 @@ class Filter {
      * @return string
      */
     static function hsc($string) {
-        return preg_replace(array("/&amp;/i", "/&nbsp;/i"), array('&', '&amp;nbsp;'), htmlspecialchars($string, ENT_QUOTES));
+        return preg_replace(["/&amp;/i", "/&nbsp;/i"], ['&', '&amp;nbsp;'], htmlspecialchars($string, ENT_QUOTES));
     }
 
     /**
@@ -117,7 +117,7 @@ class Filter {
      * @return string
      */
     static function undoHsc($text) {
-        return preg_replace(array("/&gt;/i", "/&lt;/i", "/&quot;/i", "/&#039;/i", '/&amp;nbsp;/i'), array(">", "<", "\"", "'", "&nbsp;"), $text);
+        return preg_replace(["/&gt;/i", "/&lt;/i", "/&quot;/i", "/&#039;/i", '/&amp;nbsp;/i'], [">", "<", "\"", "'", "&nbsp;"], $text);
     }
 
     /**

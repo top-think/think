@@ -15,10 +15,10 @@ namespace Think\Cache\Driver;
  */
 class Simple {
 
-    protected $options  =   array(
+    protected $options  =   [
         'prefix'        =>  '',
         'temp'          =>  '',
-    );
+    ];
 
     /**
      * 架构函数

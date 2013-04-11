@@ -9,13 +9,14 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Cache\Driver;
+
 /**
  * 文件类型缓存类
  * @author    liu21st <liu21st@gmail.com>
  */
 class File {
 
-    protected $options  =   array(
+    protected $options  =   [
         'expire'        =>  0,
         'cache_subdir'  =>  false,
         'path_level'    =>  1,
@@ -23,7 +24,7 @@ class File {
         'length'        =>  0,
         'temp'          =>  '',
         'data_compress' =>  false,
-    );
+    ];
 
     /**
      * 架构函数

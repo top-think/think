@@ -15,15 +15,15 @@ class Controller {
 
     public function __construct(){
 
-        $config['template_options'] =   array(
-            'tpl_path'         =>   MODULE_PATH.'view/',
-            'cache_path'    =>   MODULE_PATH.'cache/',
+        $config['template_options'] =   [
+            'tpl_path'         =>   MODULE_PATH.'View/',
+            'cache_path'    =>   RUNTIME_PATH.'Cache/',
             'compile_type'    =>  'File',
             'taglib_build_in'   =>  'cx',
-            'cache_options' =>  array(
-                'temp'          =>  APP_PATH.'runtime/temp/',
-                ),
-        );
+            'cache_options' =>  [
+                'temp'          =>  RUNTIME_PATH.'Temp/',
+                ],
+        ];
         $config['http_content_type']    =   'text/html';
         $config['http_cache_control']    =   'private';
         $config['http_charset'] =   'utf-8';

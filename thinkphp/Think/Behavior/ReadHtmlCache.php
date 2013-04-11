@@ -17,12 +17,12 @@
  * @author   liu21st <liu21st@gmail.com>
  */
 class ReadHtmlCacheBehavior {
-    protected $options   =  array(
+    protected $options   =  [
             'HTML_CACHE_ON'     =>  false,
             'HTML_CACHE_TIME'   =>  60,
             'HTML_CACHE_RULES'  =>  [],
             'HTML_FILE_SUFFIX'  =>  '.html',
-        );
+        ];
 
     // 行为扩展的执行入口必须是run
     public function run(&$params){
@@ -72,8 +72,8 @@ class ReadHtmlCacheBehavior {
                 $rule   = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
                 // 特殊系统变量
                 $rule   = str_ireplace(
-                    array('{:app}','{:module}','{:action}','{:group}'),
-                    array(APP_NAME,MODULE_NAME,ACTION_NAME,defined('GROUP_NAME')?GROUP_NAME:''),
+                    ['{:app}','{:module}','{:action}','{:group}'],
+                    [APP_NAME,MODULE_NAME,ACTION_NAME,defined('GROUP_NAME')?GROUP_NAME:''],
                     $rule);
                 // {|FUN} 单独使用函数
                 $rule  = preg_replace('/{|(\w+)}/e',"\\1()",$rule);

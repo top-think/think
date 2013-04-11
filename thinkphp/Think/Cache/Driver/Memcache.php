@@ -15,14 +15,14 @@ namespace Think\Cache\Driver;
  */
 class Memcache {
     protected $handler  =   null;
-    protected $options  =   array(
+    protected $options  =   [
         'host'        =>  '127.0.0.1',
         'port'        =>  11211,
         'expire'        =>  0,
         'timeout'     =>  false,
         'persistent'  =>  false,
         'length'        =>  0,
-    );
+    ];
 
     /**
      * 架构函数

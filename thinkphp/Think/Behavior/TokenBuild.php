@@ -19,12 +19,12 @@ defined('THINK_PATH') or exit();
  */
 class TokenBuildBehavior extends Behavior {
     // 行为参数定义
-    protected $options   =  array(
+    protected $options   =  [
         'TOKEN_ON'       => false,     // 开启令牌验证
         'TOKEN_NAME'     => '__hash__',    // 令牌验证的表单隐藏字段名称
         'TOKEN_TYPE'     => 'md5',   // 令牌验证哈希规则
         'TOKEN_RESET'    => true, // 令牌错误后是否重置
-    );
+    ];
 
     public function run(&$content){
         if(C('TOKEN_ON')) {
