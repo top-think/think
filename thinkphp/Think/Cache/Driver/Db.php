@@ -112,7 +112,7 @@ class Db {
                     // 删除缓存
                     $this->handler->execute('DELETE FROM `'.$this->options['table'].'` WHERE `cachekey`=\''.$key.'\'');
                 }
-                $this->handler->execute('UPDATE '.$this->options['table'].' SET data=\''.serialize($queue).'\' ,expire=0 WHERE `cachekey`=\'__info__\'')
+                $this->handler->execute('UPDATE '.$this->options['table'].' SET data=\''.serialize($queue).'\' ,expire=0 WHERE `cachekey`=\'__info__\'');
                 xcache_set('__info__', $queue);
             }
             return true;
