@@ -23,6 +23,7 @@ return array(
     'Think\Template' =>  CORE_PATH.'Template.php',
     'Think\Error'    =>  CORE_PATH.'Error.php',
     'Think\Cache'    =>  CORE_PATH.'Cache.php',
+    'Think\Cache\Driver\File'    =>  CORE_PATH.'Cache/Driver/File.php',
     'Think\Tag'      =>  CORE_PATH.'Tag.php',
     'Think\Session'  =>  CORE_PATH.'Session.php',
     'Think\Cookie'   =>  CORE_PATH.'Cookie.php',
@@ -36,5 +37,4 @@ return array(
     'Think\Lang'   =>  CORE_PATH.'Lang.php',
     'Think\Filter'  =>  CORE_PATH.'Filter.php',
     'Think\Oauth'   =>  CORE_PATH.'Oauth.php',
-    'Think\Rest'    =>  CORE_PATH.'Rest.php',
 );
