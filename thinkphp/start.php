@@ -39,7 +39,7 @@ Config::load(THINK_PATH.'convention.php');
 // 初始化操作可以在应用的公共文件中处理 下面只是示例
 //---------------------------------------------------
 // 日志初始化
-Log::init(['type'=>Config::get('log_type'),'log_path'=> Config::get('log_path')]);
+Log::init(['type'=>'File','log_path'=> LOG_PATH]);
 
 // 缓存初始化
 Cache::connect(['type'=>'File','temp'=> CACHE_PATH]);

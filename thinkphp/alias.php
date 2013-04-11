@@ -28,7 +28,7 @@ return array(
     'Think\Cookie'   =>  CORE_PATH.'Cookie.php',
     'Think\Controller' =>  CORE_PATH.'Controller.php',
     'Think\View'     =>  CORE_PATH.'View.php',
-    'Think\Url'      =>  CORE_PATH.'url.php',
+    'Think\Url'      =>  CORE_PATH.'Url.php',
     'Think\Verify'   =>  CORE_PATH.'Verify.php',
     'Think\Debug'   =>  CORE_PATH.'Debug.php',
     'Think\Input'   =>  CORE_PATH.'Input.php',
