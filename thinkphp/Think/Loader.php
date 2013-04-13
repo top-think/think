@@ -27,14 +27,8 @@ class Loader {
         if(isset(self::$map[$class])) {
             include self::$map[$class];
         }else{ // 命名空间自动加载
-            $find   =   false;
-            foreach (self::$namespace as $name=>$path){
-                if(0 === stripos($class,$name)) {
-                    $find   =   true;
-                    break;
-                }
-            }
-            $path   =   $find?dirname($path).'/':APP_PATH;
+            $name       =   strstr($class,'\\',true);
+            $path       =   isset(self::$namespace[$name])?dirname(self::$namespace[$name]).'/':APP_PATH;
             $filename   =   $path.str_replace('\\','/',$class).EXT;
             if(is_file($filename)) {
                 // Win环境下面严格区分大小写
