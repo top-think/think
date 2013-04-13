@@ -94,7 +94,7 @@ function D($name='',$layer='Model') {
 }
 
 /**
- * 实例化控制器 格式：[分组/]模块
+ * 实例化控制器 格式：[模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
  * @return object
@@ -123,6 +123,19 @@ function R($url,$vars=array(),$layer='') {
  */
 function import($class, $baseUrl = '', $ext= EXT ) {
     return Think\Loader::import($class,$baseUrl,$ext);
+}
+
+/**
+ * 快速导入第三方框架类库 所有第三方框架的类库文件统一放到 系统的Vendor目录下面
+ * @param string $class 类库
+ * @param string $baseUrl 基础目录
+ * @param string $ext 类库后缀 
+ * @return boolean
+ */
+function vendor($class, $baseUrl = '', $ext=EXT) {
+    if (empty($baseUrl))
+        $baseUrl = VENDOR_PATH;
+    return Think\Loder::import($class, $baseUrl, $ext);
 }
 
 /**
