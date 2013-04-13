@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 // 系统类库映射定义
-return array(
+return [
     'Think\App'      =>  CORE_PATH.'App.php',
     'Think\Log'      =>  CORE_PATH.'Log.php',
     'Think\Log\Driver\File' =>  CORE_PATH.'Log/Driver/File.php',
@@ -37,4 +37,4 @@ return array(
     'Think\Lang'   =>  CORE_PATH.'Lang.php',
     'Think\Filter'  =>  CORE_PATH.'Filter.php',
     'Think\Oauth'   =>  CORE_PATH.'Oauth.php',
-);
+];
