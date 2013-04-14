@@ -41,18 +41,17 @@ class Loader {
     }
 
     // 注册classmap
-    static public function addMap($class,$map){
-        self::$map[$class]  =   $map;
+    static public function addMap($class,$map=''){
+        if(is_array($class)){
+            self::$map  =   array_merge(self::$map,$class);
+        }else{
+            self::$map[$class]  =   $map;
+        }        
     }
 
     // 注册命名空间
     static public function addNamespace($namespace,$path){
         self::$namespace[$namespace]    =   $path;
-    }
-
-    // 加载classmap
-    static public function loadMap($map){
-        self::$map  =   array_merge(self::$map,$map);
     }
 
     // 注册自动加载机制
