@@ -16,9 +16,10 @@ define('MAGIC_QUOTES_GPC',false);
 define('THINK_VERSION', '4.0beta');
 // 系统常量
 defined('THINK_PATH') 	or  define('THINK_PATH',    dirname(__FILE__).'/');
-defined('CORE_PATH') 	or  define('CORE_PATH',     THINK_PATH.'Think/');
-defined('APP_PATH') 	or  define('APP_PATH',      dirname($_SERVER['SCRIPT_FILENAME']).'/');
 defined('LIB_PATH')     or  define('LIB_PATH',      THINK_PATH.'Library/');
+defined('CORE_PATH') 	or  define('CORE_PATH',     LIB_PATH.'Think/');
+defined('ORG_PATH')     or  define('ORG_PATH',      LIB_PATH.'Org/');
+defined('APP_PATH') 	or  define('APP_PATH',      dirname($_SERVER['SCRIPT_FILENAME']).'/');
 defined('RUNTIME_PATH') or  define('RUNTIME_PATH',  realpath(APP_PATH).'/Runtime/');
 defined('DATA_PATH')    or  define('DATA_PATH',     RUNTIME_PATH.'Data/');
 defined('LOG_PATH')     or  define('LOG_PATH',      RUNTIME_PATH.'Log/');

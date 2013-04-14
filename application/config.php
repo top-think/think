@@ -11,7 +11,7 @@
 // $Id$
 
 // 惯例配置文件
-return array(
+return [
     'app_debug'         =>  true,
     'var_module'        =>  'm',
     'var_controll'      =>  'c',
@@ -33,4 +33,4 @@ return array(
         'TRACE_PAGE_TABS'   => array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
         'db_sql_log'=>true,
         'url_params_bind'=>TRUE,
-);
+];
