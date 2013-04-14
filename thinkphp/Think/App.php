@@ -39,7 +39,7 @@ class App {
             }
             // 加载别名文件
             if(is_file(APP_PATH.'alias'.EXT)) {
-                Loader::loadMap(include APP_PATH.'alias'.EXT);
+                Loader::addMap(include APP_PATH.'alias'.EXT);
             }
             // 加载公共文件
             if(is_file(APP_PATH.'common'.EXT)) {
@@ -195,7 +195,7 @@ class App {
                 }
                 // 加载别名文件
                 if(is_file(MODULE_PATH.'alias'.EXT)) {
-                    Loader::loadMap(include MODULE_PATH.'alias'.EXT);
+                    Loader::addMap(include MODULE_PATH.'alias'.EXT);
                 }
                 // 加载公共文件
                 if(is_file(MODULE_PATH.'common'.EXT)) {

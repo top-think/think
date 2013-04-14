@@ -22,7 +22,7 @@ require CORE_PATH.'Loader.php';
 // 注册自动加载
 Loader::register();
 // 导入系统别名
-Loader::loadMap(include THINK_PATH.'alias.php');
+Loader::addMap(include THINK_PATH.'alias.php');
 // 加载应用类
 //require CORE_PATH.'App.php';
 // 加载错误类
