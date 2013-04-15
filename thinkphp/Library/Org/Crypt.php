@@ -14,7 +14,7 @@ namespace Org;
 class Crypt {
     /**
      * 加密字符串
-     * @access static
+     * @access public
      * @param string $str 字符串
      * @param string $key 加密key
      * @return string
@@ -40,7 +40,7 @@ class Crypt {
 
     /**
      * 解密字符串
-     * @access static
+     * @access public
      * @param string $str 字符串
      * @param string $key 加密key
      * @return string
