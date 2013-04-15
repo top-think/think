@@ -12,23 +12,22 @@
 namespace Think;
 
 class View {
-    protected $engine   =   null;       // 模板引擎实例
-    protected $theme    =   '';         // 模板主题名称
-    protected $data     =   [];    // 模板变量
-    protected $config   =   [       // 视图参数
-        'http_output_content'   =>  true,
-        'http_content_type'     =>  'text/html',
-        'http_charset'          =>  'utf-8',
-        'http_cache_control'    =>  'private',
-        'http_render_content'   =>  false,
-        'theme_on'              =>  false,
-        'auto_detect_theme'     =>  false,
-        'var_theme'             =>  't',
-        'default_theme'         =>  'default',
-        'http_cache_id'         =>  null,
-        'view_path'             =>  '',
-        'view_suffix'           =>  '.html',
-
+    protected $engine = null; // 模板引擎实例
+    protected $theme  = '';   // 模板主题名称
+    protected $data   = [];   // 模板变量
+    protected $config = [     // 视图参数
+        'http_output_content' => true,
+        'http_content_type'   => 'text/html',
+        'http_charset'        => 'utf-8',
+        'http_cache_control'  => 'private',
+        'http_render_content' => false,
+        'theme_on'            => false,
+        'auto_detect_theme'   => false,
+        'var_theme'           => 't',
+        'default_theme'       => 'default',
+        'http_cache_id'       => null,
+        'view_path'           => '',
+        'view_suffix'         => '.html',
     ];
     
     /**
@@ -39,7 +38,7 @@ class View {
      */
     public function assign($name,$value=''){
         if(is_array($name)) {
-            $this->data   =  array_merge($this->data,$name);
+            $this->data = array_merge($this->data,$name);
             return $this;
         }else {
             $this->data[$name] = $value;
@@ -57,7 +56,7 @@ class View {
     }
 
     public function __construct(array $config=[]){
-        $this->config   =   array_merge($this->config,$config);
+        $this->config = array_merge($this->config,$config);
     }
     
     /**
@@ -68,8 +67,8 @@ class View {
      * @return View
      */
     public function engine($engine,$config=[]){
-        $class  =   '\\Think\\View\\Driver\\'.ucwords($engine);
-        $this->engine =   new $class($config);
+        $class = '\\Think\\View\\Driver\\'.ucwords($engine);
+        $this->engine = new $class($config);
         return $this;
     }
     
@@ -81,13 +80,13 @@ class View {
      */
     public function theme($theme){
         if(true === $theme) { // 自动侦测
-            $this->config['theme_on']   =   true;
-            $this->config['auto_detect_theme']  =   true;
+            $this->config['theme_on'] = true;
+            $this->config['auto_detect_theme'] = true;
         }elseif(false === $theme){ // 关闭主题
-            $this->config['theme_on']   =   false;
+            $this->config['theme_on'] = false;
         }else{ // 指定模板主题
-            $this->config['theme_on']   =   true;
-            $this->theme    =   $theme;
+            $this->config['theme_on'] = true;
+            $this->theme = $theme;
         }
         return $this;
     }
@@ -124,12 +123,12 @@ class View {
      */
     protected function fetch($template,$vars=[],$cacheId='') {
         if(!$this->config['http_render_content']) {
-            $template   =   $this->parseTemplate($template);
+            $template = $this->parseTemplate($template);
             // 模板不存在 抛出异常
             if(!is_file($template)) 
                 E('template file not exists:'.$template);
         }
-        $vars   =   $vars?$vars:$this->data;
+        $vars = $vars ? $vars : $this->data;
         // 页面缓存
         ob_start();
         ob_implicit_flush(0);
@@ -153,17 +152,17 @@ class View {
         if(is_file($template)) {
             return $template;
         }
-        $template   =   str_replace(':','/',$template);
+        $template = str_replace(':','/',$template);
         // 获取当前主题名称
-        $theme  =   $this->getTemplateTheme();
+        $theme = $this->getTemplateTheme();
         // 分析模板文件规则
-        if(''==$template) {
+        if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
             $template = CONTROLLER_NAME.'/'.ACTION_NAME;
         }elseif(false === strpos($template,'/')){
             $template = CONTROLLER_NAME.'/'.$template;
         }
-        return ($this->config['view_path']?$this->config['view_path']:MODULE_PATH.'View/').$theme.$template.$this->config['view_suffix'];
+        return ($this->config['view_path'] ? $this->config['view_path'] : MODULE_PATH.'View/').$theme.$template.$this->config['view_suffix'];
     }
 
     /**
@@ -174,7 +173,7 @@ class View {
     private function getTemplateTheme() {
         if($this->config['theme_on']) {
             if($this->theme) { // 指定模板主题
-                $theme  =   $this->theme;
+                $theme = $this->theme;
             }elseif($this->config['auto_detect_theme']){
                 // 自动侦测模板主题
                 $t = $this->config['var_theme'];
@@ -184,11 +183,11 @@ class View {
                     $theme = Cookie::get('think_theme');
                 }
                 if(!is_dir(MODULE_PATH.'View/'.$theme)) {
-                    $theme  =   $this->config['default_theme'];
+                    $theme = $this->config['default_theme'];
                 }
                 Cookie::set('think_theme',$theme,864000);
             }else{
-                $theme  =   $this->config['default_theme'];
+                $theme = $this->config['default_theme'];
             }
             return $theme.'/';
         }
@@ -203,9 +202,9 @@ class View {
      */
     public function http($config=[],$value=''){
         if(is_array($config)) {
-            $this->config   =   array_merge($this->config,$config);
+            $this->config = array_merge($this->config,$config);
         }else{
-            $this->config[$config]  =   $value;
+            $this->config[$config] = $value;
         }
         return $this;
     }
