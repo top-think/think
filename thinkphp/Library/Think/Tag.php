@@ -22,8 +22,8 @@ class Tag {
      * @return void
      */
     static public function add($tag,$behavior) {
-        if(is_array($hehavior)) {
-            self::$tags[$tag] =   array_merge(self::$tags[$tag],$hehavior);
+        if(is_array($behavior)) {
+            self::$tags[$tag] =   array_merge(self::$tags[$tag],$behavior);
         }else{
             self::$tags[$tag][] =   $behavior;
         }
