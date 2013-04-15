@@ -8,10 +8,10 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
-namespace Think;
-class View {
 
+namespace Think;
+
+class View {
     protected $engine   =   null;       // 模板引擎实例
     protected $theme    =   '';         // 模板主题名称
     protected $data     =   [];    // 模板变量

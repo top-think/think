@@ -8,9 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 
 namespace Think\Config\Driver;
+
 class Ini {
     public function parse($config){
         if(is_file($config)) {

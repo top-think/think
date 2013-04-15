@@ -11,6 +11,7 @@
 
 namespace Org\Oauth\Driver;
 use Org\Oauth\Driver;
+
 class Msn extends Driver{
     /**
      * 获取requestCode的api接口

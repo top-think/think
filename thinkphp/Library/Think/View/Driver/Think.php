@@ -8,9 +8,10 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
+
 namespace Think\View\Driver;
 use Think\Template;
+
 class Think {
     private $template   =   null;
     public function __construct($config=[]){

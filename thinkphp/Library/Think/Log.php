@@ -10,8 +10,8 @@
 // +----------------------------------------------------------------------
 
 namespace Think;
-class Log {
 
+class Log {
     // 日志信息
     static protected $log       =  [];
     static protected $level     =  ['ERR','NOTIC','DEBUG','SQL','INFO'];

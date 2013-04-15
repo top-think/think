@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace Think\Controller;
+
 abstract class Rest {
 
     protected   $_method    =   ''; // 当前请求类型

@@ -8,12 +8,13 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
+
 namespace Think\Db;
 use Think\Config;
 use Think\Debug;
 use Think\Log;
 use PDO;
+
 abstract class Driver {
     // PDO操作实例
     protected $PDOStatement = null;

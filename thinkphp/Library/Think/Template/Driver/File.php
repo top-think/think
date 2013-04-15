@@ -8,9 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 
 namespace Think\Template\Driver;
+
 class File {
     // 写入编译缓存
     public function write($cacheFile,$content){

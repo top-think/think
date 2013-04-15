@@ -11,6 +11,7 @@
 
 namespace Org\Oauth\Driver;
 use Org\Oauth\Driver;
+
 class Baidu extends Driver{
     /**
      * 获取requestCode的api接口

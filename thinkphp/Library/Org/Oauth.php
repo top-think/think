@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace Org;
+
 // oauth登录接口
 // <code>
 // Oauth::connect('qq',['app_key'=>'','app_secret'=>'','callback'=>'','authorize'=>'']); // 链接QQ登录

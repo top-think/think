@@ -8,10 +8,11 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
-namespace Think;
-class Debug {
 
+namespace Think;
+
+class Debug {
+    
     static protected $_info       =   [];
     static protected $_mem        =   [];
 

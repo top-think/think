@@ -10,8 +10,8 @@
 // +----------------------------------------------------------------------
 
 namespace Think\Controller;
-abstract class Phprpc {
 
+abstract class Phprpc {
    /**
      * PHPRpc控制器架构函数
      * @access public

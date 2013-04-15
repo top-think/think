@@ -8,7 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
 namespace Think;
+
 class Config {
     static private  $_config =   [];   // 配置参数
     static private  $_range =   '_sys_';   // 参数作用域

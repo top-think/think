@@ -8,10 +8,10 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
-namespace Think;
-class Error {
 
+namespace Think;
+
+class Error {
     /**
      * 自定义异常处理
      * @access public

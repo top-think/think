@@ -8,9 +8,10 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
+
 namespace Think\Session\Driver;
 use SessionHandler;
+
 class Driver extends SessionHandler {
     protected $config   =   [];
 

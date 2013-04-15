@@ -13,6 +13,7 @@ namespace Think\Behavior;
 use Think\Config;
 use Think\Log;
 use Think\Debug;
+
 /**
  * 系统行为扩展：页面Trace显示输出
  * @category   Think

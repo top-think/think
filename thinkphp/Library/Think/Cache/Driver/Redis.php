@@ -8,7 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
 namespace Think\Cache\Driver;
+
 /**
  * Redis缓存驱动 
  * 要求安装phpredis扩展：https://github.com/nicolasff/phpredis
