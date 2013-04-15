@@ -278,7 +278,7 @@ class Gd{
                 
                 $this->info['width']  = $width;
                 $this->info['height'] = $height;
-                return;
+                return $this;
 
             /* 固定 */
             case THINKIMAGE_THUMB_FIXED:
