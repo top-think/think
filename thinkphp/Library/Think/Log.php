@@ -21,12 +21,8 @@ class Log {
     static public function init($config=[]){
         $type   =   isset($config['type'])?$config['type']:'File';
         $class  =   'Think\\Log\\Driver\\'. ucwords($type);
-        if(class_exists($class)) {
-            unset($config['type']);
-            self::$storage = new $class($config);
-        }else{
-            throw new \Exception('Log type not exists:'.$type);
-        }
+        unset($config['type']);
+        self::$storage = new $class($config);
     }
 
     /**
@@ -40,7 +36,7 @@ class Log {
     static public function record($message,$level='INFO') {
         self::$log[$level][] =   "{$level}: {$message}";
     }
-
+ 
     /**
      * 获取内存中的日志信息
      * @access public
