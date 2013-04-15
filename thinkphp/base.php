@@ -111,7 +111,7 @@ function A($name,$layer='') {
  * @param string $layer 要调用的控制层名称
  * @return mixed
  */
-function R($url,$vars=array(),$layer='') {
+function R($url,$vars=[],$layer='') {
     return Think\Loader::action($url,$vars,$layer);
 }
 
@@ -178,8 +178,8 @@ function dump($var, $echo=true, $label=null) {
  * @param array $data 传人的参数
  * @return void
  */
-function W($name, $data=array()) {
-    echo R($name,$data,'Widget');
+function W($name, $data=[]) {
+    echo Think\Loader::action($name,$data,'Widget');
 }
 
 /**
