@@ -34,7 +34,7 @@ class Markdown {
 
 	### Version ###
 
-	public const MARKDOWNLIB_VERSION  =  "1.3-beta4";
+	const MARKDOWNLIB_VERSION  =  "1.3-beta4";
 
 	### Simple Function Interface ###
 
