@@ -172,8 +172,7 @@ abstract class Driver {
      * @param  string $method 请求方法GET/POST
      * @return array  $data   响应数据
      */
-    protected function http($url, $params, $method = 'GET', $header = []){
-        $vars = http_build_query($params);
+    protected function http($url, $params, $method = 'GET', $header = [], $multi = false){
         $opts = array(
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_RETURNTRANSFER => 1,
@@ -185,12 +184,14 @@ abstract class Driver {
         /* 根据请求类型设置特定参数 */
         switch(strtoupper($method)){
             case 'GET':
-                $opts[CURLOPT_URL] = $url . '?' . $vars;
+                $opts[CURLOPT_URL] = $url . '?' . http_build_query($params);
                 break;
             case 'POST':
+                //判断是否传输文件
++               $params = $multi ? $params : http_build_query($params);
                 $opts[CURLOPT_URL] = $url;
                 $opts[CURLOPT_POST] = 1;
-                $opts[CURLOPT_POSTFIELDS] = $vars;
+                $opts[CURLOPT_POSTFIELDS] = $params;
                 break;
             default:
                 throw new Exception('不支持的请求方式！');
@@ -210,7 +211,7 @@ abstract class Driver {
      * 抽象方法，在SNSSDK中实现
      * 组装接口调用参数 并调用接口
      */
-    abstract protected function call($api, $param = '', $method = 'GET');
+    abstract protected function call($api, $param = '', $method = 'GET', $multi = false);
 
     /**
      * 抽象方法，在SNSSDK中实现
