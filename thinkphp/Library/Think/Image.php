@@ -54,9 +54,8 @@ class Image {
     }
 
     // 调用驱动类的方法
-	static public function __callStatic($method, $params){
+    static public function __callStatic($method, $params){
         self::$im || self::init();
-		return call_user_func_array([self::$im, $method], $params);
-	}
-
+        return call_user_func_array([self::$im, $method], $params);
+    }
 }
