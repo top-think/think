@@ -12,7 +12,6 @@
 namespace Think\Model;
 
 class Lite {
-
     // 当前数据库操作对象
     protected $db               =   null;
     // 数据库名称

@@ -12,7 +12,6 @@
 namespace Think;
 
 class Cache {
-
     /**
      * 操作句柄
      * @var object
@@ -36,5 +35,4 @@ class Cache {
 	static public function __callStatic($method, $params){
 		return call_user_func_array(array(self::$handler, $method), $params);
 	}
-
 }

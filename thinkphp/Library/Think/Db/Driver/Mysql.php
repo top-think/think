@@ -13,7 +13,7 @@ namespace Think\Db\Driver;
 use Think\Db\Driver;
 
 /**
- * PDO数据库驱动 
+ * mysql数据库驱动 
  * @category   Extend
  * @package  Extend
  * @subpackage  Driver.Db

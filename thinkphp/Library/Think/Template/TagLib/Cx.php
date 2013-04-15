@@ -611,5 +611,4 @@ class Cx extends TagLib {
         $parseStr  .= '<?php } ?>';
         return $parseStr;
     }
-
-    }
+}

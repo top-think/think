@@ -223,5 +223,4 @@ class App {
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
     }
-
 }

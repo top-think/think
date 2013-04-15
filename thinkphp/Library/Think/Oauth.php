@@ -68,5 +68,4 @@ class Oauth {
     static public function call($api,$param='',$method='GET'){
         return self::$handler->call($api,$param,$method);
     }
-
 }

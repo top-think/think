@@ -81,5 +81,4 @@ class Log {
     static public function write($log,$level,$destination='') {
         self::$storage && self::$storage->write("{$level}: {$log}",$destination);
     }
-
 }

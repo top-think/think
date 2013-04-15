@@ -227,5 +227,4 @@ class Loader {
         }
         return $_instance[$identify];
     }
-
 }

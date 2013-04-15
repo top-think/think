@@ -287,5 +287,4 @@ class Ubb{
 
 		return [$addr, $text];
 	}
-
 }
