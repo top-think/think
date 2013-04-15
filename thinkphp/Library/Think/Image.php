@@ -43,22 +43,20 @@ class Image {
     private static $im;
 
     /**
-     * 构造方法，用于实例化一个图片处理对象
+     * 初始化方法，用于实例化一个图片处理对象
      * @param string $type 要使用的类库，默认使用GD库
      */
-    public function init($type = 'Gd', $imgname = null){
+    static public function init($type = 'Gd', $imgname = null){
         /* 引入处理库，实例化图片处理对象 */
-        $class  =    '\\Think\\Image\\Driver\\'.ucwords($type);
+        $class = '\\Think\\Image\\Driver\\'.ucwords($type);
         self::$im = new $class($imgname);
         return self::$im;
     }
 
     // 调用驱动类的方法
 	static public function __callStatic($method, $params){
-        if(empty(self::$im)) {
-            self::init();
-        }
-		return call_user_func_array(array(self::$im, $method), $params);
+        self::$im || self::init();
+		return call_user_func_array([self::$im, $method], $params);
 	}
 
 }
