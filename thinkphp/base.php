@@ -9,39 +9,40 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-if(version_compare(PHP_VERSION,'5.4.0','<'))  die('require PHP > 5.4.0 !');
-define('MAGIC_QUOTES_GPC',false);
+if(version_compare(PHP_VERSION,'5.4.0','<')) die('require PHP > 5.4.0 !');
+define('MAGIC_QUOTES_GPC', false);
 
 //  版本信息
 define('THINK_VERSION', '4.0beta');
 // 系统常量
-defined('THINK_PATH') 	or  define('THINK_PATH',    dirname(__FILE__).'/');
-defined('LIB_PATH')     or  define('LIB_PATH',      THINK_PATH.'Library/');
-defined('CORE_PATH') 	or  define('CORE_PATH',     LIB_PATH.'Think/');
-defined('ORG_PATH')     or  define('ORG_PATH',      LIB_PATH.'Org/');
-defined('APP_PATH') 	or  define('APP_PATH',      dirname($_SERVER['SCRIPT_FILENAME']).'/');
-defined('RUNTIME_PATH') or  define('RUNTIME_PATH',  realpath(APP_PATH).'/Runtime/');
-defined('DATA_PATH')    or  define('DATA_PATH',     RUNTIME_PATH.'Data/');
-defined('LOG_PATH')     or  define('LOG_PATH',      RUNTIME_PATH.'Log/');
-defined('CACHE_PATH')   or  define('CACHE_PATH',    RUNTIME_PATH.'Temp/');
-defined('VENDOR_PATH')  or  define('VENDOR_PATH',   THINK_PATH.'Vendor/');
-defined('EXT')          or  define('EXT',           '.php');
-defined('APP_DEBUG') 	or  define('APP_DEBUG',false); // 是否调试模式
+defined('THINK_PATH')   or define('THINK_PATH',   dirname(__FILE__).'/');
+defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'Library/');
+defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'Think/');
+defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'Org/');
+defined('APP_PATH')     or define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
+defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH).'/Runtime/');
+defined('DATA_PATH')    or define('DATA_PATH',    RUNTIME_PATH.'Data/');
+defined('LOG_PATH')     or define('LOG_PATH',     RUNTIME_PATH.'Log/');
+defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Temp/');
+defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
+defined('EXT')          or define('EXT',          '.php');
+defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
 
 // 为了方便导入第三方类库 设置Vendor目录到include_path
 set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
+
 // 环境常量
-define('MEMORY_LIMIT_ON',function_exists('memory_get_usage'));
-define('IS_CGI',strpos(PHP_SAPI, 'cgi')=== 0 ? 1 : 0 );
-define('IS_WIN',strstr(PHP_OS, 'WIN') ? 1 : 0 );
-define('IS_CLI',PHP_SAPI=='cli'? 1   :   0);
-define('IS_AJAX',       (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false);
-define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
-define('REQUEST_METHOD',$_SERVER['REQUEST_METHOD']);
-define('IS_GET',        REQUEST_METHOD =='GET' ? true : false);
-define('IS_POST',       REQUEST_METHOD =='POST' ? true : false);
-define('IS_PUT',        REQUEST_METHOD =='PUT' ? true : false);
-define('IS_DELETE',     REQUEST_METHOD =='DELETE' ? true : false);
+define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
+define('IS_CGI',          strpos(PHP_SAPI, 'cgi')=== 0 ? 1 : 0 );
+define('IS_WIN',          strstr(PHP_OS, 'WIN') ? 1 : 0 );
+define('IS_CLI',          PHP_SAPI=='cli'? 1   :   0);
+define('IS_AJAX',         (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false);
+define('NOW_TIME',        $_SERVER['REQUEST_TIME']);
+define('REQUEST_METHOD',  $_SERVER['REQUEST_METHOD']);
+define('IS_GET',          REQUEST_METHOD =='GET' ? true : false);
+define('IS_POST',         REQUEST_METHOD =='POST' ? true : false);
+define('IS_PUT',          REQUEST_METHOD =='PUT' ? true : false);
+define('IS_DELETE',       REQUEST_METHOD =='DELETE' ? true : false);
 
 // 获取多语言变量
 function L($name){
@@ -204,9 +205,9 @@ function S($name,$value='',$options=null) {
         return $cache->rm($name);
     }else { // 缓存数据
         if(is_array($options)) {
-            $expire =   isset($options['expire'])?$options['expire']:NULL;	//修复查询缓存无法设置过期时间
+            $expire =   isset($options['expire'])?$options['expire']:NULL;  //修复查询缓存无法设置过期时间
         }else{
-            $expire =   is_numeric($options)?$options:NULL;	//默认快捷缓存设置过期时间
+            $expire =   is_numeric($options)?$options:NULL; //默认快捷缓存设置过期时间
         }
         return $cache->set($name, $value, $expire);
     }
