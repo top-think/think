@@ -118,7 +118,7 @@ class Upload {
                         $suffix     =   isset($thumb_suffix[$i])?$thumb_suffix[$i]:$thumb_suffix[0];
                         $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix;
                     }
-                    Think\Image::thumb($filename,$thumb_path.$thumbname.'.'.$thumb_ext,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
+                    Image::thumb($filename,$thumb_path.$thumbname.'.'.$thumb_ext,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
                 }
                 if($this->thumb_remove_origin) {
                     // 生成缩略图之后删除原图
