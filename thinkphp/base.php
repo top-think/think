@@ -136,7 +136,7 @@ function import($class, $baseUrl = '', $ext= EXT ) {
 function vendor($class, $baseUrl = '', $ext=EXT) {
     if (empty($baseUrl))
         $baseUrl = VENDOR_PATH;
-    return Think\Loder::import($class, $baseUrl, $ext);
+    return Think\Loader::import($class, $baseUrl, $ext);
 }
 
 /**
