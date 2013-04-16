@@ -61,7 +61,7 @@ class Taobao extends Driver{
             unset($data['taobao_user_id']);
             return $data;
         } else
-            throw new Exception("获取淘宝网ACCESS_TOKEN出错：{$data['error']}");
+            throw new \Exception("获取淘宝网ACCESS_TOKEN出错：{$data['error']}");
     }
 
     /**

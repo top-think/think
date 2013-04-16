@@ -67,7 +67,7 @@ class Qq extends Driver{
             $data['openid'] = $this->getOpenId();
             return $data;
         } else
-            throw new Exception("获取腾讯QQ ACCESS_TOKEN 出错：{$result}");
+            throw new \Exception("获取腾讯QQ ACCESS_TOKEN 出错：{$result}");
     }
 
     /**

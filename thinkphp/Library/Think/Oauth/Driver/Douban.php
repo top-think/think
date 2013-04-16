@@ -57,7 +57,7 @@ class Douban extends Driver{
             unset($data['douban_user_id']);
             return $data;
         } else
-            throw new Exception("获取豆瓣ACCESS_TOKEN出错：{$data['msg']}");
+            throw new \Exception("获取豆瓣ACCESS_TOKEN出错：{$data['msg']}");
     }
 
     /**

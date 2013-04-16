@@ -83,7 +83,7 @@ class Renren extends Driver{
             unset($data['user']);
             return $data;
         } else
-            throw new Exception("获取人人网ACCESS_TOKEN出错：{$data['error_description']}");
+            throw new \Exception("获取人人网ACCESS_TOKEN出错：{$data['error_description']}");
     }
 
     /**

@@ -59,7 +59,7 @@ class Sohu extends Driver{
             unset($data['open_id']);
             return $data;
         } else
-            throw new Exception("获取搜狐ACCESS_TOKEN出错：{$data['error']}");
+            throw new \Exception("获取搜狐ACCESS_TOKEN出错：{$data['error']}");
     }
 
     /**

@@ -38,13 +38,13 @@ class Sina extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){		
+    public function call($api, $param = '', $method = 'GET', $multi = false){		
         /* 新浪微博调用公共参数 */
         $params = array(
             'access_token' => $this->token['access_token'],
         );
         
-        $data = $this->http($this->url($api, '.json'), $this->param($params, $param), $method);
+        $data = $this->http($this->url($api, '.json'), $this->param($params, $param), $method, $multi);
         return json_decode($data, true);
     }
 
@@ -59,7 +59,7 @@ class Sina extends Driver{
             unset($data['uid']);
             return $data;
         } else
-            throw new Exception("获取新浪微博ACCESS_TOKEN出错：{$data['error']}");
+            throw new \Exception("获取新浪微博ACCESS_TOKEN出错：{$data['error']}");
     }
 
     /**

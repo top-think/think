@@ -59,7 +59,7 @@ class T163 extends Driver{
             unset($data['uid']);
             return $data;
         } else
-            throw new Exception("获取网易微博ACCESS_TOKEN出错：{$data['error']}");
+            throw new \Exception("获取网易微博ACCESS_TOKEN出错：{$data['error']}");
     }
 
     /**

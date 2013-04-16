@@ -63,7 +63,7 @@ class Google extends Driver{
             $data['openid'] = $this->getOpenId();
             return $data;
         } else
-            throw new Exception("获取 Google ACCESS_TOKEN出错：未知错误");
+            throw new \Exception("获取 Google ACCESS_TOKEN出错：未知错误");
     }
 
     /**

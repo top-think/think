@@ -58,7 +58,7 @@ class Baidu extends Driver{
             $data['openid'] = $this->openid();
             return $data;
         } else
-            throw new Exception("获取百度ACCESS_TOKEN出错：{$data['error']}");
+            throw new \Exception("获取百度ACCESS_TOKEN出错：{$data['error']}");
     }
 
     /**
@@ -86,7 +86,7 @@ class Baidu extends Driver{
             $userInfo['avatar'] =   "http://tb.himg.baidu.com/sys/portrait/item/{$data['portrait']}";
             return $userInfo;
         } else {
-            throw new Exception("获取百度用户信息失败：{$data['error_msg']}");
+            throw new \Exception("获取百度用户信息失败：{$data['error_msg']}");
         }
     }
 

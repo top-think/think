@@ -77,16 +77,16 @@ abstract class Driver {
      * @param array $config 
      */
     public function __construct($config = []){
-        $this->appKey       =   $config['app_key'];
-        $this->appSecret    =   $config['app_secret'];
-        $this->authorize    =   isset($config['authorize'])?$config['authorize']:'';
-        $this->callback     =   isset($config['callback'])?$config['callback']:'';
+        $this->appKey    = $config['app_key'];
+        $this->appSecret = $config['app_secret'];
+        $this->authorize = isset($config['authorize']) ? $config['authorize'] : '';
+        $this->callback  = isset($config['callback'])  ? $config['callback']  : '';
     }
 
     // 跳转到授权登录页面
-    public function login($callback=''){
+    public function login($callback = ''){
         if($callback) {
-            $this->callback =   $callback;
+            $this->callback = $callback;
         }
         //跳转到授权页面
         header('Location: ' . $this->getRequestCodeURL());
@@ -110,7 +110,7 @@ abstract class Driver {
             if(is_array($_param)){
                 $params = array_merge($params, $_param);
             } else {
-                throw new Exception('AUTHORIZE配置不正确！');
+                throw new \Exception('AUTHORIZE配置不正确！');
             }
         }
         return $this->getRequestCodeURL . '?' . http_build_query($params);
@@ -194,7 +194,7 @@ abstract class Driver {
                 $opts[CURLOPT_POSTFIELDS] = $params;
                 break;
             default:
-                throw new Exception('不支持的请求方式！');
+                throw new \Exception('不支持的请求方式！');
         }
         
         /* 初始化并执行curl请求 */
@@ -203,7 +203,7 @@ abstract class Driver {
         $data  = curl_exec($ch);
         $error = curl_error($ch);
         curl_close($ch);
-        if($error) throw new Exception('请求发生错误：' . $error);
+        if($error) throw new \Exception('请求发生错误：' . $error);
         return  $data;
     }
 

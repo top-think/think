@@ -38,7 +38,7 @@ class Tencent extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){
+    public function call($api, $param = '', $method = 'GET', $multi = false){
         /* 腾讯微博调用公共参数 */
         $params = array(
             'oauth_consumer_key' => $this->AppKey,
@@ -50,7 +50,7 @@ class Tencent extends Driver{
             'format'             => 'json'
         );
 
-        $data = $this->http($this->url($api), $this->param($params, $param), $method);
+        $data = $this->http($this->url($api), $this->param($params, $param), $method, $multi);
         return json_decode($data, true);
     }
 
@@ -64,7 +64,7 @@ class Tencent extends Driver{
         if($data['access_token'] && $data['expires_in'] && $data['openid'])
             return $data;
         else
-            throw new Exception("获取腾讯微博 ACCESS_TOKEN 出错：{$result}");
+            throw new \Exception("获取腾讯微博 ACCESS_TOKEN 出错：{$result}");
     }
 
     /**
