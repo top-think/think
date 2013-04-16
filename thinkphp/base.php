@@ -33,15 +33,15 @@ set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
 
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
-define('IS_CGI',          strpos(PHP_SAPI, 'cgi')=== 0 ? 1 : 0 );
-define('IS_WIN',          strstr(PHP_OS, 'WIN') ? 1 : 0 );
-define('IS_CLI',          PHP_SAPI=='cli'? 1   :   0);
+define('IS_CGI',          strpos(PHP_SAPI, 'cgi') === 0 ? 1 : 0);
+define('IS_WIN',          strstr(PHP_OS, 'WIN') ? 1 : 0);
+define('IS_CLI',          PHP_SAPI=='cli' ? 1 : 0);
 define('IS_AJAX',         (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false);
 define('NOW_TIME',        $_SERVER['REQUEST_TIME']);
 define('REQUEST_METHOD',  $_SERVER['REQUEST_METHOD']);
-define('IS_GET',          REQUEST_METHOD =='GET' ? true : false);
-define('IS_POST',         REQUEST_METHOD =='POST' ? true : false);
-define('IS_PUT',          REQUEST_METHOD =='PUT' ? true : false);
+define('IS_GET',          REQUEST_METHOD =='GET'    ? true : false);
+define('IS_POST',         REQUEST_METHOD =='POST'   ? true : false);
+define('IS_PUT',          REQUEST_METHOD =='PUT'    ? true : false);
 define('IS_DELETE',       REQUEST_METHOD =='DELETE' ? true : false);
 
 // 获取多语言变量
