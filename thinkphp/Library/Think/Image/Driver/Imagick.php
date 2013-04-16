@@ -184,7 +184,7 @@ class Imagick{
         
         //调整大小
         if($w != $width || $h != $height){
-            $img->sampleImage($width, $height);
+            $img->scaleImage($width, $height);
         }
 
         //设置缓存尺寸
