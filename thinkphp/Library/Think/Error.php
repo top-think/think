@@ -19,16 +19,16 @@ class Error {
      */
     static public function appException($e) {
         $error = [];
-        $error['message']   = $e->getMessage();
-        $trace  =   $e->getTrace();
-        if('E'==$trace[0]['function']) {
-            $error['file']  =   $trace[0]['file'];
-            $error['line']  =   $trace[0]['line'];
+        $error['message'] = $e->getMessage();
+        $trace = $e->getTrace();
+        if('E' == $trace[0]['function']) {
+            $error['file'] = $trace[0]['file'];
+            $error['line'] = $trace[0]['line'];
         }else{
-            $error['file']      = $e->getFile();
-            $error['line']      = $e->getLine();
+            $error['file'] = $e->getFile();
+            $error['line'] = $e->getLine();
         }
-        $error['trace']     = $e->getTraceAsString();
+        $error['trace'] = $e->getTraceAsString();
         self::halt($error);
     }
 
@@ -42,24 +42,23 @@ class Error {
      * @return void
      */
     static public function appError($errno, $errstr, $errfile, $errline) {
-      switch ($errno) {
-          case E_ERROR:
-          case E_PARSE:
-          case E_CORE_ERROR:
-          case E_COMPILE_ERROR:
-          case E_USER_ERROR:
-            $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
-            Log::record($errorStr,'ERROR');
-            self::halt($errorStr);
-            break;
-          case E_STRICT:
-          case E_USER_WARNING:
-          case E_USER_NOTICE:
-          default:
-            $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
-            Log::record($errorStr,'NOTIC');
-            break;
-      }
+        $errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
+        switch ($errno) {
+            case E_ERROR:
+            case E_PARSE:
+            case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
+            case E_USER_ERROR:
+                Log::record($errorStr, 'ERROR');
+                self::halt($errorStr);
+                break;
+            case E_STRICT:
+            case E_USER_WARNING:
+            case E_USER_NOTICE:
+            default:
+                Log::record($errorStr, 'NOTIC');
+                break;
+        }
     }
 
     /**
@@ -81,26 +80,24 @@ class Error {
      * @return void
      */
     static public function halt($error) {
-        if(IS_CLI) {
-            exit(is_array($error)?$error['message']:$error);
-        }
+        IS_CLI && exit(is_array($error)?$error['message']:$error);
         $e = [];
         if (Config::get('app_debug')) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
-                $trace          = debug_backtrace();
-                $e['message']   = $error;
-                $e['file']      = $trace[0]['file'];
-                $e['line']      = $trace[0]['line'];
+                $trace        = debug_backtrace();
+                $e['message'] = $error;
+                $e['file']    = $trace[0]['file'];
+                $e['line']    = $trace[0]['line'];
                 ob_start();
                 debug_print_backtrace();
-                $e['trace']     = ob_get_clean();
+                $e['trace'] = ob_get_clean();
             } else {
-                $e              = $error;
+                $e = $error;
             }
         } else {
             //否则定向到错误页面
-            $error_page         = Config::get('error_page');
+            $error_page = Config::get('error_page');
             if (!empty($error_page)) {
                 header('Location: ' . $error_page);
             } else {
