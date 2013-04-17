@@ -29,6 +29,12 @@ class Error {
             $error['line'] = $e->getLine();
         }
         $error['trace'] = $e->getTraceAsString();
+        // 记录异常日志
+        Log::record($error['message'],'ERR');        
+        // 发送404信息
+        header('HTTP/1.1 404 Not Found');
+        header('Status:404 Not Found');
+        // 输出异常页面
         self::halt($error);
     }
 

@@ -17,6 +17,7 @@ define('THINK_VERSION', '4.0beta');
 // 系统常量
 defined('THINK_PATH')   or define('THINK_PATH',   dirname(__FILE__).'/');
 defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'Library/');
+defined('TRAIT_PATH')   or define('TRAIT_PATH',   THINK_PATH.'Traits/');
 defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'Think/');
 defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'Org/');
 defined('APP_PATH')     or define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
@@ -137,24 +138,25 @@ function vendor($class, $baseUrl = '', $ext=EXT) {
 }
 
 /**
+ * 快速导入Traits
+ * @param string $class trait库
+ * @param string $baseUrl 基础目录
+ * @param string $ext 类库后缀 
+ * @return boolean
+ */
+function T($class,$baseUrl = '', $ext=EXT){
+    if (empty($baseUrl))
+        $baseUrl = TRAIT_PATH;
+    return Think\Loader::import($class, $baseUrl, $ext);
+}
+
+/**
  * 抛出异常处理
  * @param string $msg 异常消息
  * @param integer $code 异常代码 默认为0
  * @return void
  */
-function E($msg, $code=0,$url='') {
-    if(404 == $code && !C('app_debug')) {
-        if($msg) Think\Log::record($msg,'ERR');
-        $url    =   $url?$url:C('url_404_redirect');
-        if($url) {
-            header('Location: ' . $url);
-        }else{
-            header('HTTP/1.1 404 Not Found');
-            // 确保FastCGI模式下正常
-            header('Status:404 Not Found');
-        }
-        exit;
-    }
+function E($msg, $code=0) {
     throw new Think\Exception($msg, $code);
 }
 
