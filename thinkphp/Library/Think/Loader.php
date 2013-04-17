@@ -80,10 +80,10 @@ class Loader {
                 //加载当前项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = MODULE_PATH;
-            }elseif (in_array($class_strut[0], ['Org', 'Com'])) {
+            }elseif (in_array($class_strut[0], ['Think','Org', 'Com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl = LIB_PATH;
-            }elseif(in_array($class_strut[0], ['Think', 'Vendor', 'Library', 'Traits'])){
+            }elseif(in_array($class_strut[0], ['Vendor', 'Traits'])){
                 $baseUrl = THINK_PATH;
             }else { // 加载其他项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
@@ -92,7 +92,7 @@ class Loader {
         }
         if (substr($baseUrl, -1) != '/')
             $baseUrl .= '/';
-        // 如果类不存在 则导入类库文件
+        // 如果类存在 则导入类库文件
         $filename = $baseUrl . $class . $ext;
         if(is_file($filename)) {
             include $filename;
