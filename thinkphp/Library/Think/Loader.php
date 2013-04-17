@@ -33,7 +33,7 @@ class Loader {
             $filename = $path . str_replace('\\', '/', $class) . EXT;
             if(is_file($filename)) {
                 // Win环境下面严格区分大小写
-                if (IS_WIN && !strstr(str_replace('/', '\\', realpath($filename)), $class . EXT, true)){
+                if (IS_WIN && false === strpos(str_replace('/', '\\', realpath($filename)), $class . EXT)){
                     return ;
                 }
                 include $filename;
