@@ -17,9 +17,9 @@ class Loader {
     static protected $map = [];
     // 命名空间
     static protected $namespace = [
-        'Think'   => CORE_PATH,
-        'Vendor'  => VENDOR_PATH,
-        'Library' => LIB_PATH,
+        'Think'     =>  CORE_PATH,
+        'Vendor'    =>  VENDOR_PATH,
+        'Org'       =>  ORG_PATH,
     ];
 
     // 自动加载
