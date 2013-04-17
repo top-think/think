@@ -12,15 +12,10 @@
 namespace Think;
 
 class Model {
-    //use Think\Model\Traits\ActiveRecord;
     // 操作状态
     const MODEL_INSERT          =   1;      //  插入模型数据
     const MODEL_UPDATE          =   2;      //  更新模型数据
     const MODEL_BOTH            =   3;      //  包含上面两种方式
-
-
-    // 当前使用的扩展模型
-    private   $_extModel        =   null;
     // 当前数据库操作对象
     protected $db               =   null;
     // 主键名称
@@ -45,18 +40,10 @@ class Model {
     protected $data             =   [];
     // 查询表达式参数
     protected $options          =   [];
-    protected $_validate        =   [];  // 自动验证定义
-    protected $_auto            =   [];  // 自动完成定义
-    protected $_map             =   [];  // 字段映射定义
-    protected $_scope           =   [];  // 命名范围定义
+    // 命名范围定义
+    protected $_scope           =   [];  
     // 是否自动检测数据表字段信息
     protected $autoCheckFields  =   false;
-    // 是否批处理验证
-    protected $patchValidate    =   false;
-    // 链操作方法列表
-    protected $methods          =   ['table','order','alias','having','group','lock','distinct','auto','filter','validate'];
-    // 配置参数
-    protected $config           =   [];
 
     /**
      * 架构函数
@@ -147,39 +134,6 @@ class Model {
         unset($this->data[$name]);
     }
 
-    /**
-     * 利用__call方法实现一些特殊的Model方法
-     * @access public
-     * @param string $method 方法名称
-     * @param array $args 调用参数
-     * @return mixed
-     */
-    public function __call($method,$args) {
-        if(in_array(strtolower($method),$this->methods,true)) {
-            // 连贯操作的实现
-            $this->options[strtolower($method)] =   $args[0];
-            return $this;
-        }elseif(in_array(strtolower($method),['count','sum','min','max','avg'],true)){
-            // 统计查询的实现
-            $field =  isset($args[0])?$args[0]:'*';
-            return $this->getField(strtoupper($method).'('.$field.') AS tp_'.$method);
-        }elseif(strtolower(substr($method,0,5))=='getby') {
-            // 根据某个字段获取记录
-            $field   =   parse_name(substr($method,5));
-            $where[$field] =  $args[0];
-            return $this->where($where)->find();
-        }elseif(strtolower(substr($method,0,10))=='getfieldby') {
-            // 根据某个字段获取记录的某个值
-            $name   =   parse_name(substr($method,10));
-            $where[$name] =$args[0];
-            return $this->where($where)->getField($args[1]);
-        }elseif(isset($this->_scope[$method])){// 命名范围的单独调用支持
-            return $this->scope($method,$args[0]);
-        }else{
-            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
-            return;
-        }
-    }
     // 回调方法 初始化模型
     protected function _initialize() {}
 
@@ -257,50 +211,6 @@ class Model {
     protected function _before_insert(&$data,$options) {}
     // 插入成功后的回调方法
     protected function _after_insert($data,$options) {}
-
-    public function addAll($dataList,$replace=false){
-        if(empty($dataList)) {
-            $this->error = L('_DATA_TYPE_INVALID_');
-            return false;
-        }
-        // 分析表达式
-        $options =  $this->_parseOptions();
-        // 数据处理
-        foreach ($dataList as $key=>$data){
-            $dataList[$key] = $this->_facade($data);
-        }
-        // 写入数据到数据库
-        $result = $this->db->insertAll($dataList,$options,$replace);
-        if(false !== $result ) {
-            $insertId   =   $this->getLastInsID();
-            if($insertId) {
-                return $insertId;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * 通过Select方式添加记录
-     * @access public
-     * @param string $fields 要插入的数据表字段名
-     * @param string $table 要插入的数据表名
-     * @param array $options 表达式
-     * @return boolean
-     */
-    public function selectAdd($fields='',$table='',$options=[]) {
-        // 分析表达式
-        $options =  $this->_parseOptions($options);
-        // 写入数据到数据库
-        if(false === $result = $this->db->selectInsert($fields?$fields:$options['field'],$table?$table:$this->getTableName(),$options)){
-            // 数据库插入操作失败
-            $this->error = L('_OPERATION_WRONG_');
-            return false;
-        }else {
-            // 插入成功
-            return $result;
-        }
-    }
 
     /**
      * 保存数据
@@ -542,122 +452,6 @@ class Model {
     protected function _after_find(&$result,$options) {}
 
     /**
-     * 处理字段映射
-     * @access public
-     * @param array $data 当前数据
-     * @param integer $type 类型 0 写入 1 读取
-     * @return array
-     */
-    public function parseFieldsMap($data,$type=1) {
-        // 检查字段映射
-        if(!empty($this->_map)) {
-            foreach ($this->_map as $key=>$val){
-                if($type==1) { // 读取
-                    if(isset($data[$val])) {
-                        $data[$key] =   $data[$val];
-                        unset($data[$val]);
-                    }
-                }else{
-                    if(isset($data[$key])) {
-                        $data[$val] =   $data[$key];
-                        unset($data[$key]);
-                    }
-                }
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * 设置记录的某个字段值
-     * 支持使用数据库字段和方法
-     * @access public
-     * @param string|array $field  字段名
-     * @param string $value  字段值
-     * @return boolean
-     */
-    public function setField($field,$value='') {
-        if(is_array($field)) {
-            $data           =   $field;
-        }else{
-            $data[$field]   =   $value;
-        }
-        return $this->save($data);
-    }
-
-    /**
-     * 字段值增长
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  增长值
-     * @return boolean
-     */
-    public function setInc($field,$step=1) {
-        return $this->setField($field,['exp',$field.'+'.$step]);
-    }
-
-    /**
-     * 字段值减少
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  减少值
-     * @return boolean
-     */
-    public function setDec($field,$step=1) {
-        return $this->setField($field,['exp',$field.'-'.$step]);
-    }
-
-    /**
-     * 获取一条记录的某个字段值
-     * @access public
-     * @param string $field  字段名
-     * @param string $spea  字段数据间隔符号 NULL返回数组
-     * @return mixed
-     */
-    public function getField($field,$sepa=null) {
-        $options['field']       =   $field;
-        $options                =   $this->_parseOptions($options);
-        $field                  =   trim($field);
-        if(strpos($field,',')) { // 多字段
-            if(!isset($options['limit'])){
-                $options['limit']   =   is_numeric($sepa)?$sepa:'';
-            }
-            $resultSet          =   $this->db->select($options);
-            if(!empty($resultSet)) {
-                $_field         =   explode(',', $field);
-                $field          =   array_keys($resultSet[0]);
-                $key            =   array_shift($field);
-                $key2           =   array_shift($field);
-                $cols           =   [];
-                $count          =   count($_field);
-                foreach ($resultSet as $result){
-                    $name   =  $result[$key];
-                    if(2==$count) {
-                        $cols[$name]   =  $result[$key2];
-                    }else{
-                        $cols[$name]   =  is_string($sepa)?implode($sepa,$result):$result;
-                    }
-                }
-                return $cols;
-            }
-        }else{   // 查找一条记录
-            // 返回数据个数
-            if(true !== $sepa) {// 当sepa指定为true的时候 返回所有数据
-                $options['limit']   =   is_numeric($sepa)?$sepa:1;
-            }
-            $result = $this->db->select($options);
-            if(!empty($result)) {
-                if(true !== $sepa && 1==$options['limit']) return reset($result[0]);
-                foreach ($result as $val){
-                    $array[]    =   $val[$field];
-                }
-                return $array;
-            }
-        }
-        return null;
-    }
-
-    /**
      * 创建数据对象 但不保存到数据库
      * @access public
      * @param mixed $data 创建数据
@@ -703,86 +497,23 @@ class Model {
             }
         }
 
-        // 验证完成生成数据对象
-        if($this->autoCheckFields) { // 开启字段检测 则过滤非法字段数据
-            $fields =   $this->getDbFields();
-            foreach ($data as $key=>$val){
-                if(!in_array($key,$fields)) {
-                    unset($data[$key]);
-                }elseif(MAGIC_QUOTES_GPC && is_string($val)){
-                    $data[$key] =   stripslashes($val);
-                }
-            }
-        }
-
+        $this->_create_filter($data);
         // 赋值当前数据对象
         $this->data =   $data;
         // 返回创建的数据以供其他调用
         return $data;
      }
-
-    /**
-     * SQL查询
-     * @access public
-     * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
-     * @return mixed
-     */
-    public function query($sql,$parse=false) {
-        if(!is_bool($parse) && !is_array($parse)) {
-            $parse = func_get_args();
-            array_shift($parse);
-        }
-        $sql  =   $this->parseSql($sql,$parse);
-        return $this->db->query($sql);
-    }
-
-    /**
-     * 执行SQL语句
-     * @access public
-     * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
-     * @return false | integer
-     */
-    public function execute($sql,$parse=false) {
-        if(!is_bool($parse) && !is_array($parse)) {
-            $parse = func_get_args();
-            array_shift($parse);
-        }
-        $sql  =   $this->parseSql($sql,$parse);
-        return $this->db->execute($sql);
-    }
-
-    /**
-     * 解析SQL语句
-     * @access public
-     * @param string $sql  SQL指令
-     * @param boolean $parse  是否需要解析SQL
-     * @return string
-     */
-    protected function parseSql($sql,$parse) {
-        // 分析表达式
-        if(true === $parse) {
-            $options =  $this->_parseOptions();
-            $sql  =   $this->db->parseSql($sql,$options);
-        }elseif(is_array($parse)){ // SQL预处理
-            $sql  = vsprintf($sql,$parse);
-        }else{
-            $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
-        }
-        $this->db->setModel($this->name);
-        return $sql;
-    }
+    // 数据对象创建后的回调方法
+    protected function _create_filter(&$data){}
 
     /**
      * 切换当前的数据库连接
      * @access public
      * @param integer $linkNum  连接序号
      * @param mixed $config  数据库连接信息
-     * @param array $params  模型参数
      * @return Model
      */
-    public function db($linkNum='',$config='',$params=[]){
+    public function db($linkNum='',$config=''){
         if(''===$linkNum && $this->db) {
             return $this->db;
         }
@@ -799,12 +530,7 @@ class Model {
             unset($_db[$linkNum]);
             return ;
         }
-        if(!empty($params)) {
-            if(is_string($params))    parse_str($params,$params);
-            foreach ($params as $name=>$value){
-                $this->setProperty($name,$value);
-            }
-        }
+
         // 记录连接信息
         $_linkNum[$linkNum] =   $config;
         // 切换数据库连接
@@ -845,35 +571,6 @@ class Model {
     }
 
     /**
-     * 启动事务
-     * @access public
-     * @return void
-     */
-    public function startTrans() {
-        $this->commit();
-        $this->db->startTrans();
-        return ;
-    }
-
-    /**
-     * 提交事务
-     * @access public
-     * @return boolean
-     */
-    public function commit() {
-        return $this->db->commit();
-    }
-
-    /**
-     * 事务回滚
-     * @access public
-     * @return boolean
-     */
-    public function rollback() {
-        return $this->db->rollback();
-    }
-
-    /**
      * 返回模型的错误信息
      * @access public
      * @return string
@@ -907,10 +604,6 @@ class Model {
      */
     public function getLastSql() {
         return $this->db->getLastSql($this->name);
-    }
-    // 鉴于getLastSql比较常用 增加_sql 别名
-    public function _sql(){
-        return $this->getLastSql();
     }
 
     /**
@@ -1152,6 +845,94 @@ class Model {
     }
 
     /**
+     * 指定数据表
+     * @access public
+     * @param string $table 表名
+     * @return Model
+     */
+    public function table($table){
+        $this->options['table']     =   $table;
+        return $this;
+    }
+
+    /**
+     * 指定排序
+     * @access public
+     * @param string $order 排序
+     * @return Model
+     */
+    public function order($order){
+        $this->options['order']     =   $order;
+        return $this;
+    }
+
+    /**
+     * 指定group查询
+     * @access public
+     * @param string $group GROUP
+     * @return Model
+     */
+    public function group($group){
+        $this->options['group']     =   $group;
+        return $this;
+    }
+
+    /**
+     * 指定having查询
+     * @access public
+     * @param string $having having
+     * @return Model
+     */
+    public function having($table){
+        $this->options['having']     =   $having;
+        return $this;
+    }
+
+    /**
+     * 指定查询lock
+     * @access public
+     * @param boolean $lock 是否lock
+     * @return Model
+     */
+    public function lock($lock=false){
+        $this->options['lock']     =   $lock;
+        return $this;
+    }
+
+    /**
+     * 指定distinct查询
+     * @access public
+     * @param string $distinct 是否唯一
+     * @return Model
+     */
+    public function distinct($distinct){
+        $this->options['distinct']     =   $distinct;
+        return $this;
+    }
+
+    /**
+     * 指定数据表别名
+     * @access public
+     * @param string $alias 数据表别名
+     * @return Model
+     */
+    public function alias($alias){
+        $this->options['alias']     =   $alias;
+        return $this;
+    }
+
+    /**
+     * 指定写入过滤方法
+     * @access public
+     * @param string $filter 指定过滤方法
+     * @return Model
+     */
+    public function filter($filter){
+        $this->options['filter']     =   $filter;
+        return $this;
+    }
+
+    /**
      * 查询注释
      * @access public
      * @param string $comment 注释
@@ -1162,16 +943,4 @@ class Model {
         return $this;
     }
 
-    /**
-     * 设置模型的属性值
-     * @access public
-     * @param string $name 名称
-     * @param mixed $value 值
-     * @return Model
-     */
-    public function setProperty($name,$value) {
-        if(property_exists($this,$name))
-            $this->$name = $value;
-        return $this;
-    }
 }
