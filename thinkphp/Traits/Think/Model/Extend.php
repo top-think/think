@@ -16,6 +16,96 @@ trait Extend {
     protected $partition    =   [];
 
     /**
+     * 设置记录的某个字段值
+     * 支持使用数据库字段和方法
+     * @access public
+     * @param string|array $field  字段名
+     * @param string $value  字段值
+     * @return boolean
+     */
+    public function setField($field,$value='') {
+        if(is_array($field)) {
+            $data           =   $field;
+        }else{
+            $data[$field]   =   $value;
+        }
+        return $this->save($data);
+    }
+
+    /**
+     * 字段值增长
+     * @access public
+     * @param string $field  字段名
+     * @param integer $step  增长值
+     * @return boolean
+     */
+    public function setInc($field,$step=1) {
+        return $this->setField($field,['exp',$field.'+'.$step]);
+    }
+
+    /**
+     * 字段值减少
+     * @access public
+     * @param string $field  字段名
+     * @param integer $step  减少值
+     * @return boolean
+     */
+    public function setDec($field,$step=1) {
+        return $this->setField($field,['exp',$field.'-'.$step]);
+    }
+
+
+    /**
+     * 获取一条记录的某个字段值
+     * @access public
+     * @param string $field  字段名
+     * @param string $spea  字段数据间隔符号 NULL返回数组
+     * @return mixed
+     */
+    public function getField($field,$sepa=null) {
+        $options['field']       =   $field;
+        $options                =   $this->_parseOptions($options);
+        $field                  =   trim($field);
+        if(strpos($field,',')) { // 多字段
+            if(!isset($options['limit'])){
+                $options['limit']   =   is_numeric($sepa)?$sepa:'';
+            }
+            $resultSet          =   $this->db->select($options);
+            if(!empty($resultSet)) {
+                $_field         =   explode(',', $field);
+                $field          =   array_keys($resultSet[0]);
+                $key            =   array_shift($field);
+                $key2           =   array_shift($field);
+                $cols           =   [];
+                $count          =   count($_field);
+                foreach ($resultSet as $result){
+                    $name   =  $result[$key];
+                    if(2==$count) {
+                        $cols[$name]   =  $result[$key2];
+                    }else{
+                        $cols[$name]   =  is_string($sepa)?implode($sepa,$result):$result;
+                    }
+                }
+                return $cols;
+            }
+        }else{   // 查找一条记录
+            // 返回数据个数
+            if(true !== $sepa) {// 当sepa指定为true的时候 返回所有数据
+                $options['limit']   =   is_numeric($sepa)?$sepa:1;
+            }
+            $result = $this->db->select($options);
+            if(!empty($result)) {
+                if(true !== $sepa && 1==$options['limit']) return reset($result[0]);
+                foreach ($result as $val){
+                    $array[]    =   $val[$field];
+                }
+                return $array;
+            }
+        }
+        return null;
+    }
+        
+    /**
      * 字段值延迟增长
      * @access public
      * @param string $field  字段名
