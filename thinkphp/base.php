@@ -28,9 +28,6 @@ defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
 defined('EXT')          or define('EXT',          '.php');
 defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
 
-// 为了方便导入第三方类库 设置Vendor目录到include_path
-set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
-
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
 define('IS_CGI',          strpos(PHP_SAPI, 'cgi') === 0 ? 1 : 0);
