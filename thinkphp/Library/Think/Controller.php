@@ -99,11 +99,11 @@ class Controller {
                 header('Content-Type:application/javascript; charset=utf-8');
                 exit($data);
             case 'HTML':
-                // 返回可执行的js脚本
+                // 返回html片段
                 header('Content-Type:text/html; charset=utf-8');
                 exit($data);
             case 'TEXT':
-                // 返回可执行的js脚本
+                // 返回一段纯文本
                 header('Content-Type:text/plain; charset=utf-8');
                 exit($data);
             default:
