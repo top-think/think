@@ -102,22 +102,21 @@ class Loader {
     }
 
     /**
-     * 实例化一个没有模型文件的Model
+     * 实例化一个没有模型文件的Model（对应数据表）
      * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
-     * @param string $tablePrefix 表前缀
-     * @param mixed $connection 数据库连接信息
+     * @param array $options 模型参数
      * @return Model
      */
-    static public function table($name = '', $tablePrefix = '',$connection = '') {
+    static public function table($name = '', $options=[]) {
         static $_model = [];
         if(strpos($name, ':')) {
             list($class, $name) = explode(':', $name);
         }else{
             $class = 'Think\Model';
         }
-        $guid = $tablePrefix . $name . '_' . $class;
+        $guid =  $name . '_' . $class;
         if (!isset($_model[$guid]))
-            $_model[$guid] = new $class($name, ['table_prefix' => $tablePrefix, 'connection' => $connection]);
+            $_model[$guid] = new $class($name, $options);
         return $_model[$guid];
     }
 
