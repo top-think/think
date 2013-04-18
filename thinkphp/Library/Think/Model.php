@@ -302,7 +302,7 @@ class Model {
     }
     // 删除成功后的回调方法
     protected function _after_delete($data,$options) {}
-    
+
     /**
      * 查询数据集
      * @access public
@@ -471,9 +471,6 @@ class Model {
             return false;
         }
 
-        // 检查字段映射
-        $data = $this->parseFieldsMap($data,0);
-
         // 状态
         $type = $type?$type:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
 
@@ -496,7 +493,7 @@ class Model {
                 }
             }
         }
-
+        // 过滤创建的数据
         $this->_create_filter($data);
         // 赋值当前数据对象
         $this->data =   $data;
