@@ -491,8 +491,7 @@ class Upload {
      * @return boolean
      */
     protected function getExt($filename) {
-        $pathinfo = pathinfo($filename);
-        return $pathinfo['extension'];
+        return pathinfo($filename,PATHINFO_EXTENSION);
     }
 
     /**
