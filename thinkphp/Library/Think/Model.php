@@ -302,7 +302,7 @@ class Model {
     }
     // 删除成功后的回调方法
     protected function _after_delete($data,$options) {}
-
+    
     /**
      * 查询数据集
      * @access public
