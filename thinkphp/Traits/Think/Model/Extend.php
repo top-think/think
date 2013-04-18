@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Traits\Think;
+namespace Traits\Think\Model;
 
 trait Extend {
     
@@ -174,34 +174,6 @@ trait Extend {
             S($guid.'_time',time());
             return false;
         }
-    }
-
-    /**
-     * 批处理执行SQL语句
-     * 批处理的指令都认为是execute操作
-     * @access public
-     * @param array $sql  SQL批处理指令
-     * @return boolean
-     */
-    public function patchQuery($sql=[]) {
-        if(!is_array($sql)) return false;
-        // 自动启动事务支持
-        $this->startTrans();
-        try{
-            foreach ($sql as $_sql){
-                $result   =  $this->execute($_sql);
-                if(false === $result) {
-                    // 发生错误自动回滚事务
-                    $this->rollback();
-                    return false;
-                }
-            }
-            // 提交事务
-            $this->commit();
-        } catch (\Think\Exception $e) {
-            $this->rollback();
-        }
-        return true;
     }
 
     /**

@@ -16,6 +16,9 @@ trait Auto {
     protected $_validate        =   [];  // 自动验证定义
     protected $_auto            =   [];  // 自动完成定义
             
+    public function test($auto=''){
+        echo 'auto';
+    }            
     /**
      * 创建数据对象 但不保存到数据库
      * @access public
