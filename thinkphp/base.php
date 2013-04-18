@@ -127,27 +127,21 @@ function import($class, $baseUrl = '', $ext= EXT ) {
 /**
  * 快速导入第三方框架类库 所有第三方框架的类库文件统一放到 系统的Vendor目录下面
  * @param string $class 类库
- * @param string $baseUrl 基础目录
  * @param string $ext 类库后缀 
  * @return boolean
  */
-function vendor($class, $baseUrl = '', $ext=EXT) {
-    if (empty($baseUrl))
-        $baseUrl = VENDOR_PATH;
-    return Think\Loader::import($class, $baseUrl, $ext);
+function vendor($class, $ext=EXT) {
+    return Think\Loader::import($class, VENDOR_PATH, $ext);
 }
 
 /**
  * 快速导入Traits
  * @param string $class trait库
- * @param string $baseUrl 基础目录
  * @param string $ext 类库后缀 
  * @return boolean
  */
-function T($class,$baseUrl = '', $ext=EXT){
-    if (empty($baseUrl))
-        $baseUrl = TRAIT_PATH;
-    return Think\Loader::import($class, $baseUrl, $ext);
+function T($class,$ext=EXT){
+    return Think\Loader::import($class, TRAIT_PATH, $ext);
 }
 
 /**
