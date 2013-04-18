@@ -190,7 +190,7 @@ class Loader {
      * @param string $layer 要调用的控制层名称
      * @return mixed
      */
-    static public function action($url, $vars = [], $layer = '') {
+    static public function action($url, $vars = [], $layer = 'Controller') {
         $info   = pathinfo($url);
         $action = $info['basename'];
         $module = '.' != $info['dirname'] ? $info['dirname'] : CONTROLLER_NAME;

@@ -98,7 +98,7 @@ function D($name='',$layer='Model') {
  * @param string $layer 控制层名称
  * @return object
  */
-function A($name,$layer='') {
+function A($name,$layer='Controller') {
     return Think\Loader::controller($name,$layer);
 }
 
@@ -109,7 +109,7 @@ function A($name,$layer='') {
  * @param string $layer 要调用的控制层名称
  * @return mixed
  */
-function R($url,$vars=[],$layer='') {
+function R($url,$vars=[],$layer='Controller') {
     return Think\Loader::action($url,$vars,$layer);
 }
 
