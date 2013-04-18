@@ -101,11 +101,13 @@ class Controller {
             case 'HTML':
                 // 返回html片段
                 header('Content-Type:text/html; charset=utf-8');
-                exit($data);
+                echo $data;
+                exit;
             case 'TEXT':
                 // 返回一段纯文本
                 header('Content-Type:text/plain; charset=utf-8');
-                exit($data);
+                echo $data;
+                exit;
             default:
                 // 用于扩展其他返回格式数据
                 Tag::listen('ajax_return', $data);
