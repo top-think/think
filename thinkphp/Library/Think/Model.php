@@ -83,7 +83,7 @@ class Model {
 
         // 设置表前缀
         if(empty($this->tablePrefix)) {
-            $this->tablePrefix  =   is_null($this->tablePrefix)?'':C('db_prefix');
+            $this->tablePrefix  =   is_null($this->tablePrefix)?'':C('database.prefix');
         }
 
         // 数据库初始化操作

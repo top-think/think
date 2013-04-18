@@ -37,22 +37,29 @@ return [
 	'var_jsonp_handler'     => 'callback',
 
     /* 错误设置 */
-    'error_message'  => '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
-    'error_page'     => '',	// 错误定向页面
-    'show_error_msg' => false,    // 显示错误信息
+    'error_message'     =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
+    'error_page'        =>  '',	// 错误定向页面
+    'show_error_msg'    =>  false,    // 显示错误信息
 
     /* 数据库设置 */
-    'db_type'         => 'mysql',     // 数据库类型
-    'db_host'         => 'localhost', // 服务器地址
-    'db_name'         => '',          // 数据库名
-    'db_user'         => 'root',      // 用户名
-    'db_pwd'          => '',          // 密码
-    'db_port'         => '',        // 端口
-    'db_prefix'       => 'think_',    // 数据库表前缀
-    'db_fields_cache' => true,        // 启用字段缓存
-    'db_charset'      => 'utf8',      // 数据库编码默认采用utf8
-    'db_deploy_type'  => 0, // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
-    'db_rw_separate'  => false,       // 数据库读写是否分离 主从式有效
-    'db_master_num'   => 1, // 读写分离后 主服务器数量
-    'db_slave_no'     => '', // 指定从服务器序号
+    'database'    =>  [
+        'dbms'              =>  'mysql',     // 数据库类型
+        'connection'        =>  [
+            'dsn'               =>  '', // 
+            'hostname'          =>  'localhost', // 服务器地址
+            'database'          =>  '',          // 数据库名
+            'username'          =>  'root',      // 用户名
+            'password'          =>  '',          // 密码
+            'hostport'          =>  '',        // 端口     
+            'socket'            =>  '',            
+        ],
+        'params'            =>  [], // 数据库连接参数        
+        'charset'           =>  'utf8',      // 数据库编码默认采用utf8  
+        'prefix'            =>  '',    // 数据库表前缀
+        'debug'             =>  false, // 数据库调试模式
+        'deploy'            =>  0, // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
+        'rw_separate'       =>  false,       // 数据库读写是否分离 主从式有效
+        'master_num'        =>  1, // 读写分离后 主服务器数量
+        'slave_no'          =>  '', // 指定从服务器序号
+    ],
 ];

@@ -36,7 +36,26 @@ abstract class Driver {
     // 当前连接ID
     protected $_linkID    = null;
     // 数据库连接参数配置
-    protected $config     = [];
+    protected $config     = [
+        'dbms'              =>  '',     // 数据库类型
+        'connection'        =>  [
+            'hostname'          =>  '127.0.0.1', // 服务器地址
+            'database'          =>  '',          // 数据库名
+            'username'          =>  'root',      // 用户名
+            'password'          =>  '',          // 密码
+            'hostport'          =>  '',        // 端口     
+            'socket'            =>  '',   
+            'dsn'               =>  '', //          
+        ],
+        'params'            =>  [], // 数据库连接参数        
+        'charset'           =>  'utf8',      // 数据库编码默认采用utf8  
+        'prefix'            =>  '',    // 数据库表前缀
+        'debug'             =>  false, // 数据库调试模式
+        'deploy'            =>  0, // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
+        'rw_separate'       =>  false,       // 数据库读写是否分离 主从式有效
+        'master_num'        =>  1, // 读写分离后 主服务器数量
+        'slave_no'          =>  '', // 指定从服务器序号
+    ];
     // 数据库表达式
     protected $comparison = ['eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN'];
     // 查询表达式
@@ -60,10 +79,7 @@ abstract class Driver {
      */
     public function __construct($config=''){
         if(!empty($config)) {
-            $this->config   =   $config;
-            if(empty($this->config['params'])) {
-                $this->config['params'] =   [];
-            }
+            $this->config           =   array_merge($this->config,$config);
             $this->config['params'] =   $this->options+$this->config['params'];
         }
     }
@@ -74,25 +90,23 @@ abstract class Driver {
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {
-            if(empty($config))  $config =   $this->config;
+            if(empty($config))  $config =   $this->config['connection'];
             try{
                 if(empty($config['dsn'])) {
-                    $config['dsn']  =   $config['dbms'].':dbname='.$config['database'].';host='.$config['hostname'];
+                    $config['dsn']  =   $this->config['dbms'].':dbname='.$config['database'].';host='.$config['hostname'];
                     if(!empty($config['hostport'])) {
                         $config['dsn']  .= ';port='.$config['hostport'];
                     }elseif(!empty($config['socket'])){
                         $config['dsn']  .= ';unix_socket='.$config['socket'];
                     }
                 }
-                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->config['params']);
             }catch (\PDOException $e) {
                 E($e->getMessage());
             }
-            if(!empty($config['charset'])) {
-                $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
+            if(!empty($this->config['charset'])) {
+                $this->linkID[$linkNum]->exec('SET NAMES '.$this->config['charset']);
             }
-            // 注销数据库连接配置信息
-            if(1 != $config['deploy']) $this->config  =   [];
         }
         return $this->linkID[$linkNum];
     }
@@ -591,7 +605,7 @@ abstract class Driver {
             }
         }
 		//将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀和后缀
-		$joinStr = preg_replace("/__([A-Z_-]+)__/esU",Config::get('db_prefix').".strtolower('$1')",$joinStr);
+		$joinStr = preg_replace("/__([A-Z_-]+)__/esU",$this->config['prefix'].".strtolower('$1')",$joinStr);
         return $joinStr;
     }
 
@@ -902,7 +916,7 @@ abstract class Driver {
      * @return void
      */
     protected function initConnect($master=true) {
-        if(1 == $this->config['deploy'])
+        if(!empty($this->config['deploy']))
             // 采用分布式数据库
             $this->_linkID = $this->multiConnect($master);
         else
@@ -920,22 +934,22 @@ abstract class Driver {
         static $_config = [];
         if(empty($_config)) {
             // 缓存分布式数据库配置解析
-            foreach ($this->config as $key=>$val){
+            foreach ($this->config['connection'] as $key=>$val){
                 $_config[$key]      =   explode(',',$val);
             }
         }
         // 数据库读写是否分离
-        if(Config::get('db_rw_separate')){
+        if($this->config['rw_separate']){
             // 主从式采用读写分离
             if($master)
                 // 主服务器写入
-                $r  =   floor(mt_rand(0,Config::get('db_master_num')-1));
+                $r  =   floor(mt_rand(0,$this->config['master_num']-1));
             else{
-                if(is_numeric(Config::get('db_slave_no'))) {// 指定服务器读
-                    $r = Config::get('db_slave_no');
+                if(is_numeric($this->config['slave_no'])) {// 指定服务器读
+                    $r = $this->config['slave_no'];
                 }else{
                     // 读操作连接从服务器
-                    $r = floor(mt_rand(Config::get('db_master_num'),count($_config['hostname'])-1));   // 每次随机连接的数据库
+                    $r = floor(mt_rand($this->config['master_num'],count($_config['hostname'])-1));   // 每次随机连接的数据库
                 }
             }
         }else{
@@ -949,7 +963,6 @@ abstract class Driver {
             'hostport'  =>  isset($_config['hostport'][$r])?$_config['hostport'][$r]:$_config['hostport'][0],
             'database'  =>  isset($_config['database'][$r])?$_config['database'][$r]:$_config['database'][0],
             'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
-            'params'    =>  isset($_config['params'][$r])?$_config['params'][$r]:$_config['params'][0],
         ];
         return $this->connect($db_config,$r);
     }

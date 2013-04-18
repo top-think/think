@@ -43,43 +43,30 @@ class Db {
     /**
      * 数据库连接参数解析
      * @static
-     * @access public
+     * @access private
      * @param mixed $config
      * @return array
      */
-    static public function parseConfig($config){
+    static private function parseConfig($config){
         if(empty($config)) {
-            $config =   Config::get();
+            $config =   Config::get('database');
         }
         if(is_string($config)) {
             return self::parseDsn($config);
+        }else{
+            return $config;
         }
-        return    [
-              'dbms'        =>  $config['db_type'],
-              'dsn'         =>  $config['db_dsn'],
-              'username'    =>  $config['db_user'],
-              'password'    =>  $config['db_pwd'],
-              'hostname'    =>  $config['db_host'],
-              'hostport'    =>  $config['db_port'],
-              'database'    =>  $config['db_name'],
-              'params'      =>  $config['db_params'],
-              'charset'     =>  $config['db_charset'],
-              'deploy'      =>  $config['db_deploy'],
-              'socket'      =>  $config['db_unix_socket'],
-              'debug'       =>  $config['db_debug'],
-              'deploy'      =>  $config['db_deploy'],
-         ];
     }
 
     /**
      * DSN解析
      * 格式： mysql://username:passwd@localhost:3306/DbName?param1=val1&param2=val2#utf8
      * @static
-     * @access public
+     * @access private
      * @param string $dsnStr
      * @return array
      */
-    static public function parseDsn($dsnStr) {
+    static private function parseDsn($dsnStr) {
         if( empty($dsnStr) ){return false;}
         $info = parse_url($dsnStr);
         if(!$info) {
@@ -87,14 +74,16 @@ class Db {
         }
         $dsn = [
             'dbms'      =>  $info['scheme'],
-            'username'  =>  isset($info['user']) ? $info['user'] : '',
-            'password'  =>  isset($info['pass']) ? $info['pass'] : '',
-            'hostname'  =>  isset($info['host']) ? $info['host'] : '',
-            'hostport'  =>  isset($info['port']) ? $info['port'] : '',
-            'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
-            'charset'   =>  isset($info['fragment'])?$info['fragment']:'',
+            'connection'    =>  [
+                'username'  =>  isset($info['user']) ? $info['user'] : '',
+                'password'  =>  isset($info['pass']) ? $info['pass'] : '',
+                'hostname'  =>  isset($info['host']) ? $info['host'] : '',
+                'hostport'  =>  isset($info['port']) ? $info['port'] : '',
+                'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
+            ],
+            'charset'   =>  isset($info['fragment'])?$info['fragment']:'utf8',
         ];
-        $dsn['dsn'] =  ''; // 兼容配置信息数组
+        
         if(isset($info['query'])) {
             parse_str($info['query'],$dsn['params']);
         }else{
