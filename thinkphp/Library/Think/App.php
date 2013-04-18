@@ -164,8 +164,8 @@ class App {
         if('/favicon.ico'==$_SERVER['PATH_INFO']){
             exit;
         }
-        $part = pathinfo($_SERVER['PATH_INFO']);
-        define('__EXT__', isset($part['extension']) ? strtolower($part['extension']) : '');
+		// URL后缀
+        define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
         $_SERVER['PATH_INFO'] = trim(preg_replace('/\.(' . trim($config['url_html_suffix'], '.') . ')$/i', '', $_SERVER['PATH_INFO']), '/');
         if($_SERVER['PATH_INFO']) {
             $paths = explode($config['pathinfo_depr'], $_SERVER['PATH_INFO']);
