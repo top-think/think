@@ -12,5 +12,5 @@
 namespace Think\Model;
 T('Think/Model/View');
 class ViewModel extends \Think\Model {
-	use \Traits\Think\View;
+	use \Traits\Think\Model\View;
 }
