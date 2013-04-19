@@ -49,11 +49,15 @@ class Xml{
         return $xml;
     }
 
-    public function decode($data, $assoc = true){
-        
-    }
+    public function decode($data, $assoc = true, array $config = []){
+        //初始化配置
+        $config = array_merge($this->config, $config);
 
-    
+        //创建XML对象
+        $xml  = new SimpleXMLElement($data);
+        self::xml2data($xml, $data, $config['item_name'], $config['item_key']);
+        return $data;
+    }
 
     /**
      * 数据XML编码
@@ -76,5 +80,33 @@ class Xml{
             $xml .= "</{$key}>";
         }
         return $xml;
+    }
+
+    /**
+     * 数据XML解码
+     * @static
+     * @access public
+     * @param  SimpleXMLElement $xml  xml对象
+     * @param  array            $data 解码后的数据
+     * @param  string           $item 数字索引时的节点名称
+     * @param  string           $id   数字索引key转换为的属性名
+     */
+    static public function xml2data(SimpleXMLElement $xml, &$data, $item = 'item', $id = 'id'){
+        foreach ($xml as $items) {
+            $key  = $items->getName();
+            $attr = $items->attributes();
+            if($key == $item && isset($attr[$id])){
+                $key = strval($attr[$id]);
+            }
+
+            $child = $items->children();
+            if(empty($child)){
+                $val = strval($items);
+            } else {
+                self::xml2data($child, $val);
+            }
+
+            $data[$key] = $val;
+        }
     }
 }
