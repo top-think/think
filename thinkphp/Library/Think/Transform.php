@@ -16,7 +16,7 @@ class Transform {
 
     static private $handler = [];
 
-    static private init($type){
+    static private function init($type){
     	if(!isset(self::$handler[$type])) {
             $class = '\\Think\\Transform\\Driver\\' . ucwords($type);
             self::$handler[$type] = new $class();
