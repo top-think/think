@@ -13,9 +13,14 @@ namespace Think;
 
 // 内容解析类
 class Transform {
-
     static private $handler = [];
 
+    /**
+     * 初始化解析驱动
+     * @static 
+     * @access private
+     * @param  string $type 驱动类型
+     */
     static private function init($type){
     	if(!isset(self::$handler[$type])) {
             $class = '\\Think\\Transform\\Driver\\' . ucwords($type);
@@ -23,13 +28,26 @@ class Transform {
         }
     }
 
-    // 编码内容
+    /**
+     * 编码内容
+     * @static 
+     * @access public
+     * @param  mixed  $content 要编码的数据
+     * @param  string $type    数据类型
+     * @return string          编码后的数据
+     */
     static public function encode($content, $type){
         self::init($type);
         return self::$handler[$type]->encode($content);
     }
 
-    // 解码内容
+    /**
+     * 解码数据
+     * @param  string  $content 要解码的数据
+     * @param  string  $type    数据类型
+     * @param  boolean $assoc   是否返回数组
+     * @return mixed            解码后的数据
+     */
     static public function decode($content, $type, $assoc = true){
     	self::init($type);
     	return self::$handler[$type]->decode($content, $assoc);
