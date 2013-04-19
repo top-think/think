@@ -50,7 +50,7 @@ class Mongo extends Driver {
             if(empty($config))  $config =   $this->config['connection'];
             $host = 'mongodb://'.($config['username']?"{$config['username']}":'').($config['password']?":{$config['password']}@":'').$config['hostname'].($config['hostport']?":{$config['hostport']}":'').'/'.($config['database']?"{$config['database']}":'');
             try{
-                $this->linkID[$linkNum] = new mongoClient( $host,$this->config['params']);
+                $this->linkID[$linkNum] = new \mongoClient( $host,$this->config['params']);
             }catch (\MongoConnectionException $e){
                 E($e->getmessage());
             }
