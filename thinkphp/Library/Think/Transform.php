@@ -40,8 +40,11 @@ class Transform {
     // Transform::jsonDecode('abc', true);
 	static public function __callStatic($method, $params){
 		$type   = substr($method, 0, strlen($method) - 6);
-		$method = substr($method, -6);
+		$method = strtolower(substr($method, -6));
 		$assoc  = empty($params[2]) ? true : false;
+        if(!in_array($method, ['encode', 'decode'])){
+            throw new Think\Exception("call to undefined method {$method}");
+        }
         return self::$method($params[0], $type, $assoc);
 	}
 }
