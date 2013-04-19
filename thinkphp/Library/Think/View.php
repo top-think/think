@@ -33,12 +33,12 @@ class View {
     /**
      * 模板变量赋值
      * @access public
-     * @param mixed $name
-     * @param mixed $value
+     * @param mixed $name  变量名
+     * @param mixed $value 变量值
      */
-    public function assign($name,$value=''){
+    public function assign($name, $value = ''){
         if(is_array($name)) {
-            $this->data = array_merge($this->data,$name);
+            $this->data = array_merge($this->data, $name);
             return $this;
         }else {
             $this->data[$name] = $value;
@@ -51,12 +51,12 @@ class View {
      * @param mixed $name
      * @param mixed $value
      */
-    public function __set($name,$value=''){
+    public function __set($name, $value = ''){
         $this->config[$name] = $value;
     }
 
-    public function __construct(array $config=[]){
-        $this->config = array_merge($this->config,$config);
+    public function __construct(array $config = []){
+        $this->config = array_merge($this->config, $config);
     }
     
     /**
@@ -66,8 +66,8 @@ class View {
      * @param array $config 引擎参数
      * @return View
      */
-    public function engine($engine,$config=[]){
-        $class = '\\Think\\View\\Driver\\'.ucwords($engine);
+    public function engine($engine, array $config = []){
+        $class = '\\Think\\View\\Driver\\' . ucwords($engine);
         $this->engine = new $class($config);
         return $this;
     }
@@ -75,7 +75,7 @@ class View {
     /**
      * 设置当前输出的模板主题
      * @access public
-     * @param mixed $theme 主题名称
+     * @param  mixed $theme 主题名称
      * @return View
      */
     public function theme($theme){
@@ -94,17 +94,17 @@ class View {
     /**
      * 加载模板和页面输出 可以返回输出内容
      * @access public
-     * @param string $template 模板文件名
-     * @param array $vars 模板输出变量
-     * @param string $cacheId 模板缓存标识
+     * @param string $template  模板文件名
+     * @param array  $vars      模板输出变量
+     * @param string $cache_id  模板缓存标识
      * @return mixed
      */
-    public function display($template='',$vars=[],$cacheId='') {
-        Tag::listen('view_begin',$template);
+    public function display($template = '', $vars = [], $cache_id = '') {
+        Tag::listen('view_begin', $template);
         // 解析并获取模板内容
-        $content = $this->fetch($template,$vars,$cacheId);
+        $content = $this->fetch($template, $vars, $cache_id);
         // 输出内容过滤
-        Tag::listen('view_filter',$content);
+        Tag::listen('view_filter', $content);
         // 输出模板内容
         if($this->config['http_output_content']) {
             $this->render($content);
@@ -117,26 +117,26 @@ class View {
      * 解析和获取模板内容 用于输出
      * @access protected
      * @param string $template 模板文件名或者内容
-     * @param array $vars 模板输出变量
-     * @param string $cacheId 模板缓存标识
+     * @param array  $vars     模板输出变量
+     * @param string $cache_id 模板缓存标识
      * @return string
      */
-    protected function fetch($template,$vars=[],$cacheId='') {
+    protected function fetch($template, $vars = [], $cache_id='') {
         if(!$this->config['http_render_content']) {
             $template = $this->parseTemplate($template);
             // 模板不存在 抛出异常
             if(!is_file($template)) 
-                E('template file not exists:'.$template);
+                E('template file not exists:' . $template);
         }
         $vars = $vars ? $vars : $this->data;
         // 页面缓存
         ob_start();
         ob_implicit_flush(0);
         if($this->engine) { // 指定模板引擎
-            $this->engine->fetch($template,$vars,$cacheId);
+            $this->engine->fetch($template, $vars, $cache_id);
         }else{  // 原生PHP解析
             extract($vars, EXTR_OVERWRITE);
-            is_file($template)?include $template:eval('?>'.$template);
+            is_file($template) ? include $template : eval('?>' . $template);
         }
         // 获取并清空缓存
         return ob_get_clean();
@@ -152,17 +152,17 @@ class View {
         if(is_file($template)) {
             return $template;
         }
-        $template = str_replace(':','/',$template);
+        $template = str_replace(':', '/', $template);
         // 获取当前主题名称
         $theme = $this->getTemplateTheme();
         // 分析模板文件规则
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
-            $template = CONTROLLER_NAME.'/'.ACTION_NAME;
-        }elseif(false === strpos($template,'/')){
-            $template = CONTROLLER_NAME.'/'.$template;
+            $template = CONTROLLER_NAME . '/' . ACTION_NAME;
+        }elseif(false === strpos($template, '/')){
+            $template = CONTROLLER_NAME . '/' . $template;
         }
-        return ($this->config['view_path'] ? $this->config['view_path'] : MODULE_PATH.'View/').$theme.$template.$this->config['view_suffix'];
+        return ($this->config['view_path'] ? $this->config['view_path'] : MODULE_PATH . 'View/').$theme.$template.$this->config['view_suffix'];
     }
 
     /**
@@ -182,14 +182,14 @@ class View {
                 }elseif(Cookie::get('think_theme')){
                     $theme = Cookie::get('think_theme');
                 }
-                if(!is_dir(MODULE_PATH.'View/'.$theme)) {
+                if(!is_dir(MODULE_PATH . 'View/' . $theme)) {
                     $theme = $this->config['default_theme'];
                 }
-                Cookie::set('think_theme',$theme,864000);
+                Cookie::set('think_theme', $theme, 864000);
             }else{
                 $theme = $this->config['default_theme'];
             }
-            return $theme.'/';
+            return $theme . '/';
         }
         return '';
     }
@@ -200,9 +200,9 @@ class View {
      * @param mixed $config
      * @param mixed $value
      */
-    public function http($config=[],$value=''){
+    public function http($config = [], $value = ''){
         if(is_array($config)) {
-            $this->config = array_merge($this->config,$config);
+            $this->config = array_merge($this->config, $config);
         }else{
             $this->config[$config] = $value;
         }
@@ -219,8 +219,8 @@ class View {
      */
     private function render($content){
         // 网页字符编码
-        header('Content-Type:'.$this->config['http_content_type'].'; charset='.$this->config['http_charset']);
-        header('Cache-control: '.$this->config['http_cache_control']);  // 页面缓存控制
+        header('Content-Type:'  . $this->config['http_content_type'] . '; charset=' . $this->config['http_charset']);
+        header('Cache-control:' . $this->config['http_cache_control']);  // 页面缓存控制
         header('X-Powered-By:ThinkPHP');
         // 输出模板文件
         echo $content;
