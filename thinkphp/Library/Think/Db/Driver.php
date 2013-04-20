@@ -123,6 +123,7 @@ abstract class Driver {
      * 执行查询 返回数据集
      * @access public
      * @param string $str  sql指令
+     * @param array $bind  参数绑定
      * @return mixed
      */
     public function query($str,$bind=[]) {
@@ -155,6 +156,7 @@ abstract class Driver {
      * 执行语句
      * @access public
      * @param string $str  sql指令
+     * @param array $bind  参数绑定
      * @return integer
      */
     public function execute($str,$bind=[]) {
