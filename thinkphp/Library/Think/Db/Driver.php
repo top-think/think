@@ -128,7 +128,10 @@ abstract class Driver {
     public function query($str,$bind=[]) {
         $this->initConnect(false);
         if ( !$this->_linkID ) return false;
-        $this->queryStr = $str;
+        $this->queryStr     =   $str;
+        if(!empty($bind)){
+            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
+        }
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->queryTimes++;
@@ -158,6 +161,9 @@ abstract class Driver {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
+        if(!empty($bind)){
+            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
+        }        
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
