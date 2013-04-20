@@ -214,8 +214,7 @@ class App {
             if('favicon.ico' == strtolower(MODULE_NAME)){
                 exit;
             }
-
-            throw new Exception('module not exists :' . MODULE_NAME, 404);
+            E('module not exists :' . MODULE_NAME);
         }
         // 路由检测和控制器、操作解析
         Route::check($_SERVER['PATH_INFO']);
