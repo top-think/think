@@ -46,32 +46,22 @@ trait Query {
      * SQL查询
      * @access public
      * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
+     * @param array $bind  参数绑定
      * @return mixed
      */
-    public function query($sql,$parse=false) {
-        if(!is_bool($parse) && !is_array($parse)) {
-            $parse = func_get_args();
-            array_shift($parse);
-        }
-        $sql  =   $this->parseSql($sql,$parse);
-        return $this->db->query($sql);
+    public function query($sql,$bind=[]) {
+        return $this->db->query($sql,$bind);
     }
 
     /**
      * 执行SQL语句
      * @access public
      * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
+     * @param array $bind  参数绑定
      * @return false | integer
      */
-    public function execute($sql,$parse=false) {
-        if(!is_bool($parse) && !is_array($parse)) {
-            $parse = func_get_args();
-            array_shift($parse);
-        }
-        $sql  =   $this->parseSql($sql,$parse);
-        return $this->db->execute($sql);
+    public function execute($sql,$bind=[]) {
+        return $this->db->execute($sql,$bind);
     }
 
     /**
@@ -81,7 +71,7 @@ trait Query {
      * @param boolean $parse  是否需要解析SQL
      * @return string
      */
-    protected function parseSql($sql,$parse) {
+    public function parseSql($sql,$parse) {
         // 分析表达式
         if(true === $parse) {
             $options =  $this->_parseOptions();
