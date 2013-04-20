@@ -637,12 +637,12 @@ class Model {
                 // 记录字段类型信息
                 $this->fields['_type'] =  $type;
                 Cache::set(md5($this->trueTableName),$this->fields);
-                return array_keys($fields);
+                $fields     =   $this->fields;
             }else{
                 $this->fields   =   $fields;
-                unset($fields['_pk'],$fields['_type']);
-                return array_keys($fields);
             }
+            unset($fields['_pk'],$fields['_type']);
+            return $fields;            
         }
     }
 
@@ -926,6 +926,17 @@ class Model {
      */
     public function filter($filter){
         $this->options['filter']     =   $filter;
+        return $this;
+    }
+
+    /**
+     * 指定参数绑定
+     * @access public
+     * @param string $filter 指定过滤方法
+     * @return Model
+     */
+    public function bind($bind){
+        $this->options['bind']     =   $bind;
         return $this;
     }
 

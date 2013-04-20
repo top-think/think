@@ -341,7 +341,7 @@ abstract class Driver {
      */
     protected function parseValue($value) {
         if(is_string($value)) {
-            $value =  '\''.$this->escapeString($value).'\'';
+            $value =  strpos($value,':') === 0 ? $this->escapeString($value) : '\''.$this->escapeString($value).'\'';
         }elseif(isset($value[0]) && is_string($value[0]) && strtolower($value[0]) == 'exp'){
             $value =  $this->escapeString($value[1]);
         }elseif(is_array($value)) {
@@ -489,6 +489,8 @@ abstract class Driver {
                     }else{
                         $whereStr .= $key.' '.$this->comparison[strtolower($val[0])].' '.$this->parseValue($val[1]);
                     }
+                }elseif('bind'==strtolower($val[0])){ // 使用表达式
+                    $whereStr .= ' ('.$key.' = :'.$val[1].') ';
                 }elseif('exp'==strtolower($val[0])){ // 使用表达式
                     $whereStr .= ' ('.$key.' '.$val[1].') ';
                 }elseif(preg_match('/IN/i',$val[0])){ // IN 运算
@@ -901,7 +903,7 @@ abstract class Driver {
                 Debug::remark('queryStartTime','time');
             }else{
                 $this->modelSql[$this->model]   =  $this->queryStr;
-                $this->model  =   '_think_';
+                //$this->model  =   '_think_';
                 // 记录操作结束时间
                 Debug::remark('queryEndTime','time');
                 Log::record($this->queryStr.' [ RunTime:'.Debug::getUseTime('queryStartTime','queryEndTime').'s ]','SQL');
