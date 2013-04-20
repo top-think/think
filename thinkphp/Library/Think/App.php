@@ -156,14 +156,12 @@ class App {
                 }
             }
         }
+
         // 定位模块
         if(empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
         }
-        // 判断favicon.ico
-        if('/favicon.ico'==$_SERVER['PATH_INFO']){
-            exit;
-        }
+        
 		// URL后缀
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
         $_SERVER['PATH_INFO'] = trim(preg_replace('/\.(' . trim($config['url_html_suffix'], '.') . ')$/i', '', $_SERVER['PATH_INFO']), '/');
@@ -212,7 +210,12 @@ class App {
             $var_c = $config['var_controller'];
             $var_a = $config['var_action'];
         }else{
-            E('module not exists :' . MODULE_NAME, 404);
+            // 判断favicon.ico
+            if('favicon.ico' == strtolower(MODULE_NAME)){
+                exit;
+            }
+
+            throw new Exception('module not exists :' . MODULE_NAME, 404);
         }
         // 路由检测和控制器、操作解析
         Route::check($_SERVER['PATH_INFO']);
