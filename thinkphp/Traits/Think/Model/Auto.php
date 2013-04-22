@@ -10,15 +10,15 @@
 // +----------------------------------------------------------------------
 
 namespace Traits\Think\Model;
+define('EXISTS_VALIDATE',0);
+define('MUST_VALIDATE',1);
+define('VALUE_VALIDATE',2);
 
 trait Auto {
 
     protected $_validate        =   [];  // 自动验证定义
     protected $_auto            =   [];  // 自动完成定义
-            
-    public function test($auto=''){
-        echo 'auto';
-    }            
+                     
     /**
      * 创建数据对象 但不保存到数据库
      * @access public
@@ -192,15 +192,15 @@ trait Auto {
                     if(0==strpos($val[2],'{%') && strpos($val[2],'}'))
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
                         $val[2]  =  L(substr($val[2],2,-1));
-                    $val[3]  =  isset($val[3])?$val[3]:self::EXISTS_VALIDATE;
+                    $val[3]  =  isset($val[3])?$val[3]:EXISTS_VALIDATE;
                     $val[4]  =  isset($val[4])?$val[4]:'regex';
                     // 判断验证条件
                     switch($val[3]) {
-                        case self::MUST_VALIDATE:   // 必须验证 不管表单是否有设置该字段
+                        case MUST_VALIDATE:   // 必须验证 不管表单是否有设置该字段
                             if(false === $this->_validationField($data,$val)) 
                                 return false;
                             break;
-                        case self::VALUE_VALIDATE:    // 值不为空的时候才验证
+                        case VALUE_VALIDATE:    // 值不为空的时候才验证
                             if('' != trim($data[$val[0]]))
                                 if(false === $this->_validationField($data,$val)) 
                                     return false;
