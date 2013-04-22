@@ -813,7 +813,6 @@ class Model {
         }else{
             $this->options['where'] =   $where;
         }
-        
         return $this;
     }
 
@@ -932,7 +931,7 @@ class Model {
     /**
      * 指定参数绑定
      * @access public
-     * @param string $filter 指定过滤方法
+     * @param array $bind 指定参数绑定
      * @return Model
      */
     public function bind($bind){
