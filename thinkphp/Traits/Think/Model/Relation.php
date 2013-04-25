@@ -18,7 +18,7 @@ define('MANY_TO_MANY',4);
 
 trait Relation {
     // 关联定义
-    protected    $_link = array();
+    protected    $link = array();
 
     /**
      * 得到关联的数据表名
@@ -103,8 +103,8 @@ trait Relation {
      * @return array
      */
     protected function getRelation(&$result,$name='',$return=false) {
-        if(!empty($this->_link)) {
-            foreach($this->_link as $key=>$val) {
+        if(!empty($this->link)) {
+            foreach($this->link as $key=>$val) {
                     $mappingName =  !empty($val['mapping_name'])?$val['mapping_name']:$key; // 映射名称
                     if(empty($name) || true === $name || $mappingName == $name || (is_array($name) && in_array($mappingName,$name))) {
                         $mappingType = !empty($val['mapping_type'])?$val['mapping_type']:$val;  //  关联类型
@@ -207,9 +207,9 @@ trait Relation {
             // 数据无效返回
             return false;
         }
-        if(!empty($this->_link)) {
+        if(!empty($this->link)) {
             // 遍历关联定义
-            foreach($this->_link as $key=>$val) {
+            foreach($this->link as $key=>$val) {
                     // 操作制定关联类型
                     $mappingName =  $val['mapping_name']?$val['mapping_name']:$key; // 映射名称
                     if(empty($name) || true === $name || $mappingName == $name || (is_array($name) && in_array($mappingName,$name)) ) {

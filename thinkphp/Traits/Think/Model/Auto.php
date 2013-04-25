@@ -16,8 +16,8 @@ define('VALUE_VALIDATE',2);
 
 trait Auto {
 
-    protected $_validate        =   [];  // 自动验证定义
-    protected $_auto            =   [];  // 自动完成定义
+    protected $validate        =   [];  // 自动验证定义
+    protected $auto            =   [];  // 自动完成定义
                      
     /**
      * 创建数据对象 但不保存到数据库
@@ -124,8 +124,8 @@ trait Auto {
         if(!empty($this->options['auto'])) {
             $_auto   =   $this->options['auto'];
             unset($this->options['auto']);
-        }elseif(!empty($this->_auto)){
-            $_auto   =   $this->_auto;
+        }elseif(!empty($this->auto)){
+            $_auto   =   $this->auto;
         }
         // 自动填充
         if(isset($_auto)) {
@@ -174,17 +174,17 @@ trait Auto {
      */
     protected function autoValidation($data,$type) {
         if(!empty($this->options['validate'])) {
-            $_validate   =   $this->options['validate'];
+            $validate   =   $this->options['validate'];
             unset($this->options['validate']);
-        }elseif(!empty($this->_validate)){
-            $_validate   =   $this->_validate;
+        }elseif(!empty($this->validate)){
+            $validate   =   $this->validate;
         }
         // 属性验证
-        if(isset($_validate)) { // 如果设置了数据自动验证则进行数据验证
+        if(isset($validate)) { // 如果设置了数据自动验证则进行数据验证
             if($this->patchValidate) { // 重置验证错误信息
                 $this->error = [];
             }
-            foreach($_validate as $key=>$val) {
+            foreach($validate as $key=>$val) {
                 // 验证因子定义格式
                 // array(field,rule,message,condition,type,when,params)
                 // 判断是否需要执行验证
@@ -337,5 +337,27 @@ trait Auto {
                 // 检查附加规则
                 return $this->regex($value,$rule);
         }
-    } 
+    }
+
+    /**
+     * 指定自动完成
+     * @access public
+     * @param array $auto 自动完成设置
+     * @return Model
+     */
+    public function auto($auto){
+        $this->options['auto']     =   $auto;
+        return $this;
+    }
+
+    /**
+     * 指定自动验证
+     * @access public
+     * @param array $validate 自动验证设置
+     * @return Model
+     */
+    public function validate($auto){
+        $this->options['validate']     =   $validate;
+        return $this;
+    }    
 }
