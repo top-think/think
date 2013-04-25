@@ -37,7 +37,7 @@ trait Extend {
             $name   =   parse_name(substr($method,10));
             $where[$name] =$args[0];
             return $this->where($where)->getField($args[1]);
-        }elseif(isset($this->_scope[$method])){// 命名范围的单独调用支持
+        }elseif(isset($this->scope[$method])){// 命名范围的单独调用支持
             return $this->scope($method,$args[0]);
         }else{
             E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));

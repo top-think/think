@@ -41,7 +41,9 @@ class Model {
     // 查询表达式参数
     protected $options          =   [];
     // 命名范围定义
-    protected $_scope           =   [];  
+    protected $scope           =   [];
+    // 字段映射定义
+    protected $map             =   [];
     // 是否自动检测数据表字段信息
     protected $autoCheckFields  =   false;
 
@@ -138,12 +140,21 @@ class Model {
     protected function _initialize() {}
 
     /**
-     * 对保存到数据库的数据进行处理
+     * 对写入到数据库的数据进行处理
      * @access protected
      * @param mixed $data 要操作的数据
-     * @return boolean
+     * @return array
      */
-     protected function _facade($data) {
+     protected function _write_data($data) {
+        // 检查字段映射
+        if(!empty($this->map)) {
+            foreach ($this->map as $key=>$val){
+                if(isset($data[$key])) {
+                    $data[$val] =   $data[$key];
+                    unset($data[$key]);
+                }
+            }
+        }        
         // 检查非数据字段
         if(!empty($this->fields)) {
             foreach ($data as $key=>$val){
@@ -160,10 +171,10 @@ class Model {
             $data = array_map($this->options['filter'],$data);
             unset($this->options['filter']);
         }
+        // 回调方法
         $this->_before_write($data);
         return $data;
      }
-
     // 写入数据前的回调方法 包括新增和更新
     protected function _before_write(&$data) {}
 
@@ -189,7 +200,7 @@ class Model {
         // 分析表达式
         $options    =   $this->_parseOptions();
         // 数据处理
-        $data       =   $this->_facade($data);
+        $data       =   $this->_write_data($data);
         if(false === $this->_before_insert($data,$options)) {
             return false;
         }
@@ -231,7 +242,7 @@ class Model {
             }
         }
         // 数据处理
-        $data       =   $this->_facade($data);
+        $data       =   $this->_write_data($data);
         // 分析表达式
         $options    =   $this->_parseOptions();
         if(false === $this->_before_update($data,$options)) {
@@ -335,11 +346,24 @@ class Model {
         if(empty($resultSet)) { // 查询结果为空
             return null;
         }
-        $this->_after_select($resultSet,$options);
+        // 数据列表读取后的处理
+        $resultSet  =   $this->_read_datalist($resultSet);
+        return $resultSet;
+    }
+
+    /**
+     * 数据列表读取后的处理
+     * @access protected
+     * @param array $data 当前数据
+     * @return array
+     */
+    protected function _read_datalist($resultSet) {
+        $resultSet  =   array_map([$this,'_read_data'],$resultSet);
+        $this->_after_select($resultSet);
         return $resultSet;
     }
     // 查询成功后的回调方法
-    protected function _after_select(&$resultSet,$options) {}
+    protected function _after_select(&$resultSet) {}
 
     /**
      * 生成查询SQL 可用于子查询
@@ -354,7 +378,7 @@ class Model {
     }
 
     /**
-     * 分析表达式
+     * 分析表达式（可用于查询或者写入操作）
      * @access protected
      * @param array $options 表达式参数
      * @return array
@@ -392,8 +416,6 @@ class Model {
                 }
             }
         }
-
-
         // 表达式过滤
         $this->_options_filter($options);
         return $options;
@@ -444,12 +466,34 @@ class Model {
         if(empty($resultSet)) {// 查询结果为空
             return null;
         }
-        $this->data         =   $resultSet[0];
-        $this->_after_find($this->data,$options);
+        // 数据处理
+        $data       =   $this->_read_data($resultSet[0]);
+        // 数据对象赋值  
+        $this->data         =   $data;
         return $this->data;
     }
-    // 查询成功的回调方法
-    protected function _after_find(&$result,$options) {}
+
+    /**
+     * 数据读取后的处理
+     * @access protected
+     * @param array $data 当前数据
+     * @return array
+     */
+    protected function _read_data($data) {
+        // 检查字段映射
+        if(!empty($this->map)) {
+            foreach ($this->map as $key=>$val){
+                if(isset($data[$val])) {
+                    $data[$key] =   $data[$val];
+                    unset($data[$val]);
+                }
+            }
+        }
+        $this->_after_find($data);
+        return $data;
+    }
+    // 数据读取成功后的回调方法
+    protected function _after_find(&$result) {}
 
     /**
      * 创建数据对象 但不保存到数据库
@@ -759,9 +803,9 @@ class Model {
      */
     public function scope($scope='',$args=NULL){
         if('' === $scope) {
-            if(isset($this->_scope['default'])) {
+            if(isset($this->scope['default'])) {
                 // 默认的命名范围
-                $options    =   $this->_scope['default'];
+                $options    =   $this->scope['default'];
             }else{
                 return $this;
             }
@@ -769,8 +813,8 @@ class Model {
             $scopes         =   explode(',',$scope);
             $options        =   [];
             foreach ($scopes as $name){
-                if(!isset($this->_scope[$name])) continue;
-                $options    =   array_merge($options,$this->_scope[$name]);
+                if(!isset($this->scope[$name])) continue;
+                $options    =   array_merge($options,$this->scope[$name]);
             }
             if(!empty($args) && is_array($args)) {
                 $options    =   array_merge($options,$args);
@@ -950,4 +994,14 @@ class Model {
         return $this;
     }
 
+    /**
+     * 设置字段映射
+     * @access public
+     * @param array $map 映射
+     * @return Model
+     */
+    public function map($map){
+        $this->map =   array_merge($this->map,$map);
+        return $this;
+    }
 }

@@ -73,7 +73,7 @@ trait Relation {
      * @param mixed $data 要操作的数据
      * @return boolean
      */
-     protected function _facade($data) {
+     protected function _write_data($data) {
         $this->_before_write($data);
         return $data;
      }
