@@ -327,9 +327,13 @@ abstract class Driver {
         foreach ($data as $key=>$val){
             $value   =  $this->parseValue($val);
             if(is_scalar($value)) {// 过滤非标量数据
-                $name   =   md5($key);
-                $set[]  =   $this->parseKey($key).'=:T'.$name;
-                $this->bindParam($name,$value);
+                if(0===strpos($value,':')){
+                    $set[]  =   $this->parseKey($key).'='.$value;
+                }else{
+                    $name   =   md5($key);
+                    $set[]  =   $this->parseKey($key).'=:T'.$name;
+                    $this->bindParam($name,$value);                    
+                }
             }
         }
         return ' SET '.implode(',',$set);
@@ -740,9 +744,13 @@ abstract class Driver {
             $value   =  $this->parseValue($val);
             if(is_scalar($value)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
-                $name       =   md5($key);
-                $values[]   =   ':'.$name;
-                $this->bindParam($name,$value);      
+                if(0===strpos($value,':')){
+                    $values[]   =   $value;
+                }else{
+                    $name       =   md5($key);
+                    $values[]   =   ':T'.$name;
+                    $this->bindParam($name,$value);                     
+                }
             }
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
