@@ -71,6 +71,7 @@ abstract class Driver {
         PDO::ATTR_ORACLE_NULLS      =>  PDO::NULL_NATURAL,
         PDO::ATTR_STRINGIFY_FETCHES =>  false,
 	];
+    protected $bind         =   []; // 参数绑定
 
     /**
      * 架构函数 读取数据库配置信息
@@ -325,10 +326,24 @@ abstract class Driver {
     protected function parseSet($data) {
         foreach ($data as $key=>$val){
             $value   =  $this->parseValue($val);
-            if(is_scalar($value)) // 过滤非标量数据
-                $set[]    = $this->parseKey($key).'='.$value;
+            if(is_scalar($value)) {// 过滤非标量数据
+                $name   =   md5($key);
+                $set[]  =   $this->parseKey($key).'=:T'.$name;
+                $this->bindParam($name,$value);
+            }
         }
         return ' SET '.implode(',',$set);
+    }
+
+    /**
+     * 参数绑定
+     * @access protected
+     * @param string $name 绑定参数名
+     * @param mixed $value 绑定值
+     * @return void
+     */
+    protected function bindParam($name,$value){
+        $this->bind[':T'.$name]  =   $value;
     }
 
     /**
@@ -701,6 +716,16 @@ abstract class Driver {
     }
 
     /**
+     * 参数绑定分析
+     * @access protected
+     * @param array $bind
+     * @return array
+     */
+    protected function parseBind($bind){
+        return array_merge($this->bind,$bind);
+    }
+
+    /**
      * 插入记录
      * @access public
      * @param mixed $data 数据
@@ -714,14 +739,16 @@ abstract class Driver {
         foreach ($data as $key=>$val){
             $value   =  $this->parseValue($val);
             if(is_scalar($value)) { // 过滤非标量数据
-                $values[]   =  $value;
-                $fields[]   =  $this->parseKey($key);
+                $fields[]   =   $this->parseKey($key);
+                $name       =   md5($key);
+                $values[]   =   ':'.$name;
+                $this->bindParam($name,$value);      
             }
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:[]);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
     }
 
     /**
@@ -738,7 +765,7 @@ abstract class Driver {
         array_walk($fields, [$this, 'parseKey']);
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
-        return $this->execute($sql);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
     }
 
     /**
@@ -758,7 +785,7 @@ abstract class Driver {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:[]);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
     }
 
     /**
@@ -776,7 +803,7 @@ abstract class Driver {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:[]);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
     }
 
     /**
@@ -796,7 +823,7 @@ abstract class Driver {
                 return $value;
             }
         }
-        $result   = $this->query($sql,!empty($options['bind'])?$options['bind']:[]);
+        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
         if($cache && false !== $result ) { // 查询缓存写入
             S($key,$result,$cache);
         }
