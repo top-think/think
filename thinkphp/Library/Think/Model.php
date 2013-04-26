@@ -431,7 +431,7 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        if(isset($this->fields['_type'][$key])) {
+        if(empty($this->options['bind'][':'.$key]) && isset($this->fields['_type'][$key])) {
             $fieldType = strtolower($this->fields['_type'][$key]);
             if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
                 $data[$key]   =  intval($data[$key]);
