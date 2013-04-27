@@ -90,7 +90,7 @@ class Lite {
             if(empty($config))  $config =   $this->config;
             try{
                 if(empty($config['dsn'])) {
-                    $config['dsn']  =   $this->parseDsn($config);
+                    E('Think/Db/Lite 必须设置 dsn参数');
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
@@ -99,14 +99,6 @@ class Lite {
         }
         return $this->linkID[$linkNum];
     }
-
-    /**
-     * 解析pdo连接的dsn信息
-     * @access public
-     * @param array $config 连接信息
-     * @return string
-     */
-    protected function parseDsn($config){}
 
     /**
      * 释放查询结果
