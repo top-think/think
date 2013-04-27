@@ -44,8 +44,11 @@ class Oracle extends Driver{
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
+        if(!empty($bind)){
+            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
+        }        
         $flag = false;
-        if(preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $this->queryStr, $match)) {
+        if(preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $str, $match)) {
             $this->table = C("DB_SEQUENCE_PREFIX").str_ireplace(C("DB_PREFIX"), "", $match[2]);
             $flag = (boolean)$this->query("SELECT * FROM user_sequences WHERE sequence_name='" . strtoupper($this->table) . "'");
         }
@@ -66,7 +69,7 @@ class Oracle extends Driver{
         } else {
             $this->numRows = $this->PDOStatement->rowCount();
             if($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                $this->lastInsID = $this->getLastInsertId();
+                $this->lastInsID = $this->_linkID->lastInsertId();
             }
             return $this->numRows;
         }
@@ -118,39 +121,6 @@ class Oracle extends Driver{
      */
     public function escapeString($str) {
         return str_ireplace("'", "''", $str);
-    }
-
-    /**
-     * 获取最后插入id ,仅适用于采用序列+触发器结合生成ID的方式
-     * 在config.php中指定
-     * 'DB_TRIGGER_PREFIX'	=>	'tr_',
-     * 'DB_SEQUENCE_PREFIX' =>	'ts_',
-     * eg:表 tb_user
-     * 相对tb_user的序列为：
-     * -- Create sequence
-     * create sequence TS_USER
-     * minvalue 1
-     * maxvalue 999999999999999999999999999
-     * start with 1
-     * increment by 1
-     * nocache;
-     * 相对tb_user,ts_user的触发器为：
-     * create or replace trigger TR_USER
-     * before insert on "TB_USER"
-     * for each row
-     * begin
-     * select "TS_USER".nextval into :NEW.ID from dual;
-     * end;
-     * @access public
-     * @return integer
-     */
-    public function getLastInsertId() {
-        if(empty($this->table)) {
-            return 0;
-        }
-        $sequenceName = $this->table;
-        $vo = $this->query("SELECT {$sequenceName}.currval currval FROM dual");
-        return $vo?$vo[0]["currval"]:0;
     }
 
     /**
