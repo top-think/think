@@ -543,7 +543,7 @@ class  Template {
             }elseif(false !== strpos($var,'[')) {
                 //支持 {$var['key']} 方式输出数组
                 $name = "$".$var;
-            }elseif(false !==strpos($var,':') && false ===strpos($var,'::') && false ===strpos($var,'?')){
+            }elseif(false !==strpos($var,':') && false ===strpos($var,'(') && false ===strpos($var,'::') && false ===strpos($var,'?')){
                 //支持 {$var:property} 方式输出对象的属性
                 $vars = explode(':',$var);
                 $var  =  str_replace(':','->',$var);
