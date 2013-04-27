@@ -11,6 +11,7 @@
 
 namespace Think\Db\Driver;
 use Think\Db\Driver;
+use PDO;
 
 /**
  * Sqlsrv数据库驱动
