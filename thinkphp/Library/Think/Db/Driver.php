@@ -144,13 +144,12 @@ abstract class Driver {
             E($this->error());
         foreach ($bind as $key => $val) {
             if(is_array($val)){
-                $this->PDOStatement->bindParam($key, $val[0], $val[1]);
+                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             }else{
-                $this->PDOStatement->bindParam($key, $val);
+                $this->PDOStatement->bindValue($key, $val);
             }
         }
-        $result =   $this->PDOStatement->execute();        
-        //$result =   $this->PDOStatement->execute($bind);
+        $result =   $this->PDOStatement->execute();
         // 调试结束
         $this->debug(false);
         if ( false === $result ) {
@@ -186,9 +185,9 @@ abstract class Driver {
         }
         foreach ($bind as $key => $val) {
             if(is_array($val)){
-                $this->PDOStatement->bindParam($key, $val[0], $val[1]);
+                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             }else{
-                $this->PDOStatement->bindParam($key, $val);
+                $this->PDOStatement->bindValue($key, $val);
             }
         }
         $result	=	$this->PDOStatement->execute();
