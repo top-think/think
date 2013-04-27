@@ -34,38 +34,44 @@ class Lite {
      * 取得DB类的实例对象 字段检查
      * @access public
      * @param string $name 模型名称
-     * @param string $tablePrefix 表前缀
-     * @param mixed $connection 数据库连接信息
+     * @param array $config 模型配置
      */
-    public function __construct($name='',$tablePrefix='',$connection='') {
-        // 模型初始化
-        $this->_initialize();
-        // 读取配置参数
-        $this->config   =   Config::get();
-
-        // 获取模型名称
-        if(!empty($name)) {
-            if(strpos($name,'.')) { // 支持 数据库名.模型名的 定义
-                list($this->dbName,$this->name) = explode('.',$name);
-            }else{
-                $this->name   =  $name;
-            }
+    public function __construct($name='',$config=[]) {
+        // 传入模型参数
+        if(!empty($name)){
+            $this->name =   $name;
         }elseif(empty($this->name)){
             $this->name =   $this->getModelName();
         }
+        if(strpos($this->name,'.')) { // 支持 数据库名.模型名的 定义
+            list($this->dbName,$this->name) = explode('.',$this->name);
+        }
+
+        if(isset($config['table_prefix'])) {
+            $this->tablePrefix  =   $config['table_prefix'];
+        }
+        if(isset($config['connection'])) {
+            $this->connection   =   $config['connection'];
+        }
+        if(isset($config['table_name'])) {
+            $this->tableName    =   $config['table_name'];
+        }
+        if(isset($config['true_table_name'])) {
+            $this->trueTableName    =   $config['true_table_name'];
+        }
+        if(isset($config['db_name'])) {
+            $this->dbName    =   $config['db_name'];
+        }
+
         // 设置表前缀
-        if(is_null($tablePrefix)) {// 前缀为Null表示没有前缀
-            $this->tablePrefix = '';
-        }elseif('' != $tablePrefix) {
-            $this->tablePrefix = $tablePrefix;
-        }else{
-            $this->tablePrefix = $this->tablePrefix?$this->tablePrefix:$this->config['db_prefix'];
+        if(empty($this->tablePrefix)) {
+            $this->tablePrefix  =   is_null($this->tablePrefix)?'':C('database.prefix');
         }
 
         // 数据库初始化操作
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
-        $this->db(0,empty($this->connection)?$connection:$this->connection);
+        $this->db(0,$this->connection);
     }
 
     /**
@@ -153,7 +159,7 @@ class Lite {
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
                 $config  =  Config::get($config);
             }
-            $_db[$linkNum]            =    Db::Lite($config);
+            $_db[$linkNum]            =    \Think\Db::instance($config,true);
         }elseif(NULL === $config){
             $_db[$linkNum]->close(); // 关闭数据库连接
             unset($_db[$linkNum]);
