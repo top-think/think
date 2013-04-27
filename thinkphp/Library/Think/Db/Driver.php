@@ -94,23 +94,23 @@ abstract class Driver {
             if(empty($config))  $config =   $this->config['connection'];
             try{
                 if(empty($config['dsn'])) {
-                    $config['dsn']  =   $this->config['dbms'].':dbname='.$config['database'].';host='.$config['hostname'];
-                    if(!empty($config['hostport'])) {
-                        $config['dsn']  .= ';port='.$config['hostport'];
-                    }elseif(!empty($config['socket'])){
-                        $config['dsn']  .= ';unix_socket='.$config['socket'];
-                    }
+                    $config['dsn']  =   $this->parseDsn($config);
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->config['params']);
             }catch (\PDOException $e) {
                 E($e->getMessage());
             }
-            if(!empty($this->config['charset'])) {
-                $this->linkID[$linkNum]->exec('SET NAMES '.$this->config['charset']);
-            }
         }
         return $this->linkID[$linkNum];
     }
+
+    /**
+     * 解析pdo连接的dsn信息
+     * @access public
+     * @param array $config 连接信息
+     * @return string
+     */
+    protected function parseDsn($config){}
 
     /**
      * 释放查询结果
@@ -325,14 +325,13 @@ abstract class Driver {
      */
     protected function parseSet($data) {
         foreach ($data as $key=>$val){
-            $value   =  $this->parseValue($val);
-            if(is_scalar($value)) {// 过滤非标量数据
-                if(0===strpos($value,':')){
-                    $set[]  =   $this->parseKey($key).'='.$value;
+            if(is_scalar($val)) {// 过滤非标量数据
+                if(0===strpos($val,':')){
+                    $set[]  =   $this->parseKey($key).'='.$this->parseValue($val);
                 }else{
                     $name   =   md5($key);
                     $set[]  =   $this->parseKey($key).'=:T'.$name;
-                    $this->bindParam($name,$value);                    
+                    $this->bindParam($name,$val);          
                 }
             }
         }
@@ -726,7 +725,9 @@ abstract class Driver {
      * @return array
      */
     protected function parseBind($bind){
-        return array_merge($this->bind,$bind);
+        $bind   =   array_merge($this->bind,$bind);
+        $this->bind     =   [];
+        return $bind;
     }
 
     /**
@@ -741,15 +742,14 @@ abstract class Driver {
         $values  =  $fields    = [];
         $this->model  =   $options['model'];
         foreach ($data as $key=>$val){
-            $value   =  $this->parseValue($val);
-            if(is_scalar($value)) { // 过滤非标量数据
+            if(is_scalar($val)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
-                if(0===strpos($value,':')){
-                    $values[]   =   $value;
+                if(0===strpos($val,':')){
+                    $values[]   =   $this->parseValue($val);
                 }else{
                     $name       =   md5($key);
                     $values[]   =   ':T'.$name;
-                    $this->bindParam($name,$value);                     
+                    $this->bindParam($name,$val);                     
                 }
             }
         }
