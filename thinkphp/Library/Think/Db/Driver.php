@@ -329,8 +329,8 @@ abstract class Driver {
                 if(0===strpos($val,':')){
                     $set[]  =   $this->parseKey($key).'='.$this->parseValue($val);
                 }else{
-                    $name   =   md5($key);
-                    $set[]  =   $this->parseKey($key).'=:T'.$name;
+                    $name   =   count($this->bind);
+                    $set[]  =   $this->parseKey($key).'=:'.$name;
                     $this->bindParam($name,$val);          
                 }
             }
@@ -346,7 +346,7 @@ abstract class Driver {
      * @return void
      */
     protected function bindParam($name,$value){
-        $this->bind[':T'.$name]  =   $value;
+        $this->bind[':'.$name]  =   $value;
     }
 
     /**
@@ -747,8 +747,8 @@ abstract class Driver {
                 if(0===strpos($val,':')){
                     $values[]   =   $this->parseValue($val);
                 }else{
-                    $name       =   md5($key);
-                    $values[]   =   ':T'.$name;
+                    $name       =   count($this->bind);
+                    $values[]   =   ':'.$name;
                     $this->bindParam($name,$val);                     
                 }
             }
