@@ -14,15 +14,25 @@ use Think\Db\Driver;
 
 /**
  * Oracle数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    ZhangXuehun <zhangxuehun@sohu.com>
  */
 class Oracle extends Driver{
 
     private     $table        = '';
     protected   $selectSql    = 'SELECT * FROM (SELECT thinkphp.*, rownum AS numrow FROM (SELECT  %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%) thinkphp ) %LIMIT%%COMMENT%';
+
+    /**
+     * 解析pdo连接的dsn信息
+     * @access public
+     * @param array $config 连接信息
+     * @return string
+     */
+    protected function parseDsn($config){
+        $dsn  =   'oci:dbname='.$config['database'];
+        if(!empty($config['charset'])) {
+            $dsn  .= ';charset='.$config['charset'];
+        }
+        return $dsn;
+    }
 
     /**
      * 执行语句

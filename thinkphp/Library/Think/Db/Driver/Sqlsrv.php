@@ -14,13 +14,30 @@ use Think\Db\Driver;
 
 /**
  * Sqlsrv数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Sqlsrv extends Driver{
     protected $selectSql  =     'SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 %LIMIT%%COMMENT%';
+    // PDO连接参数
+    protected $options = [
+        PDO::ATTR_CASE              =>  PDO::CASE_LOWER,
+        PDO::ATTR_ERRMODE           =>  PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_STRINGIFY_FETCHES =>  false,
+        PDO::SQLSRV_ATTR_ENCODING   =>  PDO::SQLSRV_ENCODING_UTF8,
+    ];
+
+    /**
+     * 解析pdo连接的dsn信息
+     * @access public
+     * @param array $config 连接信息
+     * @return string
+     */
+    protected function parseDsn($config){
+        $dsn  =   'sqlsrv:dbname='.$config['database'].';Server='.$config['hostname'];
+        if(!empty($config['hostport'])) {
+            $dsn  .= ','.$config['hostport'];
+        }
+        return $dsn;
+    }
 
     /**
      * 取得数据表的字段信息
@@ -109,7 +126,7 @@ class Sqlsrv extends Driver{
             .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
     }
 
     /**
@@ -125,7 +142,7 @@ class Sqlsrv extends Driver{
             .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:[]));
     }
 
 }

@@ -14,12 +14,28 @@ use Think\Db\Driver;
 
 /**
  * mysql数据库驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Mysql extends Driver{
+
+    /**
+     * 解析pdo连接的dsn信息
+     * @access public
+     * @param array $config 连接信息
+     * @return string
+     */
+    protected function parseDsn($config){
+        $dsn  =   'mysql:dbname='.$config['database'].';host='.$config['hostname'];
+        if(!empty($config['hostport'])) {
+            $dsn  .= ';port='.$config['hostport'];
+        }elseif(!empty($config['socket'])){
+            $dsn  .= ';unix_socket='.$config['socket'];
+        }
+        if(!empty($config['charset'])){
+            $dsn  .= ';charset='.$config['charset'];
+        }
+        return $dsn;
+    }
+
     /**
      * 取得数据表的字段信息
      * @access public

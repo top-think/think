@@ -14,12 +14,19 @@ use Think\Db\Driver;
 
 /**
  * Sqlite数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Sqlite extends Driver {
+
+    /**
+     * 解析pdo连接的dsn信息
+     * @access public
+     * @param array $config 连接信息
+     * @return string
+     */
+    protected function parseDsn($config){
+        $dsn  =   'sqlite:'.$config['database'];
+        return $dsn;
+    }
 
     /**
      * 取得数据表的字段信息
