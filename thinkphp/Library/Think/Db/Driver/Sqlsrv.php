@@ -97,6 +97,20 @@ class Sqlsrv extends Driver{
     }
 
     /**
+     * 字段名分析
+     * @access protected
+     * @param string $key
+     * @return string
+     */
+    protected function parseKey(&$key) {
+        $key   =  trim($key);
+        if(!preg_match('/[,\'\"\*\(\)\[.\s]/',$key)) {
+           $key = '['.$key.']';
+        }
+        return $key;   
+    }
+
+    /**
      * limit
      * @access public
      * @param mixed $limit
