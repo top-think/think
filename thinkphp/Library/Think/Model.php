@@ -160,7 +160,7 @@ class Model {
             foreach ($data as $key=>$val){
                 if(!in_array($key,$this->fields,true)){
                     unset($data[$key]);
-                }elseif(is_scalar($val)) {
+                }elseif(is_scalar($val) && empty($this->options['bind'][':'.$key])) {
                     // 字段类型检查
                     $this->_parseType($data,$key);
                 }
@@ -197,10 +197,10 @@ class Model {
                 return false;
             }
         }
-        // 分析表达式
-        $options    =   $this->_parseOptions();
         // 数据处理
         $data       =   $this->_write_data($data);
+        // 分析表达式
+        $options    =   $this->_parseOptions();        
         if(false === $this->_before_insert($data,$options)) {
             return false;
         }
@@ -408,7 +408,7 @@ class Model {
             foreach ($options['where'] as $key=>$val){
                 $key            =   trim($key);
                 if(in_array($key,$fields,true)){
-                    if(is_scalar($val)) {
+                    if(is_scalar($val) && empty($options['bind'][':'.$key])) {
                         $this->_parseType($options['where'],$key);
                     }
                 }elseif('_' != substr($key,0,1) && false === strpos($key,'.') && false === strpos($key,'(') && false === strpos($key,'|') && false === strpos($key,'&')){
@@ -431,7 +431,7 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        if(empty($this->options['bind'][':'.$key]) && isset($this->fields['_type'][$key])) {
+        if(isset($this->fields['_type'][$key])) {
             $fieldType = strtolower($this->fields['_type'][$key]);
             if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
                 $data[$key]   =  intval($data[$key]);
