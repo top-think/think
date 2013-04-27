@@ -142,7 +142,15 @@ abstract class Driver {
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
             E($this->error());
-        $result =   $this->PDOStatement->execute($bind);
+        foreach ($bind as $key => $val) {
+            if(is_array($val)){
+                $this->PDOStatement->bindParam($key, $val[0], $val[1]);
+            }else{
+                $this->PDOStatement->bindParam($key, $val);
+            }
+        }
+        $result =   $this->PDOStatement->execute();        
+        //$result =   $this->PDOStatement->execute($bind);
         // 调试结束
         $this->debug(false);
         if ( false === $result ) {
@@ -176,7 +184,14 @@ abstract class Driver {
         if(false === $this->PDOStatement) {
             E($this->error());
         }
-        $result	=	$this->PDOStatement->execute($bind);
+        foreach ($bind as $key => $val) {
+            if(is_array($val)){
+                $this->PDOStatement->bindParam($key, $val[0], $val[1]);
+            }else{
+                $this->PDOStatement->bindParam($key, $val);
+            }
+        }
+        $result	=	$this->PDOStatement->execute();
         $this->debug(false);
         if ( false === $result) {
             $this->error();
@@ -184,19 +199,10 @@ abstract class Driver {
         } else {
             $this->numRows = $this->PDOStatement->rowCount();
             if(preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                $this->lastInsID = $this->getLastInsertId();
+                $this->lastInsID = $this->_linkID->lastInsertId();
             }
             return $this->numRows;
         }
-    }
-
-    /**
-     * 获取最后插入id
-     * @access public
-     * @return integer
-     */
-    public function getLastInsertId() {
-        return $this->_linkID->lastInsertId();
     }
 
     /**
@@ -304,8 +310,13 @@ abstract class Driver {
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
+        // 记录错误日志
         Log::record($this->error,'ERR');
-        return $this->error;
+        if($this->config['debug']) {// 开启数据库调试模式
+            E($this->error);
+        }else{
+            return $this->error;
+        }
     }
 
     /**
