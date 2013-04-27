@@ -43,16 +43,13 @@ return [
 
     /* 数据库设置 */
     'database'    =>  [
-        'dbms'              =>  'mysql',     // 数据库类型
-        'connection'        =>  [
-            'dsn'               =>  '', // 
-            'hostname'          =>  'localhost', // 服务器地址
-            'database'          =>  '',          // 数据库名
-            'username'          =>  'root',      // 用户名
-            'password'          =>  '',          // 密码
-            'hostport'          =>  '',        // 端口     
-            'socket'            =>  '',            
-        ],
+        'type'              =>  'mysql',     // 数据库类型
+        'dsn'               =>  '', // 
+        'hostname'          =>  'localhost', // 服务器地址
+        'database'          =>  '',          // 数据库名
+        'username'          =>  'root',      // 用户名
+        'password'          =>  '',          // 密码
+        'hostport'          =>  '',        // 端口               
         'params'            =>  [], // 数据库连接参数        
         'charset'           =>  'utf8',      // 数据库编码默认采用utf8  
         'prefix'            =>  '',    // 数据库表前缀

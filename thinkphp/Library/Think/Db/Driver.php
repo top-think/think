@@ -37,16 +37,13 @@ abstract class Driver {
     protected $_linkID    = null;
     // 数据库连接参数配置
     protected $config     = [
-        'dbms'              =>  '',     // 数据库类型
-        'connection'        =>  [
-            'hostname'          =>  '127.0.0.1', // 服务器地址
-            'database'          =>  '',          // 数据库名
-            'username'          =>  'root',      // 用户名
-            'password'          =>  '',          // 密码
-            'hostport'          =>  '',        // 端口     
-            'socket'            =>  '',   
-            'dsn'               =>  '', //          
-        ],
+        'type'              =>  '',     // 数据库类型
+        'hostname'          =>  '127.0.0.1', // 服务器地址
+        'database'          =>  '',          // 数据库名
+        'username'          =>  '',      // 用户名
+        'password'          =>  '',          // 密码
+        'hostport'          =>  '',        // 端口     
+        'dsn'               =>  '', //          
         'params'            =>  [], // 数据库连接参数        
         'charset'           =>  'utf8',      // 数据库编码默认采用utf8  
         'prefix'            =>  '',    // 数据库表前缀
@@ -91,12 +88,12 @@ abstract class Driver {
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {
-            if(empty($config))  $config =   $this->config['connection'];
+            if(empty($config))  $config =   $this->config;
             try{
                 if(empty($config['dsn'])) {
                     $config['dsn']  =   $this->parseDsn($config);
                 }
-                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->config['params']);
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
                 E($e->getMessage());
             }
@@ -989,9 +986,12 @@ abstract class Driver {
         static $_config = [];
         if(empty($_config)) {
             // 缓存分布式数据库配置解析
-            foreach ($this->config['connection'] as $key=>$val){
-                $_config[$key]      =   explode(',',$val);
-            }
+            $_config['username']    =   explode(',',$$this->config['username']);
+            $_config['password']    =   explode(',',$$this->config['password']);
+            $_config['hostname']    =   explode(',',$$this->config['hostname']);
+            $_config['hostport']    =   explode(',',$$this->config['hostport']);
+            $_config['database']    =   explode(',',$$this->config['database']);
+            $_config['dsn']         =   explode(',',$$this->config['dsn']);
         }
         // 数据库读写是否分离
         if($this->config['rw_separate']){

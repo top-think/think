@@ -33,7 +33,7 @@ class Db {
             // 解析连接参数 支持数组和字符串
             $options    =   self::parseConfig($config);
             // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
-            $class  =   $lite?  'Think\Db\Lite' :   'Think\\Db\\Driver\\'.ucwords($options['dbms']);
+            $class  =   $lite?  'Think\Db\Lite' :   'Think\\Db\\Driver\\'.ucwords($options['type']);
             self::$instance[$md5]   =   new $class($options);
         }
         self::$_instance    =   self::$instance[$md5];
@@ -73,14 +73,12 @@ class Db {
             return false;
         }
         $dsn = [
-            'dbms'      =>  $info['scheme'],
-            'connection'    =>  [
-                'username'  =>  isset($info['user']) ? $info['user'] : '',
-                'password'  =>  isset($info['pass']) ? $info['pass'] : '',
-                'hostname'  =>  isset($info['host']) ? $info['host'] : '',
-                'hostport'  =>  isset($info['port']) ? $info['port'] : '',
-                'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
-            ],
+            'type'      =>  $info['scheme'],
+            'username'  =>  isset($info['user']) ? $info['user'] : '',
+            'password'  =>  isset($info['pass']) ? $info['pass'] : '',
+            'hostname'  =>  isset($info['host']) ? $info['host'] : '',
+            'hostport'  =>  isset($info['port']) ? $info['port'] : '',
+            'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
             'charset'   =>  isset($info['fragment'])?$info['fragment']:'utf8',
         ];
         
