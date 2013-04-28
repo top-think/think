@@ -93,6 +93,16 @@ function D($name='',$layer='Model') {
 }
 
 /**
+ * 实例化数据库类
+ * @param array $config 数据库配置参数
+ * @param boolean $lite 是否lite连接
+ * @return object
+ */
+function db($config=[],$lite=false) {
+    return Think\Db::instance($config,$lite);
+}
+
+/**
  * 实例化控制器 格式：[模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
