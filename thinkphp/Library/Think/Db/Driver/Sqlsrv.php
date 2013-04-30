@@ -46,6 +46,7 @@ class Sqlsrv extends Driver{
      * @return array
      */
     public function getFields($tableName) {
+        list($tableName) = explode(' ', $tableName);
         $result =   $this->query("SELECT   column_name,   data_type,   column_default,   is_nullable
         FROM    information_schema.tables AS t
         JOIN    information_schema.columns AS c

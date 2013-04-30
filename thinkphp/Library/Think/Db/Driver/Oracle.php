@@ -80,6 +80,7 @@ class Oracle extends Driver{
      * @access public
      */
      public function getFields($tableName) {
+        list($tableName) = explode(' ', $tableName);
         $result = $this->query("select a.column_name,data_type,decode(nullable,'Y',0,1) notnull,data_default,decode(a.column_name,b.column_name,1,0) pk "
                   ."from user_tab_columns a,(select column_name from user_constraints c,user_cons_columns col "
           ."where c.constraint_name=col.constraint_name and c.constraint_type='P'and c.table_name='".strtoupper($tableName)

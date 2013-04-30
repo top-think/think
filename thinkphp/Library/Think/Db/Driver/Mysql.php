@@ -42,6 +42,7 @@ class Mysql extends Driver{
      */
     public function getFields($tableName) {
         $this->initConnect(true);
+        list($tableName) = explode(' ', $tableName);
         $sql   = 'SHOW COLUMNS FROM `'.$tableName.'`';
         $result = $this->query($sql);
         $info   =   [];

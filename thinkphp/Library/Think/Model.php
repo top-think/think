@@ -396,7 +396,7 @@ class Model {
         $options['model']       =   $this->name;
 
         if(isset($options['table'])) {// 动态指定表名
-            $fields     =   $this->db->getFields($this->options['table']);
+            $fields     =   $this->db->getFields($options['table']);
             $fields     =   $fields?array_keys($fields):false;
         }else{
             $options['table']   =   $this->getTableName();

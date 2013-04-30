@@ -34,6 +34,7 @@ class Sqlite extends Driver {
      * @return array
      */
     public function getFields($tableName) {
+        list($tableName) = explode(' ', $tableName);
         $result =   $this->query('PRAGMA table_info( '.$tableName.' )');
         $info   =   [];
         if($result){

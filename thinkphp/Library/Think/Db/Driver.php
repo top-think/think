@@ -430,7 +430,7 @@ abstract class Driver {
                 if(!is_numeric($table))
                     $array[] =  $this->parseKey($table).' '.$this->parseKey($alias);
                 else
-                    $array[] =  $this->parseKey($table);
+                    $array[] =  $this->parseKey($alias);
             }
             $tables  =  $array;
         }elseif(is_string($tables)){
@@ -563,7 +563,7 @@ abstract class Driver {
             }
         }else {
             //对字符串类型字段采用模糊匹配
-            if($this->conf['db_like_fields'] && preg_match('/('.$this->conf['db_like_fields'].')/i',$key)) {
+            if($this->config['db_like_fields'] && preg_match('/('.$this->config['db_like_fields'].')/i',$key)) {
                 $val  =  '%'.$val.'%';
                 $whereStr .= $key.' LIKE '.$this->parseValue($val);
             }else {
