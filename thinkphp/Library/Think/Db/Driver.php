@@ -334,7 +334,7 @@ abstract class Driver {
         foreach ($data as $key=>$val){
             if(is_scalar($val)) {// 过滤非标量数据
                 if(0===strpos($val,':')){
-                    $set[]  =   $this->parseKey($key).'='.$this->parseValue($val);
+                    $set[]  =   $this->parseKey($key).'='.$this->escapeString($val);
                 }else{
                     $name   =   count($this->bind);
                     $set[]  =   $this->parseKey($key).'=:'.$name;
@@ -752,7 +752,7 @@ abstract class Driver {
             if(is_scalar($val)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
                 if(0===strpos($val,':')){
-                    $values[]   =   $this->parseValue($val);
+                    $values[]   =   $this->escapeString($val);
                 }else{
                     $name       =   count($this->bind);
                     $values[]   =   ':'.$name;
