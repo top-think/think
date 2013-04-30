@@ -43,28 +43,6 @@ trait Query {
     }
 
     /**
-     * SQL查询
-     * @access public
-     * @param string $sql  SQL指令
-     * @param array $bind  参数绑定
-     * @return mixed
-     */
-    public function query($sql,$bind=[]) {
-        return $this->db->query($sql,$bind);
-    }
-
-    /**
-     * 执行SQL语句
-     * @access public
-     * @param string $sql  SQL指令
-     * @param array $bind  参数绑定
-     * @return false | integer
-     */
-    public function execute($sql,$bind=[]) {
-        return $this->db->execute($sql,$bind);
-    }
-
-    /**
      * 解析SQL语句
      * @access public
      * @param string $sql  SQL指令

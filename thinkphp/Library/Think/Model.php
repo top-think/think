@@ -691,6 +691,30 @@ class Model {
     }
 
     /**
+     * SQL查询
+     * @access public
+     * @param string $sql  SQL指令
+     * @param array $bind  参数绑定
+     * @return mixed
+     */
+    public function query($sql,$bind=[]) {
+        $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
+        return $this->db->query($sql,$bind);
+    }
+
+    /**
+     * 执行SQL语句
+     * @access public
+     * @param string $sql  SQL指令
+     * @param array $bind  参数绑定
+     * @return false | integer
+     */
+    public function execute($sql,$bind=[]) {
+        $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
+        return $this->db->execute($sql,$bind);
+    }
+
+    /**
      * 设置数据对象值
      * @access public
      * @param mixed $data 数据
@@ -1001,7 +1025,7 @@ class Model {
      * @return Model
      */
     public function map($map){
-        $this->map =   array_merge($this->map,$map);
+        $this->map =   $map;
         return $this;
     }
 }
