@@ -16,11 +16,7 @@ class Loader {
     // 类名映射
     static protected $map = [];
     // 命名空间
-    static protected $namespace = [
-        'Think'     =>  CORE_PATH,
-        'Vendor'    =>  VENDOR_PATH,
-        'Org'       =>  ORG_PATH,
-    ];
+    static protected $namespace = [];
 
     // 自动加载
     static public function autoload($class){
@@ -29,7 +25,14 @@ class Loader {
             include self::$map[$class];
         }else{ // 命名空间自动加载
             $name     = strstr($class, '\\', true);
-            $path     = isset(self::$namespace[$name]) ? dirname(self::$namespace[$name]) . '/' : APP_PATH;
+            if(isset(self::$namespace[$name])){ // 注册的命名空间
+                $path   =   dirname(self::$namespace[$name]) . '/';
+            }elseif(is_dir(LIB_PATH.$name)){ // Library目录下面的命名空间自动定位
+                $path   =   LIB_PATH;
+            }else{ // 项目命名空间
+                $path   =   APP_PATH;
+            }
+            //$path     = isset(self::$namespace[$name]) ? dirname(self::$namespace[$name]) . '/' : APP_PATH;
             $filename = $path . str_replace('\\', '/', $class) . EXT;
             if(is_file($filename)) {
                 // Win环境下面严格区分大小写
