@@ -100,6 +100,10 @@ class  Template {
         $this->config[$name]  =   $value;
     }
 
+    public function config($config){
+        $this->config   =   array_merge($this->config,$config);
+    }
+
     public function get($name){
         return $this->tVar[$name];
     }
@@ -109,10 +113,16 @@ class  Template {
      * @access public
      * @param string $template 模板文件
      * @param array  $vars 模板变量
-     * @param string $cacheId 模板缓存标识
+     * @param array $config 模板参数
      * @return void
      */
-    public function display($template,$vars=[],$cacheId='') {
+    public function display($template,$vars=[],$config=[]) {
+        if($vars){
+            $this->tVar =   $vars;
+        }
+        if($config){
+            $this->config($config);
+        }        
         $template   =   $this->parseTemplateFile($template);
         $cacheFile  =   $this->config['cache_path'].$this->config['cache_prefix'].md5($template).$this->config['cache_suffix'];
         if(!$this->checkCache($template,$cacheFile)) { // 缓存无效
@@ -123,12 +133,12 @@ class  Template {
         ob_start();
         ob_implicit_flush(0);
         // 读取编译存储
-        $this->storage->read($cacheFile,$vars?$vars:$this->tVar);
+        $this->storage->read($cacheFile,$this->tVar);
         // 获取并清空缓存
         $content = ob_get_clean();
-        if($cacheId && $this->config['display_cache']) {
+        if($this->config['cache_id'] && $this->config['display_cache']) {
             // 缓存页面输出
-            Cache::set($cacheId,$content,$this->config['cache_time']);
+            Cache::set($this->config['cache_id'],$content,$this->config['cache_time']);
         }
         echo $content;
     }
@@ -141,13 +151,16 @@ class  Template {
      * @return void
      */
     public function fetch($content,$vars=[]) {
+        if($vars){
+            $this->tVar =   $vars;
+        }
         $cacheFile  = $this->config['cache_path'].$this->config['cache_prefix'].md5($content).$this->config['cache_suffix'];
         if(!$this->checkCache($content,$cacheFile)) { // 缓存无效
             // 模板编译
             $this->compiler($content,$cacheFile);
         }
         // 读取编译存储
-        $this->storage->read($cacheFile,$vars?$vars:$this->tVar);
+        $this->storage->read($cacheFile,$this->tVar);
     }
 
     /**
@@ -427,7 +440,7 @@ class  Template {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
         $className  =   '\\Think\\Template\\TagLib\\'.ucwords($tagLib);
-        $tLib       =   new $className;
+        $tLib       =   new $className($this);
         foreach ($tLib->getTags() as $name=>$val){
             $tags   =   [$name];
             if(isset($val['alias'])) {// 别名设置

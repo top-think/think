@@ -60,9 +60,13 @@ class TagLib {
      * @var object
      * @access protected
      */
-    public $tpl;
+    protected $tpl;
 
     protected $comparison = [' nheq '=>' !== ',' heq '=>' === ',' neq '=>' != ',' eq '=>' == ',' egt '=>' >= ',' gt '=>' > ',' elt '=>' <= ',' lt '=>' < '];
+
+    public function __construct($template){
+        $this->tpl  =   $template;
+    }
 
     /**
      * TagLib标签属性分析 返回标签属性数组
