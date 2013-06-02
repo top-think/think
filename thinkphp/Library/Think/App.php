@@ -12,12 +12,10 @@
 namespace Think;
 
 /**
- * ThinkApp 应用管理
+ * App 应用管理
  * @author  liu21st <liu21st@gmail.com>
  */
 class App {
-
-    static private $config = [];
 
     /**
      * 执行应用程序
@@ -52,10 +50,13 @@ class App {
         // 应用URL调度
         self::dispatch($config);
 
+        // 监听app_run
+        Tag::listen('app_run');
+
         // 执行操作
         $instance = Loader::controller(CONTROLLER_NAME);
         if(!$instance) {
-            E('[ ' . MODULE_NAME . '\\Controller\\' . parse_name(CONTROLLER_NAME, 1) . 'Controller ] not exists', 404);
+            E('[ ' . MODULE_NAME . '\\Controller\\' . parse_name(CONTROLLER_NAME, 1) . 'Controller ] not exists');
         }
 
         // 获取当前操作名
@@ -135,7 +136,7 @@ class App {
             $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
         }
         
-        // 检测子域名部署
+        // 检测域名部署
         if(!IS_CLI) {
             Route::checkDomain();
         }
@@ -166,6 +167,9 @@ class App {
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
         $_SERVER['PATH_INFO'] = trim(preg_replace('/\.(' . trim($config['url_html_suffix'], '.') . ')$/i', '', $_SERVER['PATH_INFO']), '/');
         if($_SERVER['PATH_INFO']) {
+            if($config['url_deny_suffix'] && preg_match('/\.('.$config['url_deny_suffix'].')$/i', $_SERVER['PATH_INFO'])){
+                exit;
+            }            
             $paths = explode($config['pathinfo_depr'], $_SERVER['PATH_INFO']);
             // 获取URL中的模块名
             if($config['require_module'] && !isset($_GET[$var_m])) {
@@ -210,10 +214,6 @@ class App {
             $var_c = $config['var_controller'];
             $var_a = $config['var_action'];
         }else{
-            // 判断favicon.ico
-            if('favicon.ico' == strtolower(MODULE_NAME)){
-                exit;
-            }
             E('module not exists :' . MODULE_NAME);
         }
         // 路由检测和控制器、操作解析
