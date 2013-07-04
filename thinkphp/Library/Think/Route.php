@@ -177,13 +177,17 @@ class Route {
                     }
                 }
                 if(0 === strpos($rule, '/') && preg_match($rule, $regx, $matches)) { // 正则路由
+                    if(!empty($option['file'])){
+                        // 调度到某个文件中执行
+                        include $route;
+                        exit;
+                    }
                     if($route instanceof \Closure) {
                         // 执行闭包并中止
                         self::invokeRegx($route, $matches);
                         exit;
-                    }else{
-                        return self::parseRegex($matches, $route, $regx);
                     }
+                    return self::parseRegex($matches, $route, $regx);
                 }else{ // 规则路由
                     $len1 = substr_count($regx, '/');
                     $len2 = substr_count($rule, '/');
@@ -196,13 +200,17 @@ class Route {
                             }
                         }
                         if(false !== $var = self::match($regx, $rule)){
+                            if(!empty($option['file'])){
+                                // 调度到某个文件中执行
+                                include $route;
+                                exit;
+                            }
                             if($route instanceof \Closure) {
                                 // 执行闭包并中止
                                 self::invokeRule($route, $var);
                                 exit;
-                            }else{
-                                return self::parseRule($rule, $route, $regx);
                             }
+                            return self::parseRule($rule, $route, $regx);
                         }
                     }
                 }
@@ -291,7 +299,8 @@ class Route {
             parse_str($url, $var);
         }
         if(isset($path)) {
-            $_GET[Config::get('var_action')] = array_pop($path);
+            $action =   array_pop($path);
+            $_GET[Config::get('var_action')] = '[rest]'==$action? REQUEST_METHOD : $action;
             if(!empty($path)) {
                 $_GET[Config::get('var_controller')] = array_pop($path);
             }
