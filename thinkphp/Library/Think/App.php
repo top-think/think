@@ -126,6 +126,7 @@ class App {
      */
     static public function dispatch($config) {
         $var_m = $config['var_module'];
+        $var_g = $config['var_group'];
         $var_c = $config['var_controller'];
         $var_a = $config['var_action'];
         $var_p = $config['var_pathinfo'];
@@ -211,6 +212,7 @@ class App {
                     Tag::import(include MODULE_PATH . 'tags' . EXT);
                 }
             }
+            $var_g = $config['var_group'];
             $var_c = $config['var_controller'];
             $var_a = $config['var_action'];
         }else{
@@ -218,6 +220,13 @@ class App {
         }
         // 路由检测和控制器、操作解析
         Route::check($_SERVER['PATH_INFO']);
+
+        // 获取分组名
+        if(Config::get('require_group')){
+            define('GROUP_NAME', strtolower(isset($_GET[$var_g]) ? $_GET[$var_g] : $config['default_group']));
+        }else{
+            define('GROUP_NAME', '');
+        }        
 
         // 获取控制器名
         define('CONTROLLER_NAME', strtolower(isset($_GET[$var_c]) ? $_GET[$var_c] : $config['default_controller']));

@@ -271,8 +271,12 @@ class Route {
             return ;
         }
         $paths = explode('/', $url);
+        $var_g = Config::get('var_group');
         $var_c = Config::get('var_controller');
         $var_a = Config::get('var_action');
+        if(Config::get('require_group') && !isset($_GET[$var_g])) {
+            $_GET[$var_g] = array_shift($paths);
+        }        
         if(Config::get('require_controller') && !isset($_GET[$var_c])) {
             $_GET[$var_c] = array_shift($paths);
         }
