@@ -41,7 +41,7 @@ class ContentReplace {
             $script_name    =   rtrim($_SERVER['SCRIPT_NAME'],'/');
         }
         define('ROOT_URL',   rtrim(dirname(str_replace("\\","\/",$script_name)),'/'));
-        define('MODULE_URL',    ROOT_URL.(Config::get('require_module')?'/'.MODULE_NAME:''));
+        define('MODULE_URL',    ROOT_URL.(Config::get('require_module')?'/'.(defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME):''));
         define('CONTROLLER_URL',  MODULE_URL.(Config::get('require_controller')?'/'.CONTROLLER_NAME:''));
         define('ACTION_URL',    CONTROLLER_URL.'/'.ACTION_NAME);
 

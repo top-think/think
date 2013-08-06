@@ -25,28 +25,31 @@ class App {
     static public function run() {
         // 监听app_init
         Tag::listen('app_init');
-        // 加载全局初始化文件
-        if(is_file( APP_PATH . 'init' . EXT)) {
-            include APP_PATH . 'init' . EXT;
-            $config = Config::get();
-        }else{
-            // 检测项目（或模块）配置文件
-            if(is_file(APP_PATH . 'config' . EXT)) {
-                $config = Config::set(include APP_PATH . 'config' . EXT);
-            }
-            // 加载别名文件
-            if(is_file(APP_PATH . 'alias' . EXT)) {
-                Loader::addMap(include APP_PATH . 'alias' . EXT);
-            }
-            // 加载公共文件
-            if(is_file( APP_PATH . 'common' . EXT)) {
-                include APP_PATH . 'common' . EXT;
-            }
-            if(is_file(APP_PATH . 'tags' . EXT)) {
-                // 行为扩展文件
-                Tag::import(include APP_PATH . 'tags' . EXT);
-            }
-        }
+        if(Config::get('common_module')){
+            define('COMMON_PATH', APP_PATH . Config::get('common_module').'/');
+            // 加载全局初始化文件
+            if(is_file( COMMON_PATH . 'init' . EXT )) {
+                include COMMON_PATH . 'init' . EXT;
+            }else{
+                // 检测全局配置文件
+                if(is_file(COMMON_PATH . 'config' . EXT)) {
+                    Config::set(include COMMON_PATH . 'config' . EXT);
+                }
+                // 加载全局别名文件
+                if(is_file(COMMON_PATH . 'alias' . EXT)) {
+                    Loader::addMap(include COMMON_PATH . 'alias' . EXT);
+                }
+                // 加载全局公共文件
+                if(is_file( COMMON_PATH . 'common' . EXT)) {
+                    include COMMON_PATH . 'common' . EXT;
+                }
+                if(is_file(COMMON_PATH . 'tags' . EXT)) {
+                    // 全局行为扩展文件
+                    Tag::import(include COMMON_PATH . 'tags' . EXT);
+                }
+            }                
+        }        
+
         // 应用URL调度
         self::dispatch($config);
 
@@ -180,12 +183,23 @@ class App {
         }
 
         // 获取模块名称
-        define('MODULE_NAME', ucwords(strtolower(isset($_GET[$var_m]) ? $_GET[$var_m] : $config['default_module'])));
-
+        $module     =   strtolower(isset($_GET[$var_m]) ? $_GET[$var_m] : $config['default_module']);
+        if($maps = Config::get('url_module_map')) {
+            if(isset($maps[$module])) {
+                // 记录当前别名
+                define('MODULE_ALIAS',$module);
+                // 获取实际的项目名
+                $module =   $maps[MODULE_ALIAS];
+            }elseif(array_search($module,$maps)){
+                // 禁止访问原始项目
+                $module =   '';
+            }
+        }
+        define('MODULE_NAME', ucwords($module));
         // 模块初始化
-        if(MODULE_NAME && is_dir( APP_PATH . MODULE_NAME )) {
-            define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
+        if(MODULE_NAME && Config::get('common_module') != MODULE_NAME && is_dir( APP_PATH . MODULE_NAME )) {
             Tag::listen('app_begin');
+            define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
             // 加载模块初始化文件
             if(is_file( MODULE_PATH . 'init' . EXT )) {
                 include MODULE_PATH . 'init' . EXT;
