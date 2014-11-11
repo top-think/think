@@ -54,3 +54,4 @@ if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
 }
 // 执行应用
 App::run();
+//该更新了
