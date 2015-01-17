@@ -69,7 +69,7 @@ class Sohu extends Driver{
     public function getOpenId(){
         if(!empty($this->token['openid']))
             return $this->token['openid'];
-        return NULL;
+        return null;
     }
 
     /**

@@ -83,7 +83,7 @@ class Qq extends Driver{
             if(isset($data['openid']))
                 return $data['openid'];
         }
-        return NULL;
+        return null;
     }
 
     public function getOauthInfo(){

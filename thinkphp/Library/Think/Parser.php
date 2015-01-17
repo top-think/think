@@ -26,7 +26,7 @@ class Parser {
     }
 
     // 调用驱动类的方法
-	static public function __callStatic($method, $params){
+    static public function __callStatic($method, $params){
         return self::parse($params[0],$method);
-	}
+    }
 }

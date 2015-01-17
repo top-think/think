@@ -70,7 +70,7 @@ class Kaixin extends Driver{
             return $this->token['openid'];
         
         $data = $this->call('users/me');
-        return !empty($data['uid'])?$data['uid']:NULL;
+        return !empty($data['uid'])?$data['uid']:null;
     }
 
     /**

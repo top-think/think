@@ -24,7 +24,7 @@ return [
     'Think\Error'             => CORE_PATH . 'Error.php',
     'Think\Cache'             => CORE_PATH . 'Cache.php',
     'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File.php',
-    'Think\Tag'               => CORE_PATH . 'Tag.php',
+    'Think\Hook'              => CORE_PATH . 'Hook.php',
     'Think\Session'           => CORE_PATH . 'Session.php',
     'Think\Cookie'            => CORE_PATH . 'Cookie.php',
     'Think\Controller'        => CORE_PATH . 'Controller.php',

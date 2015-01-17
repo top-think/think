@@ -17,9 +17,9 @@ namespace Think;
  * 编译型模板引擎 支持动态缓存
  */
 class  Template {
-    protected   $tVar            =   [];   // 模板变量
+    protected   $data            =   [];   // 模板变量
     protected   $config          =   [    // 引擎配置
-        'tpl_path'             =>  '',
+        'tpl_path'             =>  '',		// 模板路径
         'tpl_suffix'           =>  '.html',     // 默认模板文件后缀
         'cache_suffix'          =>  '.php',      // 默认模板缓存后缀
         'tpl_deny_func_list'	=>  'echo,exit',	// 模板引擎禁用函数
@@ -28,8 +28,8 @@ class  Template {
         'tpl_end'              =>  '}',			// 模板引擎普通标签结束标记
         'strip_space'      =>  false,       // 是否去除模板文件里面的html空格与换行
         'tpl_cache'			=>  true,        // 是否开启模板编译缓存,设为false则每次都会重新编译
-        'compile_type'        =>  'file',
-        'cache_path'            =>  '',
+        'compile_type'        =>  'file',	// 模板编译类型
+        'cache_path'            =>  '',	// 模板缓存目录
         'cache_prefix'          =>  '',         // 模板缓存前缀标识，可以动态改变
         'cache_time'		    =>	0,         // 模板缓存有效期 0 为永久，(以数字为值，单位:秒)
         'layout_item'           =>  '{__CONTENT__}', // 布局模板的内容替换标识
@@ -38,7 +38,7 @@ class  Template {
         'taglib_load'           =>  true, // 是否使用内置标签库之外的其它标签库，默认自动检测
         'taglib_build_in'       =>  'cx', // 内置标签库名称(标签使用不必指定标签库名称),以逗号分隔 注意解析顺序
         'taglib_pre_load'       =>  '',   // 需要额外加载的标签库(须指定标签库名称)，多个以逗号分隔        
-        'display_cache'         =>  false,
+        'display_cache'         =>  false, // 模板渲染缓存
     ];
 
     private     $literal        =   [];   
@@ -84,9 +84,9 @@ class  Template {
      */
     public function assign($name,$value=''){
         if(is_array($name)) {
-            $this->tVar         =   array_merge($this->tVar,$name);
+            $this->data         =   array_merge($this->data,$name);
         }else {
-            $this->tVar[$name]  =   $value;
+            $this->data[$name]  =   $value;
         }
     }
 
@@ -105,7 +105,7 @@ class  Template {
     }
 
     public function get($name){
-        return $this->tVar[$name];
+        return $this->data[$name];
     }
 
     /**
@@ -118,7 +118,7 @@ class  Template {
      */
     public function display($template,$vars=[],$config=[]) {
         if($vars){
-            $this->tVar =   $vars;
+            $this->data =   $vars;
         }
         if($config){
             $this->config($config);
@@ -133,7 +133,7 @@ class  Template {
         ob_start();
         ob_implicit_flush(0);
         // 读取编译存储
-        $this->storage->read($cacheFile,$this->tVar);
+        $this->storage->read($cacheFile,$this->data);
         // 获取并清空缓存
         $content = ob_get_clean();
         if($this->config['cache_id'] && $this->config['display_cache']) {
@@ -152,7 +152,7 @@ class  Template {
      */
     public function fetch($content,$vars=[]) {
         if($vars){
-            $this->tVar =   $vars;
+            $this->data =   $vars;
         }
         $cacheFile  = $this->config['cache_path'].$this->config['cache_prefix'].md5($content).$this->config['cache_suffix'];
         if(!$this->checkCache($content,$cacheFile)) { // 缓存无效
@@ -160,7 +160,7 @@ class  Template {
             $this->compiler($content,$cacheFile);
         }
         // 读取编译存储
-        $this->storage->read($cacheFile,$this->tVar);
+        $this->storage->read($cacheFile,$this->data);
     }
 
     /**
@@ -591,22 +591,22 @@ class  Template {
             //模板函数过滤
             $fun    =   strtolower(trim($args[0]));
             switch($fun) {
-            case 'default':  // 特殊模板函数
-                $name   = '('.$name.')?('.$name.'):'.$args[1];
-                break;
-            default:  // 通用模板函数
-                if(!in_array($fun,$template_deny_funs)){
-                    if(isset($args[1])){
-                        if(strstr($args[1],'###')){
-                            $args[1] = str_replace('###',$name,$args[1]);
-                            $name = "$fun($args[1])";
-                        }else{
-                            $name = "$fun($name,$args[1])";
+                case 'default':  // 特殊模板函数
+                    $name   = '('.$name.')?('.$name.'):'.$args[1];
+                    break;
+                default:  // 通用模板函数
+                    if(!in_array($fun,$template_deny_funs)){
+                        if(isset($args[1])){
+                            if(strstr($args[1],'###')){
+                                $args[1] = str_replace('###',$name,$args[1]);
+                                $name = "$fun($args[1])";
+                            }else{
+                                $name = "$fun($name,$args[1])";
+                            }
+                        }else if(!empty($args[0])){
+                            $name = "$fun($name)";
                         }
-                    }else if(!empty($args[0])){
-                        $name = "$fun($name)";
                     }
-                }
             }
         }
         return $name;
@@ -627,11 +627,14 @@ class  Template {
             $vars[2] = trim($vars[2]);
             switch($vars[1]){
                 case 'SERVER':
-                    $parseStr = '$_SERVER[\''.strtoupper($vars[2]).'\']';break;
+                    $parseStr = '$_SERVER[\''.strtoupper($vars[2]).'\']';
+					break;
                 case 'GET':
-                    $parseStr = '$_GET[\''.$vars[2].'\']';break;
+                    $parseStr = '$_GET[\''.$vars[2].'\']';
+					break;
                 case 'POST':
-                    $parseStr = '$_POST[\''.$vars[2].'\']';break;
+                    $parseStr = '$_POST[\''.$vars[2].'\']';
+					break;
                 case 'COOKIE':
                     if(isset($vars[3])) {
                         $parseStr = '$_COOKIE[\''.$vars[2].'\'][\''.$vars[3].'\']';
@@ -647,19 +650,25 @@ class  Template {
                     }
                     break;
                 case 'ENV':
-                    $parseStr = '$_ENV[\''.strtoupper($vars[2]).'\']';break;
+                    $parseStr = '$_ENV[\''.strtoupper($vars[2]).'\']';
+					break;
                 case 'REQUEST':
-                    $parseStr = '$_REQUEST[\''.$vars[2].'\']';break;
+                    $parseStr = '$_REQUEST[\''.$vars[2].'\']';
+					break;
                 case 'CONST':
-                    $parseStr = strtoupper($vars[2]);break;
+                    $parseStr = strtoupper($vars[2]);
+					break;
                 case 'LANG':
-                    $parseStr = 'L("'.$vars[2].'")';break;
+                    $parseStr = 'L("'.$vars[2].'")';
+					break;
                 case 'CONFIG':
                     if(isset($vars[3])) {
                         $vars[2] .= '.'.$vars[3];
                     }
-                    $parseStr = 'C("'.$vars[2].'")';break;
-                default:break;
+                    $parseStr = 'C("'.$vars[2].'")';
+					break;
+                default:
+					break;
             }
         }else if(count($vars)==2){
             switch($vars[1]){
@@ -676,8 +685,9 @@ class  Template {
                     $parseStr = $this->config['tpl_end'];
                     break;
                 default:
-                    if(defined($vars[1]))
+                    if(defined($vars[1])){
                         $parseStr = $vars[1];
+					}
             }
         }
         return $parseStr;

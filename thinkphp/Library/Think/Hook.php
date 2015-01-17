@@ -11,7 +11,7 @@
 
 namespace Think;
 
-class Tag {
+class Hook {
 
     static private $tags =   [];
 
@@ -23,7 +23,7 @@ class Tag {
      */
     static public function add($tag,$behavior) {
         if(is_array($behavior)) {
-            self::$tags[$tag] =   array_merge(self::$tags[$tag],$behavior);
+            self::$tags[$tag]   =   array_merge(self::$tags[$tag],$behavior);
         }else{
             self::$tags[$tag][] =   $behavior;
         }
@@ -44,13 +44,18 @@ class Tag {
      * @param mixed $params 传入参数
      * @return void
      */
-    static public function listen($tag, &$params=NULL) {
+    static public function listen($tag, &$params=null) {
         if(isset(self::$tags[$tag])) {
-            foreach (self::$tags[$tag] as $val) {
-                Debug::remark('behavior_start','time');
-                $result =   self::exec($val, $params);
-                Debug::remark('behavior_end','time');
-                Log::record('Run '.$val.' Behavior [ RunTime:'.Debug::getUseTime('behavior_start','behavior_end').'s ]','INFO');
+            foreach (self::$tags[$tag] as $name) {
+
+                Config::get('app_debug') && Debug::remark('behavior_start','time');
+
+                $result =   self::exec($name, $tag,$params);
+
+                if(Config::get('app_debug')){
+                    Debug::remark('behavior_end','time');
+                    Log::record('Run '.$name.' [ RunTime:'.Debug::getUseTime('behavior_start','behavior_end').'s ]','INFO');
+                }
                 if(false === $result) {
                     // 如果返回false 则中断行为执行
                     return ;
@@ -63,22 +68,19 @@ class Tag {
     /**
      * 执行某个行为
      * @param string $name 行为名称
+     * @param string $tag 方法名（标签名）    
      * @param Mixed $params 传人的参数
      * @return void
      */
-    static public function exec($name, &$params=NULL) {
+    static public function exec($name, $tag,&$params=null) {
         if($name instanceof \Closure) {
             return $name($params);
         }
-        if(false === strpos($name,'\\')) {
-            $class      =  '\\'.ucwords(MODULE_NAME).'\\Behavior\\'.$name;
-        }else{
-            $class      =  $name;
+        if('Behavior' == substr($name,-8) ){
+            // 行为扩展必须用run入口方法
+            $tag    =   'run';
         }
-        if(class_exists($class)) {
-            $behavior   = new $class();
-            return $behavior->run($params);
-        }
-        return ;
+        $addon   = new $name();
+        return $addon->$tag($params);
     }
 }

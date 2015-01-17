@@ -33,21 +33,32 @@ class Session {
      * @return void
      */
     static public function init($config=[]) {
-        if(isset($config['prefix'])) self::$prefix  =   $config['prefix'];
+        if(isset($config['prefix'])) 
+            self::$prefix  =   $config['prefix'];
         if(isset($config['var_session_id']) && isset($_REQUEST[$config['var_session_id']])){
             session_id($_REQUEST[$config['var_session_id']]);
         }elseif(isset($config['id'])) {
             session_id($config['id']);
         }
         ini_set('session.auto_start', 0);
-        if(isset($config['name']))            session_name($config['name']);
-        if(isset($config['path']))            session_save_path($config['path']);
-        if(isset($config['domain']))          ini_set('session.cookie_domain', $config['domain']);
-        if(isset($config['expire']))          ini_set('session.gc_maxlifetime', $config['expire']);
-        if(isset($config['use_trans_sid']))   ini_set('session.use_trans_sid', $config['use_trans_sid']?1:0);
-        if(isset($config['use_cookies']))     ini_set('session.use_cookies', $config['use_cookies']?1:0);
-        if(isset($config['cache_limiter']))   session_cache_limiter($config['cache_limiter']);
-        if(isset($config['cache_expire']))    session_cache_expire($config['cache_expire']);
+        if(isset($config['name']))            
+            session_name($config['name']);
+        if(isset($config['path']))            
+            session_save_path($config['path']);
+        if(isset($config['domain']))          
+            ini_set('session.cookie_domain', $config['domain']);
+        if(isset($name['expire']))          {
+            ini_set('session.gc_maxlifetime',   $name['expire']);
+            ini_set('session.cookie_lifetime',  $name['expire']);
+        }
+        if(isset($config['use_trans_sid']))   
+            ini_set('session.use_trans_sid', $config['use_trans_sid']?1:0);
+        if(isset($config['use_cookies']))     
+            ini_set('session.use_cookies', $config['use_cookies']?1:0);
+        if(isset($config['cache_limiter']))   
+            session_cache_limiter($config['cache_limiter']);
+        if(isset($config['cache_expire']))    
+            session_cache_expire($config['cache_expire']);
         if(!empty($config['type'])) { // 读取session驱动
             $class      = 'Think\\Session\\Driver\\'. ucwords(strtolower($config['type']));
             // 检查驱动类
@@ -65,11 +76,16 @@ class Session {
      * @return void
      */
     static public function set($name,$value='',$prefix='') {
-        $prefix =   $prefix?$prefix:self::$prefix;
-        if($prefix){
-            if (!is_array($_SESSION[$prefix])) {
-                $_SESSION[$prefix] = [];
+        $prefix =   $prefix ? $prefix : self::$prefix;
+        if(strpos($name,'.')){
+            // 二维数组赋值
+            list($name1,$name2) =   explode('.',$name);
+            if($prefix){
+                $_SESSION[$prefix][$name1][$name2]   =  $value;
+            }else{
+                $_SESSION[$name1][$name2]  =  $value;
             }
+        }elseif($prefix){
             $_SESSION[$prefix][$name]   =  $value;
         }else{
             $_SESSION[$name]  =  $value;
@@ -82,13 +98,27 @@ class Session {
      * @param string $prefix 作用域（前缀）
      * @return mixed
      */
-    static public function get($name,$prefix='') {
-        $prefix   =  $prefix?$prefix:self::$prefix;
-        if($prefix){ // 获取session
-            return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;
+    static public function get($name='',$prefix='') {
+        $prefix   =  $prefix ? $prefix : self::$prefix;
+        if(''==$name){
+            // 获取全部的session
+            $value  = $prefix ? $_SESSION[$prefix] : $_SESSION;
+        }elseif($prefix){ // 获取session
+            if(strpos($name,'.')){
+                list($name1,$name2) =   explode('.',$name);
+                $value  = isset($_SESSION[$prefix][$name1][$name2])?$_SESSION[$prefix][$name1][$name2]:null;  
+            }else{
+                $value  = isset($_SESSION[$prefix][$name]) ? $_SESSION[$prefix][$name] : null;
+            }
         }else{
-            return isset($_SESSION[$name])?$_SESSION[$name]:null;
+            if(strpos($name,'.')){
+                list($name1,$name2) =   explode('.',$name);
+                $value  = isset($_SESSION[$name1][$name2]) ? $_SESSION[$name1][$name2] : null;  
+            }else{
+                $value  = isset($_SESSION[$name]) ? $_SESSION[$name] : null;
+            }   
         }
+        return $value;
     }
 
     /**
@@ -99,10 +129,19 @@ class Session {
      */
     static public function delete($name,$prefix='') {
         $prefix   =  $prefix?$prefix:$this->prefix;
-        if($prefix){
-            unset($_SESSION[$prefix][$name]);
+        if(strpos($name,'.')){
+            list($name1,$name2) =   explode('.',$name);
+            if($prefix){
+                unset($_SESSION[$prefix][$name1][$name2]);
+            }else{
+                unset($_SESSION[$name1][$name2]);
+            }
         }else{
-            unset($_SESSION[$name]);
+            if($prefix){
+                unset($_SESSION[$prefix][$name]);
+            }else{
+                unset($_SESSION[$name]);
+            }
         }
     }
 
@@ -127,11 +166,12 @@ class Session {
      * @return boolean
      */
     static public function has($name,$prefix='') {
-        $prefix   =  $prefix?$prefix:self::$prefix;
-        if($prefix){
-            return isset($_SESSION[$prefix][$name]);
+        $prefix   =  $prefix ? $prefix : self::$prefix;
+        if(strpos($name,'.')){ // 支持数组
+            list($name1,$name2) =   explode('.',$name);
+            return $prefix ? isset($_SESSION[$prefix][$name1][$name2]) : isset($_SESSION[$name1][$name2]);
         }else{
-            return isset($_SESSION[$name]);
+            return $prefix ? isset($_SESSION[$prefix][$name]) : isset($_SESSION[$name]);
         }
     }
 
@@ -140,7 +180,7 @@ class Session {
      * @param string $name session操作名称
      * @return void
      */
-    static public function operate($name) {
+    static private function operate($name) {
         if('pause'==$name){ // 暂停session
             session_write_close();
         }elseif('start'==$name){ // 启动session

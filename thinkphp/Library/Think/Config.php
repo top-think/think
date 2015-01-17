@@ -36,15 +36,16 @@ class Config {
 
     // 检测配置是否存在
     static public function has($name,$range=''){
-        $range  =   $range?$range:self::$_range;
-        $name = strtolower($name);
-        // 优先执行设置获取或赋值
+        $range  =   $range ? $range : self::$_range;
+        $name   =   strtolower($name);
+
         if (!strpos($name, '.')) {
             return isset(self::$_config[$range][$name]);
+        }else{
+            // 二维数组设置和获取支持
+            $name = explode('.', $name);
+            return isset(self::$_config[$range][$name[0]][$name[1]]);
         }
-        // 二维数组设置和获取支持
-        $name = explode('.', $name);
-        return isset(self::$_config[$range][$name[0]][$name[1]]);
     }
 
     // 获取配置参数 为空则获取所有配置
@@ -55,13 +56,13 @@ class Config {
             return self::$_config[$range];
         }
         $name = strtolower($name);
-        // 优先执行设置获取或赋值
         if (!strpos($name, '.')) {
             return isset(self::$_config[$range][$name]) ? self::$_config[$range][$name] : null;
+        }else{
+            // 二维数组设置和获取支持
+            $name = explode('.', $name);
+            return isset(self::$_config[$range][$name[0]][$name[1]]) ? self::$_config[$range][$name[0]][$name[1]] : null;
         }
-        // 二维数组设置和获取支持
-        $name = explode('.', $name);
-        return isset(self::$_config[$range][$name[0]][$name[1]]) ? self::$_config[$range][$name[0]][$name[1]] : null;
     }
     
     // 设置配置参数 name为数组则为批量设置
@@ -74,18 +75,18 @@ class Config {
             $name = strtolower($name);
             if (!strpos($name, '.')) {
                 self::$_config[$range][$name] = $value;
-                return;
+            }else{
+                // 二维数组设置和获取支持
+                $name = explode('.', $name);
+                self::$_config[$range][$name[0]][$name[1]] = $value;                
             }
-            // 二维数组设置和获取支持
-            $name = explode('.', $name);
-            self::$_config[$range][$name[0]][$name[1]] = $value;
             return;
-        }
-        // 批量设置
-        if (is_array($name)){
+        }elseif (is_array($name)){         
+            // 批量设置
             self::$_config[$range] = array_merge(self::$_config[$range], array_change_key_case($name));
             return self::$_config[$range];
+        }else{
+            return null; // 避免非法参数
         }
-        return null; // 避免非法参数
     }
 }

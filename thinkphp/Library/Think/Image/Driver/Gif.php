@@ -156,7 +156,7 @@ Class GIFEncoder {
 				printf	( "%s: %d %s", $this->VER, $i, $this->ERR [ 'ERR01' ] );
 				exit	( 0 );
 			}
-			for ( $j = ( 13 + 3 * ( 2 << ( ord ( $this->BUF [ $i ] { 10 } ) & 0x07 ) ) ), $k = TRUE; $k; $j++ ) {
+			for ( $j = ( 13 + 3 * ( 2 << ( ord ( $this->BUF [ $i ] { 10 } ) & 0x07 ) ) ), $k = true; $k; $j++ ) {
 				switch ( $this->BUF [ $i ] { $j } ) {
 					case "!":
 						if ( ( substr ( $this->BUF [ $i ], ( $j + 3 ), 8 ) ) == "NETSCAPE" ) {

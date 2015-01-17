@@ -69,7 +69,7 @@ class X360 extends Driver{
         if(!empty($this->token['openid']))
             return $this->token['openid'];
         $data = $this->call('user/me');
-        return !empty($data['id'])?$data['id']:NULL;
+        return !empty($data['id'])?$data['id']:null;
     }
 
     /**

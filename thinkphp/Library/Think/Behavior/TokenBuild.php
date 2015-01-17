@@ -52,7 +52,7 @@ class TokenBuildBehavior extends Behavior {
         if(isset($_SESSION[$tokenName][$tokenKey])) {// 相同页面不重复生成session
             $tokenValue = $_SESSION[$tokenName][$tokenKey];
         }else{
-            $tokenValue = $tokenType(microtime(TRUE));
+            $tokenValue = $tokenType(microtime(true));
             $_SESSION[$tokenName][$tokenKey]   =  $tokenValue;
         }
         $token      =  '<input type="hidden" name="'.$tokenName.'" value="'.$tokenKey.'_'.$tokenValue.'" />';

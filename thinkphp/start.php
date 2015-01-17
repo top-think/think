@@ -34,7 +34,7 @@ set_error_handler(['Think\Error','appError']);
 set_exception_handler(['Think\Error','appException']);
 
 // 导入系统惯例
-Config::load(THINK_PATH.'convention.php');
+$config 	=	Config::load(THINK_PATH.'convention.php');
 
 // 初始化操作可以在应用的公共文件中处理 下面只是示例
 //---------------------------------------------------
@@ -53,4 +53,4 @@ if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
     Create::build(include APP_PATH.'build.php');
 }
 // 执行应用
-App::run();
+App::run($config);

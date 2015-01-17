@@ -69,7 +69,7 @@ class Github extends Driver{
             return $this->token['openid'];
 
         $data = $this->call('user');
-        return !empty($data['id'])?$data['id']:NULL;
+        return !empty($data['id'])?$data['id']:null;
     }
 
     /**

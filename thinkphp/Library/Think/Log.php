@@ -44,7 +44,7 @@ class Log {
      * @return array
      */
     static public function getLog($level=''){
-        return $level?self::$log[$level]:self::$log;
+        return $level ? self::$log[$level] : self::$log;
     }
 
     /**
@@ -55,7 +55,7 @@ class Log {
      * @return void
      */
     static public function save($destination='',$level='') {
-        $log    =   $level?self::$log[$level]:self::$log;
+        $log    =   self::getLog($level);
         if(empty($log)) return ;
         $message    =   '';
         if($level) {

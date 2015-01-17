@@ -75,7 +75,7 @@ class Google extends Driver{
             return $this->token['openid'];
         
         $data = $this->call('userinfo');
-        return !empty($data['id'])?$data['id']:NULL;
+        return !empty($data['id'])?$data['id']:null;
     }
 	
     /**

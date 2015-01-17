@@ -29,6 +29,13 @@ defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
 defined('EXT')          or define('EXT',          '.php');
 defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
 
+defined('VAR_MODULE')       or define('VAR_MODULE', 'm');
+defined('VAR_CONTROLLER')   or define('VAR_CONTROLLER','c');
+defined('VAR_ACTION')       or define('VAR_ACTION','a');
+defined('VAR_ADDON')        or define('VAR_ADDON','addon');
+defined('VAR_PATHINFO')     or define('VAR_PATHINFO','s');
+defined('VAR_TEMPLATE')     or define('VAR_TEMPLATE','t');
+
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
 define('IS_CGI',          strpos(PHP_SAPI, 'cgi') === 0 ? 1 : 0);
@@ -167,7 +174,7 @@ function E($msg, $code=0) {
 /**
  * 浏览器友好的变量输出
  * @param mixed $var 变量
- * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串
+ * @param boolean $echo 是否输出 默认为true 如果为false 则返回输出字符串
  * @param string $label 标签 默认为空
  * @return void|string
  */
@@ -182,7 +189,7 @@ function dump($var, $echo=true, $label=null) {
  * @return void
  */
 function W($name, $data=[]) {
-    echo Think\Loader::action($name,$data,'Widget');
+    return Think\Loader::action($name,$data,'Widget');
 }
 
 /**
@@ -208,9 +215,9 @@ function S($name,$value='',$options=null) {
         return $cache->rm($name);
     }else { // 缓存数据
         if(is_array($options)) {
-            $expire =   isset($options['expire'])?$options['expire']:NULL;  //修复查询缓存无法设置过期时间
+            $expire =   isset($options['expire'])?$options['expire']:null;  //修复查询缓存无法设置过期时间
         }else{
-            $expire =   is_numeric($options)?$options:NULL; //默认快捷缓存设置过期时间
+            $expire =   is_numeric($options)?$options:null; //默认快捷缓存设置过期时间
         }
         return $cache->set($name, $value, $expire);
     }
