@@ -17,6 +17,7 @@ define('THINK_VERSION', '4.0beta');
 // 系统常量
 defined('THINK_PATH')   or define('THINK_PATH',   dirname(__FILE__).'/');
 defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'Library/');
+defined('MODE_PATH')    or define('MODE_PATH',    THINK_PATH.'Mode/'); // 系统应用模式目录
 defined('TRAIT_PATH')   or define('TRAIT_PATH',   THINK_PATH.'Traits/');
 defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'Think/');
 defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'Org/');
@@ -29,12 +30,13 @@ defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
 defined('EXT')          or define('EXT',          '.php');
 defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
 
-defined('VAR_MODULE')       or define('VAR_MODULE', 'm');
-defined('VAR_CONTROLLER')   or define('VAR_CONTROLLER','c');
-defined('VAR_ACTION')       or define('VAR_ACTION','a');
-defined('VAR_ADDON')        or define('VAR_ADDON','addon');
-defined('VAR_PATHINFO')     or define('VAR_PATHINFO','s');
-defined('VAR_TEMPLATE')     or define('VAR_TEMPLATE','t');
+if(function_exists('saeAutoLoader')){// 自动识别SAE环境
+    defined('APP_MODE')     or define('APP_MODE',      'sae');
+    defined('STORAGE_TYPE') or define('STORAGE_TYPE',  'Sae');
+}else{
+    defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
+    defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
+}
 
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
