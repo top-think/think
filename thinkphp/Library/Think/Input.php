@@ -101,9 +101,11 @@ class Input {
             if(!empty($args[1])) {
                 $filters    =   explode(',',$args[1]);
                 if(is_string($filters)){
-                    if(0 === strpos($filters,'/') && 1 !== preg_match($filters,(string)$data)){
-                        // 支持正则验证
-                        return   $default;
+                    if(0 === strpos($filters,'/')){
+                        if(1 !== preg_match($filters,(string)$data)){
+                            // 支持正则验证
+                            return   $default;
+                        }
                     }else{
                         $filters    =   explode(',',$filters);                    
                     }
