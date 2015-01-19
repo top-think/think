@@ -14,7 +14,7 @@ namespace Think;
  */
 
 // 加载框架底层语言包
-Lang::set(include THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT);
+is_file(THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT) && Lang::set(include THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT);
 
 
 // 初始化操作可以在应用的公共文件中处理 下面只是示例
@@ -62,6 +62,7 @@ return [
         'default_jsonp_handler' => 'jsonpReturn', // 默认JSONP格式返回的处理方法
         'var_jsonp_handler'     => 'callback',
         'template_engine'       =>  'think',
+        'common_module'         => 'Common',
 
         /* 错误设置 */
         'error_message'     =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效

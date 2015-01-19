@@ -59,7 +59,7 @@ class App {
         // 执行操作
         if(!preg_match('/^[A-Za-z](\/|\w)*$/',CONTROLLER_NAME)){ // 安全检测
             $instance  =  false;
-        }elseif($config['action_bind_class']){
+        }elseif(isset($config['action_bind_class']) && $config['action_bind_class']){
             // 操作绑定到类：模块\Controller\控制器\操作
             $layer  =   $config['controller_layer'];
             if(is_dir(MODULE_PATH.$layer.'/'.CONTROLLER_NAME)){
@@ -165,7 +165,7 @@ class App {
         }
         
         // 检测域名部署
-        if(!IS_CLI && $config['sub_domain_deploy']) {
+        if(!IS_CLI && isset($config['sub_domain_deploy']) && $config['sub_domain_deploy']) {
             Route::checkDomain($config);
         }
 
@@ -260,7 +260,7 @@ class App {
 
     static private function getModule($config){
         $module     =   strtolower(isset($_GET[$config['var_module']]) ? $_GET[$config['var_module']] : $config['default_module']);
-        if($maps = $config['url_module_map']) {
+        if(isset($config['url_module_map']) && $maps = $config['url_module_map']) {
             if(isset($maps[$module])) {
                 // 记录当前别名
                 define('MODULE_ALIAS',$module);

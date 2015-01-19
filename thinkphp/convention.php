@@ -37,6 +37,8 @@ return [
 	'var_jsonp_handler'     => 'callback',
     'template_engine'       =>  'think',
 
+    'common_module'         => 'Common',
+
     /* 错误设置 */
     'error_message'     =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
     'error_page'        =>  '',	// 错误定向页面

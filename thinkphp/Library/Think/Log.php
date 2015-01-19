@@ -78,7 +78,7 @@ class Log {
      * @param string $destination  写入目标
      * @return void
      */
-    static public function write($log,$level,$destination='') {
+    static public function write($log,$level='',$destination='') {
         self::$storage && self::$storage->write("{$level}: {$log}",$destination);
     }
 }
