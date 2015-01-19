@@ -34,15 +34,10 @@ return [
             'master_num'        =>  1, // 读写分离后 主服务器数量
             'slave_no'          =>  '', // 指定从服务器序号
         ],    
-        //更改模板替换变量，让普通能在所有平台下显示
-        'TMPL_PARSE_STRING' =>  [
-            // __PUBLIC__/upload  -->  /Public/upload -->http://appname-public.stor.sinaapp.com/upload
-            '/Public/upload'    =>  $st->getUrl('public','upload')
-        ],
-        'LOG_TYPE'          =>  'Sae',
-        'DATA_CACHE_TYPE'   =>  'Memcachesae',
-        'CHECK_APP_DIR'     =>  false,
-        'FILE_UPLOAD_TYPE'  =>  'Sae',
+        'log_type'          =>  'Sae',
+        'data_cache_type'   =>  'Memcachesae',
+        'check_app_dir'     =>  false,
+        'file_upload_type'  =>  'Sae',
     ],
 
     // 别名定义
