@@ -12,16 +12,41 @@
 /**
  * ThinkPHP SAE应用模式定义文件
  */
-return array(
+$st =   new SaeStorage();
+return [
     // 配置文件
-    'config'    =>  array(
-        THINK_PATH.'Conf/convention.php',   // 系统惯例配置
-        CONF_PATH.'config'.CONF_EXT,      // 应用公共配置
-        MODE_PATH.'Sae/convention.php',//[sae] sae的惯例配置
-    ),
+    'config'    =>  [
+        /* 数据库设置 */
+        'database'    =>  [
+            'type'              =>  'mysql',     // 数据库类型
+            'dsn'               =>  '', // 
+            'hostname'          =>  SAE_MYSQL_HOST_M.','.SAE_MYSQL_HOST_S, // 服务器地址
+            'database'          =>  SAE_MYSQL_DB,          // 数据库名
+            'username'          =>  SAE_MYSQL_USER,      // 用户名
+            'password'          =>  SAE_MYSQL_PASS,          // 密码
+            'hostport'          =>  SAE_MYSQL_PORT,        // 端口               
+            'params'            =>  [], // 数据库连接参数        
+            'charset'           =>  'utf8',      // 数据库编码默认采用utf8  
+            'prefix'            =>  '',    // 数据库表前缀
+            'debug'             =>  false, // 数据库调试模式
+            'deploy'            =>  1, // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
+            'rw_separate'       =>  true,       // 数据库读写是否分离 主从式有效
+            'master_num'        =>  1, // 读写分离后 主服务器数量
+            'slave_no'          =>  '', // 指定从服务器序号
+        ],    
+        //更改模板替换变量，让普通能在所有平台下显示
+        'TMPL_PARSE_STRING' =>  [
+            // __PUBLIC__/upload  -->  /Public/upload -->http://appname-public.stor.sinaapp.com/upload
+            '/Public/upload'    =>  $st->getUrl('public','upload')
+        ],
+        'LOG_TYPE'          =>  'Sae',
+        'DATA_CACHE_TYPE'   =>  'Memcachesae',
+        'CHECK_APP_DIR'     =>  false,
+        'FILE_UPLOAD_TYPE'  =>  'Sae',
+    ],
 
     // 别名定义
-    'alias'     =>  array(
+    'alias'     =>  [
         'Think\Log'               => CORE_PATH . 'Log'.EXT,
         'Think\Log\Driver\File'   => CORE_PATH . 'Log/Driver/File'.EXT,
         'Think\Exception'         => CORE_PATH . 'Exception'.EXT,
@@ -31,38 +56,6 @@ return array(
         'Think\Cache'             => CORE_PATH . 'Cache'.EXT,
         'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File'.EXT,
         'Think\Storage'           => CORE_PATH . 'Storage'.EXT,
-    ),
+    ],
 
-    // 函数和类文件
-    'core'      =>  array(
-        THINK_PATH.'Common/functions.php',
-        COMMON_PATH.'Common/function.php',
-        CORE_PATH . 'Hook'.EXT,
-        CORE_PATH . 'App'.EXT,
-        CORE_PATH . 'Dispatcher'.EXT,
-        //CORE_PATH . 'Log'.EXT,
-        CORE_PATH . 'Route'.EXT,
-        CORE_PATH . 'Controller'.EXT,
-        CORE_PATH . 'View'.EXT,
-        BEHAVIOR_PATH . 'ParseTemplateBehavior'.EXT,
-        BEHAVIOR_PATH . 'ContentReplaceBehavior'.EXT,
-    ),
-    // 行为扩展定义
-    'tags'  =>  array(
-        'app_begin'     =>  array(
-            'Behavior\ReadHtmlCacheBehavior', // 读取静态缓存
-        ),
-        'app_end'       =>  array(
-            'Behavior\ShowPageTraceBehavior', // 页面Trace显示
-        ),
-        'view_parse'    =>  array(
-            'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
-        ),
-        'template_filter'=> array(
-            'Behavior\ContentReplaceBehavior', // 模板输出替换
-        ),
-        'view_filter'   =>  array(
-            'Behavior\WriteHtmlCacheBehavior', // 写入静态缓存
-        ),
-    ),
-);
+];
