@@ -83,11 +83,6 @@ class Model {
             $this->dbName    =   $config['db_name'];
         }
 
-        // 设置表前缀
-        if(empty($this->tablePrefix)) {
-            $this->tablePrefix  =   is_null($this->tablePrefix)?'':C('database.prefix');
-        }
-
         // 数据库初始化操作
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
@@ -566,7 +561,7 @@ class Model {
                 $config  =  C($config);
             }
             $_db[$linkNum]            =    Db::instance($config);
-        }elseif(NULL === $config){
+        }elseif(null === $config){
             $_db[$linkNum]->close(); // 关闭数据库连接
             unset($_db[$linkNum]);
             return ;
@@ -825,7 +820,7 @@ class Model {
      * @param array $args 参数
      * @return Model
      */
-    public function scope($scope='',$args=NULL){
+    public function scope($scope='',$args=null){
         if('' === $scope) {
             if(isset($this->scope['default'])) {
                 // 默认的命名范围

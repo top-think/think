@@ -190,8 +190,8 @@ trait Extend {
         if(false !== ($value = F($guid))) { // 存在缓存写入数据
             if(time()>S($guid.'_time')+$lazyTime) {
                 // 延时更新时间到了，删除缓存数据 并实际写入数据库
-                S($guid,NULL);
-                S($guid.'_time',NULL);
+                S($guid,null);
+                S($guid.'_time',null);
                 return $value+$step;
             }else{
                 // 追加数据到缓存

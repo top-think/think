@@ -27,12 +27,12 @@ class Cache {
      */
     static public function connect($options=[]) {
         $type   =   !empty($options['type'])?$options['type']:'File';
-        $class = 'Think\\Cache\\Driver\\'.ucwords($type);
+        $class  =   'Think\\Cache\\Driver\\'.ucwords($type);
         self::$handler = new $class($options);
         return self::$handler;
     }
 
-	static public function __callStatic($method, $params){
-		return call_user_func_array(array(self::$handler, $method), $params);
-	}
+    static public function __callStatic($method, $params){
+        return call_user_func_array(array(self::$handler, $method), $params);
+    }
 }

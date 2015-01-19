@@ -69,7 +69,7 @@ class Baidu extends Driver{
         if(!empty($this->token['openid']))
             return $this->token['openid'];
         $data = $this->call('passport/users/getLoggedInUser');
-        return !empty($data['uid'])?$data['uid']:NULL;
+        return !empty($data['uid'])?$data['uid']:null;
     }
 
     /**

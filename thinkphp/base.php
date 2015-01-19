@@ -17,6 +17,7 @@ define('THINK_VERSION', '4.0beta');
 // 系统常量
 defined('THINK_PATH')   or define('THINK_PATH',   dirname(__FILE__).'/');
 defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'Library/');
+defined('MODE_PATH')    or define('MODE_PATH',    THINK_PATH.'Mode/'); // 系统应用模式目录
 defined('TRAIT_PATH')   or define('TRAIT_PATH',   THINK_PATH.'Traits/');
 defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'Think/');
 defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'Org/');
@@ -28,6 +29,14 @@ defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Temp/');
 defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
 defined('EXT')          or define('EXT',          '.php');
 defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
+
+if(function_exists('saeAutoLoader')){// 自动识别SAE环境
+    defined('APP_MODE')     or define('APP_MODE',      'sae');
+    defined('STORAGE_TYPE') or define('STORAGE_TYPE',  'Sae');
+}else{
+    defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
+    defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
+}
 
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
@@ -167,7 +176,7 @@ function E($msg, $code=0) {
 /**
  * 浏览器友好的变量输出
  * @param mixed $var 变量
- * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串
+ * @param boolean $echo 是否输出 默认为true 如果为false 则返回输出字符串
  * @param string $label 标签 默认为空
  * @return void|string
  */
@@ -182,7 +191,7 @@ function dump($var, $echo=true, $label=null) {
  * @return void
  */
 function W($name, $data=[]) {
-    echo Think\Loader::action($name,$data,'Widget');
+    return Think\Loader::action($name,$data,'Widget');
 }
 
 /**
@@ -208,9 +217,9 @@ function S($name,$value='',$options=null) {
         return $cache->rm($name);
     }else { // 缓存数据
         if(is_array($options)) {
-            $expire =   isset($options['expire'])?$options['expire']:NULL;  //修复查询缓存无法设置过期时间
+            $expire =   isset($options['expire'])?$options['expire']:null;  //修复查询缓存无法设置过期时间
         }else{
-            $expire =   is_numeric($options)?$options:NULL; //默认快捷缓存设置过期时间
+            $expire =   is_numeric($options)?$options:null; //默认快捷缓存设置过期时间
         }
         return $cache->set($name, $value, $expire);
     }

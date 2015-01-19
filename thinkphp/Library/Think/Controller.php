@@ -11,6 +11,7 @@
 
 namespace Think;
 use Think\View;
+use Think\Transform;
 
 class Controller {
     // 视图类实例
@@ -27,7 +28,7 @@ class Controller {
             'cache_path' => RUNTIME_PATH . 'Cache/',
         ];
         $this->view = new View();
-        $this->view->engine('think', $config);
+        $this->view->engine(Config::get('template_engine'), $config);
         
         //控制器初始化
         if(method_exists($this, '_initialize'))
@@ -80,39 +81,41 @@ class Controller {
      * @return void
      */
     protected function ajaxReturn($data, $type='') {
-        if(empty($type)) $type = C('default_ajax_return');
+        if(empty($type)) $type = Config::get('default_ajax_return');
         switch (strtoupper($type)){
             case 'JSON':
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
-                exit(Think\Transform::jsonEncode($data));
+                $data   =   Transform::jsonEncode($data);
+                break;
             case 'XML':
                 // 返回xml格式数据
                 header('Content-Type:text/xml; charset=utf-8');
-                exit(Think\Transform::xmlEncode($data));
+                $data   =   Transform::xmlEncode($data);
+                break;
             case 'JSONP':
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/javascript; charset=utf-8');
                 $handler = isset($_GET[C('var_jsonp_handler')]) ? $_GET[C('var_jsonp_handler')] : C('default_jsonp_handler');
-                exit($handler . '(' . Think\Transform::jsonEncode($data) . ');');  
+                $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';  
+                break;
             case 'SCRIPT':
                 // 返回可执行的js脚本
                 header('Content-Type:application/javascript; charset=utf-8');
-                exit($data);
+                break;
             case 'HTML':
                 // 返回html片段
                 header('Content-Type:text/html; charset=utf-8');
-                echo $data;
-                exit;
+                break;
             case 'TEXT':
                 // 返回一段纯文本
                 header('Content-Type:text/plain; charset=utf-8');
-                echo $data;
-                exit;
+                break;
             default:
                 // 用于扩展其他返回格式数据
-                Tag::listen('ajax_return', $data);
+                $data   =   Hook::listen('ajax_return', $data);
         }
+        exit($data);
     }
 
     /**
@@ -158,27 +161,35 @@ class Controller {
             $data['url']    = $jumpUrl;
             $this->ajaxReturn($data);
         }
-        if(is_int($ajax)) $this->view->assign('waitSecond', $ajax);
-        if(!empty($jumpUrl)) $this->view->assign('jumpUrl', $jumpUrl);
+        // 模板变量
+        $data   =   [];
+        if(is_int($ajax)) 
+            $data['waitSecond']   = $ajax;
+        if(!empty($jumpUrl)) 
+            $data['jumpUrl']   = $jumpUrl;
+
         // 提示标题
-        $this->view->assign('msgTitle', $status ? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_'));
-        $this->view->assign('status', $status);   // 状态
+        $data['msgTitle']   = $status ? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_');
+        $data['status']     = $status;   // 状态
+
         //保证输出不受静态缓存影响
-        C('HTML_CACHE_ON',false);
+        Config::set('html_cache_on',false);
         if($status) { //发送成功信息
-            $this->view->assign('message', $message);// 提示信息
+            $data['message']    = $message;// 提示信息
             // 成功操作后默认停留1秒
-            $this->view->assign('waitSecond', '1');
+            $data['waitSecond'] = '1';
             // 默认操作成功自动返回操作前页面
-            if(!$jumpUrl) $this->view->assign("jumpUrl", $_SERVER["HTTP_REFERER"]);
-            $this->display(C('success_tmpl'));
+            if(!$jumpUrl) 
+                $data["jumpUrl"]  = $_SERVER["HTTP_REFERER"];
+            $this->display(Config::get('success_tmpl'),$data);
         }else{
-            $this->view->assign('error', $message);// 提示信息
+            $data['error']  = $message;// 提示信息
             //发生错误时候默认停留3秒
-            $this->view->assign('waitSecond', '3');
+            $data['waitSecond'] = '3';
             // 默认发生错误的话自动返回上页
-            if(!$jumpUrl) $this->view->assign('jumpUrl', 'javascript:history.back(-1);');
-            $this->display(C('error_tmpl'));
+            if(!$jumpUrl) 
+                $data['jumpUrl']  = 'javascript:history.back(-1);';
+            $this->display(Config::get('error_tmpl'),$data);
             // 中止执行  避免出错后继续执行
             exit ;
         }

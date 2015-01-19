@@ -10,17 +10,20 @@
 // +----------------------------------------------------------------------
 
 namespace Think\Template\Driver;
+use Think\Exception;
 
 class File {
     // 写入编译缓存
     public function write($cacheFile,$content){
         // 检测模板目录
         $dir     =  dirname($cacheFile);
-        if(!is_dir($dir))
-            mkdir($dir,0755,true);
+        if(!is_dir($dir)){
+            mkdir($dir,0777,true);
+        }
         // 生成模板缓存文件
-        if( false === file_put_contents($cacheFile,$content))
-            E('_CACHE_WRITE_ERROR_:'.$cacheFile);
+        if( false === file_put_contents($cacheFile,$content)){
+            throw new Exception('_CACHE_WRITE_ERROR_:'.$cacheFile);
+        }
     }
     
     // 读取编译编译

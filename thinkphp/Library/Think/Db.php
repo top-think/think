@@ -91,7 +91,7 @@ class Db {
      }
 
     // 调用驱动类的方法
-	static public function __callStatic($method, $params){
-		return call_user_func_array(array(self::$_instance, $method), $params);
-	}
+    static public function __callStatic($method, $params){
+        return call_user_func_array(array(self::$_instance, $method), $params);
+    }
 }

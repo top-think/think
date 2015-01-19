@@ -130,9 +130,13 @@ class Loader {
      * @return Object
      */
     static public function model($name = '', $layer = 'Model') {
-        if(empty($name)) return new Model;
+        if(empty($name)) {
+            return new Model;
+        }
         static $_model = [];
-        if(isset($_model[$name . $layer])) return $_model[$name . $layer];
+        if(isset($_model[$name . $layer])) {
+            return $_model[$name . $layer];
+        }
         if(strpos($name, '/')) {
             list($module, $name) = explode('/', $name);
         }else{
@@ -157,7 +161,9 @@ class Loader {
      */
     static public function controller($name, $layer = 'Controller') {
         static $_instance = [];
-        if(isset($_instance[$name.$layer])) return $_instance[$name . $layer];
+        if(isset($_instance[$name.$layer])) {
+            return $_instance[$name . $layer];
+        }
         if(strpos($name, '/')) {
             list($module,$name) = explode('/', $name);
         }else{
@@ -226,7 +232,7 @@ class Loader {
                     $_instance[$identify] = $o;
             }
             else
-                E('_CLASS_NOT_EXIST_:' . $class);
+                throw new Exception('_CLASS_NOT_EXIST_:' . $class);
         }
         return $_instance[$identify];
     }

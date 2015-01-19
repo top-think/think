@@ -14,7 +14,6 @@ return [
     'app_debug'             => true,   // 调试模式
     'app_status'            => 'debug',// 调试模式状态
     'var_module'            => 'm',    // 模块变量名
-    'var_group'             =>  'g',    // 分组变量名
     'var_controller'        => 'c',    // 控制器变量名
     'var_action'            => 'a',    // 操作变量名
     'var_pathinfo'          => 's',    // PATHINFO变量名 用于兼容模式
@@ -22,8 +21,6 @@ return [
     'pathinfo_depr'         => '/',    // pathinfo分隔符
     'require_module'        => true,   // 是否显示模块
     'default_module'        => 'index',  // 默认模块名
-    'require_group'         => false,   // 控制器是否需要分组
-    'default_group'         => '',  // 默认分组名
     'require_controller'    => true,   // 是否显示控制器
     'default_controller'    => 'index',    // 默认控制器名
     'default_action'        => 'index',    // 默认操作名
@@ -38,6 +35,7 @@ return [
     'default_ajax_return'   => 'JSON',  // 默认AJAX 数据返回格式,可选JSON XML ...
     'default_jsonp_handler' => 'jsonpReturn', // 默认JSONP格式返回的处理方法
 	'var_jsonp_handler'     => 'callback',
+    'template_engine'       =>  'think',
 
     /* 错误设置 */
     'error_message'     =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效

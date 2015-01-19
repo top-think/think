@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace Think;
+use Think\Exception;
 
 /**
  * App 应用管理
@@ -22,52 +23,76 @@ class App {
      * @access public
      * @return void
      */
-    static public function run() {
+    static public function run($config) {
         // 监听app_init
-        Tag::listen('app_init');
-        if(Config::get('common_module')){
-            define('COMMON_PATH', APP_PATH . Config::get('common_module').'/');
-            // 加载全局初始化文件
-            if(is_file( COMMON_PATH . 'init' . EXT )) {
-                include COMMON_PATH . 'init' . EXT;
-            }else{
-                // 检测全局配置文件
-                if(is_file(COMMON_PATH . 'config' . EXT)) {
-                    Config::set(include COMMON_PATH . 'config' . EXT);
-                }
-                // 加载全局别名文件
-                if(is_file(COMMON_PATH . 'alias' . EXT)) {
-                    Loader::addMap(include COMMON_PATH . 'alias' . EXT);
-                }
-                // 加载全局公共文件
-                if(is_file( COMMON_PATH . 'common' . EXT)) {
-                    include COMMON_PATH . 'common' . EXT;
-                }
-                if(is_file(COMMON_PATH . 'tags' . EXT)) {
-                    // 全局行为扩展文件
-                    Tag::import(include COMMON_PATH . 'tags' . EXT);
-                }
-            }                
-        }        
+        Hook::listen('app_init');
+
+        define('COMMON_PATH', APP_PATH . $config['common_module'].'/');
+        // 加载全局初始化文件
+        if(is_file( COMMON_PATH . 'init' . EXT )) {
+            include COMMON_PATH . 'init' . EXT;
+        }else{
+            // 检测全局配置文件
+            if(is_file(COMMON_PATH . 'config' . EXT)) {
+                $config =   Config::set(include COMMON_PATH . 'config' . EXT);
+            }
+            // 加载全局别名文件
+            if(is_file(COMMON_PATH . 'alias' . EXT)) {
+                Loader::addMap(include COMMON_PATH . 'alias' . EXT);
+            }
+            // 加载全局公共文件
+            if(is_file( COMMON_PATH . 'common' . EXT)) {
+                include COMMON_PATH . 'common' . EXT;
+            }
+            if(is_file(COMMON_PATH . 'tags' . EXT)) {
+                // 全局行为扩展文件
+                Hook::import(include COMMON_PATH . 'tags' . EXT);
+            }
+        }
 
         // 应用URL调度
         self::dispatch($config);
 
         // 监听app_run
-        Tag::listen('app_run');
+        Hook::listen('app_run');
 
         // 执行操作
-        $instance = Loader::controller(CONTROLLER_NAME);
+        if(!preg_match('/^[A-Za-z](\/|\w)*$/',CONTROLLER_NAME)){ // 安全检测
+            $instance  =  false;
+        }elseif($config['action_bind_class']){
+            // 操作绑定到类：模块\Controller\控制器\操作
+            $layer  =   $config['controller_layer'];
+            if(is_dir(MODULE_PATH.$layer.'/'.CONTROLLER_NAME)){
+                $namespace  =   MODULE_NAME.'\\'.$layer.'\\'.CONTROLLER_NAME.'\\';
+            }else{
+                // 空控制器
+                $namespace  =   MODULE_NAME.'\\'.$layer.'\\_empty\\';                    
+            }
+            $actionName     =   strtolower(ACTION_NAME);
+            if(class_exists($namespace.$actionName)){
+                $class   =  $namespace.$actionName;
+            }elseif(class_exists($namespace.'_empty')){
+                // 空操作
+                $class   =  $namespace.'_empty';
+            }else{
+                throw new Exception('_ERROR_ACTION_:'.ACTION_NAME);
+            }
+            $instance  =  new $class;
+            // 操作绑定到类后 固定执行run入口
+            $action     =   'run';
+        }else{
+            $instance   =   Loader::controller(CONTROLLER_NAME);
+            // 获取当前操作名
+            $action     =   ACTION_NAME . $config['action_suffix'];
+        }
         if(!$instance) {
-            E('[ ' . MODULE_NAME . '\\Controller\\' . parse_name(CONTROLLER_NAME, 1) . 'Controller ] not exists');
+            throw new Exception('[ ' . MODULE_NAME . '\\Controller\\' . parse_name(CONTROLLER_NAME, 1) . 'Controller ] not exists');
         }
 
-        // 获取当前操作名
-        $action = ACTION_NAME . $config['action_suffix'];
         try{
             // 操作方法开始监听
             $call = [$instance, $action];
-            Tag::listen('action_begin', $call);
+            Hook::listen('action_begin', $call);
             if(!preg_match('/^[A-Za-z](\w)*$/', $action)){
                 // 非法操作
                 throw new \ReflectionException();
@@ -88,9 +113,12 @@ class App {
                             $vars = $_GET;
                     }
                     $params = $method->getParameters();
+                    $paramsBindType     =   $config['url_parmas_bind_type'];
                     foreach ($params as $param){
                         $name = $param->getName();
-                        if(isset($vars[$name])) {
+                        if( 1 == $paramsBindType && !empty($vars) ){
+                            $args[] =   array_shift($vars);
+                        }if(0 == $paramsBindType && isset($vars[$name])) {
                             $args[] = $vars[$name];
                         }elseif($param->isDefaultValueAvailable()){
                             $args[] = $param->getDefaultValue();
@@ -98,12 +126,13 @@ class App {
                             E('_PARAM_ERROR_:' . $name);
                         }
                     }
+                    array_walk_recursive($args,'Input::filterExp');
                     $method->invokeArgs($instance, $args);
                 }else{
                     $method->invoke($instance);
                 }
                 // 操作方法执行完成监听
-                Tag::listen('action_end', $call);
+                Hook::listen('action_end', $call);
             }else{
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -114,11 +143,11 @@ class App {
                 $method = new \ReflectionMethod($instance, '_empty');
                 $method->invokeArgs($instance, [$action, '']);
             }else{
-                E('[ ' . (new \ReflectionClass($instance))->getName() . ':' . $action . ' ] not exists ', 404);
+                throw new Exception('[ ' . (new \ReflectionClass($instance))->getName() . ':' . $action . ' ] not exists ', 404);
             }
         }
         // 监听app_end
-        Tag::listen('app_end');
+        Hook::listen('app_end');
         return ;
     }
 
@@ -128,25 +157,20 @@ class App {
      * @return void
      */
     static public function dispatch($config) {
-        $var_m = $config['var_module'];
-        $var_g = $config['var_group'];
-        $var_c = $config['var_controller'];
-        $var_a = $config['var_action'];
-        $var_p = $config['var_pathinfo'];
-        if(isset($_GET[$var_p])) { // 判断URL里面是否有兼容模式参数
-            $_SERVER['PATH_INFO'] = $_GET[$var_p];
-            unset($_GET[$var_p]);
+        if(isset($_GET[$config['var_pathinfo']])) { // 判断URL里面是否有兼容模式参数
+            $_SERVER['PATH_INFO'] = $_GET[$config['var_pathinfo']];
+            unset($_GET[$config['var_pathinfo']]);
         }elseif(IS_CLI){ // CLI模式下 index.php module/controller/action/params/...
             $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
         }
         
         // 检测域名部署
-        if(!IS_CLI) {
-            Route::checkDomain();
+        if(!IS_CLI && $config['sub_domain_deploy']) {
+            Route::checkDomain($config);
         }
 
         // 监听path_info
-        Tag::listen('path_info');
+        Hook::listen('path_info');
         // 分析PATHINFO信息
         if(!isset($_SERVER['PATH_INFO']) && $_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
             $types = explode(',', $config['pathinfo_fetch']);
@@ -162,43 +186,34 @@ class App {
             }
         }
 
-        // 定位模块
         if(empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
-        }
-        
-		// URL后缀
-        define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
-        $_SERVER['PATH_INFO'] = trim(preg_replace('/\.(' . trim($config['url_html_suffix'], '.') . ')$/i', '', $_SERVER['PATH_INFO']), '/');
-        if($_SERVER['PATH_INFO']) {
-            if($config['url_deny_suffix'] && preg_match('/\.('.$config['url_deny_suffix'].')$/i', $_SERVER['PATH_INFO'])){
-                exit;
-            }            
-            $paths = explode($config['pathinfo_depr'], $_SERVER['PATH_INFO']);
-            // 获取URL中的模块名
-            if($config['require_module'] && !isset($_GET[$var_m])) {
-                $_GET[$var_m]         = array_shift($paths);
-                $_SERVER['PATH_INFO'] = implode('/', $paths);
-            }
+            define('__INFO__','');
+            define('__EXT__','');
+        }else{
+            define('__INFO__',trim($_SERVER['PATH_INFO'],'/'));
+            // URL后缀
+            define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
+            $_SERVER['PATH_INFO'] = __INFO__;     
+            if(!defined('BIND_MODULE')){
+                if($config['url_deny_suffix'] && preg_match('/\.('.$config['url_deny_suffix'].')$/i', $_SERVER['PATH_INFO'])){
+                    exit;
+                }
+                $paths = explode($config['pathinfo_depr'], $_SERVER['PATH_INFO']);
+                // 获取URL中的模块名
+                if($config['require_module'] && !isset($_GET[$config['var_module']])) {
+                    $_GET[$config['var_module']]     = array_shift($paths);
+                    $_SERVER['PATH_INFO'] = implode('/', $paths);
+                }
+            }             
         }
 
         // 获取模块名称
-        $module     =   strtolower(isset($_GET[$var_m]) ? $_GET[$var_m] : $config['default_module']);
-        if($maps = Config::get('url_module_map')) {
-            if(isset($maps[$module])) {
-                // 记录当前别名
-                define('MODULE_ALIAS',$module);
-                // 获取实际的项目名
-                $module =   $maps[MODULE_ALIAS];
-            }elseif(array_search($module,$maps)){
-                // 禁止访问原始项目
-                $module =   '';
-            }
-        }
-        define('MODULE_NAME', ucwords($module));
+        define('MODULE_NAME', defined('BIND_MODULE')? BIND_MODULE : self::getModule($config));
+
         // 模块初始化
-        if(MODULE_NAME && Config::get('common_module') != MODULE_NAME && is_dir( APP_PATH . MODULE_NAME )) {
-            Tag::listen('app_begin');
+        if(MODULE_NAME && $config['common_module'] != MODULE_NAME && is_dir( APP_PATH . MODULE_NAME )) {
+            Hook::listen('app_begin');
             define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
             // 加载模块初始化文件
             if(is_file( MODULE_PATH . 'init' . EXT )) {
@@ -223,33 +238,39 @@ class App {
                 }
                 if(is_file(MODULE_PATH . 'tags' . EXT)) {
                     // 行为扩展文件
-                    Tag::import(include MODULE_PATH . 'tags' . EXT);
+                    Hook::import(include MODULE_PATH . 'tags' . EXT);
                 }
             }
-            $var_g = $config['var_group'];
-            $var_c = $config['var_controller'];
-            $var_a = $config['var_action'];
         }else{
-            E('module not exists :' . MODULE_NAME);
+            throw new Exception('module not exists :' . MODULE_NAME);
         }
         // 路由检测和控制器、操作解析
-        Route::check($_SERVER['PATH_INFO']);
-
-        // 获取分组名
-        if(Config::get('require_group')){
-            define('GROUP_NAME', strtolower(isset($_GET[$var_g]) ? $_GET[$var_g] : $config['default_group']));
-        }else{
-            define('GROUP_NAME', '');
-        }        
+        Route::check($_SERVER['PATH_INFO'],$config);
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strtolower(isset($_GET[$var_c]) ? $_GET[$var_c] : $config['default_controller']));
+        define('CONTROLLER_NAME', strip_tags(strtolower(isset($_GET[$config['var_controller']]) ? $_GET[$config['var_controller']] : $config['default_controller'])));
 
         // 获取操作名
-        define('ACTION_NAME', strtolower(isset($_GET[$var_a]) ? $_GET[$var_a] : $config['default_action']));
+        define('ACTION_NAME', strip_tags(strtolower(isset($_GET[$config['var_action']]) ? $_GET[$config['var_action']] : $config['default_action'])));
 
-        unset($_GET[$var_a], $_GET[$var_c], $_GET[$var_m]);
+        unset($_GET[$config['var_action']], $_GET[$config['var_controller']], $_GET[$config['var_module']]);
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST, $_GET);
+    }
+
+    static private function getModule($config){
+        $module     =   strtolower(isset($_GET[$config['var_module']]) ? $_GET[$config['var_module']] : $config['default_module']);
+        if($maps = $config['url_module_map']) {
+            if(isset($maps[$module])) {
+                // 记录当前别名
+                define('MODULE_ALIAS',$module);
+                // 获取实际的项目名
+                $module =   $maps[MODULE_ALIAS];
+            }elseif(array_search($module,$maps)){
+                // 禁止访问原始项目
+                $module =   '';
+            }
+        }
+        return strip_tags(ucwords($module));
     }
 }

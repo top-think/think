@@ -10,24 +10,27 @@
 // +----------------------------------------------------------------------
 
 namespace Think;
+use Think\Exception;
 
 class View {
     protected $engine = null; // 模板引擎实例
     protected $theme  = '';   // 模板主题名称
     protected $data   = [];   // 模板变量
     protected $config = [     // 视图参数
-        'http_output_content' => true,
-        'http_content_type'   => 'text/html',
-        'http_charset'        => 'utf-8',
-        'http_cache_control'  => 'private',
-        'http_render_content' => false,
-        'theme_on'            => false,
-        'auto_detect_theme'   => false,
-        'var_theme'           => 't',
-        'default_theme'       => 'default',
-        'http_cache_id'       => null,
-        'view_path'           => '',
-        'view_suffix'         => '.html',
+        'http_output_content'   =>  true,
+        'http_content_type'     =>  'text/html',
+        'http_charset'          =>  'utf-8',
+        'http_cache_control'    =>  'private',
+        'http_render_content'   =>  false,
+        'theme_on'              =>  false,
+        'auto_detect_theme'     =>  false,
+        'var_theme'             =>  't',
+        'default_theme'         =>  'default',
+        'http_cache_id'         =>  null,
+        'view_path'             =>  '',
+        'view_suffix'           =>  '.html',
+        'view_depr'             =>  '/',
+        'view_layer'            =>  'View',
     ];
     
     /**
@@ -100,11 +103,11 @@ class View {
      * @return mixed
      */
     public function display($template = '', $vars = [], $cache_id = '') {
-        Tag::listen('view_begin', $template);
+        Hook::listen('view_begin', $template);
         // 解析并获取模板内容
         $content = $this->fetch($template, $vars, $cache_id);
         // 输出内容过滤
-        Tag::listen('view_filter', $content);
+        Hook::listen('view_filter', $content);
         // 输出模板内容
         if($this->config['http_output_content']) {
             $this->render($content);
@@ -123,10 +126,12 @@ class View {
      */
     protected function fetch($template, $vars = [], $cache_id='') {
         if(!$this->config['http_render_content']) {
+            // 获取模板文件名
             $template = $this->parseTemplate($template);
             // 模板不存在 抛出异常
-            if(!is_file($template)) 
-                E('template file not exists:' . $template);
+            if(!is_file($template)) {
+                throw new Exception('template file not exists:' . $template);
+            }
         }
         $vars = $vars ? $vars : $this->data;
         // 页面缓存
@@ -152,17 +157,25 @@ class View {
         if(is_file($template)) {
             return $template;
         }
-        $template = str_replace(':', '/', $template);
-        // 获取当前主题名称
-        $theme = $this->getTemplateTheme();
+        $depr       =   $this->config['view_depr'];
+        $template   =   str_replace(':', $depr, $template);        
+
+        // 获取当前模块
+        $module   =  MODULE_NAME;
+        if(strpos($template,'@')){ // 跨模块调用模版文件
+            list($module,$template)  =   explode('@',$template);
+        }
+        // 获取当前主题的模版路径
+        defined('THEME_PATH') or    define('THEME_PATH', $this->getThemePath($module));
+
         // 分析模板文件规则
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
-            $template = CONTROLLER_NAME . '/' . ACTION_NAME;
-        }elseif(false === strpos($template, '/')){
-            $template = CONTROLLER_NAME . '/' . $template;
+            $template = CONTROLLER_NAME . $depr . ACTION_NAME;
+        }elseif(false === strpos($template, $depr)){
+            $template = CONTROLLER_NAME . $depr . $template;
         }
-        return ($this->config['view_path'] ? $this->config['view_path'] : MODULE_PATH . 'View/').$theme.$template.$this->config['view_suffix'];
+        return THEME_PATH.$template.$this->config['view_suffix'];  
     }
 
     /**
@@ -170,7 +183,7 @@ class View {
      * @access private
      * @return string
      */
-    private function getTemplateTheme() {
+    private function getTemplateTheme($module) {
         if($this->config['theme_on']) {
             if($this->theme) { // 指定模板主题
                 $theme = $this->theme;
@@ -182,7 +195,7 @@ class View {
                 }elseif(Cookie::get('think_theme')){
                     $theme = Cookie::get('think_theme');
                 }
-                if(!is_dir(MODULE_PATH . 'View/' . $theme)) {
+                if(!is_dir(APP_PATH.$module . '/'. $this->config['view_layer'].'/' . $theme)) {
                     $theme = $this->config['default_theme'];
                 }
                 Cookie::set('think_theme', $theme, 864000);
@@ -192,6 +205,24 @@ class View {
             return $theme . '/';
         }
         return '';
+    }
+
+    /**
+     * 获取当前的模板路径
+     * @access protected
+     * @param  string $module 模块名
+     * @return string
+     */
+    protected function getThemePath($module=MODULE_NAME){
+        // 获取当前主题名称
+        $theme = $this->getTemplateTheme($module);
+        // 获取当前主题的模版路径
+        $tmplPath   =   $this->config['view_path']; // 模块设置独立的视图目录
+        if(!$tmplPath){ 
+            // 定义TMPL_PATH 则改变全局的视图目录到模块之外
+            $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module.'/' : APP_PATH.$module.'/'.$this->config['view_layer'].'/';
+        }
+        return $tmplPath.$theme;
     }
 
     /**

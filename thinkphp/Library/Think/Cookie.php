@@ -18,6 +18,8 @@ class Cookie {
         'expire'    =>  0, // cookie 保存时间
         'path'      =>  '/', // cookie 保存路径
         'domain'    =>  '', // cookie 有效域名        
+        'secure'    =>  false, //  cookie 启用安全传输
+        'httponly'  =>  '', // httponly设置
     ];
 
     /**
@@ -27,6 +29,9 @@ class Cookie {
      */
     static public function init($config=[]){
         self::$config     = array_merge(self::$config, array_change_key_case($config));
+        if(!empty(self::$config['httponly'])){
+            ini_set('session.cookie_httponly', 1);
+        }
     }
 
     /**
@@ -66,7 +71,7 @@ class Cookie {
             $value  = 'think:'.json_encode(array_map('urlencode',$value));
         }
         $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
-        setcookie($name, $value, $expire, $config['path'], $config['domain']);
+        setcookie($name, $value, $expire, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
         $_COOKIE[$name] = $value;
     }
 
@@ -77,11 +82,11 @@ class Cookie {
      * @return mixed
      */
     static public function get($name, $prefix='') {
-        $prefix =   $prefix?$prefix:self::$config['prefix'];
+        $prefix =   $prefix ? $prefix : self::$config['prefix'];
         $name = $prefix . $name;
         if(isset($_COOKIE[$name])){
             $value =    $_COOKIE[$name];
-            if(0===strpos($value,'think:')){
+            if(0 === strpos($value,'think:')){
                 $value  =   substr($value,6);
                 return array_map('urldecode',json_decode($value,true));
             }else{
@@ -99,9 +104,10 @@ class Cookie {
      * @return mixed
      */
     static public function delete($name, $prefix='') {
-        $prefix =   $prefix?$prefix:self::$config['prefix'];
-        $name = $prefix . $name;
-        setcookie($name, '', time() - 3600, self::$config['path'], self::$config['domain']);
+        $config =   self::$config;
+        $prefix =   $prefix ? $prefix : $config['prefix'];
+        $name   =   $prefix . $name;
+        setcookie($name, '', time() - 3600, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
         unset($_COOKIE[$name]); // 删除指定cookie
     }
 
@@ -115,11 +121,12 @@ class Cookie {
         if (empty($_COOKIE))
             return;
         // 要删除的cookie前缀，不指定则删除config设置的指定前缀
-        $prefix = $prefix ? $prefix: self::$config['prefix'];
+        $config =   self::$config;
+        $prefix =   $prefix ? $prefix: $config['prefix'];
         if ($prefix) {// 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === strpos($key, $prefix)) {
-                    setcookie($key, '', time() - 3600, self::$config['path'], self::$config['domain']);
+                    setcookie($key, '', time() - 3600, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
                     unset($_COOKIE[$key]);
                 }
             }

@@ -21,36 +21,29 @@ require CORE_PATH.'Loader.php';
 
 // 注册自动加载
 Loader::register();
-// 导入系统别名
-Loader::addMap(include THINK_PATH.'alias.php');
-// 加载应用类
-//require CORE_PATH.'App.php';
-// 加载错误类
-//require CORE_PATH.'Error.php';
 
 // 注册错误和异常处理机制
 register_shutdown_function(['Think\Error','appShutdown']);
 set_error_handler(['Think\Error','appError']);
 set_exception_handler(['Think\Error','appException']);
 
-// 导入系统惯例
-Config::load(THINK_PATH.'convention.php');
+// 加载模式定义文件
+$mode 	=	require MODE_PATH.APP_MODE.EXT;
 
-// 初始化操作可以在应用的公共文件中处理 下面只是示例
-//---------------------------------------------------
-// 日志初始化
-Log::init(['type'=>'File','log_path'=> LOG_PATH]);
-
-// 缓存初始化
-Cache::connect(['type'=>'File','temp'=> CACHE_PATH]);
-//------------------------------------------------------
-
-// 启动session
-if(!IS_CLI) {
-    Session::init(['prefix'=>'think','auto_start'=>true]);
+// 加载模式配置文件
+if(isset($mode['config'])){
+	is_array($mode['config']) ? Config::set($mode['config']) : Config::load($mode['config']);
 }
-if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
-    Create::build(include APP_PATH.'build.php');
+
+// 加载模式别名定义
+if(isset($mode['alias'])){
+	Loader::addMap(is_array($mode['alias']) ? $mode['alias'] : include $mode['alias']);
 }
+
+// 加载模式行为定义
+if(isset($mode['tags'])) {
+	Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
+}
+
 // 执行应用
-App::run();
+App::run(Config::get());

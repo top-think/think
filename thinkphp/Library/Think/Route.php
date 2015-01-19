@@ -20,6 +20,7 @@ class Route {
         'DELETE' => [],
         '*'      => [],
     ];
+
     // URL映射规则
     static private $map    = [];
     // 子域名部署规则
@@ -86,7 +87,7 @@ class Route {
     }
 
     // 检测子域名部署
-    static public function checkDomain(){
+    static public function checkDomain($config=[]){
         // 开启子域名部署 支持二级和三级域名
         if(!empty(self::$domain)) {
             $rules = self::$domain;
@@ -123,7 +124,7 @@ class Route {
                     exit;
                 }
                 if(is_array($rule)) {
-                    $_GET[Config::get('var_module')] = $rule[0];
+                    $_GET[$config['var_module']] = $rule[0];
                     if(isset($rule[1])) { // 传入参数
                         parse_str($rule[1], $parms);
                         if(isset($panDomain)) {
@@ -136,18 +137,20 @@ class Route {
                         $_GET = array_merge($_GET,$parms);
                     }
                 }else{
-                    $_GET[Config::get('var_module')] = $rule;
+                    $_GET[$config['var_module']] = $rule;
                 }
             }
         }
     }
 
     // 检测URL路由
-    static public function check($regx) {
+    static public function check($regx,$config) {
         // 优先检测是否存在PATH_INFO
         if(empty($regx)) $regx = '/' ;
         // 分隔符替换 确保路由定义使用统一的分隔符
-        $regx = str_replace(Config::get('pathinfo_depr'), '/', $regx);
+        if('/' != $config['pathinfo_depr']){
+            $regx = str_replace($config['pathinfo_depr'], '/', $regx);
+        }
         if(isset(self::$map[$regx])) { // URL映射
             return self::parseUrl(self::$map[$regx]);
         }
@@ -187,7 +190,7 @@ class Route {
                         self::invokeRegx($route, $matches);
                         exit;
                     }
-                    return self::parseRegex($matches, $route, $regx);
+                    return self::parseRegex($matches, $route, $regx,$config);
                 }else{ // 规则路由
                     $len1 = substr_count($regx, '/');
                     $len2 = substr_count($rule, '/');
@@ -210,13 +213,13 @@ class Route {
                                 self::invokeRule($route, $var);
                                 exit;
                             }
-                            return self::parseRule($rule, $route, $regx);
+                            return self::parseRule($rule, $route, $regx,$config);
                         }
                     }
                 }
             }
         }
-        return self::parseUrl($regx);
+        return self::parseUrl($regx,$config);
     }
 
     /**
@@ -265,33 +268,34 @@ class Route {
         $reflect->invokeArgs($args);
     }
 
-    // 解析模块的URL地址
-    static private function parseUrl($url) {
+    // 解析模块的URL地址 [模块/]控制器/操作
+    static private function parseUrl($url,$config=[]) {
         if('/' == $url) {
             return ;
         }
         $paths = explode('/', $url);
-        $var_g = Config::get('var_group');
-        $var_c = Config::get('var_controller');
-        $var_a = Config::get('var_action');
-        if(Config::get('require_group') && !isset($_GET[$var_g])) {
-            $_GET[$var_g] = array_shift($paths);
-        }        
-        if(Config::get('require_controller') && !isset($_GET[$var_c])) {
-            $_GET[$var_c] = array_shift($paths);
+       
+        $_GET[$config['var_action']] = array_pop($paths);
+
+        if(!defined('BIND_CONTROLLER') && !isset($_GET[$config['var_controller']])) {
+            $_GET[$config['var_controller']]   =   array_pop($paths);
         }
-        if(!isset($_GET[$var_a])) {
-            $_GET[$var_a] = array_shift($paths);
+
+        if(!defined('BIND_MODULE') && !isset($_GET[$config['var_module']])) {
+            $_GET[$config['var_module']]       =   array_pop($paths);
         }
+
         // 解析剩余的URL参数
         $var  = [];
-        preg_replace('@(\w+)\/([^\/]+)@e', '$var[\'\\1\']=strip_tags(\'\\2\');', implode('/', $paths));
-        $_GET = array_merge($var, $_GET);
+        if(!empty($paths)) {
+            preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){ $var[strtolower($match[1])]=strip_tags($match[2]);}, implode('/',$paths));
+        }
+        $_GET   =   array_merge($var, $_GET);
     }
 
     // 解析规范的路由地址
     // 地址格式 [控制器/操作?]参数1=值1&参数2=值2...
-    static private function parseRoute($url) {
+    static private function parseRoute($url,$config=[]) {
         $var = [];
         if(false !== strpos($url, '?')) { // [控制器/操作?]参数1=值1&参数2=值2...
             $info = parse_url($url);
@@ -304,9 +308,12 @@ class Route {
         }
         if(isset($path)) {
             $action =   array_pop($path);
-            $_GET[Config::get('var_action')] = '[rest]'==$action? REQUEST_METHOD : $action;
+            $_GET[$config['var_action']] = '[rest]'==$action ? REQUEST_METHOD : $action;
             if(!empty($path)) {
-                $_GET[Config::get('var_controller')] = array_pop($path);
+                $_GET[$config['var_controller']] = array_pop($path);
+            }
+            if(!empty($path)) {
+                $_GET[$config['var_module']] = array_pop($path);
             }
         }
         return $var;
@@ -352,7 +359,7 @@ class Route {
     // 外部地址中可以用动态变量 采用 :1 :2 的方式
     // 'news/:month/:day/:id'=>array('News/read?cate=1','status=1'),
     // 'new/:id'=>array('/new.php?id=:1',301), 重定向
-    static private function parseRule($rule, $route, $regx) {
+    static private function parseRule($rule, $route, $regx,$config) {
         // 获取路由地址规则
         $url   = is_array($route) ? $route[0] : $route;
         // 获取URL地址中的参数
@@ -383,7 +390,7 @@ class Route {
             exit;
         }else{
             // 解析路由地址
-            $var    = self::parseRoute($url);
+            $var    = self::parseRoute($url,$config);
             // 解析路由地址里面的动态参数
             $values = array_values($matches);
             foreach ($var as $key => $val){
@@ -393,8 +400,10 @@ class Route {
             }
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
-            if($paths) {
-                preg_replace('@(\w+)\/([^\/]+)@e', '$var[strtolower(\'\\1\')]=strip_tags(\'\\2\');', implode('/', $paths));
+            if(!empty($paths)) {
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){ 
+                    $var[strtolower($match[1])] = strip_tags($match[2]);
+                    }, implode('/',$paths));
             }
             // 解析路由自动传人参数
             if(is_array($route) && isset($route[1])) {
@@ -413,7 +422,7 @@ class Route {
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
     // '/new\/(\d+)\/(\d+)/'=>array('News/read?id=:1&page=:2&cate=1','status=1'),
     // '/new\/(\d+)/'=>array('/new.php?id=:1&page=:2&status=1','301'), 重定向
-    static private function parseRegex($matches, $route, $regx) {
+    static private function parseRegex($matches, $route, $regx,$config) {
         // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;
         $url = preg_replace('/:(\d+)/e', '$matches[\\1]', $url);
@@ -422,11 +431,13 @@ class Route {
             exit;
         }else{
             // 解析路由地址
-            $var  = self::parseRoute($url);
+            $var  = self::parseRoute($url,$config);
             // 解析剩余的URL参数
             $regx = substr_replace($regx, '', 0, strlen($matches[0]));
             if($regx) {
-                preg_replace('@(\w+)\/([^,\/]+)@e', '$var[strtolower(\'\\1\')]=strip_tags(\'\\2\');', $regx);
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){ 
+                    $var[strtolower($match[1])] = strip_tags($match[2]);
+                    }, $regx);
             }
             // 解析路由自动传人参数
             if(is_array($route) && isset($route[1])) {

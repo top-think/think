@@ -71,7 +71,7 @@ class T163 extends Driver{
             return $this->token['openid'];
 
         $data = $this->call('users/show');
-        return !empty($data['id'])?$data['id']:NULL;
+        return !empty($data['id'])?$data['id']:null;
     }
 	
     /**
