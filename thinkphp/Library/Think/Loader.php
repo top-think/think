@@ -129,7 +129,7 @@ class Loader {
      * @param string $layer 业务层名称
      * @return Object
      */
-    static public function model($name = '', $layer = 'Model') {
+    static public function model($name = '', $layer = MODEL_LAYER) {
         if(empty($name)) {
             return new Model;
         }
@@ -159,7 +159,7 @@ class Loader {
      * @param string $layer 控制层名称
      * @return Object|false
      */
-    static public function controller($name, $layer = 'Controller') {
+    static public function controller($name, $layer = CONTROLLER_LAYER) {
         static $_instance = [];
         if(isset($_instance[$name.$layer])) {
             return $_instance[$name . $layer];
@@ -199,7 +199,7 @@ class Loader {
      * @param string $layer 要调用的控制层名称
      * @return mixed
      */
-    static public function action($url, $vars = [], $layer = 'Controller') {
+    static public function action($url, $vars = [], $layer = CONTROLLER_LAYER) {
         $info   = pathinfo($url);
         $action = $info['basename'];
         $module = '.' != $info['dirname'] ? $info['dirname'] : CONTROLLER_NAME;

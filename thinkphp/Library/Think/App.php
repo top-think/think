@@ -232,6 +232,8 @@ class App {
         if(MODULE_NAME && $config['common_module'] != MODULE_NAME && is_dir( APP_PATH . MODULE_NAME )) {
             Hook::listen('app_begin');
             define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
+            define('VIEW_PATH', MODULE_PATH.VIEW_LAYER.'/');
+            
             // 加载模块初始化文件
             if(is_file( MODULE_PATH . 'init' . EXT )) {
                 include MODULE_PATH . 'init' . EXT;

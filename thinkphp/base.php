@@ -25,9 +25,13 @@ defined('APP_PATH')     or define('APP_PATH',     dirname($_SERVER['SCRIPT_FILEN
 defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH).'/Runtime/');
 defined('DATA_PATH')    or define('DATA_PATH',    RUNTIME_PATH.'Data/');
 defined('LOG_PATH')     or define('LOG_PATH',     RUNTIME_PATH.'Log/');
-defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Temp/');
+defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Cache/');
+defined('TEMP_PATH')    or define('CACHE_PATH',   RUNTIME_PATH.'Temp/');
 defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
 defined('EXT')          or define('EXT',          '.php');
+defined('MODEL_LAYER')  or define('MODEL_LAYER',  'Model');
+defined('VIEW_LAYER')   or define('VIEW_LAYER',   'View');
+defined('CONTROLLER_LAYER')  or define('CONTROLLER_LAYER',  'Controller');
 defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
 
 if(function_exists('saeAutoLoader')){// 自动识别SAE环境

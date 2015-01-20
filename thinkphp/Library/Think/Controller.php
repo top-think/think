@@ -23,12 +23,7 @@ class Controller {
      */
     public function __construct(){
         // 模板引擎参数
-        $config = [
-            'tpl_path'   => MODULE_PATH  . 'View/',
-            'cache_path' => RUNTIME_PATH . 'Cache/',
-        ];
         $this->view = new View();
-        $this->view->engine(Config::get('template_engine'), $config);
         
         //控制器初始化
         if(method_exists($this, '_initialize'))

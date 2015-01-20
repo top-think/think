@@ -30,7 +30,8 @@ class View {
         'view_path'             =>  '',
         'view_suffix'           =>  '.html',
         'view_depr'             =>  '/',
-        'view_layer'            =>  'View',
+        'view_layer'            =>  VIEW_LAYER,
+        'engine_type'           =>  'think',
     ];
     
     /**
@@ -60,6 +61,7 @@ class View {
 
     public function __construct(array $config = []){
         $this->config = array_merge($this->config, $config);
+        $this->engine($this->config['engine_type']);
     }
     
     /**
