@@ -15,6 +15,6 @@
 if(version_compare(PHP_VERSION,'5.4.0','<'))  die('require PHP > 5.4.0 !');
 
 // 定义项目路径
-define('APP_PATH','./Application/');
+define('APP_PATH','./application/');
 // 加载框架引导文件
 require './thinkphp/start.php';
