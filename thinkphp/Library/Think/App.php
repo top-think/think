@@ -24,6 +24,23 @@ class App {
      * @return void
      */
     static public function run($config) {
+
+        // 日志初始化
+        Log::init(['type'=>$config['log_type'],'log_path'=> $config['log_path']]);
+
+        // 缓存初始化
+        Cache::connect(['type'=>$config['cache_type'],'temp'=> $config['cache_path']]);
+
+        // 加载框架底层语言包
+        is_file(THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT) && Lang::set(include THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT);
+
+        // 启动session
+        if(!IS_CLI) {
+            Session::init(['prefix'=>$config['session_prefix'],'auto_start'=>$config['session_auto_start']]);
+        }
+        if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
+            Create::build(include APP_PATH.'build.php');
+        }
         // 监听app_init
         Hook::listen('app_init');
 

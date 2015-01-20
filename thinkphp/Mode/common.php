@@ -13,56 +13,40 @@ namespace Think;
  * ThinkPHP 普通模式定义
  */
 
-// 加载框架底层语言包
-is_file(THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT) && Lang::set(include THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT);
-
-
-// 初始化操作可以在应用的公共文件中处理 下面只是示例
-//---------------------------------------------------
-// 日志初始化
-Log::init(['type'=>'File','log_path'=> LOG_PATH]);
-
-// 缓存初始化
-Cache::connect(['type'=>'File','temp'=> CACHE_PATH]);
-//------------------------------------------------------
-
-// 启动session
-if(!IS_CLI) {
-    Session::init(['prefix'=>'think','auto_start'=>true]);
-}
-if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
-    Create::build(include APP_PATH.'build.php');
-}
-
 return [
     // 配置文件
     'config'    =>  [
-        'app_debug'             => true,   // 调试模式
-        'app_status'            => 'debug',// 调试模式状态
-        'var_module'            => 'm',    // 模块变量名
-        'var_controller'        => 'c',    // 控制器变量名
-        'var_action'            => 'a',    // 操作变量名
-        'var_pathinfo'          => 's',    // PATHINFO变量名 用于兼容模式
-        'pathinfo_fetch'        => 'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
-        'pathinfo_depr'         => '/',    // pathinfo分隔符
-        'require_module'        => true,   // 是否显示模块
-        'default_module'        => 'index',  // 默认模块名
-        'require_controller'    => true,   // 是否显示控制器
-        'default_controller'    => 'index',    // 默认控制器名
-        'default_action'        => 'index',    // 默认操作名
-        'action_suffix'         => '', // 操作方法后缀
-        'url_model'             => 1,  // URL模式
-        'base_url'              => $_SERVER["SCRIPT_NAME"],    // 基础URL路径
-        'url_html_suffix'       => '.html',
-        'url_params_bind'       => false,  // url变量绑定
-        'exception_tmpl'        => THINK_PATH.'Tpl/think_exception.tpl',// 异常页面的模板文件
-        'error_tmpl'            => THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
-        'success_tmpl'          => THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
-        'default_ajax_return'   => 'JSON',  // 默认AJAX 数据返回格式,可选JSON XML ...
-        'default_jsonp_handler' => 'jsonpReturn', // 默认JSONP格式返回的处理方法
-        'var_jsonp_handler'     => 'callback',
+        'app_debug'             =>  true,   // 调试模式
+        'app_status'            =>  'debug',// 应用模式状态
+        'var_module'            =>  'm',    // 模块变量名
+        'var_controller'        =>  'c',    // 控制器变量名
+        'var_action'            =>  'a',    // 操作变量名
+        'var_pathinfo'          =>  's',    // PATHINFO变量名 用于兼容模式
+        'pathinfo_fetch'        =>  'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
+        'pathinfo_depr'         =>  '/',    // pathinfo分隔符
+        'require_module'        =>  true,   // 是否显示模块
+        'default_module'        =>  'index',  // 默认模块名
+        'default_controller'    =>  'index',    // 默认控制器名
+        'default_action'        =>  'index',    // 默认操作名
+        'action_suffix'         =>  '', // 操作方法后缀
+        'url_model'             =>  1,  // URL模式
+        'base_url'              =>  $_SERVER["SCRIPT_NAME"],    // 基础URL路径
+        'url_html_suffix'       =>  '.html',
+        'url_params_bind'       =>  false,  // url变量绑定
+        'exception_tmpl'        =>  THINK_PATH.'Tpl/think_exception.tpl',// 异常页面的模板文件
+        'error_tmpl'            =>  THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
+        'success_tmpl'          =>  THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
+        'default_ajax_return'   =>  'JSON',  // 默认AJAX 数据返回格式,可选JSON XML ...
+        'default_jsonp_handler' =>  'jsonpReturn', // 默认JSONP格式返回的处理方法
+        'var_jsonp_handler'     =>  'callback',
         'template_engine'       =>  'think',
-        'common_module'         => 'Common',
+        'common_module'         =>  'Common',
+        'log_path'              =>  LOG_PATH,
+        'log_type'              =>  'File',
+        'cache_type'            =>  'File',
+        'caceh_path'            =>  CACHE_PATH,
+        'session_prefix'        =>  'think',
+        'session_auto_start'    =>  true,
 
         /* 错误设置 */
         'error_message'     =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
