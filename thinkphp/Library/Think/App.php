@@ -103,7 +103,7 @@ class App {
             $action     =   ACTION_NAME . $config['action_suffix'];
         }
         if(!$instance) {
-            throw new Exception('[ ' . MODULE_NAME . '\\Controller\\' . parse_name(CONTROLLER_NAME, 1) . 'Controller ] not exists');
+            throw new Exception('[ ' . MODULE_NAME . '\\'.CONTROLLER_LAYER.'\\' . parse_name(CONTROLLER_NAME, 1) . ' ] not exists');
         }
 
         try{
