@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Template\TagLib;
-use Think\Template\TagLib;
+namespace Think\Template\Taglib;
+use Think\Template\Taglib;
 
 /**
  * CX标签库解析类
@@ -19,7 +19,7 @@ use Think\Template\TagLib;
  * @subpackage  Driver.Taglib
  * @author    liu21st <liu21st@gmail.com>
  */
-class Cx extends TagLib {
+class Cx extends Taglib {
 
     // 标签定义
     protected $tags   =  [

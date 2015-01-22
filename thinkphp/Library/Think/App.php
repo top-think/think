@@ -76,9 +76,9 @@ class App {
         // 执行操作
         if(!preg_match('/^[A-Za-z](\/|\w)*$/',CONTROLLER_NAME)){ // 安全检测
             $instance  =  false;
-        }elseif(isset($config['action_bind_class']) && $config['action_bind_class']){
+        }elseif($config['action_bind_class']){
             // 操作绑定到类：模块\Controller\控制器\操作
-            $layer  =   $config['controller_layer'];
+            $layer  =   CONTROLLER_LAYER;
             if(is_dir(MODULE_PATH.$layer.'/'.CONTROLLER_NAME)){
                 $namespace  =   MODULE_NAME.'\\'.$layer.'\\'.CONTROLLER_NAME.'\\';
             }else{
@@ -279,7 +279,7 @@ class App {
 
     static private function getModule($config){
         $module     =   strtolower(isset($_GET[$config['var_module']]) ? $_GET[$config['var_module']] : $config['default_module']);
-        if(isset($config['url_module_map']) && $maps = $config['url_module_map']) {
+        if($maps = $config['url_module_map']) {
             if(isset($maps[$module])) {
                 // 记录当前别名
                 define('MODULE_ALIAS',$module);
@@ -290,6 +290,6 @@ class App {
                 $module =   '';
             }
         }
-        return strip_tags(ucwords($module));
+        return strip_tags($module);
     }
 }

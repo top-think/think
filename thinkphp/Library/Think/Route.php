@@ -275,14 +275,16 @@ class Route {
         }
         $paths = explode('/', $url);
        
-        $_GET[$config['var_action']] = array_pop($paths);
-
-        if(!defined('BIND_CONTROLLER') && !isset($_GET[$config['var_controller']])) {
-            $_GET[$config['var_controller']]   =   array_pop($paths);
+        if(!defined('BIND_MODULE') && !isset($_GET[$config['var_module']])) {
+            $_GET[$config['var_module']]       =   array_shift($paths);
         }
 
-        if(!defined('BIND_MODULE') && !isset($_GET[$config['var_module']])) {
-            $_GET[$config['var_module']]       =   array_pop($paths);
+        if(!defined('BIND_CONTROLLER') && !isset($_GET[$config['var_controller']])) {
+            $_GET[$config['var_controller']]   =   array_shift($paths);
+        }
+
+        if($paths){
+            $_GET[$config['var_action']] = array_shift($paths);
         }
 
         // 解析剩余的URL参数

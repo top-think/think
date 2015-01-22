@@ -16,22 +16,22 @@ define('MAGIC_QUOTES_GPC', false);
 define('THINK_VERSION', '4.0beta');
 // 系统常量
 defined('THINK_PATH')   or define('THINK_PATH',   dirname(__FILE__).'/');
-defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'Library/');
-defined('MODE_PATH')    or define('MODE_PATH',    THINK_PATH.'Mode/'); // 系统应用模式目录
-defined('TRAIT_PATH')   or define('TRAIT_PATH',   THINK_PATH.'Traits/');
-defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'Think/');
-defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'Org/');
+defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'library/');
+defined('MODE_PATH')    or define('MODE_PATH',    THINK_PATH.'mode/'); // 系统应用模式目录
+defined('TRAIT_PATH')   or define('TRAIT_PATH',   THINK_PATH.'traits/');
+defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'think/');
+defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'org/');
 defined('APP_PATH')     or define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
-defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH).'/Runtime/');
-defined('DATA_PATH')    or define('DATA_PATH',    RUNTIME_PATH.'Data/');
-defined('LOG_PATH')     or define('LOG_PATH',     RUNTIME_PATH.'Log/');
-defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Cache/');
-defined('TEMP_PATH')    or define('CACHE_PATH',   RUNTIME_PATH.'Temp/');
-defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'Vendor/');
+defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH).'/runtime/');
+defined('DATA_PATH')    or define('DATA_PATH',    RUNTIME_PATH.'data/');
+defined('LOG_PATH')     or define('LOG_PATH',     RUNTIME_PATH.'log/');
+defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'cache/');
+defined('TEMP_PATH')    or define('TEMP_PATH',    RUNTIME_PATH.'temp/');
+defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'vendor/');
 defined('EXT')          or define('EXT',          '.php');
-defined('MODEL_LAYER')  or define('MODEL_LAYER',  'Model');
-defined('VIEW_LAYER')   or define('VIEW_LAYER',   'View');
-defined('CONTROLLER_LAYER')  or define('CONTROLLER_LAYER',  'Controller');
+defined('MODEL_LAYER')  or define('MODEL_LAYER',  'model');
+defined('VIEW_LAYER')   or define('VIEW_LAYER',   'view');
+defined('CONTROLLER_LAYER')  or define('CONTROLLER_LAYER',  'controller');
 defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
 
 if(function_exists('saeAutoLoader')){// 自动识别SAE环境
@@ -238,7 +238,7 @@ function S($name,$value='',$options=null) {
  */
 function parse_name($name, $type=0) {
     if ($type) {
-        return ucfirst(preg_replace("/_([a-zA-Z])/e", "strtoupper('\\1')", $name));
+        return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){ return strtoupper($match[1]);}, $name));
     } else {
         return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
     }

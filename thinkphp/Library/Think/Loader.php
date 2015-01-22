@@ -32,13 +32,9 @@ class Loader {
             }else{ // 项目命名空间
                 $path   =   APP_PATH;
             }
-            //$path     = isset(self::$namespace[$name]) ? dirname(self::$namespace[$name]) . '/' : APP_PATH;
-            $filename = $path . str_replace('\\', '/', $class) . EXT;
+            $filename   =   $path . str_replace('\\', '/', str_replace('\\_','\\',strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
+            var_dump($filename);
             if(is_file($filename)) {
-                // Win环境下面严格区分大小写
-                if (IS_WIN && false === strpos(str_replace('/', '\\', realpath($filename)), $class . EXT)){
-                    return ;
-                }
                 include $filename;
             }
         }
@@ -60,7 +56,7 @@ class Loader {
 
     // 注册自动加载机制
     static public function register($autoload = ''){
-        spl_autoload_register($autoload ? $autoload : ['Think\Loader', 'autoload']);
+        spl_autoload_register($autoload ? $autoload : ['think\loader', 'autoload']);
     }
 
     /**
@@ -83,10 +79,10 @@ class Loader {
                 //加载当前项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = MODULE_PATH;
-            }elseif (in_array($class_strut[0], ['Think','Org', 'Com'])) {
+            }elseif (in_array($class_strut[0], ['think','org', 'com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl = LIB_PATH;
-            }elseif(in_array($class_strut[0], ['Vendor', 'Traits'])){
+            }elseif(in_array($class_strut[0], ['vendor', 'traits'])){
                 $baseUrl = THINK_PATH;
             }else { // 加载其他项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
@@ -115,7 +111,7 @@ class Loader {
         if(strpos($name, ':')) {
             list($class, $name) = explode(':', $name);
         }else{
-            $class = 'Think\Model';
+            $class = 'think\model';
         }
         $guid =  $name . '_' . $class;
         if (!isset($_model[$guid]))
@@ -142,6 +138,7 @@ class Loader {
         }else{
             $module = MODULE_NAME;
         }
+        $layer =    ucwords($layer);        
         $class = $module . '\\' . $layer . '\\' . parse_name($name, 1). $layer;
         if(class_exists($class)) {
             $model = new $class($name);
@@ -169,6 +166,7 @@ class Loader {
         }else{
             $module = MODULE_NAME;
         }
+        $layer =    ucwords($layer);
         $class = $module . '\\' . $layer . '\\' . parse_name($name, 1) . $layer;
         if(class_exists($class)) {
             $action = new $class;

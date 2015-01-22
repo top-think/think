@@ -46,19 +46,19 @@ class Create {
                     }
                     foreach($file as $val){
                         switch($path) {
-                        case 'Controller':// 控制器
+                        case 'controller':// 控制器
                             $filename   =   ucwords($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
                                 file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
                             }
                             break;
-                        case 'Model': // 模型
+                        case 'model': // 模型
                             $filename   =   ucwords($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
                                 file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
                             }
                             break;
-                        case 'View': // 视图
+                        case 'view': // 视图
                             break;
                         default:
                             $filename   =   ucwords($val).$path;
@@ -77,13 +77,13 @@ class Create {
 
     // 创建欢迎页面
     static public function buildHelloController($module) {
-        if(!is_file(APP_PATH.$module.'/Controller/IndexController.php')) {
-            $content    =   file_get_contents(THINK_PATH.'Tpl/default_index.tpl');
+        if(!is_file(APP_PATH.$module.'/controller/index_controller.php')) {
+            $content    =   file_get_contents(THINK_PATH.'tpl/default_index.tpl');
             $content    =   str_replace('{$module}',$module,$content);
-            if(!is_dir(APP_PATH.$module.'/Controller')) {
-                mkdir(APP_PATH.$module.'/Controller');
+            if(!is_dir(APP_PATH.$module.'/controller')) {
+                mkdir(APP_PATH.$module.'/controller');
             }
-            file_put_contents(APP_PATH.$module.'/Controller/IndexController.php',$content);
+            file_put_contents(APP_PATH.$module.'/controller/index_controller.php',$content);
         }
     }
 
