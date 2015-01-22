@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Index\Controller;
-use Think\View;
+namespace index\controller;
+use think\View;
 class Index {
 
     public function index(){
