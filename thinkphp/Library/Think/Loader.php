@@ -33,7 +33,6 @@ class Loader {
                 $path   =   APP_PATH;
             }
             $filename   =   $path . str_replace('\\', '/', str_replace('\\_','\\',strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
-            var_dump($filename);
             if(is_file($filename)) {
                 include $filename;
             }
@@ -138,8 +137,7 @@ class Loader {
         }else{
             $module = MODULE_NAME;
         }
-        $layer =    ucwords($layer);        
-        $class = $module . '\\' . $layer . '\\' . parse_name($name, 1). $layer;
+        $class = $module . '\\' . $layer . '\\' . parse_name($name, 1);
         if(class_exists($class)) {
             $model = new $class($name);
         }else {
@@ -166,14 +164,13 @@ class Loader {
         }else{
             $module = MODULE_NAME;
         }
-        $layer =    ucwords($layer);
-        $class = $module . '\\' . $layer . '\\' . parse_name($name, 1) . $layer;
+        $class = $module . '\\' . $layer . '\\' . parse_name($name, 1) ;
         if(class_exists($class)) {
             $action = new $class;
             $_instance[$name . $layer] = $action;
             return $action;
-        }elseif(class_exists($module . '\\' . $layer . '\\Empty' . $layer)){
-            $class = $module . '\\' . $layer . '\\Empty' . $layer;
+        }elseif(class_exists($module . '\\' . $layer . '\\Empty')){
+            $class = $module . '\\' . $layer . '\\Empty';
             return new $class;
         }else{
             return false;

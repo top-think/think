@@ -11,7 +11,7 @@
 
 namespace Index\Controller;
 use Think\View;
-class IndexController {
+class Index {
 
     public function index(){
         $view   =   new View();

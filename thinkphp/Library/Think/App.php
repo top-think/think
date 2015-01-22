@@ -212,11 +212,11 @@ class App {
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
             $_SERVER['PATH_INFO'] = __INFO__;     
-            if(!defined('BIND_MODULE')){
-                if($config['url_deny_suffix'] && preg_match('/\.('.$config['url_deny_suffix'].')$/i', $_SERVER['PATH_INFO'])){
+            if(__INFO__ && !defined('BIND_MODULE')){
+                if($config['url_deny_suffix'] && preg_match('/\.('.$config['url_deny_suffix'].')$/i', __INFO__)){
                     exit;
                 }
-                $paths = explode($config['pathinfo_depr'], $_SERVER['PATH_INFO']);
+                $paths = explode($config['pathinfo_depr'], __INFO__,2);
                 // 获取URL中的模块名
                 if($config['require_module'] && !isset($_GET[$config['var_module']])) {
                     $_GET[$config['var_module']]     = array_shift($paths);
