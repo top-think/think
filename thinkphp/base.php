@@ -57,12 +57,12 @@ define('IS_DELETE',       REQUEST_METHOD =='DELETE' ? true : false);
 
 // 获取多语言变量
 function L($name){
-    return Think\Lang::get($name);
+    return think\Lang::get($name);
 }
 
 // 获取配置参数
 function C($name='',$range='') {
-    return Think\Config::get($name,$range);
+    return think\Config::get($name,$range);
 }
 
 // 获取输入数据 支持默认值和过滤
@@ -72,7 +72,7 @@ function I($key,$default='',$filter='') {
     }else{ // 默认为自动判断
         $method =   'param';
     }
-    return Think\Input::$method($key,$filter,$default);
+    return think\Input::$method($key,$filter,$default);
 }
 
 /**
@@ -81,7 +81,7 @@ function I($key,$default='',$filter='') {
  * @return void
  */
 function G($label) {
-    Think\Debug::remark($label);
+    think\Debug::remark($label);
 }
 
 /**
@@ -92,7 +92,7 @@ function G($label) {
  * @return Model
  */
 function M($name='', $tablePrefix='',$connection='') {
-    return Think\Loader::table($name,['table_prefix'=>$tablePrefix,'connection'=>$connection]);
+    return think\Loader::table($name,['table_prefix'=>$tablePrefix,'connection'=>$connection]);
 }
 
 /**
@@ -102,7 +102,7 @@ function M($name='', $tablePrefix='',$connection='') {
  * @return object
  */
 function D($name='',$layer='Model') {
-    return Think\Loader::model($name,$layer);
+    return think\Loader::model($name,$layer);
 }
 
 /**
@@ -112,7 +112,7 @@ function D($name='',$layer='Model') {
  * @return object
  */
 function db($config=[],$lite=false) {
-    return Think\Db::instance($config,$lite);
+    return think\Db::instance($config,$lite);
 }
 
 /**
@@ -122,7 +122,7 @@ function db($config=[],$lite=false) {
  * @return object
  */
 function A($name,$layer='Controller') {
-    return Think\Loader::controller($name,$layer);
+    return think\Loader::controller($name,$layer);
 }
 
 /**
@@ -133,7 +133,7 @@ function A($name,$layer='Controller') {
  * @return mixed
  */
 function R($url,$vars=[],$layer='Controller') {
-    return Think\Loader::action($url,$vars,$layer);
+    return think\Loader::action($url,$vars,$layer);
 }
 
 /**
@@ -144,7 +144,7 @@ function R($url,$vars=[],$layer='Controller') {
  * @return boolean
  */
 function import($class, $baseUrl = '', $ext= EXT ) {
-    return Think\Loader::import($class,$baseUrl,$ext);
+    return think\Loader::import($class,$baseUrl,$ext);
 }
 
 /**
@@ -154,7 +154,7 @@ function import($class, $baseUrl = '', $ext= EXT ) {
  * @return boolean
  */
 function vendor($class, $ext=EXT) {
-    return Think\Loader::import($class, VENDOR_PATH, $ext);
+    return think\Loader::import($class, VENDOR_PATH, $ext);
 }
 
 /**
@@ -164,7 +164,7 @@ function vendor($class, $ext=EXT) {
  * @return boolean
  */
 function T($class,$ext=EXT){
-    return Think\Loader::import($class, TRAIT_PATH, $ext);
+    return think\Loader::import($class, TRAIT_PATH, $ext);
 }
 
 /**
@@ -174,7 +174,7 @@ function T($class,$ext=EXT){
  * @return void
  */
 function E($msg, $code=0) {
-    throw new Think\Exception($msg, $code);
+    throw new think\Exception($msg, $code);
 }
 
 /**
@@ -185,7 +185,7 @@ function E($msg, $code=0) {
  * @return void|string
  */
 function dump($var, $echo=true, $label=null) {
-    return Think\Debug::dump($var,$echo,$label);
+    return think\Debug::dump($var,$echo,$label);
 }
 
 /**
@@ -195,7 +195,7 @@ function dump($var, $echo=true, $label=null) {
  * @return void
  */
 function W($name, $data=[]) {
-    return Think\Loader::action($name,$data,'Widget');
+    return think\Loader::action($name,$data,'Widget');
 }
 
 /**
@@ -208,12 +208,12 @@ function W($name, $data=[]) {
 function S($name,$value='',$options=null) {
     static $cache   =   null;
     if(is_array($options)){// 缓存操作的同时初始化
-        $cache  =   Think\Cache::connect($options);
+        $cache  =   think\Cache::connect($options);
     }elseif(is_array($name)) { // 缓存初始化
-        $cache  =   Think\Cache::connect($name);
+        $cache  =   think\Cache::connect($name);
         return $cache;
     }elseif(is_null($cache)) {// 自动初始化
-        $cache  =   Think\Cache::connect();
+        $cache  =   think\Cache::connect();
     }
     if(''=== $value){ // 获取缓存
         return $cache->get($name);
