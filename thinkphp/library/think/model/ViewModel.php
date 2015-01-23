@@ -9,8 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Model;
-T('Think/Model/View');
-class ViewModel extends \Think\Model {
-	use \Traits\Think\Model\View;
+namespace think\model;
+
+T('think/model/view');
+class ViewModel extends \think\model {
+	use \traits\think\model\view;
 }

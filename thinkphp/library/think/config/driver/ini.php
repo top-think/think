@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Config\Driver;
+namespace think\config\driver;
 
 class Ini {
     public function parse($config){

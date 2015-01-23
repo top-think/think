@@ -9,8 +9,8 @@
 // | Author: 杨维杰 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace Think\Oauth\Driver;
-use Think\Oauth\Driver;
+namespace think\oauth\driver;
+use think\oauth\driver;
 
 class Diandian extends Driver{
     /**

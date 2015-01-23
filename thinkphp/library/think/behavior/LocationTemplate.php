@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Behavior;
+namespace think\behavior;
 
 /**
  * 系统行为扩展：定位模板文件

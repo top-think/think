@@ -8,7 +8,8 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-namespace Think\Model;
+namespace think\model;
+
 /**
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式

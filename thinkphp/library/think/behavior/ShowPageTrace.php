@@ -9,10 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Behavior;
-use Think\Config;
-use Think\Log;
-use Think\Debug;
+namespace think\behavior;
+use think\Config;
+use think\Log;
+use think\Debug;
 
 /**
  * 系统行为扩展：页面Trace显示输出

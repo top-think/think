@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Oauth\Driver;
-use Think\Oauth\Driver;
+namespace think\oauth\driver;
+use think\oauth\driver;
 
 class Qq extends Driver{
     /**

@@ -9,10 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Model;
-use Traits\Think\Model\Extend,Traits\Think\Model\Query;
-T('Think/Model/Extend');
-T('Think/Model/Query');
-class ExtendModel extends \Think\Model {
-	use Extend,Query;
+namespace think\model;
+use traits\think\model\extend,
+    traits\think\model\query;
+
+T('think/model/extend');
+T('think/model/query');
+
+class ExtendModel extends \think\model {
+	use extend, query;
 }

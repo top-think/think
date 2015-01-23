@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Template\Taglib;
-use Think\Template\Taglib;
+namespace think\template\taglib;
+use think\template\taglib;
 
 /**
  * CX标签库解析类

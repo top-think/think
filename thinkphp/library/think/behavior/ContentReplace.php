@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Behavior;
-use Think\Config;
+namespace think\behavior;
+use think\config;
 
 /**
  * 系统行为扩展：模板内容输出替换

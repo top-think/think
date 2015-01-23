@@ -8,8 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: luofei614 <weibo.com/luofei614>
 // +----------------------------------------------------------------------
-namespace Think\Storage\Driver;
-use Think\Storage;
+namespace think\storage\driver;
+use think\storage;
+
 // SAE环境文件写入存储类
 class Sae extends Storage{
 

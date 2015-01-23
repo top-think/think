@@ -9,10 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Db;
-use Think\Config;
-use Think\Debug;
-use Think\Log;
+namespace think\db;
+use think\config;
+use think\debug;
+use think\log;
 use PDO;
 
 abstract class Driver {

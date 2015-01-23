@@ -9,7 +9,7 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace Think\Image\Driver;
+namespace think\image\driver;
 
 class Gd{
     /**

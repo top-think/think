@@ -9,7 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Oauth;
+namespace think\oauth;
+
 abstract class Driver {
 
     /**

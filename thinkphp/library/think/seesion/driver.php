@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Session\Driver;
+namespace think\session\driver;
 use SessionHandler;
 
 class Driver extends SessionHandler {

@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Template\Driver;
-use Think\Exception;
+namespace think\template\driver;
+use think\exception;
 
 class File {
     // 写入编译缓存

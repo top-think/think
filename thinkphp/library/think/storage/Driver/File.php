@@ -8,8 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-namespace Think\Storage\Driver;
-use Think\Storage;
+namespace think\storage\driver;
+use think\storage;
+
 // 本地文件写入存储类
 class File extends Storage{
 

@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Template;
+namespace think\template;
 
 /**
  * ThinkPHP标签库TagLib解析基类

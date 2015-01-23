@@ -9,8 +9,8 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace Think\Oauth\Driver;
-use Think\Oauth\Driver;
+namespace think\oauth\driver;
+use think\oauth\driver;
 
 class T163 extends Driver{
     /**

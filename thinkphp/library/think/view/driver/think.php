@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\View\Driver;
-use Think\Template;
+namespace think\view\driver;
+use think\template;
 
 class Think {
     private $template   =   null;

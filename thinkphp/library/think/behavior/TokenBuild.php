@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-defined('THINK_PATH') or exit();
+namespace think\behavior;
 /**
  * 系统行为扩展：表单令牌生成
  * @category   Think
@@ -17,7 +17,7 @@ defined('THINK_PATH') or exit();
  * @subpackage  Behavior
  * @author   liu21st <liu21st@gmail.com>
  */
-class TokenBuildBehavior extends Behavior {
+class TokenBuild extends Behavior {
     // 行为参数定义
     protected $options   =  [
         'TOKEN_ON'       => false,     // 开启令牌验证

@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Config\Driver;
+namespace think\config\driver;
 
 class Xml {
     public function parse($config){

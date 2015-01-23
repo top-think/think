@@ -11,7 +11,7 @@
 // | Ubb.php 2013-04-03
 // +----------------------------------------------------------------------
 
-namespace Think\Parser\Driver;
+namespace think\parser\driver;
 
 class Ubb{
 	/**

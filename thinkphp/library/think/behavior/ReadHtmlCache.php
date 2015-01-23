@@ -9,6 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+namespace think\behavior;
+
 /**
  * 系统行为扩展：静态缓存读取
  * @category   Think
@@ -16,7 +18,7 @@
  * @subpackage  Behavior
  * @author   liu21st <liu21st@gmail.com>
  */
-class ReadHtmlCacheBehavior {
+class ReadHtmlCache {
     protected $options   =  [
             'HTML_CACHE_ON'     =>  false,
             'HTML_CACHE_TIME'   =>  60,

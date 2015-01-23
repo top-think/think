@@ -9,8 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Model;
-T('Think/Model/Relation');
-class RelationModel extends \Think\Model {
-	use \Traits\Think\Model\Relation;
+namespace think\model;
+
+T('think/model/relation');
+class RelationModel extends \think\model {
+	use \traits\think\model\relation;
 }

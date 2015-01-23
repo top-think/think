@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think\Cache\Driver;
+namespace think\cache\driver;
 
 /**
  * Wincache缓存驱动

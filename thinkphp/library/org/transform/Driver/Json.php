@@ -9,7 +9,7 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace Think\Transform\Driver;
+namespace think\transform\driver;
 
 class Json{
 	public function encode($data){
