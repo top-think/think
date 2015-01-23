@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Traits\Think\Model;
+namespace traits\think\model;
 define('EXISTS_VALIDATE',0);
 define('MUST_VALIDATE',1);
 define('VALUE_VALIDATE',2);

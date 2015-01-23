@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Traits\Think\Model;
+namespace traits\think\model;
 
 trait Extend {
     
