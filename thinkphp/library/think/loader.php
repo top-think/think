@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think;
-use Think\Config;
+namespace think;
+use think\Config;
 
 class Loader {
     // 类名映射

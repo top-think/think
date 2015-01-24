@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think;
-use Think\Exception;
+namespace think;
+use think\Exception;
 
 class View {
     protected $engine = null; // 模板引擎实例

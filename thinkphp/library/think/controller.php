@@ -9,9 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think;
-use Think\View;
-use Think\Transform;
+namespace think;
+use think\View;
+use think\Transform;
 
 class Controller {
     // 视图类实例

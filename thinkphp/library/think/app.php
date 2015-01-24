@@ -9,8 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace Think;
-use Think\Exception;
+namespace think;
+use think\Exception;
 
 /**
  * App 应用管理
