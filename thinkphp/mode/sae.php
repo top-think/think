@@ -50,7 +50,6 @@ return [
         'Think\Template'          => CORE_PATH . 'Template'.EXT,
         'Think\Cache'             => CORE_PATH . 'Cache'.EXT,
         'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File'.EXT,
-        'Think\Storage'           => CORE_PATH . 'Storage'.EXT,
     ],
 
 ];
