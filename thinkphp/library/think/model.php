@@ -18,6 +18,8 @@ class Model {
     const MODEL_BOTH            =   3;      //  包含上面两种方式
     // 当前数据库操作对象
     protected $db               =   null;
+    // 数据库对象池
+    private   $_db              =   [];    
     // 主键名称
     protected $pk               =   'id';
     // 数据表前缀
@@ -188,7 +190,7 @@ class Model {
                 // 重置数据
                 $this->data     = [];
             }else{
-                $this->error    = L('_DATA_TYPE_INVALID_');
+                $this->error    = Lang::get('_DATA_TYPE_INVALID_');
                 return false;
             }
         }
@@ -201,15 +203,22 @@ class Model {
         }
         // 写入数据到数据库
         $result = $this->db->insert($data,$options,$replace);
-        if(false !== $result ) {
+        if(false !== $result && is_numeric($result)) {
+            $pk     =   $this->getPk();
+            // 增加复合主键支持
+            if (is_array($pk)) return $result;            
             $insertId   =   $this->getLastInsID();
             if($insertId) {
                 // 自增主键返回插入ID
-                $data[$this->getPk()]  = $insertId;
-                $this->_after_insert($data,$options);
+                $data[$pk]  = $insertId;
+                if(false === $this->_after_insert($data,$options)){
+                    return false;
+                }
                 return $insertId;
             }
-            $this->_after_insert($data,$options);
+            if(false === $this->_after_insert($data,$options)){
+                return false;
+            }
         }
         return $result;
     }
@@ -218,9 +227,9 @@ class Model {
     // 插入成功后的回调方法
     protected function _after_insert($data,$options) {}
 
-    public function addAll($dataList,$options=array(),$replace=false){
+    public function addAll($dataList,$options=[],$replace=false){
         if(empty($dataList)) {
-            $this->error = L('_DATA_TYPE_INVALID_');
+            $this->error = Lang::get('_DATA_TYPE_INVALID_');
             return false;
         }
         // 数据处理
@@ -254,33 +263,54 @@ class Model {
                 // 重置数据
                 $this->data     =   [];
             }else{
-                $this->error    =   L('_DATA_TYPE_INVALID_');
+                $this->error    =   Lang::get('_DATA_TYPE_INVALID_');
                 return false;
             }
         }
         // 数据处理
         $data       =   $this->_write_data($data);
+        if(empty($data)){
+            // 没有数据则不执行
+            $this->error    =   Lang::get('_DATA_TYPE_INVALID_');
+            return false;
+        }        
         // 分析表达式
         $options    =   $this->_parseOptions();
-        if(false === $this->_before_update($data,$options)) {
-            return false;
-        }
+        $pk         =   $this->getPk();
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
-            if(isset($data[$this->getPk()])) {
-                $pk                 =   $this->getPk();
-                $where[$pk]         =   $data[$pk];
-                $options['where']   =   $where;
-                $pkValue            =   $data[$pk];
+            if (is_string($pk) && isset($data[$pk])) {
+                $where[$pk]     =   $data[$pk];
                 unset($data[$pk]);
-            }else{
+            } elseif (is_array($pk)) {
+                // 增加复合主键支持
+                foreach ($pk as $field) {
+                    if(isset($data[$field])) {
+                        $where[$field]      =   $data[$field];
+                    } else {
+                           // 如果缺少复合主键数据则不执行
+                        $this->error        =   Lang::get('_OPERATION_WRONG_');
+                        return false;
+                    }
+                    unset($data[$field]);
+                }
+            }            
+            if(!isset($where)){
                 // 如果没有任何更新条件则不执行
                 $this->error        =   Lang::get('_OPERATION_WRONG_');
                 return false;
-            }
+            }else{
+                $options['where']   =   $where;
+            }            
         }
+        if(isset($options['where'][$pk])){
+            $pkValue    =   $options['where'][$pk];
+        }        
+        if(false === $this->_before_update($data,$options)) {
+            return false;
+        }        
         $result     =   $this->db->update($data,$options);
-        if(false !== $result) {
+        if(false !== $result && is_numeric($result)) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_update($data,$options);
         }
@@ -298,29 +328,53 @@ class Model {
      * @return mixed
      */
     public function delete($options=[]) {
+        $pk   =  $this->getPk();        
         if(empty($options) && empty($this->options['where'])) {
             // 如果删除条件为空 则删除当前数据对象所对应的记录
-            if(!empty($this->data) && isset($this->data[$this->getPk()]))
-                return $this->delete($this->data[$this->getPk()]);
-            else
+            if(!empty($this->data) && isset($this->data[$pk])){
+                return $this->delete($this->data[$pk]);
+            }else{
                 return false;
+            }
         }
         if(is_numeric($options)  || is_string($options)) {
             // 根据主键删除记录
-            $pk   =  $this->getPk();
             if(strpos($options,',')) {
                 $where[$pk]     =  ['IN', $options];
             }else{
                 $where[$pk]     =  $options;
             }
-            $pkValue            =  $where[$pk];
             $options            =  [];
             $options['where']   =  $where;
         }
+        // 根据复合主键删除记录
+        if (is_array($options) && (count($options) > 0) && is_array($pk)) {
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) $count++; 
+            } 
+            if ($count == count($pk)) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where']  =  $where;
+            } else {
+                return false;
+            }
+        }        
         // 分析表达式
         $options =  $this->_parseOptions($options);
-        $result=    $this->db->delete($options);
-        if(false !== $result) {
+        if(empty($options['where'])){
+            // 如果条件为空 不进行删除操作 除非设置 1=1
+            return false;
+        }        
+        if(isset($options['where'][$pk])){
+            $pkValue            =  $options['where'][$pk];
+        }        
+        $result     =    $this->db->delete($options);
+        if(false !== $result && is_numeric($result)) {
             $data = [];
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_delete($data,$options);
@@ -338,9 +392,9 @@ class Model {
      * @return mixed
      */
     public function select($options=[]) {
+        $pk   =  $this->getPk();        
         if(is_string($options) || is_numeric($options)) {
             // 根据主键查询
-            $pk   =  $this->getPk();
             if(strpos($options,',')) {
                 $where[$pk]     =  ['IN',$options];
             }else{
@@ -348,8 +402,24 @@ class Model {
             }
             $options            =  [];
             $options['where']   =  $where;
+        }elseif (is_array($options) && (count($options) > 0) && is_array($pk)) {
+            // 根据复合主键查询
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) $count++; 
+            } 
+            if ($count == count($pk)) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where']  =  $where;
+            } else {
+                return false;
+            }
         }elseif(false === $options){ // 用于子查询 不查询只返回SQL
-            return  $this->buildSql();
+            $options['fetch_sql'] = true;
         }
 
         // 分析表达式
@@ -358,7 +428,7 @@ class Model {
         if(isset($options['cache'])){
             $cache  =   $options['cache'];
             $key    =   is_string($cache['key'])?$cache['key']:md5(serialize($options));
-            $data   =   S($key,'',$cache);
+            $data   =   Cache::get($key,'',$cache);
             if(false !== $data){
                 return $data;
             }
@@ -390,7 +460,7 @@ class Model {
         }
 
         if(isset($cache)){
-            S($key,$resultSet,$cache);
+            Cache::set($key,$resultSet,$cache);
         }
 
         return $resultSet;
@@ -496,11 +566,30 @@ class Model {
      * @return mixed
      */
     public function find($options=[]) {
+        $pk  =  $this->getPk();        
         if(is_numeric($options) || is_string($options)) {
-            $where[$this->getPk()]  =   $options;
+            $where[$pk]  =   $options;
             $options                =   [];
             $options['where']       =   $where;
         }
+        // 根据复合主键查找记录
+        if (is_array($options) && is_array($pk) && (count($options) > 0) ) {
+            // 根据复合主键查询
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) $count++; 
+            } 
+            if ($count == count($pk)) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where']  =  $where;
+            } else {
+                return false;
+            }
+        }        
         // 总是查找一条记录
         $options['limit']   =   1;
         // 分析表达式
@@ -509,7 +598,7 @@ class Model {
         if(isset($options['cache'])){
             $cache  =   $options['cache'];
             $key    =   is_string($cache['key'])?$cache['key']:md5(serialize($options));
-            $data   =   S($key,'',$cache);
+            $data   =   Cache::get($key,'',$cache);
             if(false !== $data){
                 $this->data     =   $data;
                 return $data;
@@ -530,7 +619,7 @@ class Model {
         // 数据对象赋值  
         $this->data         =   $data;
         if(isset($cache)){
-            S($key,$data,$cache);
+            Cache::set($key,$data,$cache);
         }        
         return $this->data;
     }
@@ -573,7 +662,7 @@ class Model {
         }
         // 验证数据
         if(empty($data) || !is_array($data)) {
-            $this->error = L('_DATA_TYPE_INVALID_');
+            $this->error = Lang::get('_DATA_TYPE_INVALID_');
             return false;
         }
 
@@ -620,24 +709,20 @@ class Model {
         if(''===$linkNum && $this->db) {
             return $this->db;
         }
-        static $_linkNum    =   [];
-        static $_db = [];
-        if(!isset($_db[$linkNum]) || (isset($_db[$linkNum]) && $config && $_linkNum[$linkNum]!=$config) ) {
+        if(!isset($this->_db[$linkNum])) {
             // 创建一个新的实例
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
-                $config  =  C($config);
+                $config  =  Config::get($config);
             }
-            $_db[$linkNum]            =    Db::instance($config);
+            $this->_db[$linkNum]            =    Db::instance($config);
         }elseif(null === $config){
-            $_db[$linkNum]->close(); // 关闭数据库连接
-            unset($_db[$linkNum]);
+            $this->_db[$linkNum]->close(); // 关闭数据库连接
+            unset($this->_db[$linkNum]);
             return ;
         }
 
-        // 记录连接信息
-        $_linkNum[$linkNum] =   $config;
         // 切换数据库连接
-        $this->db   =    $_db[$linkNum];
+        $this->db   =    $this->_db[$linkNum];
         $this->_after_db();
         return $this;
     }
@@ -737,7 +822,18 @@ class Model {
                     // 记录字段类型
                     $type[$key]    =   $val['type'];
                     if($val['primary']) {
-                        $this->fields['_pk'] = $key;
+                        // 增加复合主键支持
+                        if (!empty($this->fields['_pk'])) {
+                            if (is_string($this->fields['_pk'])) {
+                                $this->pk   =   array($this->fields['_pk']);
+                                $this->fields['_pk']   =   $this->pk;
+                            }
+                            $this->pk[]   =   $key;
+                            $this->fields['_pk'][]   =   $key;
+                        } else {
+                            $this->pk   =   $key;
+                            $this->fields['_pk']   =   $key;
+                        }                        
                     }
                 }
                 // 记录字段类型信息
@@ -756,24 +852,56 @@ class Model {
      * SQL查询
      * @access public
      * @param string $sql  SQL指令
-     * @param array $bind  参数绑定
+     * @param mixed $parse  是否需要解析SQL
      * @return mixed
      */
-    public function query($sql,$bind=[]) {
-        $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
-        return $this->db->query($sql,$bind);
+    public function query($sql,$parse=false) {
+        if(!is_bool($parse) && !is_array($parse)) {
+            $parse = func_get_args();
+            array_shift($parse);
+        }
+        $sql  =   $this->parseSql($sql,$parse);
+        return $this->db->query($sql);
     }
 
     /**
      * 执行SQL语句
      * @access public
      * @param string $sql  SQL指令
-     * @param array $bind  参数绑定
+     * @param mixed $parse  是否需要解析SQL
      * @return false | integer
      */
-    public function execute($sql,$bind=[]) {
-        $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
-        return $this->db->execute($sql,$bind);
+    public function execute($sql,$parse=false) {
+        if(!is_bool($parse) && !is_array($parse)) {
+            $parse = func_get_args();
+            array_shift($parse);
+        }        
+        $sql  =   $this->parseSql($sql,$parse);
+        return $this->db->execute($sql);
+    }
+
+    /**
+     * 解析SQL语句
+     * @access public
+     * @param string $sql  SQL指令
+     * @param boolean $parse  是否需要解析SQL
+     * @return string
+     */
+    protected function parseSql($sql,$parse) {
+        // 分析表达式
+        if(true === $parse) {
+            $options =  $this->_parseOptions();
+            $sql    =   $this->db->parseSql($sql,$options);
+        }elseif(is_array($parse)){ // SQL预处理
+            $parse  =   array_map(array($this->db,'escapeString'),$parse);
+            $sql    =   vsprintf($sql,$parse);
+        }else{
+            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix));
+            $prefix =   $this->tablePrefix;
+            $sql    =   preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $sql);
+        }
+        $this->db->setModel($this->name);
+        return $sql;
     }
 
     /**
@@ -791,7 +919,7 @@ class Model {
         }elseif(is_string($data)){
             parse_str($data,$data);
         }elseif(!is_array($data)){
-            E(L('_DATA_TYPE_INVALID_'));
+            E(Lang::get('_DATA_TYPE_INVALID_'));
         }
         $this->data = $data;
         return $this;
@@ -848,7 +976,7 @@ class Model {
                 $options =  $union;
             }
         }else{
-            E(L('_DATA_TYPE_INVALID_'));
+            E(Lang::get('_DATA_TYPE_INVALID_'));
         }
         $this->options['union'][]  =   $options;
         return $this;
@@ -1101,6 +1229,28 @@ class Model {
      */
     public function filter($filter){
         $this->options['filter']     =   $filter;
+        return $this;
+    }
+
+    /**
+     * 对数据集进行索引
+     * @access public
+     * @param string $index 索引名称
+     * @return Model
+     */
+    public function index($index){
+        $this->options['index']     =   $index;
+        return $this;
+    }
+
+    /**
+     * 指定强制索引
+     * @access public
+     * @param string $force 索引名称
+     * @return Model
+     */
+    public function force($force){
+        $this->options['force']     =   $force;
         return $this;
     }
 
