@@ -33,39 +33,49 @@ class Session {
      * @return void
      */
     static public function init($config=[]) {
-        if(isset($config['prefix'])) 
+        if(isset($config['prefix'])){
             self::$prefix  =   $config['prefix'];
+        }
         if(isset($config['var_session_id']) && isset($_REQUEST[$config['var_session_id']])){
             session_id($_REQUEST[$config['var_session_id']]);
         }elseif(isset($config['id'])) {
             session_id($config['id']);
         }
         ini_set('session.auto_start', 0);
-        if(isset($config['name']))            
+        if(isset($config['name'])){        
             session_name($config['name']);
-        if(isset($config['path']))            
+        }
+        if(isset($config['path']))   {         
             session_save_path($config['path']);
-        if(isset($config['domain']))          
+        }
+        if(isset($config['domain']))  {        
             ini_set('session.cookie_domain', $config['domain']);
+        }
         if(isset($name['expire']))          {
             ini_set('session.gc_maxlifetime',   $name['expire']);
             ini_set('session.cookie_lifetime',  $name['expire']);
         }
-        if(isset($config['use_trans_sid']))   
+        if(isset($config['use_trans_sid'])) { 
             ini_set('session.use_trans_sid', $config['use_trans_sid']?1:0);
-        if(isset($config['use_cookies']))     
+        }
+        if(isset($config['use_cookies'])) {
             ini_set('session.use_cookies', $config['use_cookies']?1:0);
-        if(isset($config['cache_limiter']))   
+        }
+        if(isset($config['cache_limiter'])) { 
             session_cache_limiter($config['cache_limiter']);
-        if(isset($config['cache_expire']))    
+        }
+        if(isset($config['cache_expire'])) {
             session_cache_expire($config['cache_expire']);
+        }
         if(!empty($config['type'])) { // 读取session驱动
             $class      = 'Think\\Session\\Driver\\'. ucwords(strtolower($config['type']));
             // 检查驱动类
             session_set_save_handler(new $class());
         }
         // 启动session
-        if($config['auto_start'])  session_start();
+        if($config['auto_start']) {
+            session_start();
+        }
     }
 
     /**
