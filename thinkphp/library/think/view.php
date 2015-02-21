@@ -168,7 +168,7 @@ class View {
             list($module,$template)  =   explode('@',$template);
         }
         // 获取当前主题的模版路径
-        defined('THEME_PATH') or    define('THEME_PATH', $this->getThemePath($module));
+        defined('THEME_PATH') ||    define('THEME_PATH', $this->getThemePath($module));
 
         // 分析模板文件规则
         if('' == $template) {

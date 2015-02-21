@@ -161,7 +161,7 @@ class SecacheClient{
         if(!file_exists($this->_file)){
             $this->create();
         }else{
-            $this->_rs = fopen($this->_file,'rb+') or $this->trigger_error('Can\'t open the cachefile: '.realpath($this->_file),E_USER_ERROR);
+            $this->_rs = fopen($this->_file,'rb+') || $this->trigger_error('Can\'t open the cachefile: '.realpath($this->_file),E_USER_ERROR);
             $this->_seek($this->header_padding);
             $info = unpack('V1max_size/a*ver',fread($this->_rs,$this->info_size));
             if($info['ver']!=$this->ver){
@@ -178,7 +178,7 @@ class SecacheClient{
     }
 
     function create(){
-        $this->_rs = fopen($this->_file,'wb+') or $this->trigger_error('Can\'t open the cachefile: '.realpath($this->_file),E_USER_ERROR);;
+        $this->_rs = fopen($this->_file,'wb+') || $this->trigger_error('Can\'t open the cachefile: '.realpath($this->_file),E_USER_ERROR);;
         fseek($this->_rs,0);
         fputs($this->_rs,'<'.'?php exit()?'.'>');
         return $this->_format();

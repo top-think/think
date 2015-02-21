@@ -138,7 +138,7 @@ class Session {
      * @return void
      */
     static public function delete($name,$prefix='') {
-        $prefix   =  $prefix?$prefix:$this->prefix;
+        $prefix   =  $prefix ? $prefix : self::$prefix;
         if(strpos($name,'.')){
             list($name1,$name2) =   explode('.',$name);
             if($prefix){
@@ -161,7 +161,7 @@ class Session {
      * @return void
      */
     static public function clear($prefix='') {
-        $prefix   =  $prefix?$prefix:self::$prefix;
+        $prefix   =  $prefix ? $prefix : self::$prefix;
         if($prefix) {
             unset($_SESSION[$prefix]);
         }else{

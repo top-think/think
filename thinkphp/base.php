@@ -9,37 +9,36 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-if(version_compare(PHP_VERSION,'5.4.0','<')) die('require PHP > 5.4.0 !');
 define('MAGIC_QUOTES_GPC', false);
 
 //  版本信息
 define('THINK_VERSION', '4.0beta');
 // 系统常量
-defined('THINK_PATH')   or define('THINK_PATH',   dirname(__FILE__).'/');
-defined('LIB_PATH')     or define('LIB_PATH',     THINK_PATH.'library/');
-defined('MODE_PATH')    or define('MODE_PATH',    THINK_PATH.'mode/'); // 系统应用模式目录
-defined('TRAIT_PATH')   or define('TRAIT_PATH',   THINK_PATH.'traits/');
-defined('CORE_PATH')    or define('CORE_PATH',    LIB_PATH.'think/');
-defined('ORG_PATH')     or define('ORG_PATH',     LIB_PATH.'org/');
-defined('APP_PATH')     or define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
-defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH).'/runtime/');
-defined('DATA_PATH')    or define('DATA_PATH',    RUNTIME_PATH.'data/');
-defined('LOG_PATH')     or define('LOG_PATH',     RUNTIME_PATH.'log/');
-defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'cache/');
-defined('TEMP_PATH')    or define('TEMP_PATH',    RUNTIME_PATH.'temp/');
-defined('VENDOR_PATH')  or define('VENDOR_PATH',  THINK_PATH.'vendor/');
-defined('EXT')          or define('EXT',          '.php');
-defined('MODEL_LAYER')  or define('MODEL_LAYER',  'model');
-defined('VIEW_LAYER')   or define('VIEW_LAYER',   'view');
-defined('CONTROLLER_LAYER')  or define('CONTROLLER_LAYER',  'controller');
-defined('APP_DEBUG')    or define('APP_DEBUG',    false); // 是否调试模式
+defined('THINK_PATH')   || define('THINK_PATH',   dirname(__FILE__).'/');
+defined('LIB_PATH')     || define('LIB_PATH',     THINK_PATH.'library/');
+defined('MODE_PATH')    || define('MODE_PATH',    THINK_PATH.'mode/'); // 系统应用模式目录
+defined('TRAIT_PATH')   || define('TRAIT_PATH',   THINK_PATH.'traits/');
+defined('CORE_PATH')    || define('CORE_PATH',    LIB_PATH.'think/');
+defined('ORG_PATH')     || define('ORG_PATH',     LIB_PATH.'org/');
+defined('APP_PATH')     || define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
+defined('RUNTIME_PATH') || define('RUNTIME_PATH', realpath(APP_PATH).'/runtime/');
+defined('DATA_PATH')    || define('DATA_PATH',    RUNTIME_PATH.'data/');
+defined('LOG_PATH')     || define('LOG_PATH',     RUNTIME_PATH.'log/');
+defined('CACHE_PATH')   || define('CACHE_PATH',   RUNTIME_PATH.'cache/');
+defined('TEMP_PATH')    || define('TEMP_PATH',    RUNTIME_PATH.'temp/');
+defined('VENDOR_PATH')  || define('VENDOR_PATH',  THINK_PATH.'vendor/');
+defined('EXT')          || define('EXT',          '.php');
+defined('MODEL_LAYER')  || define('MODEL_LAYER',  'model');
+defined('VIEW_LAYER')   || define('VIEW_LAYER',   'view');
+defined('CONTROLLER_LAYER')  || define('CONTROLLER_LAYER',  'controller');
+defined('APP_DEBUG')    || define('APP_DEBUG',    false); // 是否调试模式
 
 if(function_exists('saeAutoLoader')){// 自动识别SAE环境
-    defined('APP_MODE')     or define('APP_MODE',      'sae');
-    defined('STORAGE_TYPE') or define('STORAGE_TYPE',  'Sae');
+    defined('APP_MODE')     || define('APP_MODE',      'sae');
+    defined('STORAGE_TYPE') || define('STORAGE_TYPE',  'Sae');
 }else{
-    defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
-    defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
+    defined('APP_MODE')     || define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
+    defined('STORAGE_TYPE') || define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
 }
 
 // 环境常量

@@ -25,9 +25,11 @@ class Loader {
             include self::$map[$class];
         }else{ // 命名空间自动加载
             $name     = strstr($class, '\\', true);
-            if(isset(self::$namespace[$name])){ // 注册的命名空间
+            if(isset(self::$namespace[$name])){ 
+                // 注册的命名空间
                 $path   =   dirname(self::$namespace[$name]) . '/';
-            }elseif(is_dir(LIB_PATH.$name)){ // Library目录下面的命名空间自动定位
+            }elseif(in_array($name,['think','org','behavior','com']) || is_dir(LIB_PATH.$name)){ 
+                // Library目录下面的命名空间自动定位
                 $path   =   LIB_PATH;
             }else{ // 项目命名空间
                 $path   =   APP_PATH;
@@ -78,7 +80,7 @@ class Loader {
                 //加载当前项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = MODULE_PATH;
-            }elseif (in_array($class_strut[0], ['think','org', 'com'])) {
+            }elseif (in_array($class_strut[0], ['think','behavior','org', 'com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl = LIB_PATH;
             }elseif(in_array($class_strut[0], ['vendor', 'traits'])){
