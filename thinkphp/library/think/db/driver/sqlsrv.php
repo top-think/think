@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\db\driver;
-use think\db\driver;
+use think\db\Driver;
 use PDO;
 
 /**

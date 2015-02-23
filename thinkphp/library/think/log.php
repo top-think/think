@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -20,7 +20,7 @@ class Log {
     // 日志初始化
     static public function init($config=[]){
         $type   =   isset($config['type'])?$config['type']:'File';
-        $class  =   'Think\\Log\\Driver\\'. ucwords($type);
+        $class  =   '\\think\\log\\driver\\'. ucwords($type);
         unset($config['type']);
         self::$storage = new $class($config);
     }

@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -33,7 +33,7 @@ class Db {
             // 解析连接参数 支持数组和字符串
             $options    =   self::parseConfig($config);
             // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
-            $class  =   $lite?  'Think\Db\Lite' :   'Think\\Db\\Driver\\'.ucwords($options['type']);
+            $class  =   $lite?  'think\db\Lite' :   'think\\db\\driver\\'.ucwords($options['type']);
             self::$instance[$md5]   =   new $class($options);
         }
         self::$_instance    =   self::$instance[$md5];

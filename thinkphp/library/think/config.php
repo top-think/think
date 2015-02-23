@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -25,7 +25,7 @@ class Config {
         if(empty($type)) {
             $type   =   substr(strrchr($config, '.'),1);
         }
-        $class  =   '\Think\Config\Driver\\'.ucwords($type);
+        $class  =   '\\think\\config\driver\\'.ucwords($type);
         self::set((new $class())->parse($config),'',$range);
     }
 

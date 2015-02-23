@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -21,9 +21,9 @@ class Session {
      */
     static public function prefix($prefix=''){
         if(empty($prefix)) {
-            return self::$config['prefix'];
+            return self::$prefix;
         }else{
-            self::$config['prefix']   =   $prefix;
+            self::$prefix   =   $prefix;
         }
     }
 
@@ -36,12 +36,9 @@ class Session {
         if(isset($config['prefix'])){
             self::$prefix  =   $config['prefix'];
         }
-        if(isset($config['var_session_id']) && isset($_REQUEST[$config['var_session_id']])){
-            session_id($_REQUEST[$config['var_session_id']]);
-        }elseif(isset($config['id'])) {
+        if(isset($config['id'])) {
             session_id($config['id']);
         }
-        ini_set('session.auto_start', 0);
         if(isset($config['name'])){        
             session_name($config['name']);
         }
@@ -51,9 +48,9 @@ class Session {
         if(isset($config['domain']))  {        
             ini_set('session.cookie_domain', $config['domain']);
         }
-        if(isset($name['expire']))          {
-            ini_set('session.gc_maxlifetime',   $name['expire']);
-            ini_set('session.cookie_lifetime',  $name['expire']);
+        if(isset($config['expire']))          {
+            ini_set('session.gc_maxlifetime',   $config['expire']);
+            ini_set('session.cookie_lifetime',  $config['expire']);
         }
         if(isset($config['use_trans_sid'])) { 
             ini_set('session.use_trans_sid', $config['use_trans_sid']?1:0);
@@ -68,14 +65,16 @@ class Session {
             session_cache_expire($config['cache_expire']);
         }
         if(!empty($config['type'])) { // 读取session驱动
-            $class      = 'Think\\Session\\Driver\\'. ucwords(strtolower($config['type']));
+            $class      = '\\think\\session\\driver\\'. ucwords(strtolower($config['type']));
             // 检查驱动类
             session_set_save_handler(new $class());
         }
         // 启动session
-        if($config['auto_start']) {
+        if(!empty($config['auto_start'])){
+            ini_set('session.auto_start', 0);
             session_start();
-        }
+        }        
+
     }
 
     /**
@@ -186,25 +185,38 @@ class Session {
     }
 
     /**
-     * session管理
-     * @param string $name session操作名称
+     * 暂停session
      * @return void
      */
-    static private function operate($name) {
-        if('pause'==$name){ // 暂停session
-            session_write_close();
-        }elseif('start'==$name){ // 启动session
-            session_start();
-        }elseif('destroy'==$name){ // 销毁session
-            $_SESSION =  [];
-            session_unset();
-            session_destroy();
-        }elseif('regenerate'==$name){ // 重新生成id
-            session_regenerate_id();
-        }
+    static public function pause() {
+        // 暂停session
+        session_write_close();
     }
 
-    static public function __callStatic($name,$args) {
-        self::operate($name);
+    /**
+     * 启动session
+     * @return void
+     */
+    static public function start() {
+        session_start();
     }
+
+    /**
+     * 销毁session
+     * @return void
+     */
+    static public function destroy() {
+        $_SESSION =  [];
+        session_unset();
+        session_destroy();
+    }
+
+    /**
+     * 重新生成session_id
+     * @return void
+     */
+    static private function regenerate() {
+        session_regenerate_id();
+    }
+
 }
