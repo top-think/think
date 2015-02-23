@@ -26,17 +26,17 @@ class App {
     static public function run($config) {
 
         // 日志初始化
-        Log::init(['type'=>$config['log_type'],'log_path'=> $config['log_path']]);
+        Log::init($config['log']);
 
         // 缓存初始化
-        Cache::connect(['type'=>$config['cache_type'],'temp'=> $config['cache_path']]);
+        Cache::connect($config['cache']);
 
         // 加载框架底层语言包
         is_file(THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT) && Lang::set(include THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT);
 
         // 启动session
         if(!IS_CLI) {
-            Session::init(['prefix'=>$config['session_prefix'],'auto_start'=>$config['session_auto_start']]);
+            Session::init($config['session']);
         }
         if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
             Create::build(include APP_PATH.'build.php');
@@ -274,7 +274,7 @@ class App {
 
         unset($_GET[$config['var_action']], $_GET[$config['var_controller']], $_GET[$config['var_module']]);
         //保证$_REQUEST正常取值
-        $_REQUEST = array_merge($_POST, $_GET);
+        $_REQUEST = array_merge($_POST, $_GET , $_COOKIE);
     }
 
     static private function getModule($config){

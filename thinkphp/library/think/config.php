@@ -50,7 +50,7 @@ class Config {
 
     // 获取配置参数 为空则获取所有配置
     static public function get($name=null,$range='') {
-        $range  =   $range?$range:self::$_range;
+        $range  =   $range ? $range : self::$_range;
         // 无参数时获取所有
         if (empty($name)) {
             return self::$_config[$range];
@@ -67,7 +67,7 @@ class Config {
     
     // 设置配置参数 name为数组则为批量设置
     static public function set($name, $value=null,$range='') {
-        $range  =   $range?$range:self::$_range;
+        $range  =   $range ? $range : self::$_range;
         if(!isset(self::$_config[$range])) {
             self::$_config[$range]  =   [];
         }

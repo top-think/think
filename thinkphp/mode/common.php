@@ -41,12 +41,6 @@ return [
         'var_jsonp_handler'     =>  'callback',
         'template_engine'       =>  'think',
         'common_module'         =>  'Common',
-        'log_path'              =>  LOG_PATH,
-        'log_type'              =>  'File',
-        'cache_type'            =>  'File',
-        'caceh_path'            =>  CACHE_PATH,
-        'session_prefix'        =>  'think',
-        'session_auto_start'    =>  true,
         'action_bind_class'     =>  false,
         'url_module_map'        =>  [],
 
@@ -54,6 +48,24 @@ return [
         'error_message'     =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
         'error_page'        =>  '', // 错误定向页面
         'show_error_msg'    =>  false,    // 显示错误信息
+
+        'log'               =>  [
+            'type'              =>  'File',      
+            'path'              =>  LOG_PATH,
+        ]
+
+        'cache'             =>  [
+            'type'              =>  'File',
+            'path'              =>  CACHE_PATH,      
+            'prefix'            =>  '',
+            'expire'            =>  0,
+        ]
+
+        'session'               =>  [
+            'prefix'            =>  'think',
+            'type'              =>  '',
+            'auto_start'        =>  true,        
+        ]
 
         /* 数据库设置 */
         'database'    =>  [

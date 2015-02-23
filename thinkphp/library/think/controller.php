@@ -73,42 +73,43 @@ class Controller {
      * @access protected
      * @param mixed $data 要返回的数据
      * @param String $type AJAX返回数据格式
+     * @param mixed $fun 数据处理方法
      * @return void
      */
-    protected function ajaxReturn($data, $type='') {
-        if(empty($type)) $type = Config::get('default_ajax_return');
-        switch (strtoupper($type)){
-            case 'JSON':
-                // 返回JSON数据格式到客户端 包含状态信息
-                header('Content-Type:application/json; charset=utf-8');
-                $data   =   Transform::jsonEncode($data);
-                break;
-            case 'XML':
-                // 返回xml格式数据
-                header('Content-Type:text/xml; charset=utf-8');
-                $data   =   Transform::xmlEncode($data);
-                break;
-            case 'JSONP':
-                // 返回JSON数据格式到客户端 包含状态信息
-                header('Content-Type:application/javascript; charset=utf-8');
-                $handler = isset($_GET[C('var_jsonp_handler')]) ? $_GET[C('var_jsonp_handler')] : C('default_jsonp_handler');
-                $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';  
-                break;
-            case 'SCRIPT':
-                // 返回可执行的js脚本
-                header('Content-Type:application/javascript; charset=utf-8');
-                break;
-            case 'HTML':
-                // 返回html片段
-                header('Content-Type:text/html; charset=utf-8');
-                break;
-            case 'TEXT':
-                // 返回一段纯文本
-                header('Content-Type:text/plain; charset=utf-8');
-                break;
-            default:
-                // 用于扩展其他返回格式数据
-                $data   =   Hook::listen('ajax_return', $data);
+    protected function ajaxReturn($data, $type='',$fun='') {
+        if(empty($type)) {
+            $type   = Config::get('default_ajax_return');
+        }
+        $headers    =   [
+            'json'  =>  'application/json',
+            'xml'   =>  'text/xml',
+            'jsonp' =>  'application/javascript',
+            'script'=>  'application/javascript',
+            'html'  =>  'text/html',
+            'text'  =>  'text/plain',
+        ];
+        $type       =   strtolower($type);
+        if(isset($headers[$type])){
+            header('Content-Type:'.$headers[$type].'; charset=utf-8');
+        }
+        if($fun && is_callable($fun)){
+            $data   =   call_user_func($fun,$data);
+        }else{
+            switch ($type){
+                case 'json':
+                    // 返回JSON数据格式到客户端 包含状态信息
+                    $data   =   Transform::jsonEncode($data);
+                    break;
+                case 'xml':
+                    // 返回xml格式数据
+                    $data   =   Transform::xmlEncode($data);
+                    break;
+                case 'jsonp':
+                    // 返回JSON数据格式到客户端 包含状态信息
+                    $handler = isset($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
+                    $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';  
+                    break;
+            }            
         }
         exit($data);
     }

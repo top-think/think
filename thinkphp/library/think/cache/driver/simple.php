@@ -19,7 +19,7 @@ class Simple {
 
     protected $options  =   [
         'prefix'        =>  '',
-        'temp'          =>  '',
+        'path'          =>  '',
     ];
 
     /**
@@ -30,7 +30,7 @@ class Simple {
         if(!empty($options)) {
             $this->options =  array_merge($this->options,$options);
         }
-        if(substr($this->options['temp'], -1) != '/')    $this->options['temp'] .= '/';
+        if(substr($this->options['path'], -1) != '/')    $this->options['path'] .= '/';
     }
 
     /**
@@ -40,7 +40,7 @@ class Simple {
      * @return string
      */
     private function filename($name) {
-        return  $this->options['temp'].$this->options['prefix'].md5($name).'.php';
+        return  $this->options['path'].$this->options['prefix'].md5($name).'.php';
     }
 
     /**

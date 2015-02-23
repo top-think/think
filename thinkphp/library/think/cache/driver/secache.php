@@ -20,7 +20,7 @@ class Secache {
     protected $handler  =   null;
     protected $options  =   [
         'project'       =>  '',
-        'temp'          =>  '',
+        'path'          =>  '',
         'expire'        =>  0,
         'prefix'        =>  '',
         'length'        =>  0,
@@ -35,9 +35,9 @@ class Secache {
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
-        if(substr($this->options['temp'], -1) != '/')    $this->options['temp'] .= '/';
+        if(substr($this->options['path'], -1) != '/')    $this->options['path'] .= '/';
         $this->handler  =   new SecacheClient;
-        $this->handler->workat($this->options['temp'].$this->options['project']);
+        $this->handler->workat($this->options['path'].$this->options['project']);
     }
 
     /**

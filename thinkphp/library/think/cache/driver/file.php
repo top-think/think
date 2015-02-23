@@ -23,7 +23,7 @@ class File {
         'path_level'    =>  1,
         'prefix'        =>  '',
         'length'        =>  0,
-        'temp'          =>  '',
+        'path'          =>  '',
         'data_compress' =>  false,
     ];
 
@@ -35,7 +35,7 @@ class File {
         if(!empty($options)) {
             $this->options =  array_merge($this->options,$options);
         }
-        if(substr($this->options['temp'], -1) != '/')    $this->options['temp'] .= '/';
+        if(substr($this->options['path'], -1) != '/')    $this->options['path'] .= '/';
         $this->init();
     }
 
@@ -46,8 +46,8 @@ class File {
      */
     private function init() {
         // 创建项目缓存目录
-        if (!is_dir($this->options['temp'])) {
-            if (!  mkdir($this->options['temp'],0755))
+        if (!is_dir($this->options['path'])) {
+            if (!  mkdir($this->options['path'],0755))
                 return false;
         }
     }
@@ -67,14 +67,14 @@ class File {
             for($i=0;$i<$len;$i++) {
                 $dir	.=	$name{$i}.'/';
             }
-            if(!is_dir($this->options['temp'].$dir)) {
-                mkdir($this->options['temp'].$dir,0755,true);
+            if(!is_dir($this->options['path'].$dir)) {
+                mkdir($this->options['path'].$dir,0755,true);
             }
             $filename	=	$dir.$this->options['prefix'].$name.'.php';
         }else{
             $filename	=	$this->options['prefix'].$name.'.php';
         }
-        return $this->options['temp'].$filename;
+        return $this->options['path'].$filename;
     }
 
     /**
