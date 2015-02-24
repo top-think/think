@@ -33,13 +33,8 @@ defined('VIEW_LAYER')   || define('VIEW_LAYER',   'view');
 defined('CONTROLLER_LAYER')  || define('CONTROLLER_LAYER',  'controller');
 defined('APP_DEBUG')    || define('APP_DEBUG',    false); // 是否调试模式
 
-if(function_exists('saeAutoLoader')){// 自动识别SAE环境
-    defined('APP_MODE')     || define('APP_MODE',      'sae');
-    defined('STORAGE_TYPE') || define('STORAGE_TYPE',  'Sae');
-}else{
-    defined('APP_MODE')     || define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
-    defined('STORAGE_TYPE') || define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
-}
+// 应用模式 默认为普通模式 
+defined('APP_MODE')     || define('APP_MODE',      function_exists('saeAutoLoader') ? 'sae' : 'common');
 
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
@@ -67,20 +62,26 @@ function C($name='',$range='') {
 // 获取输入数据 支持默认值和过滤
 function I($key,$default='',$filter='') {
     if(strpos($key,'.')) { // 指定参数来源
-        list($method,$key) =   explode('.',$key);
+        list($method,$key) =   explode('.',$key,2);
     }else{ // 默认为自动判断
         $method =   'param';
     }
-    return think\Input::$method($key,$filter,$default);
+    return think\Input::$method($key,$default,$filter);
 }
 
 /**
  * 记录时间（微秒）和内存使用情况
- * @param string $label 记录标签
- * @return void
+ * @param string $start 开始标签
+ * @param string $end 结束标签
+ * @param integer $dec 小数位
+ * @return mixed
  */
-function G($label) {
-    think\Debug::remark($label);
+function G($start,$end='',$dec=6) {
+	if(''==$end){
+		think\Debug::remark($start);
+	}else{
+		return 'm'==$dec ? think\Debug::getUseMem($start,$end) : think\Debug::getUseTime($start,$end,$dec);
+	}
 }
 
 /**
@@ -100,7 +101,7 @@ function M($name='', $tablePrefix='',$connection='') {
  * @param string $layer 业务层名称
  * @return object
  */
-function D($name='',$layer='Model') {
+function D($name='',$layer=MODEL_LAYER) {
     return think\Loader::model($name,$layer);
 }
 
@@ -120,7 +121,7 @@ function db($config=[],$lite=false) {
  * @param string $layer 控制层名称
  * @return object
  */
-function A($name,$layer='Controller') {
+function A($name,$layer=CONTROLLER_LAYER) {
     return think\Loader::controller($name,$layer);
 }
 
@@ -131,7 +132,7 @@ function A($name,$layer='Controller') {
  * @param string $layer 要调用的控制层名称
  * @return mixed
  */
-function R($url,$vars=[],$layer='Controller') {
+function R($url,$vars=[],$layer=CONTROLLER_LAYER) {
     return think\Loader::action($url,$vars,$layer);
 }
 
@@ -220,9 +221,9 @@ function S($name,$value='',$options=null) {
         return $cache->rm($name);
     }else { // 缓存数据
         if(is_array($options)) {
-            $expire =   isset($options['expire'])?$options['expire']:null;  //修复查询缓存无法设置过期时间
+            $expire =   isset($options['expire']) ? $options['expire'] : null;  //修复查询缓存无法设置过期时间
         }else{
-            $expire =   is_numeric($options)?$options:null; //默认快捷缓存设置过期时间
+            $expire =   is_numeric($options) ? $options : null; //默认快捷缓存设置过期时间
         }
         return $cache->set($name, $value, $expire);
     }
