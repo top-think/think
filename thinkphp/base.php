@@ -9,8 +9,6 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-define('MAGIC_QUOTES_GPC', false);
-
 //  版本信息
 define('THINK_VERSION', '4.0beta');
 // 系统常量
