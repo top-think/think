@@ -13,8 +13,8 @@ namespace think;
 
 class Debug {
     
-    static protected $_info       =   [];
-    static protected $_mem        =   [];
+    static protected $info       =   [];
+    static protected $mem        =   [];
 
     /**
      * 记录时间（微秒）和内存使用情况
@@ -24,10 +24,10 @@ class Debug {
      */
     static public function remark($name,$value='') {
          // 记录时间和内存使用
-        self::$_info[$name]  =  is_float($value) ? $value : microtime(true);
+        self::$info[$name]  =  is_float($value) ? $value : microtime(true);
         if('time' != $value ) {
-            self::$_mem['mem'][$name]  = is_float($value) ? $value : memory_get_usage();
-            self::$_mem['peak'][$name] = function_exists('memory_get_peak_usage') ? memory_get_peak_usage() : self::$_mem['mem'][$name];
+            self::$mem['mem'][$name]  = is_float($value) ? $value : memory_get_usage();
+            self::$mem['peak'][$name] = memory_get_peak_usage();
         }
     }
 
@@ -39,9 +39,10 @@ class Debug {
      * @return mixed
      */
     static public function getUseTime($start,$end,$dec=6) {
-        if(!isset(self::$_info[$end])) 
-            self::$_info[$end]   =  microtime(true);
-        return number_format((self::$_info[$end]-self::$_info[$start]),$dec);
+        if(!isset(self::$info[$end])) {
+            self::$info[$end]   =  microtime(true);
+        }
+        return number_format((self::$info[$end]-self::$info[$start]),$dec);
     }
 
     /**
@@ -52,9 +53,10 @@ class Debug {
      * @return mixed
      */
     static public function getUseMem($start,$end,$dec=2) {
-        if(!isset(self::$_mem['mem'][$end])) 
-            self::$_mem['mem'][$end]     =  memory_get_usage();
-        $size   =   self::$_mem['mem'][$end]-self::$_mem['mem'][$start];
+        if(!isset(self::$mem['mem'][$end])) {
+            self::$mem['mem'][$end]     =  memory_get_usage();
+        }
+        $size   =   self::$mem['mem'][$end]-self::$mem['mem'][$start];
         $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
         while ($size >= 1024) {
@@ -72,9 +74,10 @@ class Debug {
      * @return mixed
      */
     static public function getMemPeak($start,$end,$dec=2) {
-        if(!isset(self::$_mem['peak'][$end])) 
-            self::$_mem['peak'][$end]     =  function_exists('memory_get_peak_usage') ? memory_get_peak_usage() : memory_get_usage();
-        $size   =   self::$_mem['peak'][$end]-self::$_mem['peak'][$start];
+        if(!isset(self::$mem['peak'][$end])) {
+            self::$mem['peak'][$end]     =  memory_get_peak_usage() ;
+        }
+        $size   =   self::$mem['peak'][$end]-self::$mem['peak'][$start];
         $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
         while ($size >= 1024) {
@@ -108,7 +111,8 @@ class Debug {
         if ($echo) {
             echo($output);
             return null;
-        }else
+        }else{
             return $output;
+        }
     }
 }

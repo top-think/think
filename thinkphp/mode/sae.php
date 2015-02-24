@@ -42,14 +42,16 @@ return [
 
     // 别名定义
     'alias'     =>  [
-        'Think\Log'               => CORE_PATH . 'Log'.EXT,
-        'Think\Log\Driver\File'   => CORE_PATH . 'Log/Driver/File'.EXT,
-        'Think\Exception'         => CORE_PATH . 'Exception'.EXT,
-        'Think\Model'             => CORE_PATH . 'Model'.EXT,
-        'Think\Db'                => CORE_PATH . 'Db'.EXT,
-        'Think\Template'          => CORE_PATH . 'Template'.EXT,
-        'Think\Cache'             => CORE_PATH . 'Cache'.EXT,
-        'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File'.EXT,
+        'think\Log'                     => CORE_PATH . 'log'.EXT,
+        'think\log\driver\File'         => CORE_PATH . 'log/driver/file'.EXT,
+        'think\log\driver\Sae'          => CORE_PATH . 'log/driver/sae'.EXT,        
+        'think\Exception'               => CORE_PATH . 'exception'.EXT,
+        'think\Model'                   => CORE_PATH . 'model'.EXT,
+        'think\Db'                      => CORE_PATH . 'db'.EXT,
+        'think\Template'                => CORE_PATH . 'template'.EXT,
+        'think\Cache'                   => CORE_PATH . 'cache'.EXT,
+        'think\cache\driver\File'       => CORE_PATH . 'cache/driver/file'.EXT,
+        'think\cache\driver\Memcache'   => CORE_PATH . 'cache/driver/memcache'.EXT,        
     ],
 
 ];

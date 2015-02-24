@@ -12,12 +12,12 @@
 namespace think;
 
 class Lang {
-    static private  $_lang  =   [];         // 语言参数
-    static private  $_range =   '_sys_';   // 作用域
+    static private  $lang  =   [];         // 语言参数
+    static private  $range =   '_sys_';   // 作用域
 
     // 设定语言参数的作用域
     static public function range($range){
-        self::$_range   =   $range;
+        self::$range   =   $range;
     }
 
     /**
@@ -28,12 +28,12 @@ class Lang {
      * @return mixed
      */
     static public function set($name, $value=null,$range='') {
-        $range  =   $range?$range:self::$_range;
+        $range  =   $range?$range:self::$range;
         // 批量定义
         if (is_array($name)){
-            return self::$_lang[$range] = array_merge(self::$_lang[$range], array_change_key_case($name));
+            return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($name));
         }else{
-            return self::$_lang[$range][strtolower($name)] = $value;
+            return self::$lang[$range][strtolower($name)] = $value;
         }
     }
 
@@ -44,11 +44,11 @@ class Lang {
      * @return mixed
      */
     static public function get($name=null, $range='') {
-        $range  =   $range?$range:self::$_range;
+        $range  =   $range?$range:self::$range;
         // 空参数返回所有定义
         if (empty($name))
-            return self::$_lang[$range];
+            return self::$lang[$range];
         $name = strtolower($name);
-        return isset(self::$_lang[$range][$name]) ? self::$_lang[$range][$name] : $name;
+        return isset(self::$lang[$range][$name]) ? self::$lang[$range][$name] : $name;
     }
 }

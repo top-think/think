@@ -76,11 +76,7 @@ class Hook {
         if($name instanceof \Closure) {
             return $name($params);
         }
-        if('Behavior' == substr($name,-8) ){
-            // 行为扩展必须用run入口方法
-            $tag    =   'run';
-        }
         $addon   = new $name();
-        return $addon->$tag($params);
+        return method_exists($addon,$tag) ? $addon->$tag($params): $addon->run($params);
     }
 }

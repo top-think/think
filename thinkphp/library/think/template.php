@@ -60,7 +60,7 @@ class  Template {
 
         // 初始化模板编译存储器
         $type   =   $this->config['compile_type']?$this->config['compile_type']:'File';
-        $class  =   '\Think\Template\Driver\\'.ucwords($type);
+        $class  =   '\\think\\template\\driver\\'.ucwords($type);
         $this->storage =   new $class();
     }
 
@@ -439,7 +439,7 @@ class  Template {
     protected function parseTagLib($tagLib,&$content,$hide=false) {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
-        $className  =   '\\Think\\Template\\Taglib\\'.ucwords($tagLib);
+        $className  =   '\\think\\template\\taglib\\'.ucwords($tagLib);
         $tLib       =   new $className($this);
         foreach ($tLib->getTags() as $name=>$val){
             $tags   =   [$name];

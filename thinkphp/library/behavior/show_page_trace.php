@@ -42,7 +42,7 @@ class ShowPageTrace {
             $info[] = $file.' ( '.number_format(filesize($file)/1024,2).' KB )';
         }
         $trace  =   [];
-        Debug::remark('START',$GLOBALS['startTime']);
+        Debug::remark('START',NOW_TIME);
         $base   =   [
             '请求信息'  =>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.$_SERVER['PHP_SELF'],
             '运行时间'  =>  Debug::getUseTime('START','END',6).'s',
@@ -84,7 +84,7 @@ class ShowPageTrace {
         unset($files,$info,$base,$debug);
         // 调用Trace页面模板
         ob_start();
-        include Config::has('tmpl_trace_file')?Config::get('tmpl_trace_file'):THINK_PATH.'tpl/page_trace.tpl';
+        include Config::has('tmpl_trace_file') ? Config::get('tmpl_trace_file') : THINK_PATH.'tpl/page_trace.tpl';
         return ob_get_clean();
     }
 }

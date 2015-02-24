@@ -72,7 +72,7 @@ class View {
      * @return View
      */
     public function engine($engine, array $config = []){
-        $class = '\\Think\\View\\Driver\\' . ucwords($engine);
+        $class = '\\think\\view\\driver\\' . ucwords($engine);
         $this->engine = new $class($config);
         return $this;
     }

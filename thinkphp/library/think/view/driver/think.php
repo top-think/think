@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\view\driver;
-use think\template;
+use think\Template;
 
 class Think {
     private $template   =   null;

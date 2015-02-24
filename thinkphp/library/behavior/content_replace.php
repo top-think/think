@@ -10,14 +10,10 @@
 // +----------------------------------------------------------------------
 
 namespace think\behavior;
-use think\config;
+use think\Config;
 
 /**
  * 系统行为扩展：模板内容输出替换
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
 class ContentReplace {
 

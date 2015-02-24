@@ -52,20 +52,20 @@ return [
         'log'               =>  [
             'type'              =>  'File',      
             'path'              =>  LOG_PATH,
-        ]
+        ],
 
         'cache'             =>  [
             'type'              =>  'File',
             'path'              =>  CACHE_PATH,      
             'prefix'            =>  '',
             'expire'            =>  0,
-        ]
+        ],
 
         'session'               =>  [
             'prefix'            =>  'think',
             'type'              =>  '',
             'auto_start'        =>  true,        
-        ]
+        ],
 
         /* 数据库设置 */
         'database'    =>  [
@@ -89,29 +89,31 @@ return [
 
     // 别名定义
     'alias'     =>  [
-        'Think\App'               => CORE_PATH . 'App.php',
-        'Think\Log'               => CORE_PATH . 'Log.php',
-        'Think\Log\Driver\File'   => CORE_PATH . 'Log/Driver/File.php',
-        'Think\Config'            => CORE_PATH . 'Config.php',
-        'Think\Route'             => CORE_PATH . 'Route.php',
-        'Think\Exception'         => CORE_PATH . 'Exception.php',
-        'Think\Model'             => CORE_PATH . 'Model.php',
-        'Think\Db'                => CORE_PATH . 'Db.php',
-        'Think\Db\Driver'         => CORE_PATH . 'Db/Driver.php',
-        'Think\Template'          => CORE_PATH . 'Template.php',
-        'Think\Error'             => CORE_PATH . 'Error.php',
-        'Think\Cache'             => CORE_PATH . 'Cache.php',
-        'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File.php',
-        'Think\Hook'              => CORE_PATH . 'Hook.php',
-        'Think\Session'           => CORE_PATH . 'Session.php',
-        'Think\Cookie'            => CORE_PATH . 'Cookie.php',
-        'Think\Controller'        => CORE_PATH . 'Controller.php',
-        'Think\View'              => CORE_PATH . 'View.php',
-        'Think\Url'               => CORE_PATH . 'Url.php',
-        'Think\Debug'             => CORE_PATH . 'Debug.php',
-        'Think\Input'             => CORE_PATH . 'Input.php',
-        'Think\Parser'            => CORE_PATH . 'Parser.php',
-        'Think\Lang'              => CORE_PATH . 'Lang.php',
+        'think\App'                     =>  CORE_PATH . 'app'.EXT,
+        'think\Log'                     =>  CORE_PATH . 'log'.EXT,
+        'think\log\driver\File'         =>  CORE_PATH . 'log/driver/file'.EXT,
+        'think\Config'                  =>  CORE_PATH . 'config'.EXT,
+        'think\Route'                   =>  CORE_PATH . 'route'.EXT,
+        'think\Exception'               =>  CORE_PATH . 'exception'.EXT,
+        'think\Model'                   =>  CORE_PATH . 'model'.EXT,
+        'think\Db'                      =>  CORE_PATH . 'db'.EXT,
+        'think\Db\Driver'               =>  CORE_PATH . 'db/driver'.EXT,
+        'think\Template'                =>  CORE_PATH . 'template'.EXT,
+        'think\view\driver\Think'       =>  CORE_PATH . 'view\driver\think'.EXT,
+        'think\template\driver\File'    =>  CORE_PATH . 'template\driver\file'.EXT,
+        'think\Error'                   =>  CORE_PATH . 'error'.EXT,
+        'think\Cache'                   =>  CORE_PATH . 'cache'.EXT,
+        'think\cache\driver\File'       =>  CORE_PATH . 'cache/driver/file'.EXT,
+        'think\Hook'                    =>  CORE_PATH . 'hook'.EXT,
+        'think\Session'                 =>  CORE_PATH . 'session'.EXT,
+        'think\Cookie'                  =>  CORE_PATH . 'cookie'.EXT,
+        'think\Controller'              =>  CORE_PATH . 'controller'.EXT,
+        'think\View'                    =>  CORE_PATH . 'view'.EXT,
+        'think\Url'                     =>  CORE_PATH . 'url'.EXT,
+        'think\Debug'                   =>  CORE_PATH . 'debug'.EXT,
+        'think\Input'                   =>  CORE_PATH . 'input'.EXT,
+        'think\Parser'                  =>  CORE_PATH . 'parser'.EXT,
+        'think\Lang'                    =>  CORE_PATH . 'lang'.EXT,
     ],
 
     'init'       =>  [],

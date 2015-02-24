@@ -12,12 +12,12 @@
 namespace think;
 
 class Config {
-    static private  $_config =   [];   // 配置参数
-    static private  $_range =   '_sys_';   // 参数作用域
+    static private  $config =   [];   // 配置参数
+    static private  $range =   '_sys_';   // 参数作用域
 
     // 设定配置参数的作用域
     static public function range($range){
-        self::$_range   =   $range;
+        self::$range   =   $range;
     }
 
     // 解析其他格式的配置参数
@@ -36,55 +36,55 @@ class Config {
 
     // 检测配置是否存在
     static public function has($name,$range=''){
-        $range  =   $range ? $range : self::$_range;
+        $range  =   $range ? $range : self::$range;
         $name   =   strtolower($name);
 
         if (!strpos($name, '.')) {
-            return isset(self::$_config[$range][$name]);
+            return isset(self::$config[$range][$name]);
         }else{
             // 二维数组设置和获取支持
             $name = explode('.', $name);
-            return isset(self::$_config[$range][$name[0]][$name[1]]);
+            return isset(self::$config[$range][$name[0]][$name[1]]);
         }
     }
 
     // 获取配置参数 为空则获取所有配置
     static public function get($name=null,$range='') {
-        $range  =   $range ? $range : self::$_range;
+        $range  =   $range ? $range : self::$range;
         // 无参数时获取所有
         if (empty($name)) {
-            return self::$_config[$range];
+            return self::$config[$range];
         }
         $name = strtolower($name);
         if (!strpos($name, '.')) {
-            return isset(self::$_config[$range][$name]) ? self::$_config[$range][$name] : null;
+            return isset(self::$config[$range][$name]) ? self::$config[$range][$name] : null;
         }else{
             // 二维数组设置和获取支持
             $name = explode('.', $name);
-            return isset(self::$_config[$range][$name[0]][$name[1]]) ? self::$_config[$range][$name[0]][$name[1]] : null;
+            return isset(self::$config[$range][$name[0]][$name[1]]) ? self::$config[$range][$name[0]][$name[1]] : null;
         }
     }
     
     // 设置配置参数 name为数组则为批量设置
     static public function set($name, $value=null,$range='') {
-        $range  =   $range ? $range : self::$_range;
-        if(!isset(self::$_config[$range])) {
-            self::$_config[$range]  =   [];
+        $range  =   $range ? $range : self::$range;
+        if(!isset(self::$config[$range])) {
+            self::$config[$range]  =   [];
         }
         if (is_string($name)) {
             $name = strtolower($name);
             if (!strpos($name, '.')) {
-                self::$_config[$range][$name] = $value;
+                self::$config[$range][$name] = $value;
             }else{
                 // 二维数组设置和获取支持
                 $name = explode('.', $name);
-                self::$_config[$range][$name[0]][$name[1]] = $value;                
+                self::$config[$range][$name[0]][$name[1]] = $value;                
             }
             return;
         }elseif (is_array($name)){         
             // 批量设置
-            self::$_config[$range] = array_merge(self::$_config[$range], array_change_key_case($name));
-            return self::$_config[$range];
+            self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
+            return self::$config[$range];
         }else{
             return null; // 避免非法参数
         }

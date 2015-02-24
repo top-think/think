@@ -13,17 +13,14 @@ namespace think\behavior;
 
 /**
  * 系统行为扩展：定位模板文件
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
 class LocationTemplate {
     // 行为扩展的执行入口必须是run
     public function run(&$templateFile){
         // 自动定位模板文件
-        if(!is_file($templateFile))
+        if(!is_file($templateFile)){
             $templateFile   = $this->parseTemplateFile($templateFile);
+        }
     }
 
     /**
@@ -42,7 +39,7 @@ class LocationTemplate {
         }elseif(false === strpos($template,'.')) {
             $template   =  $template;
         }
-        $templateFile   =   MODULE_PATH.'View/'.$template.'.html';
+        $templateFile   =   MODULE_PATH.'view/'.$template.'.html';
         return $templateFile;
     }
 }
