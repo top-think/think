@@ -1294,7 +1294,7 @@ class Model {
      * @param boolean $fetch 是否返回sql
      * @return Model
      */
-    public function fetchSql($fetch){
+    public function fetchSql($fetch=true){
         $this->options['fetch_sql'] =   $fetch;
         return $this;
     }
