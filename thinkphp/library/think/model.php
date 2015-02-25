@@ -69,8 +69,8 @@ class Model {
             list($this->dbName,$this->name) = explode('.',$this->name);
         }
 
-        if(isset($config['table_prefix'])) {
-            $this->tablePrefix  =   $config['table_prefix'];
+        if(isset($config['prefix'])) {
+            $this->tablePrefix  =   $config['prefix'];
         }
         if(isset($config['connection'])) {
             $this->connection   =   $config['connection'];
