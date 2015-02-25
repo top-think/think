@@ -69,6 +69,8 @@ class Model {
 
         if(isset($config['prefix'])) {
             $this->tablePrefix  =   $config['prefix'];
+        }else{
+            $this->tablePrefix  =   Config::get('database.prefix');
         }
         if(isset($config['connection'])) {
             $this->connection   =   $config['connection'];

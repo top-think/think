@@ -90,7 +90,7 @@ function G($start,$end='',$dec=6) {
  * @return Model
  */
 function M($name='', $tablePrefix='',$connection='') {
-    return think\Loader::table($name,['table_prefix'=>$tablePrefix,'connection'=>$connection]);
+    return think\Loader::table($name,['prefix'=>$tablePrefix,'connection'=>$connection]);
 }
 
 /**
