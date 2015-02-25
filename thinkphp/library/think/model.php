@@ -19,7 +19,7 @@ class Model {
     // 当前数据库操作对象
     protected $db               =   null;
     // 数据库对象池
-    private   $_db              =   [];    
+    private   $_db              =   [];
     // 主键名称
     protected $pk               =   'id';
     // 数据表前缀
@@ -46,8 +46,6 @@ class Model {
     protected $scope           =   [];
     // 字段映射定义
     protected $map             =   [];
-    // 是否自动检测数据表字段信息
-    protected $autoCheckFields  =   false;
 
     /**
      * 架构函数
@@ -1302,11 +1300,16 @@ class Model {
     /**
      * 设置字段映射
      * @access public
-     * @param array $map 映射
+     * @param mixed $map 映射名称或者映射数据
+     * @param string $name 映射的字段
      * @return Model
      */
-    public function map($map){
-        $this->map =   $map;
+    public function map($map,$name=''){
+        if(is_array($map)){
+            $this->map  =   array_merge($this->map,$map);
+        }else{
+            $this->map[$map] =   $name;
+        }
         return $this;
     }
 }
