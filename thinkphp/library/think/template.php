@@ -654,14 +654,14 @@ class  Template {
                     if(isset($vars[3])) {
                         $parseStr = '$_COOKIE[\''.$vars[2].'\'][\''.$vars[3].'\']';
                     }else{
-                        $parseStr = 'cookie(\''.$vars[2].'\')';
+                        $parseStr = '\\think\\cookie::get(\''.$vars[2].'\')';
                     }
                     break;
                 case 'SESSION':
                     if(isset($vars[3])) {
                         $parseStr = '$_SESSION[\''.$vars[2].'\'][\''.$vars[3].'\']';
                     }else{
-                        $parseStr = 'session(\''.$vars[2].'\')';
+                        $parseStr = '\\think\\session::get(\''.$vars[2].'\')';
                     }
                     break;
                 case 'ENV':
