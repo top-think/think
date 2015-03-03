@@ -19,7 +19,7 @@ class Parser {
     // 解析内容
     static public function parse($content,$type){
         if(!isset(self::$handler[$type])) {
-            $class  =   '\\Think\\Parser\\Driver\\'.ucwords($type);
+            $class  =   '\\Think\\Parser\\Driver\\'.strtolower($type);
             self::$handler[$type]  =   new $class();
         }
         return self::$handler[$type]->parse($content);

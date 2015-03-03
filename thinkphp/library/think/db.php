@@ -33,7 +33,7 @@ class Db {
             // 解析连接参数 支持数组和字符串
             $options    =   self::parseConfig($config);
             // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
-            $class  =   $lite?  'think\db\Lite' :   'think\\db\\driver\\'.ucwords($options['type']);
+            $class  =   $lite?  'think\db\lite' :   'think\\db\\driver\\'.strtolower($options['type']);
             self::$instance[$md5]   =   new $class($options);
         }
         self::$_instance    =   self::$instance[$md5];

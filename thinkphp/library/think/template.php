@@ -60,7 +60,7 @@ class  Template {
 
         // 初始化模板编译存储器
         $type   =   $this->config['compile_type']?$this->config['compile_type']:'File';
-        $class  =   '\\think\\template\\driver\\'.ucwords($type);
+        $class  =   '\\think\\template\\driver\\'.strtolower($type);
         $this->storage =   new $class();
     }
 
@@ -136,7 +136,7 @@ class  Template {
         $this->storage->read($cacheFile,$this->data);
         // 获取并清空缓存
         $content = ob_get_clean();
-        if($this->config['cache_id'] && $this->config['display_cache']) {
+        if(!empty($this->config['cache_id']) && $this->config['display_cache']) {
             // 缓存页面输出
             Cache::set($this->config['cache_id'],$content,$this->config['cache_time']);
         }
@@ -197,7 +197,9 @@ class  Template {
         // 模板解析
         $content =  $this->parse($content);
         // 还原被替换的Literal标签
-        $content =  preg_replace('/<!--###literal(\d+)###-->/eis',"\$this->restoreLiteral('\\1')",$content);
+        $content =  preg_replace_callback('/<!--###literal(\d+)###-->/is', function($matches){
+            return $this->restoreLiteral($matches[1]);
+        },$content);
         // 添加安全代码
         $content =  '<?php if (!defined(\'THINK_PATH\')) exit();?>'.$content;
         if($this->config['strip_space']) {
@@ -230,7 +232,9 @@ class  Template {
         // 检查PHP语法
         $content    =   $this->parsePhp($content);
         // 首先替换literal标签内容
-        $content    =   preg_replace('/'.$begin.'literal'.$end.'(.*?)'.$begin.'\/literal'.$end.'/eis',"\$this->parseLiteral('\\1')",$content);
+        $content    =   preg_replace_callback('/'.$begin.'literal'.$end.'(.*?)'.$begin.'\/literal'.$end.'/is', function($matches){
+            return $this->parseLiteral($matches[1]);
+        },$content);
 
         // 获取需要引入的标签库列表
         // 标签库只需要定义一次，允许引入多个一次
@@ -259,7 +263,9 @@ class  Template {
             $this->parseTagLib($tag,$content,true);
         }
         // 解析普通模板标签 {tagName}
-        $content = preg_replace('/('.$this->config['tpl_begin'].')([^\d\s'.$this->config['tpl_begin'].$this->config['tpl_end'].'].+?)('.$this->config['tpl_end'].')/eis',"\$this->parseTag('\\2','\\0')",$content);
+        $content = preg_replace_callback('/('.$this->config['tpl_begin'].')([^\d\s'.$this->config['tpl_begin'].$this->config['tpl_end'].'].+?)('.$this->config['tpl_end'].')/is',function($matches){
+            return $this->parseTag($matches[2], $matches[0]);
+        },$content);
         return $content;
     }
 
@@ -326,14 +332,20 @@ class  Template {
             //替换extend标签
             $content    =   str_replace($matches[0],'',$content);
             // 记录页面中的block标签
-            preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->parseBlock('\\1','\\2')",$content);
+            preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is',function($matches){
+                return $this->parseBlock($matches[1],$matches[2]);
+            },$content);
             // 读取继承模板
             $array      =   $this->parseXmlAttrs($matches[1]);
             $content    =   $this->parseTemplateName($array['name']);
             // 替换block标签
-            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
+            $content    =   preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is',function($matches){
+                return $this->replaceBlock($matches[1],$matches[2]);
+            },$content);
         }else{
-            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"stripslashes('\\2')",$content);            
+            $content    =   preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is',function($matches){
+                return stripslashes($matches[2]);
+            },$content);            
         }
         return $content;
     }
@@ -439,7 +451,7 @@ class  Template {
     protected function parseTagLib($tagLib,&$content,$hide=false) {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
-        $className  =   '\\think\\template\\taglib\\'.ucwords($tagLib);
+        $className  =   '\\think\\template\\taglib\\'.strtolower($tagLib);
         $tLib       =   new $className($this);
         foreach ($tLib->getTags() as $name=>$val){
             $tags   =   [$name];
@@ -457,14 +469,17 @@ class  Template {
                 }
                 $n1 = empty($val['attr'])?'(\s*?)':'\s([^'.$end.']*)';
                 if (!$closeTag){
-                    $patterns       = '/'.$begin.$parseTag.$n1.'\/(\s*?)'.$end.'/eis';
-                    $replacement    = "\$this->parseXmlTag(\$tLib,'$tagLib','$tag','$1','')";
-                    $content        = preg_replace($patterns, $replacement,$content);
+                    $patterns       = '/'.$begin.$parseTag.$n1.'\/(\s*?)'.$end.'/is';
+                    $content        = preg_replace_callback($patterns, function($matches){
+                        return $this->parseXmlTag($tLib, $tagLib, $tag, $matches[0], $matches[1]);
+                    }, $content);
                 }else{
-                    $patterns       = '/'.$begin.$parseTag.$n1.$end.'(.*?)'.$begin.'\/'.$parseTag.'(\s*?)'.$end.'/eis';
-                    $replacement    = "\$this->parseXmlTag(\$tLib,'$tagLib','$tag','$1','$2')";
-                    for($i=0;$i<$level;$i++) 
-                        $content=preg_replace($patterns,$replacement,$content);
+                    $patterns       = '/'.$begin.$parseTag.$n1.$end.'(.*?)'.$begin.'\/'.$parseTag.'(\s*?)'.$end.'/is';
+                    for($i=0;$i<$level;$i++){
+                        $content    = preg_replace_callback($patterns, function($matches){
+                            return $this->parseXmlTag($tLib, $tagLib, $tag, $matches[0], $matches[1]);
+                        }, $content);
+                    }
                 }
             }
         }

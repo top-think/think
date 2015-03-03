@@ -65,7 +65,7 @@ class Session {
             session_cache_expire($config['cache_expire']);
         }
         if(!empty($config['type'])) { // 读取session驱动
-            $class      = '\\think\\session\\driver\\'. ucwords(strtolower($config['type']));
+            $class      = '\\think\\session\\driver\\'. strtolower($config['type']);
             // 检查驱动类
             session_set_save_handler(new $class());
         }

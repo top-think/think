@@ -48,7 +48,7 @@ class Image {
      */
     static public function init($type = 'Gd', $imgname = null){
         /* 引入处理库，实例化图片处理对象 */
-        $class = '\\Think\\Image\\Driver\\'.ucwords($type);
+        $class = '\\Think\\Image\\Driver\\'.strtolower($type);
         self::$im = new $class($imgname);
         return self::$im;
     }

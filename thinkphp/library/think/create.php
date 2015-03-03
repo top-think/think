@@ -47,13 +47,13 @@ class Create {
                     foreach($file as $val){
                         switch($path) {
                         case 'controller':// 控制器
-                            $filename   =   ucwords($val).$path;
+                            $filename   =   strtolower($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
                                 file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
                             }
                             break;
                         case 'model': // 模型
-                            $filename   =   ucwords($val).$path;
+                            $filename   =   strtolower($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
                                 file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
                             }
@@ -61,7 +61,7 @@ class Create {
                         case 'view': // 视图
                             break;
                         default:
-                            $filename   =   ucwords($val).$path;
+                            $filename   =   strtolower($val).$path;
                             if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
                                 file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
                             }

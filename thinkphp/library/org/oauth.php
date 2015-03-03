@@ -34,7 +34,7 @@ class Oauth {
      * @return object
      */
     static public function connect($type,$options=[]) {
-        $class = 'Think\\Oauth\\Driver\\'.ucwords($type);
+        $class = 'think\\oauth\\driver\\'.strtolower($type);
         self::$handler = new $class($options);
         return self::$handler;
     }
