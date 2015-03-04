@@ -23,7 +23,7 @@ class Transform {
      */
     static private function init($type){
         if(!isset(self::$handler[$type])) {
-            $class = '\\Think\\Transform\\Driver\\' . strtolower($type);
+            $class = '\\think\\transform\\driver\\' . strtolower($type);
             self::$handler[$type] = new $class();
         }
     }
