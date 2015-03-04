@@ -115,8 +115,9 @@ class Loader {
             $class = 'think\model';
         }
         $guid =  $name . '_' . $class;
-        if (!isset($_model[$guid]))
+        if (!isset($_model[$guid])){
             $_model[$guid] = new $class($name, $options);
+        }
         return $_model[$guid];
     }
 
