@@ -45,26 +45,24 @@ class Create {
                         mkdir(APP_PATH.$module.'/'.$path);
                     }
                     foreach($file as $val){
+                    	$filename   =   strtolower($val);
                         switch($path) {
-                        case 'controller':// 控制器
-                            $filename   =   strtolower($val).$path;
-                            if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
-                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
-                            }
-                            break;
-                        case 'model': // 模型
-                            $filename   =   strtolower($val).$path;
-                            if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
-                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
-                            }
-                            break;
-                        case 'view': // 视图
-                            break;
-                        default:
-                            $filename   =   strtolower($val).$path;
-                            if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
-                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
-                            }
+	                        case 'controller':// 控制器
+	                            if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
+	                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
+	                            }
+	                            break;
+	                        case 'model': // 模型
+	                            if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
+	                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
+	                            }
+	                            break;
+	                        case 'view': // 视图
+	                            break;
+	                        default:
+	                            if(!is_file(APP_PATH.$module.'/'.$path.'/'.$filename.'.php')) {
+	                                file_put_contents(APP_PATH.$module.'/'.$path.'/'.$filename.'.php',"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
+	                            }
                         }
 
                     }
@@ -77,13 +75,13 @@ class Create {
 
     // 创建欢迎页面
     static public function buildHelloController($module) {
-        if(!is_file(APP_PATH.$module.'/controller/index_controller.php')) {
+        if(!is_file(APP_PATH.$module.'/controller/index.php')) {
             $content    =   file_get_contents(THINK_PATH.'tpl/default_index.tpl');
             $content    =   str_replace('{$module}',$module,$content);
             if(!is_dir(APP_PATH.$module.'/controller')) {
                 mkdir(APP_PATH.$module.'/controller');
             }
-            file_put_contents(APP_PATH.$module.'/controller/index_controller.php',$content);
+            file_put_contents(APP_PATH.$module.'/controller/index.php',$content);
         }
     }
 
