@@ -119,7 +119,7 @@ class Input {
      * @return mixed
      */
     static public function server($name='',$default=null,$filter='') {
-        return self::getData($name,$_SERVER,$filter,$default);
+        return self::getData(strtoupper($name),$_SERVER,$filter,$default);
     }
 
     /**
@@ -143,7 +143,7 @@ class Input {
      * @return mixed
      */
     static public function env($name='',$default=null,$filter='') {
-        return self::getData($name,$_ENV,$filter,$default);
+        return self::getData(strtoupper($name),$_ENV,$filter,$default);
     }
 
     /**
