@@ -30,6 +30,7 @@ defined('MODEL_LAYER')  || define('MODEL_LAYER',  'model');
 defined('VIEW_LAYER')   || define('VIEW_LAYER',   'view');
 defined('CONTROLLER_LAYER')  || define('CONTROLLER_LAYER',  'controller');
 defined('APP_DEBUG')    || define('APP_DEBUG',    false); // 是否调试模式
+defined('ENV_PREFIX')   || define('ENV_PREFIX',    'T_'); // 环境变量的配置前缀
 
 // 应用模式 默认为普通模式 
 defined('APP_MODE')     || define('APP_MODE',      function_exists('saeAutoLoader') ? 'sae' : 'common');

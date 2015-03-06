@@ -13,7 +13,7 @@ namespace think;
 
 class Config {
     static private  $config =   [];   // 配置参数
-    static private  $range =   '_sys_';   // 参数作用域
+    static private  $range 	=   '_sys_';   // 参数作用域
 
     // 设定配置参数的作用域
     static public function range($range){
@@ -57,10 +57,18 @@ class Config {
         }
         $name = strtolower($name);
         if (!strpos($name, '.')) {
+        	// 判断环境变量
+        	if(isset($_ENV[ENV_PREFIX.$name])){
+        		return $_ENV[ENV_PREFIX.$name];
+        	}
             return isset(self::$config[$range][$name]) ? self::$config[$range][$name] : null;
         }else{
             // 二维数组设置和获取支持
             $name = explode('.', $name);
+        	// 判断环境变量
+        	if(isset($_ENV[ENV_PREFIX.$name[0].'_'.$name[1]])){
+        		return $_ENV[ENV_PREFIX.$name[0].'_'.$name[1]];
+        	}            
             return isset(self::$config[$range][$name[0]][$name[1]]) ? self::$config[$range][$name[0]][$name[1]] : null;
         }
     }
