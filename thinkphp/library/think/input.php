@@ -135,6 +135,18 @@ class Input {
     }
 
     /**
+     * 获取环境变量
+     * @access public
+     * @param string $name 数据名称
+     * @param string $default 默认值     
+     * @param string $filter 过滤方法   
+     * @return mixed
+     */
+    static public function env($name='',$default=null,$filter='') {
+        return self::getData($name,$_ENV,$filter,$default);
+    }
+
+    /**
      * 获取系统变量 支持过滤和默认值
      * @access public
      * @param string $method 输入数据类型
