@@ -13,7 +13,7 @@ namespace think\transform\driver;
 
 class Json{
 	public function encode($data){
-		return json_encode($data);
+		return json_encode($data, JSON_UNESCAPED_UNICODE);
 	}
 
 	public function decode($data, $assoc = true){
