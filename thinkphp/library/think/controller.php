@@ -11,7 +11,7 @@
 
 namespace think;
 use think\View;
-use think\Transform;
+use org\Transform;
 
 class Controller {
     // 视图类实例
