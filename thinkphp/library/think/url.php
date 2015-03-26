@@ -91,10 +91,10 @@ class Url {
                 $path       =   explode($depr,$url);
                 $var        =   [];
                 $var[Config::get('var_action')]       =   !empty($path)?array_pop($path):ACTION_NAME;
-                if(Config::get('require_controller')) {
+                if(!defined('BIND_CONTROLLER')){
                     $var[Config::get('var_controller')]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;
                 }
-                if(Config::get('require_module')) {
+                if(!defined('BIND_MODULE')){
                     $var[Config::get('var_module')]    =   !empty($path)?array_pop($path):MODULE_NAME;
                 }
             }

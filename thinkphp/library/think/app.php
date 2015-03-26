@@ -32,7 +32,7 @@ class App {
         Cache::connect($config['cache']);
 
         // 加载框架底层语言包
-        is_file(THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT) && Lang::set(include THINK_PATH.'Lang/'.strtolower(Config::get('default_lang')).EXT);
+        is_file(THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT) AND Lang::set(include THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT);
 
         // 启动session
         if(!IS_CLI) {
@@ -45,27 +45,8 @@ class App {
         Hook::listen('app_init');
 
         define('COMMON_PATH', APP_PATH . $config['common_module'].'/');
-        // 加载全局初始化文件
-        if(is_file( COMMON_PATH . 'init' . EXT )) {
-            include COMMON_PATH . 'init' . EXT;
-        }else{
-            // 检测全局配置文件
-            if(is_file(COMMON_PATH . 'config' . EXT)) {
-                $config =   Config::set(include COMMON_PATH . 'config' . EXT);
-            }
-            // 加载全局别名文件
-            if(is_file(COMMON_PATH . 'alias' . EXT)) {
-                Loader::addMap(include COMMON_PATH . 'alias' . EXT);
-            }
-            // 加载全局公共文件
-            if(is_file( COMMON_PATH . 'common' . EXT)) {
-                include COMMON_PATH . 'common' . EXT;
-            }
-            if(is_file(COMMON_PATH . 'tags' . EXT)) {
-                // 全局行为扩展文件
-                Hook::import(include COMMON_PATH . 'tags' . EXT);
-            }
-        }
+        // 初始化公共模块
+        self::initModule(COMMON_PATH,$config);
 
         // 应用URL调度
         self::dispatch($config);
@@ -169,6 +150,39 @@ class App {
     }
 
     /**
+     * 初始化模块
+     * @access private
+     * @return void
+     */
+    static private function initModule($path,&$config){
+        // 加载初始化文件
+        if(is_file( $path . 'init' . EXT )) {
+            include $path . 'init' . EXT;
+        }else{
+            // 检测配置文件
+            if(is_file($path . 'config' . EXT)) {
+                $config =   Config::set(include $path . 'config' . EXT);
+            }
+            // 加载应用状态配置文件
+            if($config['app_status'] && is_file($path . $config['app_status'] . EXT)) {
+                $config =   Config::set(include $path . $config['app_status'] . EXT);
+            }
+            // 加载别名文件
+            if(is_file($path . 'alias' . EXT)) {
+                Loader::addMap(include $path . 'alias' . EXT);
+            }
+            // 加载公共文件
+            if(is_file( $path . 'common' . EXT)) {
+                include $path . 'common' . EXT;
+            }
+            // 加载行为扩展文件
+            if(is_file($path . 'tags' . EXT)) {
+                Hook::import(include $path . 'tags' . EXT);
+            }
+        }
+    }
+
+    /**
      * URL调度
      * @access public
      * @return void
@@ -208,7 +222,8 @@ class App {
             define('__INFO__','');
             define('__EXT__','');
         }else{
-            define('__INFO__',trim($_SERVER['PATH_INFO'],'/'));
+            $_SERVER['PATH_INFO']  =   trim($_SERVER['PATH_INFO'],'/');
+            define('__INFO__',$_SERVER['PATH_INFO']);
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
             $_SERVER['PATH_INFO'] = __INFO__;     
@@ -222,7 +237,9 @@ class App {
                     $_GET[$config['var_module']]     = array_shift($paths);
                     $_SERVER['PATH_INFO'] = implode('/', $paths);
                 }
-            }             
+            }
+            // 去除URL后缀
+            $_SERVER['PATH_INFO']   =   preg_replace($config['url_html_suffix']? '/\.('.trim($config['url_html_suffix'],'.').')$/i' : '/\.'.__EXT__.'$/i', '', $_SERVER['PATH_INFO']);
         }
 
         // 获取模块名称
@@ -234,32 +251,8 @@ class App {
             define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
             define('VIEW_PATH', MODULE_PATH.VIEW_LAYER.'/');
             
-            // 加载模块初始化文件
-            if(is_file( MODULE_PATH . 'init' . EXT )) {
-                include MODULE_PATH . 'init' . EXT;
-                $config = Config::get();
-            }else{
-                // 检测项目（或模块）配置文件
-                if(is_file(MODULE_PATH . 'config' . EXT)) {
-                    $config = Config::set(include MODULE_PATH . 'config' . EXT);
-                }
-                if($config['app_status'] && is_file(MODULE_PATH . $config['app_status'] . EXT)) {
-                    // 加载对应的项目配置文件
-                    $config = Config::set(include MODULE_PATH . $config['app_status'] . EXT);
-                }
-                // 加载别名文件
-                if(is_file(MODULE_PATH . 'alias' . EXT)) {
-                    Loader::addMap(include MODULE_PATH . 'alias' . EXT);
-                }
-                // 加载公共文件
-                if(is_file( MODULE_PATH . 'common' . EXT)) {
-                    include MODULE_PATH . 'common' . EXT;
-                }
-                if(is_file(MODULE_PATH . 'tags' . EXT)) {
-                    // 行为扩展文件
-                    Hook::import(include MODULE_PATH . 'tags' . EXT);
-                }
-            }
+            // 初始化模块
+            self::initModule(MODULE_PATH,$config);
         }else{
             throw new Exception('module not exists :' . MODULE_NAME);
         }

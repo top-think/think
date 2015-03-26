@@ -28,21 +28,21 @@ set_error_handler(['think\Error','appError']);
 set_exception_handler(['think\Error','appException']);
 
 // 加载模式定义文件
-$mode 	=	require MODE_PATH.APP_MODE.EXT;
+$mode   =   require MODE_PATH.APP_MODE.EXT;
 
 // 加载模式别名定义
 if(isset($mode['alias'])){
-	Loader::addMap(is_array($mode['alias']) ? $mode['alias'] : include $mode['alias']);
+    Loader::addMap(is_array($mode['alias']) ? $mode['alias'] : include $mode['alias']);
 }
 
 // 加载模式配置文件
 if(isset($mode['config'])){
-	is_array($mode['config']) ? Config::set($mode['config']) : Config::load($mode['config']);
+    is_array($mode['config']) ? Config::set($mode['config']) : Config::load($mode['config']);
 }
 
 // 加载模式行为定义
 if(isset($mode['tags'])) {
-	Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
+    Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
 }
 
 // 执行应用

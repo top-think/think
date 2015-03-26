@@ -96,7 +96,7 @@ class Error {
     static public function halt($error) {
         IS_CLI && exit(is_array($error)?$error['message']:$error);
         $e = [];
-        if (Config::get('app_debug')) {
+        if (APP_DEBUG) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
                 $trace        = debug_backtrace();

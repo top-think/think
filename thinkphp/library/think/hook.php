@@ -48,11 +48,13 @@ class Hook {
         if(isset(self::$tags[$tag])) {
             foreach (self::$tags[$tag] as $name) {
 
-                Config::get('app_debug') && Debug::remark('behavior_start','time');
+                if(APP_DEBUG){
+                    Debug::remark('behavior_start','time');
+                }
 
                 $result =   self::exec($name, $tag,$params);
 
-                if(Config::get('app_debug')){
+                if(APP_DEBUG){
                     Debug::remark('behavior_end','time');
                     Log::record('Run '.$name.' [ RunTime:'.Debug::getUseTime('behavior_start','behavior_end').'s ]','INFO');
                 }

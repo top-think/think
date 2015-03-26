@@ -12,28 +12,28 @@
 //  版本信息
 define('THINK_VERSION', '4.0beta');
 // 系统常量
-defined('THINK_PATH')   || define('THINK_PATH',   dirname(__FILE__).'/');
-defined('LIB_PATH')     || define('LIB_PATH',     THINK_PATH.'library/');
-defined('MODE_PATH')    || define('MODE_PATH',    THINK_PATH.'mode/'); // 系统应用模式目录
-defined('TRAIT_PATH')   || define('TRAIT_PATH',   THINK_PATH.'traits/');
-defined('CORE_PATH')    || define('CORE_PATH',    LIB_PATH.'think/');
-defined('ORG_PATH')     || define('ORG_PATH',     LIB_PATH.'org/');
-defined('APP_PATH')     || define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
-defined('RUNTIME_PATH') || define('RUNTIME_PATH', realpath(APP_PATH).'/runtime/');
-defined('DATA_PATH')    || define('DATA_PATH',    RUNTIME_PATH.'data/');
-defined('LOG_PATH')     || define('LOG_PATH',     RUNTIME_PATH.'log/');
-defined('CACHE_PATH')   || define('CACHE_PATH',   RUNTIME_PATH.'cache/');
-defined('TEMP_PATH')    || define('TEMP_PATH',    RUNTIME_PATH.'temp/');
-defined('VENDOR_PATH')  || define('VENDOR_PATH',  THINK_PATH.'vendor/');
-defined('EXT')          || define('EXT',          '.php');
-defined('MODEL_LAYER')  || define('MODEL_LAYER',  'model');
-defined('VIEW_LAYER')   || define('VIEW_LAYER',   'view');
-defined('CONTROLLER_LAYER')  || define('CONTROLLER_LAYER',  'controller');
-defined('APP_DEBUG')    || define('APP_DEBUG',    false); // 是否调试模式
-defined('ENV_PREFIX')   || define('ENV_PREFIX',    'T_'); // 环境变量的配置前缀
+defined('THINK_PATH')   OR define('THINK_PATH',   dirname(__FILE__).'/');
+defined('LIB_PATH')     OR define('LIB_PATH',     THINK_PATH.'library/');
+defined('MODE_PATH')    OR define('MODE_PATH',    THINK_PATH.'mode/'); // 系统应用模式目录
+defined('TRAIT_PATH')   OR define('TRAIT_PATH',   THINK_PATH.'traits/');
+defined('CORE_PATH')    OR define('CORE_PATH',    LIB_PATH.'think/');
+defined('ORG_PATH')     OR define('ORG_PATH',     LIB_PATH.'org/');
+defined('APP_PATH')     OR define('APP_PATH',     dirname($_SERVER['SCRIPT_FILENAME']).'/');
+defined('RUNTIME_PATH') OR define('RUNTIME_PATH', realpath(APP_PATH).'/runtime/');
+defined('DATA_PATH')    OR define('DATA_PATH',    RUNTIME_PATH.'data/');
+defined('LOG_PATH')     OR define('LOG_PATH',     RUNTIME_PATH.'log/');
+defined('CACHE_PATH')   OR define('CACHE_PATH',   RUNTIME_PATH.'cache/');
+defined('TEMP_PATH')    OR define('TEMP_PATH',    RUNTIME_PATH.'temp/');
+defined('VENDOR_PATH')  OR define('VENDOR_PATH',  THINK_PATH.'vendor/');
+defined('EXT')          OR define('EXT',          '.php');
+defined('MODEL_LAYER')  OR define('MODEL_LAYER',  'model');
+defined('VIEW_LAYER')   OR define('VIEW_LAYER',   'view');
+defined('CONTROLLER_LAYER')  OR define('CONTROLLER_LAYER',  'controller');
+defined('APP_DEBUG')    OR define('APP_DEBUG',    false); // 是否调试模式
+defined('ENV_PREFIX')   OR define('ENV_PREFIX',    'T_'); // 环境变量的配置前缀
 
 // 应用模式 默认为普通模式 
-defined('APP_MODE')     || define('APP_MODE',      function_exists('saeAutoLoader') ? 'sae' : 'common');
+defined('APP_MODE')     OR define('APP_MODE',      function_exists('saeAutoLoader') ? 'sae' : 'common');
 
 // 环境常量
 define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
@@ -54,8 +54,12 @@ function L($name){
 }
 
 // 获取配置参数
-function C($name='',$range='') {
-    return think\Config::get($name,$range);
+function C($name='',$value=null,$range='') {
+    if(is_null($value)){
+        return think\Config::get($name,$range);
+    }else{
+        think\Config::set($name,$value,$range);
+    }
 }
 
 // 获取输入数据 支持默认值和过滤
@@ -76,11 +80,11 @@ function I($key,$default='',$filter='') {
  * @return mixed
  */
 function G($start,$end='',$dec=6) {
-	if(''==$end){
-		think\Debug::remark($start);
-	}else{
-		return 'm'==$dec ? think\Debug::getUseMem($start,$end) : think\Debug::getUseTime($start,$end,$dec);
-	}
+    if(''==$end){
+        think\Debug::remark($start);
+    }else{
+        return 'm'==$dec ? think\Debug::getUseMem($start,$end) : think\Debug::getUseTime($start,$end,$dec);
+    }
 }
 
 /**
@@ -195,6 +199,38 @@ function dump($var, $echo=true, $label=null) {
  */
 function W($name, $data=[]) {
     return think\Loader::action($name,$data,'Widget');
+}
+
+function U($url,$vars='',$suffix=true,$domain=false){
+    return think\Url::build($url,$vars,$suffix,$domain);
+}
+
+function session($name,$value=''){
+    if(is_array($name)){// 初始化
+        think\Session::init($name);
+    }elseif(is_null($name)){ // 清除
+        think\Session::clear($value);
+    }elseif('' === $value){ // 获取
+        return think\Session::get($name);
+    }elseif(is_null($value)){ // 删除session
+        return think\Session::delete($name);
+    }else{ // 设置session
+        think\Session::set($name,$value);
+    }
+}
+
+function cookie($name,$value=''){
+    if(is_array($name)){// 初始化
+        think\Cookie::init($name);
+    }elseif(is_null($name)){ // 清除
+        think\Cookie::clear($value);
+    }elseif('' === $value){ // 获取
+        return think\Cookie::get($name);
+    }elseif(is_null($value)){ // 删除session
+        return think\Cookie::delete($name);
+    }else{ // 设置session
+        think\Cookie::set($name,$value);
+    }
 }
 
 /**
