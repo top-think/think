@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 
 namespace think;
-use think\Exception;
 
 class View {
     protected $engine = null; // 模板引擎实例
@@ -34,6 +33,11 @@ class View {
         'engine_type'           =>  'think',
     ];
     
+    public function __construct(array $config = []){
+        $this->config = array_merge($this->config, empty($config)? (array)Config::get('view') : $config);
+        $this->engine($this->config['engine_type']);
+    }
+
     /**
      * 模板变量赋值
      * @access public
@@ -59,11 +63,17 @@ class View {
         $this->config[$name] = $value;
     }
 
-    public function __construct(array $config = []){
+    /**
+     * 设置视图参数
+     * @access public
+     * @param array $config 视图参数
+     * @return View
+     */
+    public function config(array $config=[]){
         $this->config = array_merge($this->config, $config);
-        $this->engine($this->config['engine_type']);
+        return $this;        
     }
-    
+
     /**
      * 设置当前模板解析的引擎
      * @access public

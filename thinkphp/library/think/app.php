@@ -44,8 +44,9 @@ class App {
         // 监听app_init
         Hook::listen('app_init');
 
-        define('COMMON_PATH', APP_PATH . $config['common_module'].'/');
         // 初始化公共模块
+        define('COMMON_PATH', APP_PATH . $config['common_module'].'/');
+
         self::initModule(COMMON_PATH,$config);
 
         // 应用URL调度
@@ -58,13 +59,12 @@ class App {
         if(!preg_match('/^[A-Za-z](\/|\w)*$/',CONTROLLER_NAME)){ // 安全检测
             $instance  =  false;
         }elseif($config['action_bind_class']){
-            // 操作绑定到类：模块\Controller\控制器\操作
-            $layer  =   CONTROLLER_LAYER;
-            if(is_dir(MODULE_PATH.$layer.'/'.CONTROLLER_NAME)){
-                $namespace  =   MODULE_NAME.'\\'.$layer.'\\'.CONTROLLER_NAME.'\\';
+            // 操作绑定到类：模块\controller\控制器\操作
+            if(is_dir(MODULE_PATH.CONTROLLER_LAYER.'/'.CONTROLLER_NAME)){
+                $namespace  =   MODULE_NAME.'\\'.CONTROLLER_LAYER.'\\'.CONTROLLER_NAME.'\\';
             }else{
                 // 空控制器
-                $namespace  =   MODULE_NAME.'\\'.$layer.'\\_empty\\';                    
+                $namespace  =   MODULE_NAME.'\\'.CONTROLLER_LAYER.'\\empty\\';                    
             }
             $actionName     =   strtolower(ACTION_NAME);
             if(class_exists($namespace.$actionName)){
@@ -161,8 +161,18 @@ class App {
         }else{
             // 检测配置文件
             if(is_file($path . 'config' . EXT)) {
-                $config =   Config::set(include $path . 'config' . EXT);
+                $config =   Config::set(include $path . 'config' . EXT );
             }
+
+            // 检测额外配置
+            if($config['extra_config_list']){
+                foreach($config['extra_config_list'] as $conf){
+                    if(is_file($path . $conf . EXT)) {
+                        $config =   Config::set(include $path . $conf . EXT );
+                    }
+                }
+            }
+
             // 加载应用状态配置文件
             if($config['app_status'] && is_file($path . $config['app_status'] . EXT)) {
                 $config =   Config::set(include $path . $config['app_status'] . EXT);
@@ -197,7 +207,7 @@ class App {
         
         // 检测域名部署
         if(!IS_CLI && isset($config['sub_domain_deploy']) && $config['sub_domain_deploy']) {
-            Route::checkDomain($config);
+            Route::checkDomain();
         }
 
         // 监听path_info
@@ -233,14 +243,17 @@ class App {
                 }
                 $paths = explode($config['pathinfo_depr'], __INFO__,2);
                 // 获取URL中的模块名
-                if($config['require_module'] && !isset($_GET[$config['var_module']])) {
-                    $_GET[$config['var_module']]     = array_shift($paths);
+                if($config['require_module'] && !isset($_GET[VAR_MODULE])) {
+                    $_GET[VAR_MODULE]     = array_shift($paths);
                     $_SERVER['PATH_INFO'] = implode('/', $paths);
                 }
             }
             // 去除URL后缀
             $_SERVER['PATH_INFO']   =   preg_replace($config['url_html_suffix']? '/\.('.trim($config['url_html_suffix'],'.').')$/i' : '/\.'.__EXT__.'$/i', '', $_SERVER['PATH_INFO']);
         }
+
+        // URL常量
+        define('__SELF__',strip_tags($_SERVER[$config['url_request_uri']]));
 
         // 获取模块名称
         define('MODULE_NAME', defined('BIND_MODULE')? BIND_MODULE : self::getModule($config));
@@ -257,21 +270,21 @@ class App {
             throw new Exception('module not exists :' . MODULE_NAME);
         }
         // 路由检测和控制器、操作解析
-        Route::check($_SERVER['PATH_INFO'],$config);
+        Route::check($_SERVER['PATH_INFO'],$config['pathinfo_depr']);
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strip_tags(strtolower(isset($_GET[$config['var_controller']]) ? $_GET[$config['var_controller']] : $config['default_controller'])));
+        define('CONTROLLER_NAME', strip_tags(strtolower(isset($_GET[VAR_CONTROLLER]) ? $_GET[VAR_CONTROLLER] : $config['default_controller'])));
 
         // 获取操作名
-        define('ACTION_NAME', strip_tags(strtolower(isset($_GET[$config['var_action']]) ? $_GET[$config['var_action']] : $config['default_action'])));
+        define('ACTION_NAME', strip_tags(strtolower(isset($_GET[VAR_ACTION]) ? $_GET[VAR_ACTION] : $config['default_action'])));
 
-        unset($_GET[$config['var_action']], $_GET[$config['var_controller']], $_GET[$config['var_module']]);
+        unset($_GET[VAR_ACTION], $_GET[VAR_CONTROLLER], $_GET[VAR_MODULE]);
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST, $_GET , $_COOKIE);
     }
 
     static private function getModule($config){
-        $module     =   strtolower(isset($_GET[$config['var_module']]) ? $_GET[$config['var_module']] : $config['default_module']);
+        $module     =   strtolower(isset($_GET[VAR_MODULE]) ? $_GET[VAR_MODULE] : $config['default_module']);
         if($maps = $config['url_module_map']) {
             if(isset($maps[$module])) {
                 // 记录当前别名

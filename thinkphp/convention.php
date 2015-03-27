@@ -1,12 +1,9 @@
 <?php
 
 return [
-    'app_debug'             =>  true,   // 调试模式
     'app_status'            =>  'debug',// 应用模式状态
-    'var_module'            =>  'm',    // 模块变量名
-    'var_controller'        =>  'c',    // 控制器变量名
-    'var_action'            =>  'a',    // 操作变量名
     'var_pathinfo'          =>  's',    // PATHINFO变量名 用于兼容模式
+    'extra_config_list'     =>  [],
     'pathinfo_fetch'        =>  'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
     'pathinfo_depr'         =>  '/',    // pathinfo分隔符
     'require_module'        =>  true,   // 是否显示模块
@@ -15,9 +12,10 @@ return [
     'default_action'        =>  'index',    // 默认操作名
     'action_suffix'         =>  '', // 操作方法后缀
     'url_model'             =>  1,  // URL模式
+    'url_request_uri'       =>  'REQUEST_URI', // 获取当前页面地址的系统变量 默认为REQUEST_URI    
     'base_url'              =>  $_SERVER["SCRIPT_NAME"],    // 基础URL路径
     'url_html_suffix'       =>  '.html',
-    'url_params_bind'       =>  false,  // url变量绑定
+    'url_params_bind'       =>  TRUE,  // url变量绑定
     'exception_tmpl'        =>  THINK_PATH.'Tpl/think_exception.tpl',// 异常页面的模板文件
     'error_tmpl'            =>  THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
     'success_tmpl'          =>  THINK_PATH.'Tpl/dispatch_jump.tpl', // 默认成功跳转对应的模板文件

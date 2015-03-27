@@ -52,7 +52,7 @@ class Config {
     static public function get($name=null,$range='') {
         $range  =   $range ? $range : self::$range;
         // 无参数时获取所有
-        if (empty($name)) {
+        if (empty($name) && isset(self::$config[$range])) {
             return self::$config[$range];
         }
         $name = strtolower($name);
@@ -98,8 +98,4 @@ class Config {
         }
     }
 
-    // 获取某个作用域的配置列表
-    static public function getRange($rang){
-        return isset(self::$config[$range]) ? self::$config[$range] : null;
-    }
 }

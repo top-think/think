@@ -50,10 +50,8 @@ class  Template {
      * 架构函数
      * @access public
      */
-    public function __construct($config=[]){
-        if(!empty($config)) {
-            $this->config   =   array_merge($this->config,$config);
-        }
+    public function __construct(array $config=[]){
+        $this->config   =   array_merge($this->config, empty($config) ? (array)Config::get('template') : $config );
         $this->config['taglib_begin']       =   $this->stripPreg($this->config['taglib_begin']);
         $this->config['taglib_end']         =   $this->stripPreg($this->config['taglib_end']);
         $this->config['tpl_begin']         =   $this->stripPreg($this->config['tpl_begin']);

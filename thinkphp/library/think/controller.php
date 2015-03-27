@@ -26,8 +26,9 @@ class Controller {
         $this->view = new View();
         
         //控制器初始化
-        if(method_exists($this, '_initialize'))
+        if(method_exists($this, '_initialize')){
             $this->_initialize();
+        }
     }
 
     /**
@@ -112,6 +113,18 @@ class Controller {
             }            
         }
         exit($data);
+    }
+
+    /**
+     * Action跳转(URL重定向） 支持指定模块和延时跳转
+     * @access protected
+     * @param string $url 跳转的URL表达式
+     * @param array $params 其它URL参数
+     * @return void
+     */
+    protected function redirect($url,$params=[]) {
+        $url    =   U($url,$params);
+        header('Location: ' . $url);
     }
 
     /**
