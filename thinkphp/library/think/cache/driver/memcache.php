@@ -40,9 +40,16 @@ class Memcache {
         }
         $func               =   $this->options['persistent'] ? 'pconnect' : 'connect';
         $this->handler      =   new \Memcache;
-        $options['timeout'] === false ?
-            $this->handler->$func($options['host'], $options['port']) :
-            $this->handler->$func($options['host'], $options['port'], $options['timeout']);
+        // 支持集群
+        $hosts              = explode(',', $this->options['host']);
+        $ports              = explode(',', $this->options['port']);
+
+        foreach((array) $hosts as $i=>$host){
+            $port           = isset($ports[$i]) ? $ports[$i] : $ports[0];
+            $options['timeout'] === false ?
+                $this->handler->addServer($host, $port, $this->options['persistent'], 1) :
+                $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']);
+        }
     }
 
     /**
