@@ -38,7 +38,6 @@ class Memcache {
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);
         }
-        $func               =   $this->options['persistent'] ? 'pconnect' : 'connect';
         $this->handler      =   new \Memcache;
         // 支持集群
         $hosts              = explode(',', $this->options['host']);
