@@ -34,10 +34,6 @@ class App {
         // 加载框架底层语言包
         is_file(THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT) AND Lang::set(include THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT);
 
-        // 启动session
-        if(!IS_CLI) {
-            Session::init($config['session']);
-        }
         if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
             Create::build(include APP_PATH.'build.php');
         }
@@ -48,6 +44,11 @@ class App {
         define('COMMON_PATH', APP_PATH . $config['common_module'].'/');
 
         self::initModule(COMMON_PATH,$config);
+
+        // 启动session
+        if(!IS_CLI) {
+            Session::init($config['session']);
+        }
 
         // 应用URL调度
         self::dispatch($config);
