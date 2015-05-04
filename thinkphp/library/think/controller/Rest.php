@@ -11,7 +11,7 @@
 
 namespace think\controller;
 
-abstract class Rest {
+abstract class rest {
 
     protected   $_method    =   ''; // 当前请求类型
     protected   $_type      =   ''; // 当前资源类型

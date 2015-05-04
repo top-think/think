@@ -11,7 +11,7 @@
 
 namespace think\controller;
 
-abstract class Amf {
+abstract class amf {
 
    /**
      * PHPRpc控制器架构函数
@@ -19,7 +19,7 @@ abstract class Amf {
      */
     public function __construct() {
     	//导入类库
-    	Think\Loader::import('Vendor.Zend.Amf.Server');
+    	think\loader::import('Vendor.Zend.Amf.Server');
     	//实例化AMF
     	$server = new \Zend_Amf_Server();
   	    $server -> setClass($this);

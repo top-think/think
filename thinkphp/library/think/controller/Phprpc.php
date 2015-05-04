@@ -11,14 +11,14 @@
 
 namespace think\controller;
 
-abstract class Phprpc {
+abstract class phprpc {
    /**
      * PHPRpc控制器架构函数
      * @access public
      */
     public function __construct() {
     	//导入类库
-    	Think\Loader::import('Vendor.phpRPC.phprpc_server');
+    	think\loader::import('Vendor.phpRPC.phprpc_server');
     	//实例化phprpc
     	$server = new \PHPRPC_Server();
         $server->add($this);
