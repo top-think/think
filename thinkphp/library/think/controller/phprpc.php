@@ -18,7 +18,7 @@ abstract class phprpc {
      */
     public function __construct() {
     	//导入类库
-    	think\loader::import('Vendor.phpRPC.phprpc_server');
+    	think\loader::import('vendor.phprpc.phprpc_server');
     	//实例化phprpc
     	$server = new \PHPRPC_Server();
         $server->add($this);

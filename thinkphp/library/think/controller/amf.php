@@ -19,7 +19,7 @@ abstract class amf {
      */
     public function __construct() {
     	//导入类库
-    	think\loader::import('Vendor.Zend.Amf.Server');
+    	think\loader::import('vendor.zend.amf.server');
     	//实例化AMF
     	$server = new \Zend_Amf_Server();
   	    $server -> setClass($this);
