@@ -25,9 +25,39 @@ class Controller {
         // 模板引擎参数
         $this->view = new View();
         
-        //控制器初始化
+        // 控制器初始化
         if(method_exists($this, '_initialize')){
             $this->_initialize();
+        }
+        // 前置操作方法
+        $list     =   Config::get('before_action_list');
+        if($list){
+            foreach($list as $config){
+                $this->beforeAction($config['method',$config['option']);
+            }
+        }
+
+    }
+
+    /**
+     * 前置操作
+     * @access public     
+     * @param $method
+     * @param $options
+     */
+    protected function beforeAction($method, $options) {
+        if (isset($options['only'])) {
+            if (!in_array(ACTION_NAME, $options['only'])) {
+                return;
+            }
+        } elseif (isset($options['except'])) {
+            if (in_array(ACTION_NAME, $options['except'])) {
+                return;
+            }
+        }
+
+        if (method_exists($this, $method)) {
+            call_user_func([$this, $method]);
         }
     }
 
