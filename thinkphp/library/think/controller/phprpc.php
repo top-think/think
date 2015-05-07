@@ -11,20 +11,24 @@
 
 namespace think\controller;
 
-abstract class Amf {
-
+abstract class phprpc {
    /**
      * PHPRpc控制器架构函数
      * @access public
      */
     public function __construct() {
     	//导入类库
-    	Think\Loader::import('Vendor.Zend.Amf.Server');
-    	//实例化AMF
-    	$server = new \Zend_Amf_Server();
-  	    $server -> setClass($this);
-    	echo $server -> handle();
-        return ;
+    	think\loader::import('vendor.phprpc.phprpc_server');
+    	//实例化phprpc
+    	$server = new \PHPRPC_Server();
+        $server->add($this);
+        if(APP_DEBUG) {
+            $server->setDebugMode(true);
+        }
+        $server->setEnableGZIP(true);
+		$server->start();
+		//C('PHPRPC_COMMENT',$server->comment());
+		echo $server->comment();
     }
 
 }

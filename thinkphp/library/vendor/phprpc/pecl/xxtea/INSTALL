@@ -1,0 +1,66 @@
+Installing of XXTEA PHP package.
+
+There are many ways to build the package. Below you can find details for most
+useful ways of package building:
+
+1. with PHP
+2. with phpize utility
+3. under Windows using Microsoft Visual C (.NET or VC6)
+
+-----------------------------------------------------------------------------
+Way 1: Building the package with PHP
+-----------------------------------------------------------------------------
+
+1.  Create ext/xxtea folder in the php-source-folder. Copy all files
+    from the package into created folder.
+
+2.  Run
+        ./buildconf
+    to rebuild PHP's configure script.
+
+3.  Compile php with option:
+    --enable-xxtea to build bundled into PHP module
+    --enable-xxtea=shared to build dinamycally loadable module
+
+-----------------------------------------------------------------------------
+Way 2: Building the package with phpize utility
+-----------------------------------------------------------------------------
+
+1.  Unpack contents of the package.
+
+2.  Run
+        phpize
+    script, which will prepare environment for building XXTEA package.
+
+3.  Run 
+        ./configure --enable-xxtea=shared
+    to generate makefile
+
+4.  Run
+        make
+    to build XXTEA extension library. It will be placed into
+    ./modules folder.
+
+5.  Run
+        make install
+    to install XXTEA extension library into PHP
+
+-----------------------------------------------------------------------------
+Way 3: Building the package under Windows using Microsoft Visual C (.NET or VC6)
+-----------------------------------------------------------------------------
+1.  Create ext/xxtea folder in the php-source-folder. Copy all files
+    from the package into created folder.
+
+2.  Copy php4ts.lib (for PHP4) or php5ts.lib (for PHP5) static library from
+    your version of PHP into ext/xxtea folder.
+
+3.  Open php_xxtea.sln - solution file under MSVC.NET or php_xxtea.dsw - 
+    workspace file under MSVC6. Try to build Release_php4 (for PHP4) or Release_php5
+    (for PHP5) configuration.
+
+4.  Copy php_xxtea.dll from ext/xxtea/Release_php4 or ext/xxtea/Release_php5
+    into {extension_dir} folder. Path to {extension_dir} can be found in php.ini
+
+5.  Add line
+        extension=php_xxtea.dll
+    into php.ini
