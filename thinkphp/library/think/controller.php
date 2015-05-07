@@ -41,9 +41,9 @@ class Controller {
 
     /**
      * 前置操作
-     * @access public     
-     * @param $method
-     * @param $options
+     * @access protected     
+     * @param string    $method     前置操作方法名
+     * @param array     $options    调用参数 ['only'=>[...]] 或者['except'=>[...]]
      */
     protected function beforeAction($method, $options) {
         if (isset($options['only'])) {
