@@ -32,11 +32,12 @@ class Controller {
         // 前置操作方法
         $list     =   Config::get('before_action_list');
         if($list){
-            foreach($list as $config){
-                $this->beforeAction($config['method',$config['option']);
+            foreach($list as $method=>$options){
+                is_numeric($method)?
+                    $this->beforeAction($options):
+                    $this->beforeAction($method,$options);
             }
         }
-
     }
 
     /**
@@ -45,7 +46,7 @@ class Controller {
      * @param string    $method     前置操作方法名
      * @param array     $options    调用参数 ['only'=>[...]] 或者['except'=>[...]]
      */
-    protected function beforeAction($method, $options) {
+    protected function beforeAction($method, $options=[]) {
         if (isset($options['only'])) {
             if (!in_array(ACTION_NAME, $options['only'])) {
                 return;
