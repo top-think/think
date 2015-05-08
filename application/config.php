@@ -27,7 +27,7 @@ return [
     'action_suffix'       => '',
     'file_ext'            => '.php',
     'url_model'           => 1,
-    'TMPL_EXCEPTION_FILE' => THINK_PATH.'tpl/think_exception.tpl',// 异常页面的模板文件
+    'exception_tmpl'      => THINK_PATH.'tpl/think_exception.tpl',// 异常页面的模板文件
     'show_page_trace'     => true,
     'trace_page_tabs'     => array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
     'db_sql_log'          => true,

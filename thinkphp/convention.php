@@ -23,7 +23,7 @@ return [
     'default_jsonp_handler' =>  'jsonpReturn', // 默认JSONP格式返回的处理方法
     'var_jsonp_handler'     =>  'callback',
     'template_engine'       =>  'think',
-    'common_module'         =>  'Common',
+    'common_module'         =>  'common',
     'action_bind_class'     =>  false,
     'url_module_map'        =>  [],
 
