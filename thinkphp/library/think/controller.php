@@ -30,6 +30,7 @@ class Controller {
             $this->_initialize();
         }
         // 前置操作方法
+        // 支持 ['action1','action2'] 或者 ['action1'=>['only'=>'index'],'action2'=>'except'=>'login']
         $list     =   Config::get('before_action_list');
         if($list){
             foreach($list as $method=>$options){
@@ -101,49 +102,31 @@ class Controller {
     }
 
     /**
+     * 返回API数据到客户端
+     * @access protected
+     * @param mixed $data 要返回的数据
+     * @param integer $code 返回的code
+     * @param mixed $msg 提示信息     
+     * @param string $type 返回数据格式
+     * @return void
+     */
+    protected function result($data,$code=0,$msg='',$type='') {
+        $result['code'] = $code;
+        $result['msg']  = $msg;
+        $result['time'] = NOW_TIME;
+        $result['data'] = $data;
+        app::returnData($result,$type);
+    }
+
+    /**
      * Ajax方式返回数据到客户端
      * @access protected
      * @param mixed $data 要返回的数据
      * @param String $type AJAX返回数据格式
-     * @param mixed $fun 数据处理方法
      * @return void
      */
-    protected function ajaxReturn($data, $type='',$fun='') {
-        if(empty($type)) {
-            $type   = Config::get('default_ajax_return');
-        }
-        $headers    =   [
-            'json'  =>  'application/json',
-            'xml'   =>  'text/xml',
-            'jsonp' =>  'application/javascript',
-            'script'=>  'application/javascript',
-            'html'  =>  'text/html',
-            'text'  =>  'text/plain',
-        ];
-        $type       =   strtolower($type);
-        if(isset($headers[$type])){
-            header('Content-Type:'.$headers[$type].'; charset=utf-8');
-        }
-        if($fun && is_callable($fun)){
-            $data   =   call_user_func($fun,$data);
-        }else{
-            switch ($type){
-                case 'json':
-                    // 返回JSON数据格式到客户端 包含状态信息
-                    $data   =   Transform::jsonEncode($data);
-                    break;
-                case 'xml':
-                    // 返回xml格式数据
-                    $data   =   Transform::xmlEncode($data);
-                    break;
-                case 'jsonp':
-                    // 返回JSON数据格式到客户端 包含状态信息
-                    $handler = isset($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
-                    $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';  
-                    break;
-            }            
-        }
-        exit($data);
+    protected function ajaxReturn($data, $type='') {
+        app::returnData($data,$type);
     }
 
     /**

@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\cache\driver;
+use think\Exception;
 
 /**
  * Redis缓存驱动 
@@ -34,7 +35,7 @@ class Redis {
      */
     public function __construct($options=[]) {
         if ( !extension_loaded('redis') ) {
-            E('_NOT_SUPPERT_:redis');
+            throw new Exception('_NOT_SUPPERT_:redis');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);

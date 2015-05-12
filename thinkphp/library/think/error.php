@@ -18,19 +18,13 @@ class Error {
      * @param mixed $e 异常对象
      */
     static public function appException($e) {
-        $error = [];
-        $error['message'] = $e->getMessage();
-        $trace = $e->getTrace();
-        if('E' == $trace[0]['function']) {
-            $error['file'] = $trace[0]['file'];
-            $error['line'] = $trace[0]['line'];
-        }else{
-            $error['file'] = $e->getFile();
-            $error['line'] = $e->getLine();
-        }
-        $error['trace'] = $e->getTraceAsString();
+        $error['message']   =   $e->getMessage();
+        $error['file']      =   $e->getFile();
+        $error['line']      =   $e->getLine();
+        $error['trace']     =   $e->getTraceAsString();
+        $error['code']      =   $e->getCode();
         // 记录异常日志
-        Log::record($error['message'],'ERR');        
+        Log::record($error['message'],'ERR');
         // 发送404信息
         header('HTTP/1.1 404 Not Found');
         header('Status:404 Not Found');
@@ -50,10 +44,6 @@ class Error {
     static public function appError($errno, $errstr, $errfile, $errline) {
         $errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
         switch ($errno) {
-            case E_ERROR:
-            case E_PARSE:
-            case E_CORE_ERROR:
-            case E_COMPILE_ERROR:
             case E_USER_ERROR:
                 Log::record($errorStr, 'ERROR');
                 self::halt($errorStr);
@@ -94,22 +84,32 @@ class Error {
      * @return void
      */
     static public function halt($error) {
-        IS_CLI && exit(is_array($error)?$error['message']:$error);
+        $message    =   is_array($error)? $error['message'] : $error;
+        $code       =   is_array($error)? $error['code'] : 1;
+        if(IS_CLI){
+            exit($message);
+        }elseif(IS_API){
+            // API接口
+            $data['code']   =   $code;
+            $data['msg']    =   $message;
+            $data['time']   =   NOW_TIME;
+            app::returnData($data);
+        }
         $e = [];
         if (APP_DEBUG) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
-                $trace        = debug_backtrace();
-                $e['message'] = $error;
-                $e['file']    = $trace[0]['file'];
-                $e['line']    = $trace[0]['line'];
+                $trace          =   debug_backtrace();
+                $e['message']   =   $error;
+                $e['file']      =   $trace[0]['file'];
+                $e['line']      =   $trace[0]['line'];
                 ob_start();
                 debug_print_backtrace();
-                $e['trace'] = ob_get_clean();
+                $e['trace']     =   ob_get_clean();
             } else {
                 $e = $error;
             }
-        } else {
+        }else {
             //否则定向到错误页面
             $error_page = Config::get('error_page');
             if (!empty($error_page)) {

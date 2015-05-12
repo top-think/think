@@ -9,6 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace think\model;
+use think\Loader;
 
 /**
  * MongoModel模型类
@@ -39,16 +40,16 @@ class MongoModel extends \Think\Model{
     public function __call($method,$args) {
         if(strtolower(substr($method,0,5))=='getby') {
             // 根据某个字段获取记录
-            $field   =   parse_name(substr($method,5));
+            $field   =   Loader::parseName(substr($method,5));
             $where[$field] =$args[0];
             return $this->where($where)->find();
         }elseif(strtolower(substr($method,0,10))=='getfieldby') {
             // 根据某个字段获取记录的某个值
-            $name   =   parse_name(substr($method,10));
+            $name   =   Loader::parseName(substr($method,10));
             $where[$name] =$args[0];
             return $this->where($where)->getField($args[1]);
         }else{
-            throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            throw new \think\Exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             return;
         }
     }
@@ -266,7 +267,7 @@ class MongoModel extends \Think\Model{
             if(!empty($this->tableName)) {
                 $tableName .= $this->tableName;
             }else{
-                $tableName .= parse_name($this->name);
+                $tableName .= Loader::parseName($this->name);
             }
             $this->trueTableName    =   strtolower($tableName);
         }

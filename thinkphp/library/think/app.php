@@ -32,7 +32,9 @@ class App {
         Cache::connect($config['cache']);
 
         // 加载框架底层语言包
-        is_file(THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT) AND Lang::set(include THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT);
+        if(is_file(THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT)){
+            Lang::set(include THINK_PATH.'Lang/'.strtolower($config['default_lang']).EXT);
+        }
 
         if(is_file(APP_PATH.'build.php')) { // 自动化创建脚本
             Create::build(include APP_PATH.'build.php');
@@ -85,7 +87,7 @@ class App {
             $action     =   ACTION_NAME . $config['action_suffix'];
         }
         if(!$instance) {
-            throw new Exception('[ ' . MODULE_NAME . '\\'.CONTROLLER_LAYER.'\\' . parse_name(CONTROLLER_NAME, 1) . ' ] not exists');
+            throw new Exception('[ ' . MODULE_NAME . '\\'.CONTROLLER_LAYER.'\\' . Loader::parseName(CONTROLLER_NAME, 1) . ' ] not exists');
         }
 
         try{
@@ -122,16 +124,20 @@ class App {
                         }elseif($param->isDefaultValueAvailable()){
                             $args[] = $param->getDefaultValue();
                         }else{
-                            E('_PARAM_ERROR_:' . $name);
+                            throw new Exception('_PARAM_ERROR_:' . $name);
                         }
                     }
                     array_walk_recursive($args,'Input::filterExp');
-                    $method->invokeArgs($instance, $args);
+                    $data   =   $method->invokeArgs($instance, $args);
                 }else{
-                    $method->invoke($instance);
+                    $data   =   $method->invoke($instance);
                 }
                 // 操作方法执行完成监听
                 Hook::listen('action_end', $call);
+                if(IS_API){
+                    // API接口返回数据
+                    self::returnData($data,$config['default_ajax_return']);
+                }
             }else{
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -148,6 +154,44 @@ class App {
         // 监听app_end
         Hook::listen('app_end');
         return ;
+    }
+
+    /**
+     * 返回API数据到客户端
+     * @access protected
+     * @param mixed $data 要返回的数据
+     * @param String $type 返回数据格式
+     * @return void
+     */
+    static public function returnData($data, $type='') {
+        $headers    =   [
+            'json'  =>  'application/json',
+            'xml'   =>  'text/xml',
+            'jsonp' =>  'application/javascript',
+            'script'=>  'application/javascript',
+            'text'  =>  'text/plain',
+        ];
+        $type       =   strtolower($type);
+        if(isset($headers[$type])){
+            header('Content-Type:'.$headers[$type].'; charset=utf-8');
+        }
+
+        switch ($type){
+            case 'json':
+                // 返回JSON数据格式到客户端 包含状态信息
+                $data   =   Transform::jsonEncode($data);
+                break;
+            case 'xml':
+                // 返回xml格式数据
+                $data   =   Transform::xmlEncode($data);
+                break;
+            case 'jsonp':
+                // 返回JSON数据格式到客户端 包含状态信息
+                $handler = isset($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
+                $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';
+                break;
+        }
+        exit($data);
     }
 
     /**

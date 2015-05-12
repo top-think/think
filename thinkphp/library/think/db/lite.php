@@ -90,11 +90,11 @@ class Lite {
             if(empty($config))  $config =   $this->config;
             try{
                 if(empty($config['dsn'])) {
-                    E('Think/Db/Lite 必须设置 dsn参数');
+                    throw new Exception('Think/Db/Lite 必须设置 dsn参数');
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
-                E($e->getMessage());
+                throw new Exception($e->getMessage());
             }
         }
         return $this->linkID[$linkNum];
@@ -128,8 +128,10 @@ class Lite {
         // 调试开始
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
-        if(false === $this->PDOStatement)
-            E($this->error());
+        if(false === $this->PDOStatement){
+            $this->error();
+            return false;
+        }
         foreach ($bind as $key => $val) {
             if(is_array($val)){
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
@@ -137,14 +139,19 @@ class Lite {
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
-        $result =   $this->PDOStatement->execute();
-        // 调试结束
-        $this->debug(false);
-        if ( false === $result ) {
+        try{
+            $result =   $this->PDOStatement->execute();
+            // 调试结束
+            $this->debug(false);
+            if ( false === $result ) {
+                $this->error();
+                return false;
+            } else {
+                return $this->getResult();
+            }
+        }catch (\PDOException $e) {
             $this->error();
             return false;
-        } else {
-            return $this->getResult();
         }
     }
 
@@ -168,8 +175,9 @@ class Lite {
         // 记录开始执行时间
         $this->debug(true);
         $this->PDOStatement =   $this->_linkID->prepare($str);
-        if(false === $this->PDOStatement) {
-            E($this->error());
+        if(false === $this->PDOStatement){
+            $this->error();
+            return false;
         }
         foreach ($bind as $key => $val) {
             if(is_array($val)){
@@ -178,17 +186,22 @@ class Lite {
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
-        $result =   $this->PDOStatement->execute();
-        $this->debug(false);
-        if ( false === $result) {
+        try{
+            $result =   $this->PDOStatement->execute();
+            $this->debug(false);
+            if ( false === $result) {
+                $this->error();
+                return false;
+            } else {
+                $this->numRows = $this->PDOStatement->rowCount();
+                if(preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+                    $this->lastInsID = $this->_linkID->lastInsertId();
+                }
+                return $this->numRows;
+            }
+        }catch (\PDOException $e) {
             $this->error();
             return false;
-        } else {
-            $this->numRows = $this->PDOStatement->rowCount();
-            if(preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                $this->lastInsID = $this->_linkID->lastInsertId();
-            }
-            return $this->numRows;
         }
     }
 
@@ -300,7 +313,7 @@ class Lite {
         // 记录错误日志
         Log::record($this->error,'ERR');
         if($this->config['debug']) {// 开启数据库调试模式
-            E($this->error);
+            throw new Exception($this->error);
         }else{
             return $this->error;
         }

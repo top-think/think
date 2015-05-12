@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\cache\driver;
+use think\Exception;
 
 /**
  * Sqlite缓存驱动
@@ -33,7 +34,7 @@ class Sqlite {
      */
     public function __construct($options=[]) {
         if ( !extension_loaded('sqlite') ) {
-            E('_NOT_SUPPERT_:sqlite');
+            throw new Exception('_NOT_SUPPERT_:sqlite');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);

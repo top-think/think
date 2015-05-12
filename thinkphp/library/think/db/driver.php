@@ -10,9 +10,10 @@
 // +----------------------------------------------------------------------
 
 namespace think\db;
-use think\config;
-use think\debug;
-use think\log;
+use think\Config;
+use think\Debug;
+use think\Log;
+use think\Exception;
 use PDO;
 
 abstract class Driver {
@@ -101,7 +102,7 @@ abstract class Driver {
                     Log::record($e->getMessage(),'ERR');
                     return $this->connect($autoConnection,$linkNum);
                 }elseif($config['debug']){
-                    E($e->getMessage());
+                    throw new Exception($e->getMessage());
                 }
             }
         }
@@ -161,15 +162,15 @@ abstract class Driver {
         }
         $this->bind =   [];
         try{
-	        $result =   $this->PDOStatement->execute();
-	        // 调试结束
-	        $this->debug(false);
-	        if ( false === $result ) {
-	            $this->error();
-	            return false;
-	        } else {
-	            return $this->getResult();
-	        }        	
+            $result =   $this->PDOStatement->execute();
+            // 调试结束
+            $this->debug(false);
+            if ( false === $result ) {
+                $this->error();
+                return false;
+            } else {
+                return $this->getResult();
+            }        	
         }catch (\PDOException $e) {
             $this->error();
             return false;
@@ -214,18 +215,18 @@ abstract class Driver {
         }
         $this->bind =   [];
         try{
-	        $result =   $this->PDOStatement->execute();
-	        $this->debug(false);
-	        if ( false === $result) {
-	            $this->error();
-	            return false;
-	        } else {
-	            $this->numRows = $this->PDOStatement->rowCount();
-	            if(preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-	                $this->lastInsID = $this->_linkID->lastInsertId();
-	            }
-	            return $this->numRows;
-	        }        	
+            $result =   $this->PDOStatement->execute();
+            $this->debug(false);
+            if ( false === $result) {
+                $this->error();
+                return false;
+            } else {
+                $this->numRows = $this->PDOStatement->rowCount();
+                if(preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+                    $this->lastInsID = $this->_linkID->lastInsertId();
+                }
+                return $this->numRows;
+            }        	
         }catch (\PDOException $e) {
             $this->error();
             return false;
@@ -341,7 +342,7 @@ abstract class Driver {
         // 记录错误日志
         Log::record($this->error,'ERR');
         if($this->config['debug']) {// 开启数据库调试模式
-            E($this->error);
+            throw new Exception($this->error);
         }else{
             return $this->error;
         }
@@ -505,10 +506,6 @@ abstract class Driver {
                     // 解析特殊条件表达式
                     $whereStr   .= $this->parseThinkWhere($key,$val);
                 }else{
-                    // 查询字段的安全过滤
-                    // if(!preg_match('/^[A-Z_\|\&\-.a-z0-9\(\)\,]+$/',trim($key))){
-                    //     E(L('_EXPRESS_ERROR_').':'.$key);
-                    // }
                     // 多条件支持
                     $multi  = is_array($val) &&  isset($val['_multi']);
                     $key    = trim($key);
@@ -578,7 +575,7 @@ abstract class Driver {
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  $key.' '.$this->exp[$exp].' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
                 }else{
-                    E(L('_EXPRESS_ERROR_').':'.$val[0]);
+                    throw new Exception(L('_EXPRESS_ERROR_').':'.$val[0]);
                 }
             }else {
                 $count = count($val);

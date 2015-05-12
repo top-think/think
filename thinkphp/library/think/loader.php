@@ -139,7 +139,7 @@ class Loader {
         }else{
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . parse_name($name, 1);
+        $class = $module . '\\' . $layer . '\\' . self::parseName($name, 1);
         if(class_exists($class)) {
             $model = new $class($name);
         }else {
@@ -166,7 +166,7 @@ class Loader {
         }else{
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . parse_name($name, 1) ;
+        $class = $module . '\\' . $layer . '\\' . self::parseName($name, 1) ;
         if(class_exists($class)) {
             $action = new $class;
             $_instance[$name . $layer] = $action;
@@ -232,5 +232,20 @@ class Loader {
                 throw new Exception('_CLASS_NOT_EXIST_:' . $class);
         }
         return $_instance[$identify];
+    }
+
+    /**
+     * 字符串命名风格转换
+     * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
+     * @param string $name 字符串
+     * @param integer $type 转换类型
+     * @return string
+     */
+    static public function parseName($name, $type=0) {
+        if ($type) {
+            return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){ return strtoupper($match[1]);}, $name));
+        } else {
+            return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
+        }
     }
 }

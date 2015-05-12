@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\cache\driver;
+use think\Exception;
 
 /**
  * Xcache缓存驱动
@@ -30,7 +31,7 @@ class Xcache {
      */
     public function __construct($options=[]) {
         if ( !function_exists('xcache_info') ) {
-            E('_NOT_SUPPERT_:Xcache');
+            throw new Exception('_NOT_SUPPERT_:Xcache');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);

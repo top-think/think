@@ -15,7 +15,7 @@ class Url {
 
     /**
      * URL组装 支持不同URL模式
-     * @param string $url URL表达式，格式：'[分组/模块/操作#锚点@域名]?参数1=值1&参数2=值2...'
+     * @param string $url URL表达式，格式：'[模块/控制器/操作#锚点@域名]?参数1=值1&参数2=值2...'
      * @param string|array $vars 传入的参数，支持数组和字符串
      * @param string $suffix 伪静态后缀，默认为true表示获取配置值
      * @param boolean $domain 是否显示域名
@@ -24,31 +24,31 @@ class Url {
     static public function build($url='',$vars='',$suffix=true,$domain=false) {
         $config     =   Config::get();
         // 解析URL
-        $info   =  parse_url($url);
-        $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
+        $info       =   parse_url($url);
+        $url        =   !empty($info['path'])?$info['path']:ACTION_NAME;
         if(isset($info['fragment'])) { // 解析锚点
             $anchor =   $info['fragment'];
             if(false !== strpos($anchor,'?')) { // 解析参数
-                list($anchor,$info['query']) = explode('?',$anchor,2);
+                list($anchor,$info['query']) =  explode('?',$anchor,2);
             }        
             if(false !== strpos($anchor,'@')) { // 解析域名
-                list($anchor,$host)    =   explode('@',$anchor, 2);
+                list($anchor,$host)         =   explode('@',$anchor, 2);
             }
         }elseif(false !== strpos($url,'@')) { // 解析域名
             list($url,$host)    =   explode('@',$info['path'], 2);
         }
         // 解析子域名
         if(isset($host)) {
-            $domain = $host.(strpos($host,'.')?'':strstr($_SERVER['HTTP_HOST'],'.'));
+            $domain =   $host.(strpos($host,'.')?'':strstr($_SERVER['HTTP_HOST'],'.'));
         }elseif($domain===true){
             $domain = $_SERVER['HTTP_HOST'];
             if($config['app_sub_domain_deplay'] ) { // 开启子域名部署
-                $domain = $domain=='localhost'?'localhost':'www'.strstr($_SERVER['HTTP_HOST'],'.');
+                $domain = $domain == 'localhost' ? 'localhost' : 'www'.strstr($_SERVER['HTTP_HOST'],'.');
                 // '子域名'=>array('项目[/分组]');
                 foreach ($config['app_sub_domain_rules'] as $key => $rule) {
                     if(false === strpos($key,'*') && 0=== strpos($url,$rule[0])) {
-                        $domain = $key.strstr($domain,'.'); // 生成对应子域名
-                        $url    =  substr_replace($url,'',0,strlen($rule[0]));
+                        $domain =   $key.strstr($domain,'.'); // 生成对应子域名
+                        $url    =   substr_replace($url,'',0,strlen($rule[0]));
                         break;
                     }
                 }
@@ -79,16 +79,16 @@ class Url {
                 if('/' != $depr) { // 安全替换
                     $url    =   str_replace('/',$depr,$url);
                 }
-                // 解析分组、模块和操作
+                // 解析模块、控制器和操作
                 $url        =   trim($url,$depr);
                 $path       =   explode($depr,$url);
                 $var        =   [];
-                $var[VAR_ACTION]       =   !empty($path)?array_pop($path):ACTION_NAME;
+                $var[VAR_ACTION]       =   !empty($path)? array_pop($path) : ACTION_NAME;
                 if(!defined('BIND_CONTROLLER')){
-                    $var[VAR_CONTROLLER]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;
+                    $var[VAR_CONTROLLER]       =   !empty($path)? array_pop($path) : CONTROLLER_NAME;
                 }
                 if(!defined('BIND_MODULE')){
-                    $var[VAR_MODULE]    =   !empty($path)?array_pop($path):MODULE_NAME;
+                    $var[VAR_MODULE]    =   !empty($path)? array_pop($path) : MODULE_NAME;
                 }
             }
         }
@@ -124,7 +124,7 @@ class Url {
             $url  .= '#'.$anchor;
         }
         if($domain) {
-            $url   =  (self::is_ssl()?'https://':'http://').$domain.$url;
+            $url   =  (self::is_ssl()? 'https://' : 'http://' ).$domain.$url;
         }
         return $url;
     }

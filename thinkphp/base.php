@@ -34,6 +34,7 @@ defined('VAR_CONTROLLER')   OR define('VAR_CONTROLLER',   'c');
 defined('VAR_ACTION')   OR define('VAR_ACTION',  'a');
 defined('APP_DEBUG')    OR define('APP_DEBUG',    false); // 是否调试模式
 defined('ENV_PREFIX')   OR define('ENV_PREFIX',    'T_'); // 环境变量的配置前缀
+defined('IS_API')       OR define('IS_API',    false); // 是否API接口
 
 // 应用模式 默认为普通模式 
 defined('APP_MODE')     OR define('APP_MODE',      function_exists('saeAutoLoader') ? 'sae' : 'common');
@@ -264,20 +265,5 @@ function S($name,$value='',$options=null) {
             $expire =   is_numeric($options) ? $options : null; //默认快捷缓存设置过期时间
         }
         return $cache->set($name, $value, $expire);
-    }
-}
-
-/**
- * 字符串命名风格转换
- * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
- * @param string $name 字符串
- * @param integer $type 转换类型
- * @return string
- */
-function parse_name($name, $type=0) {
-    if ($type) {
-        return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){ return strtoupper($match[1]);}, $name));
-    } else {
-        return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
     }
 }

@@ -751,7 +751,7 @@ class Model {
             if(!empty($this->tableName)) {
                 $tableName .= $this->tableName;
             }else{
-                $tableName .= parse_name($this->name);
+                $tableName .= Loader::parseName($this->name);
             }
             $this->trueTableName    =   strtolower($tableName);
         }
@@ -919,7 +919,7 @@ class Model {
         }elseif(is_string($data)){
             parse_str($data,$data);
         }elseif(!is_array($data)){
-            E(Lang::get('_DATA_TYPE_INVALID_'));
+            throw new Exception(Lang::get('_DATA_TYPE_INVALID_'));
         }
         $this->data = $data;
         return $this;
@@ -976,7 +976,7 @@ class Model {
                 $options =  $union;
             }
         }else{
-            E(Lang::get('_DATA_TYPE_INVALID_'));
+            throw new Exception(Lang::get('_DATA_TYPE_INVALID_'));
         }
         $this->options['union'][]  =   $options;
         return $this;

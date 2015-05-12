@@ -68,7 +68,7 @@ abstract class rest {
             $this->$fun();
         }else{
             // 抛出异常
-            E(L('_ERROR_ACTION_:').ACTION_NAME);
+            throw new \think\Exception(L('_ERROR_ACTION_:').ACTION_NAME);
         }
     }
 

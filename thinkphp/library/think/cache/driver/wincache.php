@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\cache\driver;
+use think\Exception;
 
 /**
  * Wincache缓存驱动
@@ -30,7 +31,7 @@ class Wincache {
      */
     public function __construct($options=[]) {
         if ( !function_exists('wincache_ucache_info') ) {
-            E('_NOT_SUPPERT_:WinCache');
+            throw new Exception('_NOT_SUPPERT_:WinCache');
         }
         if(!empty($options)) {
             $this->options      =   array_merge($this->options,$options);

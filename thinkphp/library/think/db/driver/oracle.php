@@ -59,19 +59,25 @@ class Oracle extends Driver{
         $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            E($this->error());
-        }
-        $result	=	$this->PDOStatement->execute($bind);
-        $this->debug(false);
-        if ( false === $result) {
             $this->error();
             return false;
-        } else {
-            $this->numRows = $this->PDOStatement->rowCount();
-            if($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                $this->lastInsID = $this->_linkID->lastInsertId();
+        }
+        try{
+            $result	=	$this->PDOStatement->execute($bind);
+            $this->debug(false);
+            if ( false === $result) {
+                $this->error();
+                return false;
+            } else {
+                $this->numRows = $this->PDOStatement->rowCount();
+                if($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+                    $this->lastInsID = $this->_linkID->lastInsertId();
+                }
+                return $this->numRows;
             }
-            return $this->numRows;
+        }catch (\PDOException $e) {
+            $this->error();
+            return false;
         }
     }
 
@@ -129,7 +135,7 @@ class Oracle extends Driver{
      * @access public
      * @return string
      */
-	public function parseLimit($limit) {
+    public function parseLimit($limit) {
         $limitStr    = '';
         if(!empty($limit)) {
             $limit	=	explode(',',$limit);
