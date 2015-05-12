@@ -115,7 +115,7 @@ class Controller {
         $result['msg']  = $msg;
         $result['time'] = NOW_TIME;
         $result['data'] = $data;
-        app::returnData($result,$type);
+        App::returnData($result,$type);
     }
 
     /**
@@ -126,7 +126,7 @@ class Controller {
      * @return void
      */
     protected function ajaxReturn($data, $type='') {
-        app::returnData($data,$type);
+        App::returnData($data,$type);
     }
 
     /**

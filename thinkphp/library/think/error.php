@@ -93,7 +93,7 @@ class Error {
             $data['code']   =   $code;
             $data['msg']    =   $message;
             $data['time']   =   NOW_TIME;
-            app::returnData($data);
+            App::returnData($data);
         }
         $e = [];
         if (APP_DEBUG) {
