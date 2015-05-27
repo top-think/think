@@ -32,7 +32,7 @@ class Sae {
     public function write($log,$destination='') {
         static $is_debug =  null;
         $now    =   date($this->config['log_time_format']);
-        $logstr =   "[{$now}] ".$_SERVER['REMOTE_ADDR'].' '.$_SERVER['REQUEST_URI']."\r\n{$log}\r\n";
+        $logstr =   "[{$now}] {$_SERVER['SERVER_ADDR']} {$_SERVER['REMOTE_ADDR']} {$_SERVER['REQUEST_URI']}\r\n{$log}\r\n";
         if(is_null($is_debug)){
             preg_replace('@(\w+)\=([^;]*)@e', '$appSettings[\'\\1\']="\\2";', $_SERVER['HTTP_APPCOOKIE']);
             $is_debug = in_array($_SERVER['HTTP_APPVERSION'], explode(',', $appSettings['debug'])) ? true : false;
