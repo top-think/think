@@ -701,28 +701,31 @@ class Model {
     /**
      * 切换当前的数据库连接
      * @access public
-     * @param integer $linkNum  连接序号
+     * @param mixed $linkId  连接标识
      * @param mixed $config  数据库连接信息
      * @return Model
      */
-    public function db($linkNum='',$config=''){
-        if(''===$linkNum && $this->db) {
+    public function db($linkId='',$config=''){
+        if(''===$linkId && $this->db) {
             return $this->db;
         }
-        if(!isset($this->_db[$linkNum])) {
+
+        if(!isset($this->_db[$linkId])) {
             // 创建一个新的实例
-            if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
+            if(is_string($linkId) && ''==$config){
+                $config  =  Config::get($linkId);
+            }elseif(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
                 $config  =  Config::get($config);
             }
-            $this->_db[$linkNum]            =    Db::instance($config);
+            $this->_db[$linkId]            =    Db::instance($config);
         }elseif(null === $config){
-            $this->_db[$linkNum]->close(); // 关闭数据库连接
-            unset($this->_db[$linkNum]);
+            $this->_db[$linkId]->close(); // 关闭数据库连接
+            unset($this->_db[$linkId]);
             return ;
         }
 
         // 切换数据库连接
-        $this->db   =    $this->_db[$linkNum];
+        $this->db   =    $this->_db[$linkId];
         $this->_after_db();
         return $this;
     }
