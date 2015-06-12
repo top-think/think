@@ -1317,4 +1317,14 @@ class Model {
         }
         return $this;
     }
+
+    /**
+     * 设置从主服务器读取数据
+     * @access public
+     * @return Model
+     */
+    public function readMaster(){
+    	$this->options['read_master'] =	true;
+    	return $this;
+    }
 }

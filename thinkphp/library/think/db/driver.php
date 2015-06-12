@@ -130,10 +130,11 @@ abstract class Driver {
      * @access public
      * @param string $str  sql指令
      * @param boolean $fetchSql  不执行只是获取SQL
+     * @param boolean $master  是否在主服务器读操作
      * @return mixed
      */
-    public function query($str,$fetchSql=false) {
-        $this->initConnect(false);
+    public function query($str,$fetchSql=false,$master=false) {
+        $this->initConnect($master);
         if ( !$this->_linkID ) return false;
         $this->queryStr     =   $str;
         if(!empty($this->bind)){
@@ -935,7 +936,7 @@ abstract class Driver {
         $this->model  =   $options['model'];
         $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $sql    = $this->buildSelectSql($options);
-        $result   = $this->query($sql,!empty($options['fetch_sql']) ? true : false);
+        $result   = $this->query($sql,!empty($options['fetch_sql']) ? true : false,!empty($options['read_master']) ? true : false);
         return $result;
     }
 
