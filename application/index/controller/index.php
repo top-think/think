@@ -15,7 +15,7 @@ class Index {
 
     public function index(){
         $view   =   new View();
-        $view->display();
+        return $view->fetch();
     }
 
 }
