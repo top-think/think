@@ -16,11 +16,6 @@ class View {
     protected $theme  = '';   // 模板主题名称
     protected $data   = [];   // 模板变量
     protected $config = [     // 视图参数
-        'http_output_content'   =>  true,
-        'http_content_type'     =>  'text/html',
-        'http_charset'          =>  'utf-8',
-        'http_cache_control'    =>  'private',
-        'http_render_content'   =>  false,
         'theme_on'              =>  false,
         'auto_detect_theme'     =>  false,
         'var_theme'             =>  't',
@@ -34,7 +29,7 @@ class View {
     ];
     
     public function __construct(array $config = []){
-        $this->config = array_merge($this->config, empty($config)? (array)Config::get('view') : $config);
+        $this->config(empty($config)? Config::get() : $config);
         $this->engine($this->config['engine_type']);
     }
 
@@ -54,24 +49,20 @@ class View {
     }
 
     /**
-     * 视图参数设置
-     * @access public
-     * @param mixed $name
-     * @param mixed $value
-     */
-    public function __set($name, $value = ''){
-        $this->config[$name] = $value;
-    }
-
-    /**
      * 设置视图参数
      * @access public
      * @param array $config 视图参数
      * @return View
      */
     public function config(array $config=[]){
-        $this->config = array_merge($this->config, $config);
-        return $this;        
+        if(is_array($config)){
+            foreach($this->config as $key=>$val){
+                if(isset($config[$key])){
+                    $this->config[$key] =   $config[$key];
+                }
+            }
+            return $this;
+        }
     }
 
     /**
@@ -107,37 +98,15 @@ class View {
     }
 
     /**
-     * 加载模板和页面输出 可以返回输出内容
-     * @access public
-     * @param string $template  模板文件名
-     * @param array  $vars      模板输出变量
-     * @param string $cache_id  模板缓存标识
-     * @return mixed
-     */
-    public function display($template = '', $vars = [], $cache_id = '') {
-        Hook::listen('view_begin', $template);
-        // 解析并获取模板内容
-        $content = $this->fetch($template, $vars, $cache_id);
-        // 输出内容过滤
-        Hook::listen('view_filter', $content);
-        // 输出模板内容
-        if($this->config['http_output_content']) {
-            $this->render($content);
-        }else{ // 返回解析后的内容
-            return $content;
-        }
-    }
-
-    /**
      * 解析和获取模板内容 用于输出
-     * @access protected
+     * @access public
      * @param string $template 模板文件名或者内容
      * @param array  $vars     模板输出变量
      * @param string $cache_id 模板缓存标识
      * @return string
      */
-    protected function fetch($template, $vars = [], $cache_id='') {
-        if(!$this->config['http_render_content']) {
+    public function fetch($template, $vars = [], $cache_id='',$renderContent=false) {
+        if(!$renderContent){
             // 获取模板文件名
             $template = $this->parseTemplate($template);
             // 模板不存在 抛出异常
@@ -170,7 +139,7 @@ class View {
             return $template;
         }
         $depr       =   $this->config['view_depr'];
-        $template   =   str_replace(':', $depr, $template);        
+        $template   =   str_replace(':', $depr, $template);
 
         // 获取当前模块
         $module   =  MODULE_NAME;
@@ -237,35 +206,4 @@ class View {
         return $tmplPath.$theme;
     }
 
-    /**
-     * 视图输出参数设置
-     * @access public
-     * @param mixed $config
-     * @param mixed $value
-     */
-    public function http($config = [], $value = ''){
-        if(is_array($config)) {
-            $this->config = array_merge($this->config, $config);
-        }else{
-            $this->config[$config] = $value;
-        }
-        return $this;
-    }
-
-    /**
-     * 输出内容文本可以包括Html
-     * @access private
-     * @param string $content 输出内容
-     * @param string $charset 模板输出字符集
-     * @param string $contentType 输出类型
-     * @return mixed
-     */
-    private function render($content){
-        // 网页字符编码
-        header('Content-Type:'  . $this->config['http_content_type'] . '; charset=' . $this->config['http_charset']);
-        header('Cache-control:' . $this->config['http_cache_control']);  // 页面缓存控制
-        header('X-Powered-By:ThinkPHP');
-        // 输出模板文件
-        echo $content;
-    }
 }

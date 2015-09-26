@@ -23,8 +23,11 @@ class App {
      * @access public
      * @return void
      */
-    static public function run($config) {
+    static public function run(array $config=[]) {
 
+        if(version_compare(PHP_VERSION,'5.4.0','<'))  {
+            throw new Exception('require PHP > 5.4.0 !');
+        }
         // 日志初始化
         Log::init($config['log']);
 
@@ -43,12 +46,10 @@ class App {
         Hook::listen('app_init');
 
         // 初始化公共模块
-        define('COMMON_PATH', APP_PATH . $config['common_module'].'/');
-
-        self::initModule(COMMON_PATH,$config);
+        self::initModule(APP_PATH . $config['common_module'].'/',$config);
 
         // 启动session
-        if(!IS_CLI) {
+        if($config['use_session']) {
             Session::init($config['session']);
         }
 
@@ -67,7 +68,7 @@ class App {
                 $namespace  =   MODULE_NAME.'\\'.CONTROLLER_LAYER.'\\'.CONTROLLER_NAME.'\\';
             }else{
                 // 空控制器
-                $namespace  =   MODULE_NAME.'\\'.CONTROLLER_LAYER.'\\empty\\';                    
+                $namespace  =   MODULE_NAME.'\\'.CONTROLLER_LAYER.'\\empty\\';
             }
             $actionName     =   strtolower(ACTION_NAME);
             if(class_exists($namespace.$actionName)){
@@ -133,11 +134,9 @@ class App {
                     $data   =   $method->invoke($instance);
                 }
                 // 操作方法执行完成监听
-                Hook::listen('action_end', $call);
-                if(IS_API){
-                    // API接口返回数据
-                    self::returnData($data,$config['default_ajax_return']);
-                }
+                Hook::listen('action_end', $data);
+                // 返回数据
+                Response::returnData($data,$config['default_return_type']);
             }else{
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -151,47 +150,7 @@ class App {
                 throw new Exception('[ ' . (new \ReflectionClass($instance))->getName() . ':' . $action . ' ] not exists ', 404);
             }
         }
-        // 监听app_end
-        Hook::listen('app_end');
         return ;
-    }
-
-    /**
-     * 返回API数据到客户端
-     * @access protected
-     * @param mixed $data 要返回的数据
-     * @param String $type 返回数据格式
-     * @return void
-     */
-    static public function returnData($data, $type='') {
-        $headers    =   [
-            'json'  =>  'application/json',
-            'xml'   =>  'text/xml',
-            'jsonp' =>  'application/javascript',
-            'script'=>  'application/javascript',
-            'text'  =>  'text/plain',
-        ];
-        $type       =   strtolower($type);
-        if(isset($headers[$type])){
-            header('Content-Type:'.$headers[$type].'; charset=utf-8');
-        }
-
-        switch ($type){
-            case 'json':
-                // 返回JSON数据格式到客户端 包含状态信息
-                $data   =   Transform::jsonEncode($data);
-                break;
-            case 'xml':
-                // 返回xml格式数据
-                $data   =   Transform::xmlEncode($data);
-                break;
-            case 'jsonp':
-                // 返回JSON数据格式到客户端 包含状态信息
-                $handler = isset($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
-                $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';
-                break;
-        }
-        exit($data);
     }
 
     /**
@@ -296,9 +255,6 @@ class App {
             // 去除URL后缀
             $_SERVER['PATH_INFO']   =   preg_replace($config['url_html_suffix']? '/\.('.trim($config['url_html_suffix'],'.').')$/i' : '/\.'.__EXT__.'$/i', '', $_SERVER['PATH_INFO']);
         }
-
-        // URL常量
-        define('__SELF__',strip_tags($_SERVER[$config['url_request_uri']]));
 
         // 获取模块名称
         define('MODULE_NAME', defined('BIND_MODULE')? BIND_MODULE : self::getModule($config));

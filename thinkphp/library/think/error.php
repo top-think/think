@@ -46,7 +46,7 @@ class Error {
         switch ($errno) {
             case E_USER_ERROR:
                 Log::record($errorStr, 'ERROR');
-                self::halt($errorStr);
+                self::halt($errorStr,$errno);
                 break;
             case E_STRICT:
             case E_USER_WARNING:
@@ -81,11 +81,12 @@ class Error {
     /**
      * 错误输出
      * @param mixed $error 错误
+     * @param int $errno 错误代码
      * @return void
      */
-    static public function halt($error) {
+    static public function halt($error,$code=1) {
         $message    =   is_array($error)? $error['message'] : $error;
-        $code       =   is_array($error)? $error['code'] : 1;
+        $code       =   is_array($error)? $error['code'] : $code;
         if(IS_CLI){
             exit($message);
         }elseif(IS_API){

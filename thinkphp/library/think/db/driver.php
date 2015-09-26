@@ -1082,7 +1082,7 @@ abstract class Driver {
         $_config['hostport']    =   explode(',',$this->config['hostport']);
         $_config['database']    =   explode(',',$this->config['database']);
         $_config['dsn']         =   explode(',',$this->config['dsn']);
-        $_config['charset']     =   explode(',',$this->config['charset']);        
+        $_config['charset']     =   explode(',',$this->config['charset']);
 
         $m     =   floor(mt_rand(0,$this->config['master_num']-1));
         // 数据库读写是否分离
