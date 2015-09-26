@@ -105,7 +105,7 @@ class View {
      * @param string $cache_id 模板缓存标识
      * @return string
      */
-    public function fetch($template, $vars = [], $cache_id='',$renderContent=false) {
+    public function fetch($template='', $vars = [], $cache_id='',$renderContent=false) {
         if(!$renderContent){
             // 获取模板文件名
             $template = $this->parseTemplate($template);

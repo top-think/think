@@ -83,7 +83,7 @@ class App {
             // 操作绑定到类后 固定执行run入口
             $action     =   'run';
         }else{
-            $instance   =   Loader::controller(CONTROLLER_NAME);
+            $instance   =   Loader::controller(CONTROLLER_NAME,'',$config['empty_controller']);
             // 获取当前操作名
             $action     =   ACTION_NAME . $config['action_suffix'];
         }

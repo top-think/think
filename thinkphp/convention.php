@@ -10,6 +10,7 @@ return [
     'default_module'        =>  'index',  // 默认模块名
     'default_controller'    =>  'index',    // 默认控制器名
     'default_action'        =>  'index',    // 默认操作名
+    'empty_controller'      =>  'error',   // 默认的空控制器名
     'action_suffix'         =>  '', // 操作方法后缀
     'url_model'             =>  1,  // URL模式
     'url_request_uri'       =>  'REQUEST_URI', // 获取当前页面地址的系统变量 默认为REQUEST_URI    
