@@ -17,9 +17,9 @@ class Controller {
     // 视图类实例
     protected $view     =   null;
     protected $config   =   [
-        'before_action_list'    =   [],
-        'success_tmpl'          =   '',
-        'error_tmpl'            =   '',
+        'before_action_list'    =>   [],
+        'success_tmpl'          =>   '',
+        'error_tmpl'            =>   '',
     ];
 
     /**
