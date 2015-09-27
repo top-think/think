@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 
 namespace think;
-use org\Transform;
 
 class Response {
 
@@ -38,11 +37,11 @@ class Response {
         switch ($type){
             case 'json':
                 // 返回JSON数据格式到客户端 包含状态信息
-                $data   =   Transform::jsonEncode($data);
+                $data   =   json_encode($data, JSON_UNESCAPED_UNICODE);
                 break;
             case 'xml':
                 // 返回xml格式数据
-                $data   =   Transform::xmlEncode($data);
+                $data   =   \org\Transform::xmlEncode($data);
                 break;
             case 'jsonp':
                 // 返回JSON数据格式到客户端 包含状态信息
