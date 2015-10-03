@@ -250,6 +250,8 @@ class App {
                 if($config['require_module'] && !isset($_GET[VAR_MODULE])) {
                     $_GET[VAR_MODULE]     = array_shift($paths);
                     $_SERVER['PATH_INFO'] = implode('/', $paths);
+                }else if($config['require_module'] == false && !isset($_GET[$config['var_module']])){
+                    $_GET[$config['var_module']] = $config['default_module'];
                 }
             }
             // 去除URL后缀
