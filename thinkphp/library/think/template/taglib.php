@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\template;
+use think\Exception;
 
 /**
  * ThinkPHP标签库TagLib解析基类
@@ -83,7 +84,7 @@ class TagLib {
         $xml    =   '<tpl><tag '.$attr.' /></tpl>';
         $xml    =   simplexml_load_string($xml);
         if(!$xml) {
-            exit('_XML_TAG_ERROR_ : '.$attr);
+            throw new Exception('_XML_TAG_ERROR_ : '.$attr);
         }
         $xml    =   (array)($xml->tag->attributes());
         $array  =   array_change_key_case($xml['@attributes']);
@@ -100,7 +101,7 @@ class TagLib {
                     if( isset($array[$name])) {
                         $array[$name] = str_replace('___','&',$array[$name]);
                     }elseif(false !== array_search($name,$must)){
-                        exit('_PARAM_ERROR_:'.$name);
+                        throw new Exception('_PARAM_ERROR_:'.$name);
                     }
                 }
             }

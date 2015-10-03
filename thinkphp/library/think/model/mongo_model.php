@@ -49,7 +49,7 @@ class MongoModel extends \Think\Model{
             $where[$name] =$args[0];
             return $this->where($where)->getField($args[1]);
         }else{
-            throw new \think\Exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            throw new \think\Exception(__CLASS__.':'.$method.Lang::get('_METHOD_NOT_EXIST_'));
             return;
         }
     }
@@ -104,7 +104,7 @@ class MongoModel extends \Think\Model{
 
     // 查询成功后的回调方法
     protected function _after_select(&$resultSet,$options) {
-        array_walk($resultSet,array($this,'checkMongoId'));
+        array_walk($resultSet,[$this,'checkMongoId']);
     }
 
     /**
@@ -134,11 +134,11 @@ class MongoModel extends \Think\Model{
      * @param mixed $options 表达式参数
      * @return mixed
      */
-     public function find($options=array()) {
+     public function find($options=[]) {
          if( is_numeric($options) || is_string($options)) {
             $id   =  $this->getPk();
             $where[$id] = $options;
-            $options = array();
+            $options = [];
             $options['where'] = $where;
          }
         // 分析表达式
@@ -165,7 +165,7 @@ class MongoModel extends \Think\Model{
      * @return boolean
      */
     public function setInc($field,$step=1) {
-        return $this->setField($field,array('inc',$step));
+        return $this->setField($field,['inc',$step]);
     }
 
     /**
@@ -176,7 +176,7 @@ class MongoModel extends \Think\Model{
      * @return boolean
      */
     public function setDec($field,$step=1) {
-        return $this->setField($field,array('inc','-'.$step));
+        return $this->setField($field,['inc','-'.$step]);
     }
 
     /**
@@ -196,11 +196,11 @@ class MongoModel extends \Think\Model{
             }
             $resultSet = $this->db->select($options);
             if(!empty($resultSet)) {
-                $_field = explode(',', $field);
-                $field  = array_keys($resultSet[0]);
-                $key =  array_shift($field);
-                $key2 = array_shift($field);
-                $cols   =   array();
+                $_field =   explode(',', $field);
+                $field  =   array_keys($resultSet[0]);
+                $key    =   array_shift($field);
+                $key2   =   array_shift($field);
+                $cols   =   [];
                 $count  =   count($_field);
                 foreach ($resultSet as $result){
                     $name   =  $result[$key];
@@ -246,7 +246,7 @@ class MongoModel extends \Think\Model{
      * @param array $args   参数
      * @return mixed
      */
-    public function mongoCode($code,$args=array()) {
+    public function mongoCode($code,$args=[]) {
         return $this->db->execute($code,$args);
     }
 

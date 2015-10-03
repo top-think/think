@@ -25,7 +25,7 @@ class Url {
         $config     =   Config::get();
         // 解析URL
         $info       =   parse_url($url);
-        $url        =   !empty($info['path'])?$info['path']:ACTION_NAME;
+        $url        =   !empty($info['path'])? $info['path'] : ACTION_NAME;
         if(isset($info['fragment'])) { // 解析锚点
             $anchor =   $info['fragment'];
             if(false !== strpos($anchor,'?')) { // 解析参数
@@ -39,7 +39,7 @@ class Url {
         }
         // 解析子域名
         if(isset($host)) {
-            $domain =   $host.(strpos($host,'.')?'':strstr($_SERVER['HTTP_HOST'],'.'));
+            $domain =   $host.(strpos($host,'.')? '' : strstr($_SERVER['HTTP_HOST'],'.'));
         }elseif($domain===true){
             $domain = $_SERVER['HTTP_HOST'];
             if($config['app_sub_domain_deplay'] ) { // 开启子域名部署
@@ -107,7 +107,9 @@ class Url {
             }
             if(!empty($vars)) { // 添加参数
                 foreach ($vars as $var => $val){
-                    if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
+                    if('' !== trim($val)) {
+                        $url .= $depr . $var . $depr . urlencode($val);
+                    }
                 }                
             }
             if($suffix) {

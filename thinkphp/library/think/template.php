@@ -171,8 +171,9 @@ class  Template {
      * @return boolen
      */
     private function checkCache($template,$cacheFile) {
-        if (!$this->config['tpl_cache']) // 优先对配置设定检测
+        if (!$this->config['tpl_cache']) {// 优先对配置设定检测
             return false;
+        }
         // 检查编译存储是否有效
         return $this->storage->check($template,$cacheFile,$this->config['cache_time']);
     }
@@ -226,7 +227,9 @@ class  Template {
      */
     public function parse($content) {
         // 内容为空不解析
-        if(empty($content)) return '';
+        if(empty($content)) {
+            return '';
+        }
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
         // 检查include语法
@@ -279,7 +282,7 @@ class  Template {
         }
         // PHP语法检查
         if($this->config['tpl_deny_php'] && false !== strpos($content,'<?php')) {
-            exit('_NOT_ALLOW_PHP_');
+            throw new Exception('_NOT_ALLOW_PHP_');
         }
         return $content;
     }
@@ -361,8 +364,9 @@ class  Template {
     private function parseXmlAttrs($attrs) {
         $xml        =   '<tpl><tag '.$attrs.' /></tpl>';
         $xml        =   simplexml_load_string($xml);
-        if(!$xml)
-            exit('_XML_TAG_ERROR_');
+        if(!$xml){
+            throw new Exception('_XML_TAG_ERROR_');
+        }
         $xml        =   (array)($xml->tag->attributes());
         $array      =   array_change_key_case($xml['@attributes']);
         return $array;
@@ -375,7 +379,9 @@ class  Template {
      * @return string
      */
     private function parseLiteral($content) {
-        if(trim($content)=='')  return '';
+        if(trim($content)=='')  {
+            return '';
+        }
         $content            =   stripslashes($content);
         $i                  =   count($this->literal);
         $parseStr           =   "<!--###literal{$i}###-->";
@@ -500,13 +506,14 @@ class  Template {
      * @return string
      */
     private function parseXmlTag($tLib,$tagLib,$tag,$attr,$content) {
-        $attr   = stripslashes($attr);
-        $content= stripslashes($content);
-        if(ini_get('magic_quotes_sybase'))
-            $attr   =  str_replace('\"','\'',$attr);
-        $parse      = '_'.$tag;
-        $content    = trim($content);
-        $tags   =   $tLib->parseXmlAttr($attr,$tag);
+        $attr       =   stripslashes($attr);
+        $content    =   stripslashes($content);
+        if(ini_get('magic_quotes_sybase')){
+            $attr   =   str_replace('\"','\'',$attr);
+        }
+        $parse      =   '_'.$tag;
+        $content    =   trim($content);
+        $tags       =   $tLib->parseXmlAttr($attr,$tag);
         return $tLib->$parse($tags,$content);
     }
 
@@ -554,7 +561,9 @@ class  Template {
         $varStr     =   trim($varStr);
         static $_varParseList = [];
         //如果已经解析过该变量字串，则直接返回变量值
-        if(isset($_varParseList[$varStr])) return $_varParseList[$varStr];
+        if(isset($_varParseList[$varStr])) {
+            return $_varParseList[$varStr];
+        }
         $parseStr   =   '';
         if(!empty($varStr)){
             $varArray = explode('|',$varStr);
@@ -582,8 +591,9 @@ class  Template {
                 $name = "$$var";
             }
             //对变量使用函数
-            if(count($varArray)>0)
+            if(count($varArray)>0){
                 $name = $this->parseVarFunction($name,$varArray);
+            }
             $parseStr = '<?php echo ('.$name.'); ?>';
         }
         $_varParseList[$varStr] = $parseStr;
@@ -645,13 +655,13 @@ class  Template {
             switch($vars[1]){
                 case 'SERVER':
                     $parseStr = '$_SERVER[\''.strtoupper($vars[2]).'\']';
-					break;
+                    break;
                 case 'GET':
                     $parseStr = '$_GET[\''.$vars[2].'\']';
-					break;
+                    break;
                 case 'POST':
                     $parseStr = '$_POST[\''.$vars[2].'\']';
-					break;
+                    break;
                 case 'COOKIE':
                     if(isset($vars[3])) {
                         $parseStr = '$_COOKIE[\''.$vars[2].'\'][\''.$vars[3].'\']';
@@ -668,24 +678,24 @@ class  Template {
                     break;
                 case 'ENV':
                     $parseStr = '$_ENV[\''.strtoupper($vars[2]).'\']';
-					break;
+                    break;
                 case 'REQUEST':
                     $parseStr = '$_REQUEST[\''.$vars[2].'\']';
-					break;
+                    break;
                 case 'CONST':
                     $parseStr = strtoupper($vars[2]);
-					break;
+                    break;
                 case 'LANG':
                     $parseStr = '\\think\\lang::get("'.$vars[2].'")';
-					break;
+                    break;
                 case 'CONFIG':
                     if(isset($vars[3])) {
                         $vars[2] .= '.'.$vars[3];
                     }
                     $parseStr = '\\think\\config::get("'.$vars[2].'")';
-					break;
+                    break;
                 default:
-					break;
+                    break;
             }
         }else if(count($vars)==2){
             switch($vars[1]){
@@ -704,7 +714,7 @@ class  Template {
                 default:
                     if(defined($vars[1])){
                         $parseStr = $vars[1];
-					}
+                    }
             }
         }
         return $parseStr;
@@ -737,9 +747,10 @@ class  Template {
      * @return string
      */    
     private function parseTemplateName($templateName){
-        if(substr($templateName,0,1)=='$')
+        if(substr($templateName,0,1)=='$'){
             //支持加载变量文件名
             $templateName = $this->get(substr($templateName,1));
+        }
         $array      =   explode(',',$templateName);
         $parseStr   =   '';
         foreach ($array as $templateName){

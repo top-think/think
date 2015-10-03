@@ -35,7 +35,7 @@ trait Auto {
         }
         // 验证数据
         if(empty($data) || !is_array($data)) {
-            $this->error = L('_DATA_TYPE_INVALID_');
+            $this->error = \think\Lang::get('_DATA_TYPE_INVALID_');
             return false;
         }
 
@@ -94,7 +94,7 @@ trait Auto {
      * @return boolean
      */
     public function regex($value,$rule) {
-        $validate = array(
+        static $validate = [
             'require'   =>  '/.+/',
             'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
             'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
@@ -104,10 +104,11 @@ trait Auto {
             'integer'   =>  '/^[-\+]?\d+$/',
             'double'    =>  '/^[-\+]?\d+(\.\d+)?$/',
             'english'   =>  '/^[A-Za-z]+$/',
-        );
+        ];
         // 检查是否有内置的正则表达式
-        if(isset($validate[strtolower($rule)]))
+        if(isset($validate[strtolower($rule)])){
             $rule       =   $validate[strtolower($rule)];
+        }
         return preg_match($rule,$value)===1;
     }
 
@@ -129,8 +130,10 @@ trait Auto {
         if(isset($_auto)) {
             foreach ($_auto as $auto){
                 // 填充因子定义格式
-                // array('field','填充内容','填充条件','附加规则',[额外参数])
-                if(empty($auto[2])) $auto[2] = self::MODEL_INSERT; // 默认为新增的时候自动填充
+                // ['field','填充内容','填充条件','附加规则',[额外参数]]
+                if(empty($auto[2])) {
+                    $auto[2] = self::MODEL_INSERT; // 默认为新增的时候自动填充
+                }
                 if( $type == $auto[2] || $auto[2] == self::MODEL_BOTH) {
                     switch(trim($auto[3])) {
                         case 'function':    //  使用函数进行填充 字段的值作为参数
@@ -142,21 +145,24 @@ trait Auto {
                             if('function'==$auto[3]) {
                                 $data[$auto[0]]  = call_user_func_array($auto[1], $args);
                             }else{
-                                $data[$auto[0]]  =  call_user_func_array(array(&$this,$auto[1]), $args);
+                                $data[$auto[0]]  =  call_user_func_array([&$this,$auto[1]], $args);
                             }
                             break;
                         case 'field':    // 用其它字段的值进行填充
                             $data[$auto[0]] = $data[$auto[1]];
                             break;
                         case 'ignore': // 为空忽略
-                            if(''===$data[$auto[0]])
+                            if(''===$data[$auto[0]]){
                                 unset($data[$auto[0]]);
+                            }
                             break;
                         case 'string':
                         default: // 默认作为字符串填充
                             $data[$auto[0]] = $auto[1];
                     }
-                    if(false === $data[$auto[0]] )   unset($data[$auto[0]]);
+                    if(false === $data[$auto[0]] ) {
+                        unset($data[$auto[0]]);
+                    }
                 }
             }
         }
@@ -172,24 +178,25 @@ trait Auto {
      */
     protected function autoValidation($data,$type) {
         if(!empty($this->options['validate'])) {
-            $validate   =   $this->options['validate'];
+            $_validate   =   $this->options['validate'];
             unset($this->options['validate']);
         }elseif(!empty($this->validate)){
-            $validate   =   $this->validate;
+            $_validate   =   $this->validate;
         }
         // 属性验证
-        if(isset($validate)) { // 如果设置了数据自动验证则进行数据验证
+        if(isset($_validate)) { // 如果设置了数据自动验证则进行数据验证
             if($this->patchValidate) { // 重置验证错误信息
                 $this->error = [];
             }
-            foreach($validate as $key=>$val) {
+            foreach($_validate as $key=>$val) {
                 // 验证因子定义格式
-                // array(field,rule,message,condition,type,when,params)
+                // [field,rule,message,condition,type,when,params]
                 // 判断是否需要执行验证
                 if(empty($val[5]) || $val[5]== self::MODEL_BOTH || $val[5]== $type ) {
-                    if(0==strpos($val[2],'{%') && strpos($val[2],'}'))
+                    if(0==strpos($val[2],'{%') && strpos($val[2],'}')){
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
                         $val[2]  =  L(substr($val[2],2,-1));
+                    }
                     $val[3]  =  isset($val[3])?$val[3]:EXISTS_VALIDATE;
                     $val[4]  =  isset($val[4])?$val[4]:'regex';
                     // 判断验证条件
@@ -204,14 +211,16 @@ trait Auto {
                                     return false;
                             break;
                         default:    // 默认表单存在该字段就验证
-                            if(isset($data[$val[0]]))
-                                if(false === $this->_validationField($data,$val)) 
-                                    return false;
+                            if(isset($data[$val[0]]) && false === $this->_validationField($data,$val)) {
+                                return false;
+                            }
                     }
                 }
             }
             // 批量验证的时候最后返回错误
-            if(!empty($this->error)) return false;
+            if(!empty($this->error)) {
+                return false;
+            }
         }
         return true;
     }
@@ -248,39 +257,38 @@ trait Auto {
             case 'function':// 使用函数进行验证
             case 'callback':// 调用方法进行验证
                 $args = isset($val[6])?(array)$val[6]:[];
-                if(is_string($val[0]) && strpos($val[0], ','))
+                if(is_string($val[0]) && strpos($val[0], ',')){
                     $val[0] = explode(',', $val[0]);
+                }
                 if(is_array($val[0])){
                     // 支持多个字段验证
-                    foreach($val[0] as $field)
+                    foreach($val[0] as $field){
                         $_data[$field] = $data[$field];
+                    }
                     array_unshift($args, $_data);
                 }else{
                     array_unshift($args, $data[$val[0]]);
                 }
-                if('function'==$val[4]) {
-                    return call_user_func_array($val[1], $args);
-                }else{
-                    return call_user_func_array(array(&$this, $val[1]), $args);
-                }
+                return call_user_func_array( 'function'==$val[4] ? $val[1] : [&$this, $val[1]], $args);
             case 'confirm': // 验证两个字段是否相同
                 return $data[$val[0]] == $data[$val[1]];
             case 'unique': // 验证某个值是否唯一
-                if(is_string($val[0]) && strpos($val[0],','))
+                if(is_string($val[0]) && strpos($val[0],',')){
                     $val[0]  =  explode(',',$val[0]);
+                }
                 $map = [];
                 if(is_array($val[0])) {
                     // 支持多个字段验证
-                    foreach ($val[0] as $field)
+                    foreach ($val[0] as $field){
                         $map[$field]   =  $data[$field];
+                    }
                 }else{
                     $map[$val[0]] = $data[$val[0]];
                 }
                 if(!empty($data[$this->getPk()])) { // 完善编辑的时候验证唯一
-                    $map[$this->getPk()] = array('neq',$data[$this->getPk()]);
+                    $map[$this->getPk()] = ['neq',$data[$this->getPk()]];
                 }
-                if($this->where($map)->find())   return false;
-                return true;
+                return $this->where($map)->find() ? false : true;
             default:  // 检查附加规则
                 return $this->check($data[$val[0]],$val[1],$val[4]);
         }
@@ -323,8 +331,12 @@ trait Auto {
                 }
             case 'expire':
                 list($start,$end)   =  explode(',',$rule);
-                if(!is_numeric($start)) $start   =  strtotime($start);
-                if(!is_numeric($end)) $end   =  strtotime($end);
+                if(!is_numeric($start)) {
+                    $start   =  strtotime($start);
+                }
+                if(!is_numeric($end)) {
+                    $end   =  strtotime($end);
+                }
                 return NOW_TIME >= $start && NOW_TIME <= $end;
             case 'ip_allow': // IP 操作许可验证
                 return in_array(get_client_ip(),explode(',',$rule));
@@ -354,7 +366,7 @@ trait Auto {
      * @param array $validate 自动验证设置
      * @return Model
      */
-    public function validate($auto){
+    public function validate($validate){
         $this->options['validate']     =   $validate;
         return $this;
     }    

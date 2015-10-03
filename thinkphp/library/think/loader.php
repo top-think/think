@@ -89,8 +89,9 @@ class Loader {
                 $baseUrl = APP_PATH . $class_strut[0] . '/';
             }
         }
-        if (substr($baseUrl, -1) != '/')
+        if (substr($baseUrl, -1) != '/'){
             $baseUrl .= '/';
+        }
         // 如果类存在 则导入类库文件
         $filename = $baseUrl . $class . $ext;
         if(is_file($filename)) {

@@ -18,7 +18,7 @@ define('MANY_TO_MANY',4);
 
 trait Relation {
     // 关联定义
-    protected    $link = array();
+    protected    $link = [];
 
     /**
      * 得到关联的数据表名
@@ -166,7 +166,7 @@ trait Relation {
                                 break;
                         }
                         if(!$return){
-                            if(isset($val['as_fields']) && in_array($mappingType,array(HAS_ONE,BELONGS_TO)) ) {
+                            if(isset($val['as_fields']) && in_array($mappingType,[HAS_ONE,BELONGS_TO]) ) {
                                 // 支持直接把关联的字段值映射成数据对象中的某个字段
                                 // 仅仅支持HAS_ONE BELONGS_TO
                                 $fields =   explode(',',$val['as_fields']);
@@ -228,7 +228,7 @@ trait Relation {
                         if(!empty($val['condition'])) {
                             $mappingCondition   =   $val['condition'];
                         }else{
-                            $mappingCondition               =   array();
+                            $mappingCondition               =   [];
                             $mappingCondition[$mappingFk]   =   $pk;
                         }
                         // 获取关联model对象
@@ -285,7 +285,7 @@ trait Relation {
                                     $mappingRelationFk = $val['relation_foreign_key']?$val['relation_foreign_key']:$model->getModelName().'_id';// 关联
                                     $mappingRelationTable  =  $val['relation_table']?$val['relation_table']:$this->getRelationTableName($model);
                                     if(is_array($mappingData)) {
-                                        $ids   = array();
+                                        $ids   = [];
                                         foreach ($mappingData as $vo)
                                             $ids[]   =   $vo[$mappingKey];
                                         $relationId =   implode(',',$ids);

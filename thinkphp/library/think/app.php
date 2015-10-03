@@ -243,7 +243,7 @@ class App {
             $_SERVER['PATH_INFO'] = __INFO__;     
             if(__INFO__ && !defined('BIND_MODULE')){
                 if($config['url_deny_suffix'] && preg_match('/\.('.$config['url_deny_suffix'].')$/i', __INFO__)){
-                    exit;
+                    throw new Exception('URL_SUFFIX_DENY');
                 }
                 $paths = explode($config['pathinfo_depr'], __INFO__,2);
                 // 获取URL中的模块名

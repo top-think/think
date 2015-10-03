@@ -56,7 +56,9 @@ class Log {
      */
     static public function save($destination='',$level='') {
         $log    =   self::getLog($level);
-        if(empty($log)) return ;
+        if(empty($log)) {
+            return ;
+        }
         $message    =   '';
         if($level) {
             $message    .=   implode("\r\n",$log);

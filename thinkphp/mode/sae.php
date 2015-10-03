@@ -18,21 +18,35 @@ return [
     'config'    =>  [
         /* 数据库设置 */
         'database'    =>  [
-            'type'              =>  'mysql',     // 数据库类型
+            // 数据库类型
+            'type'              =>  'mysql',     
             'dsn'               =>  '', // 
-            'hostname'          =>  SAE_MYSQL_HOST_M.','.SAE_MYSQL_HOST_S, // 服务器地址
-            'database'          =>  SAE_MYSQL_DB,          // 数据库名
-            'username'          =>  SAE_MYSQL_USER,      // 用户名
-            'password'          =>  SAE_MYSQL_PASS,          // 密码
-            'hostport'          =>  SAE_MYSQL_PORT,        // 端口               
-            'params'            =>  [], // 数据库连接参数        
-            'charset'           =>  'utf8',      // 数据库编码默认采用utf8  
-            'prefix'            =>  '',    // 数据库表前缀
-            'debug'             =>  false, // 数据库调试模式
-            'deploy'            =>  1, // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
-            'rw_separate'       =>  true,       // 数据库读写是否分离 主从式有效
-            'master_num'        =>  1, // 读写分离后 主服务器数量
-            'slave_no'          =>  '', // 指定从服务器序号
+            // 服务器地址
+            'hostname'          =>  SAE_MYSQL_HOST_M.','.SAE_MYSQL_HOST_S, 
+            // 数据库名
+            'database'          =>  SAE_MYSQL_DB,          
+            // 用户名
+            'username'          =>  SAE_MYSQL_USER,      
+            // 密码
+            'password'          =>  SAE_MYSQL_PASS,        
+            // 端口         
+            'hostport'          =>  SAE_MYSQL_PORT,     
+            // 数据库连接参数              
+            'params'            =>  [],      
+            // 数据库编码默认采用utf8  
+            'charset'           =>  'utf8',    
+            // 数据库表前缀  
+            'prefix'            =>  '',    
+            // 数据库调试模式
+            'debug'             =>  false, 
+            // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
+            'deploy'            =>  1, 
+            // 数据库读写是否分离 主从式有效
+            'rw_separate'       =>  true,       
+            // 读写分离后 主服务器数量
+            'master_num'        =>  1, 
+            // 指定从服务器序号
+            'slave_no'          =>  '', 
         ],    
         'log_type'          =>  'Sae',
         'data_cache_type'   =>  'Memcachesae',

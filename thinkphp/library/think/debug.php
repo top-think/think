@@ -60,8 +60,8 @@ class Debug {
         $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
         while ($size >= 1024) {
-             $size /= 1024;
-               $pos++;
+            $size /= 1024;
+            $pos++;
         }
         return round($size,$dec)." ".$a[$pos];
     }
@@ -81,8 +81,8 @@ class Debug {
         $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
         while ($size >= 1024) {
-             $size /= 1024;
-               $pos++;
+            $size /= 1024;
+            $pos++;
         }
         return round($size,$dec)." ".$a[$pos];
     }

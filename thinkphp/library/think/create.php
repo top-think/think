@@ -14,13 +14,12 @@ namespace think;
 class Create {
     static public function build($build) {
         // 锁定
-        $lockfile	 =	 APP_PATH.'create.lock';
+        $lockfile    =  APP_PATH.'create.lock';
         if(is_writable($lockfile)) {
             return ;
         } else {
             if(!touch($lockfile)){
-                header('Content-Type:text/html; charset=utf-8');
-                exit('目录 [ '.APP_PATH.' ] 不可写！');
+                throw new Exception('目录 [ '.APP_PATH.' ] 不可写！');
             }
         }
         foreach ($build as $module=>$list){
@@ -45,7 +44,7 @@ class Create {
                         mkdir(APP_PATH.$module.'/'.$path);
                     }
                     foreach($file as $val){
-                    	$filename   =   APP_PATH.$module.'/'.$path.'/'.strtolower($val).EXT;
+                        $filename   =   APP_PATH.$module.'/'.$path.'/'.strtolower($val).EXT;
                         switch($path) {
 	                        case 'controller':// 控制器
 	                            if(!is_file($filename)) {
@@ -75,7 +74,7 @@ class Create {
 
     // 创建欢迎页面
     static public function buildHelloController($module) {
-    	$filename 	=	APP_PATH.$module.'/controller/index'.EXT;
+        $filename   =   APP_PATH.$module.'/controller/index'.EXT;
         if(!is_file($filename)) {
             $content    =   file_get_contents(THINK_PATH.'tpl/default_index.tpl');
             $content    =   str_replace('{$module}',$module,$content);

@@ -28,7 +28,7 @@ class Lang {
      * @return mixed
      */
     static public function set($name, $value=null,$range='') {
-        $range  =   $range?$range:self::$range;
+        $range  =   $range? $range : self::$range;
         // 批量定义
         if (is_array($name)){
             return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($name));
@@ -46,8 +46,9 @@ class Lang {
     static public function get($name=null, $range='') {
         $range  =   $range?$range:self::$range;
         // 空参数返回所有定义
-        if (empty($name))
+        if (empty($name)){
             return self::$lang[$range];
+        }
         $name = strtolower($name);
         return isset(self::$lang[$range][$name]) ? self::$lang[$range][$name] : $name;
     }

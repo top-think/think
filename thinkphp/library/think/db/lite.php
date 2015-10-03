@@ -10,9 +10,10 @@
 // +----------------------------------------------------------------------
 
 namespace think\db;
-use think\config;
-use think\debug;
-use think\log;
+use think\Config;
+use think\Debug;
+use think\Log;
+use think\Exception;
 use PDO;
 
 class Lite {

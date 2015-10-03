@@ -231,8 +231,9 @@ class Route {
             return true;
         }elseif(isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT'] )) {
             return true;
+        }else{
+            return false;
         }
-        return false;
     }
 
     // 执行正则匹配下的闭包方法 支持参数调用
@@ -354,13 +355,13 @@ class Route {
 
     // 解析规则路由
     // '路由规则'=>'[控制器/操作]?额外参数1=值1&额外参数2=值2...'
-    // '路由规则'=>array('[控制器/操作]','额外参数1=值1&额外参数2=值2...')
+    // '路由规则'=> ['[控制器/操作]','额外参数1=值1&额外参数2=值2...']
     // '路由规则'=>'外部地址'
-    // '路由规则'=>array('外部地址','重定向代码')
+    // '路由规则'=>['外部地址','重定向代码']
     // 路由规则中 :开头 表示动态变量
     // 外部地址中可以用动态变量 采用 :1 :2 的方式
-    // 'news/:month/:day/:id'=>array('News/read?cate=1','status=1'),
-    // 'new/:id'=>array('/new.php?id=:1',301), 重定向
+    // 'news/:month/:day/:id'=>['News/read?cate=1','status=1'],
+    // 'new/:id'=>['/new.php?id=:1',301], 重定向
     static private function parseRule($rule, $route, $regx) {
         // 获取路由地址规则
         $url   = is_array($route) ? $route[0] : $route;
@@ -418,12 +419,12 @@ class Route {
 
     // 解析正则路由
     // '路由正则'=>'[控制器/操作]?参数1=值1&参数2=值2...'
-    // '路由正则'=>array('[控制器/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...')
+    // '路由正则'=>['[控制器/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...']
     // '路由正则'=>'外部地址'
-    // '路由正则'=>array('外部地址','重定向代码')
+    // '路由正则'=>['外部地址','重定向代码']
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
-    // '/new\/(\d+)\/(\d+)/'=>array('News/read?id=:1&page=:2&cate=1','status=1'),
-    // '/new\/(\d+)/'=>array('/new.php?id=:1&page=:2&status=1','301'), 重定向
+    // '/new\/(\d+)\/(\d+)/'=>['News/read?id=:1&page=:2&cate=1','status=1'],
+    // '/new\/(\d+)/'=>['/new.php?id=:1&page=:2&status=1','301'], 重定向
     static private function parseRegex($matches, $route, $regx) {
         // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;

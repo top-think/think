@@ -150,7 +150,7 @@ class Input {
      * 获取系统变量 支持过滤和默认值
      * @access public
      * @param string $method 输入数据类型
-     * @param array $args 参数 array(key,filter,default)
+     * @param array $args 参数 [key,filter,default]
      * @return mixed
      */
     static private function getData($name,$input,$filter,$default) {
@@ -183,7 +183,7 @@ class Input {
                         $filters    =   explode(',',$filters);                    
                     }
                 }elseif(is_int($filters)){
-                    $filters    =   array($filters);
+                    $filters    =   [$filters];
                 }
                 
                 if(is_array($filters)){

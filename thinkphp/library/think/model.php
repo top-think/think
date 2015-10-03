@@ -13,9 +13,9 @@ namespace think;
 
 class Model {
     // 操作状态
-    const MODEL_INSERT          =   1;      //  插入模型数据
-    const MODEL_UPDATE          =   2;      //  更新模型数据
-    const MODEL_BOTH            =   3;      //  包含上面两种方式
+    const MODEL_INSERT          =   1;      //  新增
+    const MODEL_UPDATE          =   2;      //  更新
+    const MODEL_BOTH            =   3;      //  全部
     // 当前数据库操作对象
     protected $db               =   null;
     // 数据库对象池
@@ -43,9 +43,9 @@ class Model {
     // 查询表达式参数
     protected $options          =   [];
     // 命名范围定义
-    protected $scope           =   [];
+    protected $scope            =   [];
     // 字段映射定义
-    protected $map             =   [];
+    protected $map              =   [];
 
     /**
      * 架构函数
@@ -110,7 +110,7 @@ class Model {
      * @return mixed
      */
     public function __get($name) {
-        return isset($this->data[$name])?$this->data[$name]:null;
+        return isset($this->data[$name])? $this->data[$name] : null;
     }
 
     /**
@@ -206,7 +206,9 @@ class Model {
         if(false !== $result && is_numeric($result)) {
             $pk     =   $this->getPk();
             // 增加复合主键支持
-            if (is_array($pk)) return $result;            
+            if (is_array($pk)) {
+                return $result;
+            }
             $insertId   =   $this->getLastInsID();
             if($insertId) {
                 // 自增主键返回插入ID
@@ -288,7 +290,7 @@ class Model {
                     if(isset($data[$field])) {
                         $where[$field]      =   $data[$field];
                     } else {
-                           // 如果缺少复合主键数据则不执行
+                        // 如果缺少复合主键数据则不执行
                         $this->error        =   Lang::get('_OPERATION_WRONG_');
                         return false;
                     }
@@ -351,7 +353,9 @@ class Model {
         if (is_array($options) && (count($options) > 0) && is_array($pk)) {
             $count = 0;
             foreach (array_keys($options) as $key) {
-                if (is_int($key)) $count++; 
+                if (is_int($key)) {
+                    $count++; 
+                }
             } 
             if ($count == count($pk)) {
                 $i = 0;
@@ -376,7 +380,9 @@ class Model {
         $result     =    $this->db->delete($options);
         if(false !== $result && is_numeric($result)) {
             $data = [];
-            if(isset($pkValue)) $data[$pk]   =  $pkValue;
+            if(isset($pkValue)) {
+                $data[$pk]   =  $pkValue;
+            }
             $this->_after_delete($data,$options);
         }
         // 返回删除记录个数
@@ -406,7 +412,9 @@ class Model {
             // 根据复合主键查询
             $count = 0;
             foreach (array_keys($options) as $key) {
-                if (is_int($key)) $count++; 
+                if (is_int($key)) {
+                    $count++; 
+                }
             } 
             if ($count == count($pk)) {
                 $i = 0;
@@ -427,7 +435,7 @@ class Model {
         // 判断查询缓存
         if(isset($options['cache'])){
             $cache  =   $options['cache'];
-            $key    =   is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $key    =   is_string($cache['key'])? $cache['key'] : md5(serialize($options));
             $data   =   Cache::get($key,'',$cache);
             if(false !== $data){
                 return $data;
@@ -577,7 +585,9 @@ class Model {
             // 根据复合主键查询
             $count = 0;
             foreach (array_keys($options) as $key) {
-                if (is_int($key)) $count++; 
+                if (is_int($key)) {
+                    $count++; 
+                }
             } 
             if ($count == count($pk)) {
                 $i = 0;
@@ -597,7 +607,7 @@ class Model {
         // 判断查询缓存
         if(isset($options['cache'])){
             $cache  =   $options['cache'];
-            $key    =   is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $key    =   is_string($cache['key'])? $cache['key'] : md5(serialize($options));
             $data   =   Cache::get($key,'',$cache);
             if(false !== $data){
                 $this->data     =   $data;
@@ -620,7 +630,7 @@ class Model {
         $this->data         =   $data;
         if(isset($cache)){
             Cache::set($key,$data,$cache);
-        }        
+        }
         return $this->data;
     }
 
@@ -667,7 +677,7 @@ class Model {
         }
 
         // 状态
-        $type = $type?$type:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
+        $type = $type? $type : (!empty($data[$this->getPk()])? self::MODEL_UPDATE : self::MODEL_INSERT);
 
         // 检测提交字段的合法性
         if(isset($this->options['field'])) { // $this->field('field1,field2...')->create()
@@ -738,8 +748,9 @@ class Model {
      * @return string
      */
     public function getModelName() {
-        if(empty($this->name))
+        if(empty($this->name)){
             $this->name =   substr(get_class($this),0,-5);
+        }
         return $this->name;
     }
 
@@ -828,7 +839,7 @@ class Model {
                         // 增加复合主键支持
                         if (!empty($this->fields['_pk'])) {
                             if (is_string($this->fields['_pk'])) {
-                                $this->pk   =   array($this->fields['_pk']);
+                                $this->pk   =   [$this->fields['_pk']];
                                 $this->fields['_pk']   =   $this->pk;
                             }
                             $this->pk[]   =   $key;
@@ -896,10 +907,10 @@ class Model {
             $options =  $this->_parseOptions();
             $sql    =   $this->db->parseSql($sql,$options);
         }elseif(is_array($parse)){ // SQL预处理
-            $parse  =   array_map(array($this->db,'escapeString'),$parse);
+            $parse  =   array_map([$this->db,'escapeString'],$parse);
             $sql    =   vsprintf($sql,$parse);
         }else{
-            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix));
+            $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
             $prefix =   $this->tablePrefix;
             $sql    =   preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $sql);
         }
@@ -999,8 +1010,9 @@ class Model {
             $expire = $key;
             $key    = true;
         }
-        if(false !== $key)
+        if(false !== $key){
             $this->options['cache']  =  ['key'=>$key,'expire'=>$expire,'type'=>$type];
+        }
         return $this;
     }
 
@@ -1014,7 +1026,7 @@ class Model {
     public function field($field,$except=false){
         if(true === $field) {// 获取全部字段
             $fields     =  $this->getDbFields();
-            $field      =  $fields?:'*';
+            $field      =  $fields? : '*';
         }elseif($except) {// 字段排除
             if(is_string($field)) {
                 $field  =  explode(',',$field);
@@ -1074,8 +1086,8 @@ class Model {
                 $parse = func_get_args();
                 array_shift($parse);
             }
-            $parse = array_map([$this->db,'escapeString'],$parse);
-            $where =   vsprintf($where,$parse);
+            $parse =    array_map([$this->db,'escapeString'],$parse);
+            $where =    vsprintf($where,$parse);
         }elseif(is_object($where)){
             $where  =   get_object_vars($where);
         }
@@ -1118,7 +1130,7 @@ class Model {
         if(is_null($listRows) && strpos($page,',')){
             list($page,$listRows)   =   explode(',',$page);
         }
-        $this->options['page']      =   array(intval($page),intval($listRows));
+        $this->options['page']      =   [intval($page),intval($listRows)];
         return $this;
     }
 
@@ -1324,7 +1336,7 @@ class Model {
      * @return Model
      */
     public function readMaster(){
-    	$this->options['read_master'] =	true;
-    	return $this;
+        $this->options['read_master'] =	true;
+        return $this;
     }
 }

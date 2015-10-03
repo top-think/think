@@ -94,7 +94,7 @@ class Error {
             $data['code']   =   $code;
             $data['msg']    =   $message;
             $data['time']   =   NOW_TIME;
-            App::returnData($data);
+            Response::returnData($data);
         }
         $e = [];
         if (APP_DEBUG) {
@@ -116,10 +116,11 @@ class Error {
             if (!empty($error_page)) {
                 header('Location: ' . $error_page);
             } else {
-                if (Config::get('show_error_msg'))
+                if (Config::get('show_error_msg')){
                     $e['message'] = is_array($error) ? $error['message'] : $error;
-                else
+                }else{
                     $e['message'] = C('error_message');
+                }
             }
         }
         // 包含异常页面模板

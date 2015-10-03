@@ -32,23 +32,24 @@ trait View {
             $tableName = '';
             foreach ($this->viewFields as $key=>$view){
                 // 获取数据表名称
-                if(isset($view['_table'])) { // 2011/10/17 添加实际表名定义支持 可以实现同一个表的视图
-                    $tableName .= $view['_table'];
+                if(isset($view['_table'])) { 
+                    // 2011/10/17 添加实际表名定义支持 可以实现同一个表的视图
+                    $tableName .=   $view['_table'];
                 }else{
-                    $class  =   $key.'Model';
-                    $Model  =  class_exists($class)?new $class():M($key);
-                    $tableName .= $Model->getTableName();
+                    $class      =   $key.'Model';
+                    $model      =   class_exists($class)? new $class() : M($key);
+                    $tableName .=   $model->getTableName();
                 }
                 // 表别名定义
-                $tableName .= !empty($view['_as'])?' '.$view['_as']:' '.$key;
+                $tableName     .=   !empty($view['_as'])? ' '.$view['_as'] :' '.$key;
                 // 支持ON 条件定义
-                $tableName .= !empty($view['_on'])?' ON '.$view['_on']:'';
+                $tableName     .=   !empty($view['_on'])? ' ON '.$view['_on'] : '';
                 // 指定JOIN类型 例如 RIGHT INNER LEFT 下一个表有效
-                $type = !empty($view['_type'])?$view['_type']:'';
-                $tableName   .= ' '.strtoupper($type).' JOIN ';
-                $len  =  strlen($type.'_JOIN ');
+                $type           =   !empty($view['_type'])?$view['_type']:'';
+                $tableName     .=   ' '.strtoupper($type).' JOIN ';
+                $len            =   strlen($type.'_JOIN ');
             }
-            $tableName = substr($tableName,0,-$len);
+            $tableName              =   substr($tableName,0,-$len);
             $this->trueTableName    =   $tableName;
         }
         return $this->trueTableName;
@@ -61,16 +62,20 @@ trait View {
      * @return void
      */
     protected function _options_filter(&$options) {
-        if(isset($options['field']))
-            $options['field'] = $this->checkFields($options['field']);
-        else
-            $options['field'] = $this->checkFields();
-        if(isset($options['group']))
-            $options['group']  =  $this->checkGroup($options['group']);
-        if(isset($options['where']))
-            $options['where']  =  $this->checkCondition($options['where']);
-        if(isset($options['order']))
-            $options['order']  =  $this->checkOrder($options['order']);
+        if(isset($options['field'])){
+            $options['field']   =   $this->checkFields($options['field']);
+        }else{
+            $options['field']   =   $this->checkFields();
+        }
+        if(isset($options['group'])){
+            $options['group']   =   $this->checkGroup($options['group']);
+        }
+        if(isset($options['where'])){
+            $options['where']   =   $this->checkCondition($options['where']);
+        }
+        if(isset($options['order'])){
+            $options['order']   =   $this->checkOrder($options['order']);
+        }
     }
 
     /**
@@ -126,16 +131,16 @@ trait View {
             $orders = explode(',',$order);
             $_order = [];
             foreach ($orders as $order){
-                $array = explode(' ',$order);
-                $field   =   $array[0];
-                $sort   =   isset($array[1])?$array[1]:'ASC';
+                $array      =   explode(' ',$order);
+                $field      =   $array[0];
+                $sort       =   isset($array[1])? $array[1] : 'ASC';
                 // 解析成视图字段
                 foreach ($this->viewFields as $name=>$val){
-                    $k = isset($val['_as'])?$val['_as']:$name;
-                    $val  =  $this->_checkFields($name,$val);
+                    $k      =   isset($val['_as']) ? $val['_as'] : $name;
+                    $val    =   $this->_checkFields($name,$val);
                     if(false !== $_field = array_search($field,$val,true)) {
                         // 存在视图字段
-                        $field     =  is_numeric($_field)?$k.'.'.$field:$k.'.'.$_field;
+                        $field     =  is_numeric($_field)? $k.'.'.$field : $k.'.'.$_field;
                         break;
                     }
                 }
@@ -159,11 +164,11 @@ trait View {
             foreach ($groups as $field){
                 // 解析成视图字段
                 foreach ($this->viewFields as $name=>$val){
-                    $k = isset($val['_as'])?$val['_as']:$name;
-                    $val  =  $this->_checkFields($name,$val);
+                    $k      =   isset($val['_as'])? $val['_as'] : $name;
+                    $val    =   $this->_checkFields($name,$val);
                     if(false !== $_field = array_search($field,$val,true)) {
                         // 存在视图字段
-                        $field     =  is_numeric($_field)?$k.'.'.$field:$k.'.'.$_field;
+                        $field     =  is_numeric($_field)? $k.'.'.$field : $k.'.'.$_field;
                         break;
                     }
                 }
@@ -185,8 +190,8 @@ trait View {
             // 获取全部视图字段
             $fields =   [];
             foreach ($this->viewFields as $name=>$val){
-                $k = isset($val['_as'])?$val['_as']:$name;
-                $val  =  $this->_checkFields($name,$val);
+                $k      =   isset($val['_as'])? $val['_as'] : $name;
+                $val    =   $this->_checkFields($name,$val);
                 foreach ($val as $key=>$field){
                     if(is_numeric($key)) {
                         $fields[]    =   $k.'.'.$field.' AS '.$field;
@@ -203,8 +208,9 @@ trait View {
             }
             $fields = implode(',',$fields);
         }else{
-            if(!is_array($fields))
+            if(!is_array($fields)){
                 $fields =   explode(',',$fields);
+            }
             // 解析成视图字段
             $array =  [];
             foreach ($fields as $key=>$field){
@@ -215,19 +221,20 @@ trait View {
                 }
             }
             foreach ($this->viewFields as $name=>$val){
-                $k = isset($val['_as'])?$val['_as']:$name;
-                $val  =  $this->_checkFields($name,$val);
+                $k      =   isset($val['_as'])? $val['_as'] : $name;
+                $val    =   $this->_checkFields($name,$val);
                 foreach ($fields as $key=>$field){
                     if(false !== $_field = array_search($field,$val,true)) {
                         // 存在视图字段
                         if(is_numeric($_field)) {
                             $array[]    =   $k.'.'.$field.' AS '.$field;
                         }elseif('_' != substr($_field,0,1)){
-                            if( false !== strpos($_field,'*') ||  false !== strpos($_field,'(') || false !== strpos($_field,'.'))
+                            if( false !== strpos($_field,'*') ||  false !== strpos($_field,'(') || false !== strpos($_field,'.')){
                                 //如果包含* 或者 使用了sql方法 则不再添加前面的表名
                                 $array[]    =   $_field.' AS '.$field;
-                            else
+                            }else{
                                 $array[]    =   $k.'.'.$_field.' AS '.$field;
+                            }
                         }
                     }
                 }

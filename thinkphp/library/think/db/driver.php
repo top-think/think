@@ -491,7 +491,7 @@ abstract class Driver {
             $whereStr = $where;
         }else{ // 使用数组表达式
             $operate  = isset($where['_logic'])?strtoupper($where['_logic']):'';
-            if(in_array($operate,array('AND','OR','XOR'))){
+            if(in_array($operate,['AND','OR','XOR'])){
                 // 定义逻辑运算规则 例如 OR XOR AND NOT
                 $operate    =   ' '.$operate.' ';
                 unset($where['_logic']);
@@ -512,7 +512,7 @@ abstract class Driver {
                     $key    = trim($key);
                     if(strpos($key,'|')) { // 支持 name|title|nickname 方式定义查询字段
                         $array =  explode('|',$key);
-                        $str   =  array();
+                        $str   =  [];
                         foreach ($array as $m=>$k){
                             $v =  $multi?$val[$m]:$val;
                             $str[]   = $this->parseWhereItem($this->parseKey($k),$v);
@@ -520,7 +520,7 @@ abstract class Driver {
                         $whereStr .= '( '.implode(' OR ',$str).' )';
                     }elseif(strpos($key,'&')){
                         $array =  explode('&',$key);
-                        $str   =  array();
+                        $str   =  [];
                         foreach ($array as $m=>$k){
                             $v =  $multi?$val[$m]:$val;
                             $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
@@ -548,8 +548,8 @@ abstract class Driver {
                 }elseif(preg_match('/^(notlike|like)$/',$exp)){// 模糊查找
                     if(is_array($val[1])) {
                         $likeLogic  =   isset($val[2])?strtoupper($val[2]):'OR';
-                        if(in_array($likeLogic,array('AND','OR','XOR'))){
-                            $like       =   array();
+                        if(in_array($likeLogic,['AND','OR','XOR'])){
+                            $like       =   [];
                             foreach ($val[1] as $item){
                                 $like[] = $key.' '.$this->exp[$exp].' '.$this->parseValue($item);
                             }
@@ -576,12 +576,12 @@ abstract class Driver {
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  $key.' '.$this->exp[$exp].' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
                 }else{
-                    throw new Exception(L('_EXPRESS_ERROR_').':'.$val[0]);
+                    throw new Exception(Lang::get('_EXPRESS_ERROR_').':'.$val[0]);
                 }
             }else {
                 $count = count($val);
                 $rule  = isset($val[$count-1]) ? (is_array($val[$count-1]) ? strtoupper($val[$count-1][0]) : strtoupper($val[$count-1]) ) : '' ; 
-                if(in_array($rule,array('AND','OR','XOR'))) {
+                if(in_array($rule,['AND','OR','XOR'])) {
                     $count  = $count -1;
                 }else{
                     $rule   = 'AND';
@@ -792,7 +792,7 @@ abstract class Driver {
     public function insert($data,$options=[],$replace=false) {
         $values  =  $fields    = [];
         $this->model  =   $options['model'];
-        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
+        $this->parseBind(!empty($options['bind'])?$options['bind']:[]);
         foreach ($data as $key=>$val){
             if(is_array($val) && 'exp' == $val[0]){
                 $fields[]   =  $this->parseKey($key);
@@ -826,14 +826,14 @@ abstract class Driver {
      * @param boolean $replace 是否replace
      * @return false | integer
      */
-    public function insertAll($dataSet,$options=array(),$replace=false) {
-        $values  =  array();
+    public function insertAll($dataSet,$options=[],$replace=false) {
+        $values  =  [];
         $this->model  =   $options['model'];
         if(!is_array($dataSet[0])) return false;
-        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
-        $fields =   array_map(array($this,'parseKey'),array_keys($dataSet[0]));
+        $this->parseBind(!empty($options['bind'])?$options['bind']:[]);
+        $fields =   array_map([$this,'parseKey'],array_keys($dataSet[0]));
         foreach ($dataSet as $data){
-            $value   =  array();
+            $value   =  [];
             foreach ($data as $key=>$val){
                 if(is_array($val) && 'exp' == $val[0]){
                     $value[]   =    $val[1];
@@ -866,9 +866,9 @@ abstract class Driver {
      */
     public function selectInsert($fields,$table,$options=[]) {
         $this->model  =   $options['model'];
-        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
+        $this->parseBind(!empty($options['bind'])?$options['bind']:[]);
         if(is_string($fields))   $fields    = explode(',',$fields);
-        array_walk($fields, array($this, 'parseKey'));
+        array_walk($fields, [$this, 'parseKey']);
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
         return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
@@ -883,7 +883,7 @@ abstract class Driver {
      */
     public function update($data,$options) {
         $this->model  =   $options['model'];
-        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
+        $this->parseBind(!empty($options['bind'])?$options['bind']:[]);
         $table  =   $this->parseTable($options['table']);
         $sql   = 'UPDATE ' . $table . $this->parseSet($data);
         if(strpos($table,',')){// 多表更新支持JOIN操作
@@ -907,7 +907,7 @@ abstract class Driver {
      */
     public function delete($options=[]) {
         $this->model  =   $options['model'];
-        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
+        $this->parseBind(!empty($options['bind'])?$options['bind']:[]);
         $table  =   $this->parseTable($options['table']);
         $sql    =   'DELETE FROM '.$table;
         if(strpos($table,',')){// 多表删除支持USING和JOIN操作
@@ -934,7 +934,7 @@ abstract class Driver {
      */
     public function select($options=[]) {
         $this->model  =   $options['model'];
-        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
+        $this->parseBind(!empty($options['bind'])?$options['bind']:[]);
         $sql    = $this->buildSelectSql($options);
         $result   = $this->query($sql,!empty($options['fetch_sql']) ? true : false,!empty($options['read_master']) ? true : false);
         return $result;
@@ -1105,7 +1105,7 @@ abstract class Driver {
         }
         
         if($m != $r ){
-            $db_master  =   array(
+            $db_master  =   [
                 'username'  =>  isset($_config['username'][$m])?$_config['username'][$m]:$_config['username'][0],
                 'password'  =>  isset($_config['password'][$m])?$_config['password'][$m]:$_config['password'][0],
                 'hostname'  =>  isset($_config['hostname'][$m])?$_config['hostname'][$m]:$_config['hostname'][0],
@@ -1113,9 +1113,9 @@ abstract class Driver {
                 'database'  =>  isset($_config['database'][$m])?$_config['database'][$m]:$_config['database'][0],
                 'dsn'       =>  isset($_config['dsn'][$m])?$_config['dsn'][$m]:$_config['dsn'][0],
                 'charset'   =>  isset($_config['charset'][$m])?$_config['charset'][$m]:$_config['charset'][0],
-            );
+            ];
         }
-        $db_config = array(
+        $db_config = [
             'username'  =>  isset($_config['username'][$r])?$_config['username'][$r]:$_config['username'][0],
             'password'  =>  isset($_config['password'][$r])?$_config['password'][$r]:$_config['password'][0],
             'hostname'  =>  isset($_config['hostname'][$r])?$_config['hostname'][$r]:$_config['hostname'][0],
@@ -1123,7 +1123,7 @@ abstract class Driver {
             'database'  =>  isset($_config['database'][$r])?$_config['database'][$r]:$_config['database'][0],
             'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
             'charset'   =>  isset($_config['charset'][$r])?$_config['charset'][$r]:$_config['charset'][0],
-        );
+        ];
         return $this->connect($db_config,$r,$r == $m ? false : $db_master);
     }
 

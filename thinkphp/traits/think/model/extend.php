@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace traits\think\model;
-use think\Loader;
+use think\loader;
 trait Extend {
     
     protected $partition    =   [];
@@ -23,7 +23,7 @@ trait Extend {
      * @return mixed
      */
     public function __call($method,$args) {
-        if(in_array(strtolower($method),array('count','sum','min','max','avg'),true)){
+        if(in_array(strtolower($method),['count','sum','min','max','avg'],true)){
             // 统计查询的实现
             $field =  isset($args[0])?$args[0]:'*';
             return $this->getField(strtoupper($method).'('.$field.') AS tp_'.$method);
@@ -40,7 +40,7 @@ trait Extend {
         }elseif(isset($this->scope[$method])){// 命名范围的单独调用支持
             return $this->scope($method,$args[0]);
         }else{
-            throw new \think\Exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            throw new \think\Exception(__CLASS__.':'.$method.\think\Lang::get('_METHOD_NOT_EXIST_'));
             return;
         }
     }
@@ -102,12 +102,11 @@ trait Extend {
             }
             $resultSet          =   $this->db->select($options);
             if(!empty($resultSet)) {
-                $_field         =   explode(',', $field);
                 $field          =   array_keys($resultSet[0]);
                 $key            =   array_shift($field);
                 $key2           =   array_shift($field);
                 $cols           =   [];
-                $count          =   count($_field);
+                $count          =   count(explode(',', $field));
                 foreach ($resultSet as $result){
                     $name   =  $result[$key];
                     if(2==$count) {
@@ -125,7 +124,9 @@ trait Extend {
             }
             $result = $this->db->select($options);
             if(!empty($result)) {
-                if(true !== $sepa && 1==$options['limit']) return reset($result[0]);
+                if(true !== $sepa && 1==$options['limit']) {
+                    return reset($result[0]);
+                }
                 foreach ($result as $val){
                     $array[]    =   $val[$field];
                 }
@@ -149,11 +150,14 @@ trait Extend {
             return false;
         }
         if($lazyTime>0) {// 延迟写入
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
+            $guid   =     md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step   =     $this->lazyWrite($guid,$step,$lazyTime);
+            if(false === $step ) {
+                // 等待下次写入
+                return true; 
+            }
         }
-        return $this->setField($field,array('exp',$field.'+'.$step));
+        return $this->setField($field,['exp',$field.'+'.$step]);
     }
 
     /**
@@ -172,9 +176,12 @@ trait Extend {
         if($lazyTime>0) {// 延迟写入
             $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
             $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
+            if(false === $step ) {
+                // 等待下次写入
+                return true; 
+            }
         }
-        return $this->setField($field,array('exp',$field.'-'.$step));
+        return $this->setField($field,['exp',$field.'-'.$step]);
     }
 
     /**
@@ -252,10 +259,10 @@ trait Extend {
             // 当设置的分表字段不在查询条件或者数据中
             // 进行联合查询，必须设定 partition['num']
             $tableName  =   [];
-            for($i=0;$i<$this->partition['num'];$i++)
+            for($i=0;$i<$this->partition['num'];$i++){
                 $tableName[] = 'SELECT * FROM '.$this->getTableName().'_'.($i+1);
-            $tableName = '( '.implode(" UNION ",$tableName).') AS '.$this->name;
-            return $tableName;
+            }
+            return '( '.implode(" UNION ",$tableName).') AS '.$this->name;
         }
     }
 }

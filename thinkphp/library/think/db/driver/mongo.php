@@ -31,7 +31,7 @@ class Mongo extends Driver {
      */
     public function __construct($config=''){
         if ( !class_exists('mongoClient') ) {
-            throw new Exception(L('_NOT_SUPPERT_').':Mongo');
+            throw new Exception(Lang::get('_NOT_SUPPERT_').':Mongo');
         }
         if(!empty($config)) {
             $this->config           =   array_merge($this->config,$config);
@@ -631,7 +631,7 @@ class Mongo extends Driver {
             }else{
                 // 查询字段的安全过滤
                 if(!preg_match('/^[A-Z_\|\&\-.a-z0-9]+$/',trim($key))){
-                    throw new Exception(L('_ERROR_QUERY_').':'.$key);
+                    throw new Exception(Lang::get('_ERROR_QUERY_').':'.$key);
                 }
                 $key = trim($key);
                 if(strpos($key,'|')) {

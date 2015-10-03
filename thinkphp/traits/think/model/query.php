@@ -52,12 +52,12 @@ trait Query {
     public function parseSql($sql,$parse) {
         // 分析表达式
         if(true === $parse) {
-            $options =  $this->_parseOptions();
-            $sql  =   $this->db->parseSql($sql,$options);
+            $options    =   $this->_parseOptions();
+            $sql        =   $this->db->parseSql($sql,$options);
         }elseif(is_array($parse)){ // SQL预处理
-            $sql  = vsprintf($sql,$parse);
+            $sql        =   vsprintf($sql,$parse);
         }else{
-            $sql    =   strtr($sql,['__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix]);
+            $sql        =   strtr($sql,['__TABLE__' => $this->getTableName(),'__PREFIX__' => $this->tablePrefix]);
         }
         return $sql;
     }
@@ -70,7 +70,9 @@ trait Query {
      * @return boolean
      */
     public function patchQuery($sql=[]) {
-        if(!is_array($sql)) return false;
+        if(!is_array($sql)) {
+            return false;
+        }
         // 自动启动事务支持
         $this->startTrans();
         try{
@@ -84,7 +86,7 @@ trait Query {
             }
             // 提交事务
             $this->commit();
-        } catch (\Think\Exception $e) {
+        } catch (\think\exception $e) {
             $this->rollback();
         }
         return true;

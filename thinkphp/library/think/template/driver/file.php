@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace think\template\driver;
-use think\exception;
+use think\Exception;
 
 class File {
     // 写入编译缓存

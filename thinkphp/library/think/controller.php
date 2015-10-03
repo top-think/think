@@ -11,7 +11,6 @@
 
 namespace think;
 use think\View;
-use org\Transform;
 
 class Controller {
     // 视图类实例
@@ -182,8 +181,8 @@ class Controller {
             $data['jumpUrl']   = $jumpUrl;
 
         // 提示标题
-        $data['msgTitle']   = $status ? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_');
-        $data['status']     = $status;   // 状态
+        $data['msgTitle']   =   Lang::get( $status ? '_OPERATION_SUCCESS_' : '_OPERATION_FAIL_');
+        $data['status']     =   $status;   // 状态
 
         //保证输出不受静态缓存影响
         Config::set('html_cache_on',false);
