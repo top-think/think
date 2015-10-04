@@ -13,8 +13,8 @@ namespace think\db\driver;
 
 use think\db\Driver;
 use think\Exception;
-use think\Lang as Lang;
-use think\Log as Log;
+use think\Lang;
+use think\Log;
 
 /**
  * Mongo数据库驱动

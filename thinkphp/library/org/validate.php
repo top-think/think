@@ -11,10 +11,12 @@
 
 namespace think;
 
+use think\Lang;
+
 class Validate
 {
-
-    protected $validate = []; // 自动验证定义
+    // 自动验证定义
+    protected $validate = [];
     // 是否批处理验证
     protected $patchValidate = false;
     protected $error         = '';
@@ -54,7 +56,7 @@ class Validate
                 if (0 == strpos($val[2], '{%') && strpos($val[2], '}'))
                 // 支持提示信息的多语言 使用 {%语言定义} 方式
                 {
-                    $val[2] = L(substr($val[2], 2, -1));
+                    $val[2] = Lang::get(substr($val[2], 2, -1));
                 }
 
                 $val[3] = isset($val[3]) ? $val[3] : 0;
@@ -166,7 +168,7 @@ class Validate
                     list($min, $max) = explode(',', $rule);
                     return $length >= $min && $length <= $max;
                 } else {
-// 指定长度
+                    // 指定长度
                     return $length == $rule;
                 }
             case 'expire':

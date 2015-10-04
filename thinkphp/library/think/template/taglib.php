@@ -205,7 +205,7 @@ class TagLib
                 case 'CONST':$parseStr = strtoupper($vars[2]);
                     break;
                 case 'LANG':
-                    $parseStr = 'L("' . $vars[2] . '")';
+                    $parseStr = '\think\Lang::get("' . $vars[2] . '")';
                     break;
                 case 'CONFIG':
                     if (isset($vars[3])) {

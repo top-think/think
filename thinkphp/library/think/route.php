@@ -105,7 +105,7 @@ class Route
                 // 完整域名或者IP配置
                 $rule = $rules[$_SERVER['HTTP_HOST']];
             } else {
-// 子域名配置
+                // 子域名配置
                 $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);
                 if (!empty($domain)) {
                     $subDomain = implode('.', $domain);
@@ -221,7 +221,7 @@ class Route
                     $len2 = substr_count($rule, '/');
                     if ($len1 >= $len2) {
                         if ('$' == substr($rule, -1, 1)) {
-// 完整匹配
+                            // 完整匹配
                             if ($len1 != $len2) {
                                 continue;
                             } else {
@@ -364,7 +364,7 @@ class Route
         $var = [];
         foreach ($m2 as $key => $val) {
             if (0 === strpos($val, ':')) {
-// 动态变量
+                // 动态变量
                 if (strpos($val, '\\')) {
                     $type = substr($val, -1);
                     if ('d' == $type && !is_numeric($m1[$key])) {

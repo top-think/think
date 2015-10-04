@@ -209,7 +209,7 @@ trait Auto
                 if (empty($val[5]) || self::MODEL_BOTH == $val[5] || $val[5] == $type) {
                     if (0 == strpos($val[2], '{%') && strpos($val[2], '}')) {
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
-                        $val[2] = L(substr($val[2], 2, -1));
+                        $val[2] = \think\Lang::get(substr($val[2], 2, -1));
                     }
                     $val[3] = isset($val[3]) ? $val[3] : EXISTS_VALIDATE;
                     $val[4] = isset($val[4]) ? $val[4] : 'regex';

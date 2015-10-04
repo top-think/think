@@ -179,7 +179,7 @@ class Controller
     private function dispatchJump($message, $status = 1, $jumpUrl = '', $ajax = false)
     {
         if (true === $ajax || IS_AJAX) {
-// AJAX提交
+            // AJAX提交
             $data           = is_array($ajax) ? $ajax : [];
             $data['info']   = $message;
             $data['status'] = $status;

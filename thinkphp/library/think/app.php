@@ -11,8 +11,6 @@
 
 namespace think;
 
-use think\Exception;
-
 /**
  * App 应用管理
  * @author  liu21st <liu21st@gmail.com>
@@ -73,7 +71,7 @@ class App
                 $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . CONTROLLER_NAME . '\\';
             } else {
                 // 空控制器
-                $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\empty\\';
+                $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . $config['empty_controller'] . '\\';
             }
             $actionName = strtolower(ACTION_NAME);
             if (class_exists($namespace . $actionName)) {

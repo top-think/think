@@ -11,8 +11,8 @@
 
 namespace think\image\driver;
 
-use think\Lang as Lang;
-use think\image\driver\Imagick as Imagick;
+use think\Lang;
+
 class Imagick
 {
     /**
