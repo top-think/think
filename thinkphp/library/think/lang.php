@@ -13,8 +13,10 @@ namespace think;
 
 class Lang
 {
-    private static $lang  = []; // 语言参数
-    private static $range = '_sys_'; // 作用域
+    // 语言参数
+    private static $lang  = []; 
+    // 作用域
+    private static $range = '_sys_'; 
 
     // 设定语言参数的作用域
     public static function range($range)

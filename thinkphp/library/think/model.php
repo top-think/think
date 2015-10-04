@@ -18,7 +18,7 @@ class Model
     const MODEL_UPDATE = 2; //  更新
     const MODEL_BOTH   = 3; //  全部
     // 当前数据库操作对象
-    protected $db = null;
+    protected $db   = null;
     // 数据库对象池
     private $_db = [];
     // 主键名称

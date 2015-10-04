@@ -13,10 +13,14 @@ namespace think;
 
 class View
 {
-    protected $engine = null; // 模板引擎实例
-    protected $theme  = ''; // 模板主题名称
-    protected $data   = []; // 模板变量
-    protected $config = [ // 视图参数
+    // 模板引擎实例
+    protected $engine = null; 
+    // 模板主题名称
+    protected $theme  = ''; 
+    // 模板变量
+    protected $data   = []; 
+    // 视图参数
+    protected $config = [ 
         'theme_on'          => false,
         'auto_detect_theme' => false,
         'var_theme'         => 't',

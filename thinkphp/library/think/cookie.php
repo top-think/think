@@ -15,12 +15,18 @@ class Cookie
 {
 
     protected static $config = [
-        'prefix'   => '', // cookie 名称前缀
-        'expire'   => 0, // cookie 保存时间
-        'path'     => '/', // cookie 保存路径
-        'domain'   => '', // cookie 有效域名
-        'secure'   => false, //  cookie 启用安全传输
-        'httponly' => '', // httponly设置
+        // cookie 名称前缀
+        'prefix'   => '', 
+        // cookie 保存时间
+        'expire'   => 0, 
+        // cookie 保存路径
+        'path'     => '/', 
+        // cookie 有效域名
+        'domain'   => '', 
+        //  cookie 启用安全传输
+        'secure'   => false, 
+        // httponly设置
+        'httponly' => '', 
     ];
 
     /**

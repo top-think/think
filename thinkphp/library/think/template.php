@@ -18,8 +18,10 @@ namespace think;
  */
 class Template
 {
-    protected $data   = []; // 模板变量
-    protected $config = [ // 引擎配置
+    // 模板变量
+    protected $data   = []; 
+    // 引擎配置
+    protected $config = [ 
         'tpl_path'           => VIEW_PATH, // 模板路径
         'tpl_suffix'         => '.html', // 默认模板文件后缀
         'cache_suffix'       => '.php', // 默认模板缓存后缀

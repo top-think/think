@@ -16,9 +16,10 @@ namespace think;
  */
 class Db
 {
-
-    private static $instance  = []; //  数据库连接实例
-    private static $_instance = null; //  当前数据库连接实例
+    //  数据库连接实例
+    private static $instance  = []; 
+    //  当前数据库连接实例
+    private static $_instance = null; 
 
     /**
      * 取得数据库类实例

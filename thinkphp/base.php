@@ -230,7 +230,7 @@ function U($url, $vars = '', $suffix = true, $domain = false)
 function session($name, $value = '')
 {
     if (is_array($name)) {
-// 初始化
+        // 初始化
         think\Session::init($name);
     } elseif (is_null($name)) {
         // 清除
@@ -250,7 +250,7 @@ function session($name, $value = '')
 function cookie($name, $value = '')
 {
     if (is_array($name)) {
-// 初始化
+        // 初始化
         think\Cookie::init($name);
     } elseif (is_null($name)) {
         // 清除
@@ -278,14 +278,14 @@ function S($name, $value = '', $options = null)
 {
     static $cache = null;
     if (is_array($options)) {
-// 缓存操作的同时初始化
+        // 缓存操作的同时初始化
         $cache = think\Cache::connect($options);
     } elseif (is_array($name)) {
         // 缓存初始化
         $cache = think\Cache::connect($name);
         return $cache;
     } elseif (is_null($cache)) {
-// 自动初始化
+        // 自动初始化
         $cache = think\Cache::connect();
     }
     if ('' === $value) {

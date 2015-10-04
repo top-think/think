@@ -20,9 +20,9 @@ require CORE_PATH . 'loader.php';
 Loader::register();
 
 // 注册错误和异常处理机制
-register_shutdown_function(['think\error', 'appShutdown']);
-set_error_handler(['think\error', 'appError']);
-set_exception_handler(['think\error', 'appException']);
+register_shutdown_function(['think\Error', 'appShutdown']);
+set_error_handler(['think\Error', 'appError']);
+set_exception_handler(['think\Error', 'appException']);
 
 // 加载模式定义文件
 $mode = require MODE_PATH . APP_MODE . EXT;

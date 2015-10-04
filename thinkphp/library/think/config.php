@@ -13,8 +13,10 @@ namespace think;
 
 class Config
 {
-    private static $config = []; // 配置参数
-    private static $range  = '_sys_'; // 参数作用域
+    // 配置参数
+    private static $config = []; 
+    // 参数作用域
+    private static $range  = '_sys_'; 
 
     // 设定配置参数的作用域
     public static function range($range)
