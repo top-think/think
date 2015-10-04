@@ -10,15 +10,18 @@
 // +----------------------------------------------------------------------
 
 namespace think\behavior;
+
 use think\Config;
 
 /**
  * 系统行为扩展：模板内容输出替换
  */
-class ContentReplace {
+class ContentReplace 
+{
 
     // 行为扩展的执行入口必须是run
-    public function run(&$content){
+    public function run(&$content)
+    {
         $content = $this->templateContentReplace($content);
     }
 
@@ -28,12 +31,13 @@ class ContentReplace {
      * @param string $content 模板内容
      * @return string
      */
-    protected function templateContentReplace($content) {
+    protected function templateContentReplace($content)
+    {
         if(IS_CGI) {
             //CGI/FASTCGI模式下
             $_temp  = explode('.php',$_SERVER['PHP_SELF']);
             $script_name    =   rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/');
-        }else {
+        } else {
             $script_name    =   rtrim($_SERVER['SCRIPT_NAME'],'/');
         }
         define('ROOT_URL',   rtrim(dirname(str_replace("\\","\/",$script_name)),'/'));
@@ -52,8 +56,9 @@ class ContentReplace {
             '__PUBLIC__'    =>  ROOT_URL.'/Public',// 站点公共目录
         ];
         // 允许用户自定义模板的字符串替换
-        if(is_array(Config::get('tmpl_parse_string')) )
+        if(is_array(Config::get('tmpl_parse_string')) ){
             $replace =  array_merge($replace,Config::get('tmpl_parse_string'));
+        }
         $content = str_replace(array_keys($replace),array_values($replace),$content);
         return $content;
     }

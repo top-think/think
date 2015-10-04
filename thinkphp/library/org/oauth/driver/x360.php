@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class X360 extends Driver{
+class X360 extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -38,12 +40,13 @@ class X360 extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){		
+    public function call($api, $param = '', $method = 'GET')
+    {
         /* 360开放平台调用公共参数 */
         $params = array(
             'access_token' => $this->token['access_token'],
         );
-        
+
         $data = $this->http($this->url($api, '.json'), $this->param($params, $param), $method);
         return json_decode($data, true);
     }
@@ -52,38 +55,45 @@ class X360 extends Driver{
      * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         $data = json_decode($result, true);
-        if($data['access_token'] && $data['expires_in'] && $data['refresh_token']){
+        if ($data['access_token'] && $data['expires_in'] && $data['refresh_token']) {
             $data['openid'] = $this->getOpenId();
             return $data;
-        } else
+        } else {
             throw new \Exception("获取360开放平台ACCESS_TOKEN出错：{$data['error']}");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
+        }
+
         $data = $this->call('user/me');
-        return !empty($data['id'])?$data['id']:null;
+        return !empty($data['id']) ? $data['id'] : null;
     }
 
     /**
      * 获取当前登录的用户信息
      * @return array
      */
-    public function getOauthInfo(){
+    public function getOauthInfo()
+    {
         $data = $this->call('user/me');
 
-        if($data['error_code'] == 0){
-            $userInfo['type']   =   'X360';
-            $userInfo['name']   =   $data['name'];
-            $userInfo['nick']   =   $data['name'];
-            $userInfo['avatar'] =   $data['avatar'];
+        if (0 == $data['error_code']) {
+            $userInfo['type']   = 'X360';
+            $userInfo['name']   = $data['name'];
+            $userInfo['nick']   = $data['name'];
+            $userInfo['avatar'] = $data['avatar'];
             return $userInfo;
         } else {
             E("获取360用户信息失败：{$data['error']}");

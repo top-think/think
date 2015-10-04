@@ -10,12 +10,14 @@
 // +----------------------------------------------------------------------
 
 namespace think\db\driver;
+
 use think\db\Driver;
 
 /**
- * mysql数据库驱动 
+ * mysql数据库驱动
  */
-class Mysql extends Driver{
+class Mysql extends Driver
+{
 
     /**
      * 解析pdo连接的dsn信息
@@ -23,15 +25,16 @@ class Mysql extends Driver{
      * @param array $config 连接信息
      * @return string
      */
-    protected function parseDsn($config){
-        $dsn  =   'mysql:dbname='.$config['database'].';host='.$config['hostname'];
-        if(!empty($config['hostport'])) {
-            $dsn  .= ';port='.$config['hostport'];
-        }elseif(!empty($config['socket'])){
-            $dsn  .= ';unix_socket='.$config['socket'];
+    protected function parseDsn($config)
+    {
+        $dsn = 'mysql:dbname=' . $config['database'] . ';host=' . $config['hostname'];
+        if (!empty($config['hostport'])) {
+            $dsn .= ';port=' . $config['hostport'];
+        } elseif (!empty($config['socket'])) {
+            $dsn .= ';unix_socket=' . $config['socket'];
         }
-        if(!empty($config['charset'])){
-            $dsn  .= ';charset='.$config['charset'];
+        if (!empty($config['charset'])) {
+            $dsn .= ';charset=' . $config['charset'];
         }
         return $dsn;
     }
@@ -40,18 +43,19 @@ class Mysql extends Driver{
      * 取得数据表的字段信息
      * @access public
      */
-    public function getFields($tableName) {
+    public function getFields($tableName)
+    {
         $this->initConnect(true);
         list($tableName) = explode(' ', $tableName);
-        $sql   = 'SHOW COLUMNS FROM `'.$tableName.'`';
-        $result = $this->query($sql);
-        $info   =   [];
-        if($result) {
+        $sql             = 'SHOW COLUMNS FROM `' . $tableName . '`';
+        $result          = $this->query($sql);
+        $info            = [];
+        if ($result) {
             foreach ($result as $key => $val) {
                 $info[$val['field']] = [
                     'name'    => $val['field'],
                     'type'    => $val['type'],
-                    'notnull' => (bool) ($val['null'] === ''), // not null is empty, null is yes
+                    'notnull' => (bool) ('' === $val['null']), // not null is empty, null is yes
                     'default' => $val['default'],
                     'primary' => (strtolower($val['key']) == 'pri'),
                     'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
@@ -65,10 +69,11 @@ class Mysql extends Driver{
      * 取得数据库的表信息
      * @access public
      */
-    public function getTables($dbName='') {
-        $sql    = !empty($dbName)?'SHOW TABLES FROM '.$dbName:'SHOW TABLES ';
+    public function getTables($dbName = '')
+    {
+        $sql    = !empty($dbName) ? 'SHOW TABLES FROM ' . $dbName : 'SHOW TABLES ';
         $result = $this->query($sql);
-        $info   =   [];
+        $info   = [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }
@@ -81,12 +86,13 @@ class Mysql extends Driver{
      * @param string $key
      * @return string
      */
-    protected function parseKey(&$key) {
-        $key   =  trim($key);
-        if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
-           $key = '`'.$key.'`';
+    protected function parseKey(&$key)
+    {
+        $key = trim($key);
+        if (!preg_match('/[,\'\"\*\(\)`.\s]/', $key)) {
+            $key = '`' . $key . '`';
         }
-        return $key;            
+        return $key;
     }
 
 }

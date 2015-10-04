@@ -11,16 +11,17 @@
 
 namespace think\transform\driver;
 
-class Xml{
+class Xml
+{
     /**
      * XML数据默认配置项
      * @var array
      */
     private $config = [
         'root_name' => 'think', //根节点名称
-        'root_attr' => [],      //根节点属性
-        'item_name' => 'item',  //数字节点转换的名称
-        'item_key'  => 'id',    //数字节点转换的属性名
+        'root_attr' => [], //根节点属性
+        'item_name' => 'item', //数字节点转换的名称
+        'item_key'  => 'id', //数字节点转换的属性名
     ];
 
     /**
@@ -29,7 +30,8 @@ class Xml{
      * @param  array $config 数据配置项
      * @return string        编码后的XML数据
      */
-    public function encode($data, array $config = []) {
+    public function encode($data, array $config = [])
+    {
         //初始化配置
         $config = array_merge($this->config, $config);
 
@@ -46,17 +48,18 @@ class Xml{
      * @param  array   $config 数据配置项
      * @return string          解码后的XML数据
      */
-    public function decode($str, $assoc = true, array $config = []){
+    public function decode($str, $assoc = true, array $config = [])
+    {
         //初始化配置
         $config = array_merge($this->config, $config);
 
         //创建XML对象
         $xml = new \SimpleXMLElement($str);
-        if($assoc){
+        if ($assoc) {
             self::xml2data($xml, $data, $config['item_name'], $config['item_key']);
             return $data;
         }
-        
+
         return $xml;
     }
 
@@ -69,16 +72,17 @@ class Xml{
      * @param  string $id   数字索引key转换为的属性名
      * @return string
      */
-    static public function data2xml(SimpleXMLElement $xml, $data, $item = 'item', $id = 'id') {
+    public static function data2xml(SimpleXMLElement $xml, $data, $item = 'item', $id = 'id')
+    {
         foreach ($data as $key => $value) {
             //指定默认的数字key
-            if(is_numeric($key)){
+            if (is_numeric($key)) {
                 $id && $val = $key;
-                $key = $item;
+                $key        = $item;
             }
 
             //添加子元素
-            if(is_array($value) || is_object($value)){
+            if (is_array($value) || is_object($value)) {
                 $child = $xml->addChild($key);
                 self::data2xml($child, $value, $item, $id);
             } else {
@@ -99,15 +103,16 @@ class Xml{
      * @param  string           $item 数字索引时的节点名称
      * @param  string           $id   数字索引key转换为的属性名
      */
-    static public function xml2data(SimpleXMLElement $xml, &$data, $item = 'item', $id = 'id'){
+    public static function xml2data(SimpleXMLElement $xml, &$data, $item = 'item', $id = 'id')
+    {
         foreach ($xml->children() as $items) {
             $key  = $items->getName();
             $attr = $items->attributes();
-            if($key == $item && isset($attr[$id])){
+            if ($key == $item && isset($attr[$id])) {
                 $key = strval($attr[$id]);
             }
 
-            if($items->count()){
+            if ($items->count()) {
                 self::xml2data($items, $val);
             } else {
                 $val = strval($items);

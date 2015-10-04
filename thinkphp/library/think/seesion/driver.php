@@ -10,13 +10,16 @@
 // +----------------------------------------------------------------------
 
 namespace think\session\driver;
+
 use SessionHandler;
 
-class Driver extends SessionHandler {
-    protected $config   =   [];
+class Driver extends SessionHandler
+{
+    protected $config = [];
 
-    public function __construct($config=[]){
-        $this->config   =   array_merge($this->config,$config);
+    public function __construct($config = [])
+    {
+        $this->config = array_merge($this->config, $config);
     }
 
 }

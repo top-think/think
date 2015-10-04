@@ -10,18 +10,20 @@
 // +----------------------------------------------------------------------
 
 namespace think\cache\driver;
+
 use think\Exception;
 
 /**
  * Xcache缓存驱动
  * @author    liu21st <liu21st@gmail.com>
  */
-class Xcache {
+class Xcache
+{
 
-    protected $options  =   [
-        'prefix'        =>  '',
-        'expire'        =>  0,
-        'length'        =>  0,
+    protected $options = [
+        'prefix' => '',
+        'expire' => 0,
+        'length' => 0,
     ];
 
     /**
@@ -29,12 +31,13 @@ class Xcache {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=[]) {
-        if ( !function_exists('xcache_info') ) {
+    public function __construct($options = [])
+    {
+        if (!function_exists('xcache_info')) {
             throw new Exception('_NOT_SUPPERT_:Xcache');
         }
-        if(!empty($options)) {
-            $this->options      =   array_merge($this->options,$options);
+        if (!empty($options)) {
+            $this->options = array_merge($this->options, $options);
         }
     }
 
@@ -44,8 +47,9 @@ class Xcache {
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public function get($name) {
-        $name   =   $this->options['prefix'].$name;
+    public function get($name)
+    {
+        $name = $this->options['prefix'] . $name;
         if (xcache_isset($name)) {
             return xcache_get($name);
         }
@@ -60,22 +64,26 @@ class Xcache {
      * @param integer $expire  有效时间（秒）
      * @return boolen
      */
-    public function set($name, $value,$expire=null) {
-        if(is_null($expire)) {
-            $expire = $this->options['expire'] ;
+    public function set($name, $value, $expire = null)
+    {
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
         }
-        $name   =   $this->options['prefix'].$name;
-        if(xcache_set($name, $value, $expire)) {
-            if($this->options['length']>0) {
+        $name = $this->options['prefix'] . $name;
+        if (xcache_set($name, $value, $expire)) {
+            if ($this->options['length'] > 0) {
                 // 记录缓存队列
-                $queue  =   xcache_get('__info__');
-                if(!$queue) {
-                    $queue  =   [];
+                $queue = xcache_get('__info__');
+                if (!$queue) {
+                    $queue = [];
                 }
-                if(false===array_search($name, $queue))  array_push($queue,$name);
-                if(count($queue) > $this->options['length']) {
+                if (false === array_search($name, $queue)) {
+                    array_push($queue, $name);
+                }
+
+                if (count($queue) > $this->options['length']) {
                     // 出列
-                    $key =  array_shift($queue);
+                    $key = array_shift($queue);
                     // 删除缓存
                     xcache_unset($key);
                 }
@@ -92,8 +100,9 @@ class Xcache {
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public function rm($name) {
-        return xcache_unset($this->options['prefix'].$name);
+    public function rm($name)
+    {
+        return xcache_unset($this->options['prefix'] . $name);
     }
 
     /**
@@ -101,7 +110,8 @@ class Xcache {
      * @access public
      * @return boolen
      */
-    public function clear() {
-        return ;
+    public function clear()
+    {
+        return;
     }
 }

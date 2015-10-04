@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class Sohu extends Driver{
+class Sohu extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -38,7 +40,8 @@ class Sohu extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){		
+    public function call($api, $param = '', $method = 'GET')
+    {
         /* 搜狐调用公共参数 */
         $params = array(
             'access_token' => $this->token['access_token'],
@@ -52,23 +55,29 @@ class Sohu extends Driver{
      * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         $data = json_decode($result, true);
-        if($data['access_token'] && $data['expires_in'] && $data['refresh_token'] && $data['open_id']){
+        if ($data['access_token'] && $data['expires_in'] && $data['refresh_token'] && $data['open_id']) {
             $data['openid'] = $data['open_id'];
             unset($data['open_id']);
             return $data;
-        } else
+        } else {
             throw new \Exception("获取搜狐ACCESS_TOKEN出错：{$data['error']}");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
+        }
+
         return null;
     }
 
@@ -76,14 +85,15 @@ class Sohu extends Driver{
      * 获取当前登录的用户信息
      * @return array
      */
-    public function getOauthInfo(){
+    public function getOauthInfo()
+    {
         $data = $this->call('i/prv/1/user/get-basic-info');
-        
-        if('success' == $data['message'] && !empty($data['data'])){
-            $userInfo['type']   =   'SOHU';
-            $userInfo['name']   =   $data['data']['open_id'];
-            $userInfo['nick']   =   $data['data']['nick'];
-            $userInfo['avatar'] =   $data['data']['icon'];
+
+        if ('success' == $data['message'] && !empty($data['data'])) {
+            $userInfo['type']   = 'SOHU';
+            $userInfo['name']   = $data['data']['open_id'];
+            $userInfo['nick']   = $data['data']['nick'];
+            $userInfo['avatar'] = $data['data']['icon'];
             return $userInfo;
         } else {
             E("获取搜狐用户信息失败：{$data['message']}");

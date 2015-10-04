@@ -15,22 +15,27 @@ namespace think\cache\driver;
  * 文件类型缓存类
  * @author    liu21st <liu21st@gmail.com>
  */
-class Simple {
+class Simple
+{
 
-    protected $options  =   [
-        'prefix'        =>  '',
-        'path'          =>  '',
+    protected $options = [
+        'prefix' => '',
+        'path'   => '',
     ];
 
     /**
      * 架构函数
      * @access public
      */
-    public function __construct($options=[]) {
-        if(!empty($options)) {
-            $this->options =  array_merge($this->options,$options);
+    public function __construct($options = [])
+    {
+        if (!empty($options)) {
+            $this->options = array_merge($this->options, $options);
         }
-        if(substr($this->options['path'], -1) != '/')    $this->options['path'] .= '/';
+        if (substr($this->options['path'], -1) != '/') {
+            $this->options['path'] .= '/';
+        }
+
     }
 
     /**
@@ -39,8 +44,9 @@ class Simple {
      * @param string $name 缓存变量名
      * @return string
      */
-    private function filename($name) {
-        return  $this->options['path'].$this->options['prefix'].md5($name).'.php';
+    private function filename($name)
+    {
+        return $this->options['path'] . $this->options['prefix'] . md5($name) . '.php';
     }
 
     /**
@@ -49,11 +55,12 @@ class Simple {
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public function get($name) {
-        $filename       = $this->filename($name);
+    public function get($name)
+    {
+        $filename = $this->filename($name);
         if (is_file($filename)) {
             return include $filename;
-        }else{
+        } else {
             return false;
         }
     }
@@ -66,13 +73,14 @@ class Simple {
      * @param int $expire  有效时间 0为永久
      * @return boolen
      */
-    public function set($name,$value,$expire=null) {
-        $filename       = $this->filename($name);
+    public function set($name, $value, $expire = null)
+    {
+        $filename = $this->filename($name);
         // 缓存数据
-        $dir            =   dirname($filename);
+        $dir = dirname($filename);
         // 目录不存在则创建
         //if (!is_dir($dir))
-          //  mkdir($dir,0755,true);
+        //  mkdir($dir,0755,true);
         return file_put_contents($filename, ("<?php\treturn " . var_export($value, true) . ";?>"));
     }
 
@@ -82,7 +90,8 @@ class Simple {
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public function rm($name) {
+    public function rm($name)
+    {
         return unlink($this->filename($name));
     }
 
@@ -92,8 +101,9 @@ class Simple {
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public function clear() {
-        $filename       = $this->filename('*');
+    public function clear()
+    {
+        $filename = $this->filename('*');
         array_map("unlink", glob($filename));
     }
 }

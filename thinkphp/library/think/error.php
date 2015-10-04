@@ -11,20 +11,22 @@
 
 namespace think;
 
-class Error {
+class Error
+{
     /**
      * 自定义异常处理
      * @access public
      * @param mixed $e 异常对象
      */
-    static public function appException($e) {
-        $error['message']   =   $e->getMessage();
-        $error['file']      =   $e->getFile();
-        $error['line']      =   $e->getLine();
-        $error['trace']     =   $e->getTraceAsString();
-        $error['code']      =   $e->getCode();
+    public static function appException($e)
+    {
+        $error['message'] = $e->getMessage();
+        $error['file']    = $e->getFile();
+        $error['line']    = $e->getLine();
+        $error['trace']   = $e->getTraceAsString();
+        $error['code']    = $e->getCode();
         // 记录异常日志
-        Log::record($error['message'],'ERR');
+        Log::record($error['message'], 'ERR');
         // 发送404信息
         header('HTTP/1.1 404 Not Found');
         header('Status:404 Not Found');
@@ -41,12 +43,13 @@ class Error {
      * @param int $errline 错误行数
      * @return void
      */
-    static public function appError($errno, $errstr, $errfile, $errline) {
+    public static function appError($errno, $errstr, $errfile, $errline)
+    {
         $errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
         switch ($errno) {
             case E_USER_ERROR:
                 Log::record($errorStr, 'ERROR');
-                self::halt($errorStr,$errno);
+                self::halt($errorStr, $errno);
                 break;
             case E_STRICT:
             case E_USER_WARNING:
@@ -61,7 +64,8 @@ class Error {
      * 应用关闭处理
      * @return void
      */
-    static public function appShutdown(){
+    public static function appShutdown()
+    {
         // 记录日志
         Log::save();
         if ($e = error_get_last()) {
@@ -84,41 +88,42 @@ class Error {
      * @param int $errno 错误代码
      * @return void
      */
-    static public function halt($error,$code=1) {
-        $message    =   is_array($error)? $error['message'] : $error;
-        $code       =   is_array($error)? $error['code'] : $code;
-        if(IS_CLI){
+    public static function halt($error, $code = 1)
+    {
+        $message = is_array($error) ? $error['message'] : $error;
+        $code    = is_array($error) ? $error['code'] : $code;
+        if (IS_CLI) {
             exit($message);
-        }elseif(IS_API){
+        } elseif (IS_API) {
             // API接口
-            $data['code']   =   $code;
-            $data['msg']    =   $message;
-            $data['time']   =   NOW_TIME;
+            $data['code'] = $code;
+            $data['msg']  = $message;
+            $data['time'] = NOW_TIME;
             Response::returnData($data);
         }
         $e = [];
         if (APP_DEBUG) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
-                $trace          =   debug_backtrace();
-                $e['message']   =   $error;
-                $e['file']      =   $trace[0]['file'];
-                $e['line']      =   $trace[0]['line'];
+                $trace        = debug_backtrace();
+                $e['message'] = $error;
+                $e['file']    = $trace[0]['file'];
+                $e['line']    = $trace[0]['line'];
                 ob_start();
                 debug_print_backtrace();
-                $e['trace']     =   ob_get_clean();
+                $e['trace'] = ob_get_clean();
             } else {
                 $e = $error;
             }
-        }else {
+        } else {
             //否则定向到错误页面
             $error_page = Config::get('error_page');
             if (!empty($error_page)) {
                 header('Location: ' . $error_page);
             } else {
-                if (Config::get('show_error_msg')){
+                if (Config::get('show_error_msg')) {
                     $e['message'] = is_array($error) ? $error['message'] : $error;
-                }else{
+                } else {
                     $e['message'] = C('error_message');
                 }
             }

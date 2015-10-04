@@ -15,27 +15,32 @@ namespace think\cache\driver;
  * 文件类型缓存类
  * @author    liu21st <liu21st@gmail.com>
  */
-class File {
+class File
+{
 
-    protected $options  =   [
-        'expire'        =>  0,
-        'cache_subdir'  =>  false,
-        'path_level'    =>  1,
-        'prefix'        =>  '',
-        'length'        =>  0,
-        'path'          =>  '',
-        'data_compress' =>  false,
+    protected $options = [
+        'expire'        => 0,
+        'cache_subdir'  => false,
+        'path_level'    => 1,
+        'prefix'        => '',
+        'length'        => 0,
+        'path'          => '',
+        'data_compress' => false,
     ];
 
     /**
      * 架构函数
      * @access public
      */
-    public function __construct($options=[]) {
-        if(!empty($options)) {
-            $this->options =  array_merge($this->options,$options);
+    public function __construct($options = [])
+    {
+        if (!empty($options)) {
+            $this->options = array_merge($this->options, $options);
         }
-        if(substr($this->options['path'], -1) != '/')    $this->options['path'] .= '/';
+        if (substr($this->options['path'], -1) != '/') {
+            $this->options['path'] .= '/';
+        }
+
         $this->init();
     }
 
@@ -44,11 +49,14 @@ class File {
      * @access private
      * @return boolen
      */
-    private function init() {
+    private function init()
+    {
         // 创建项目缓存目录
         if (!is_dir($this->options['path'])) {
-            if (!  mkdir($this->options['path'],0755))
+            if (!mkdir($this->options['path'], 0755)) {
                 return false;
+            }
+
         }
     }
 
@@ -58,23 +66,24 @@ class File {
      * @param string $name 缓存变量名
      * @return string
      */
-    private function filename($name) {
-        $name	=	md5($name);
-        if($this->options['cache_subdir']) {
+    private function filename($name)
+    {
+        $name = md5($name);
+        if ($this->options['cache_subdir']) {
             // 使用子目录
-            $dir    =   '';
-            $len    =   $this->options['path_level'];
-            for($i=0;$i<$len;$i++) {
-                $dir	.=	$name{$i}.'/';
+            $dir = '';
+            $len = $this->options['path_level'];
+            for ($i = 0; $i < $len; $i++) {
+                $dir .= $name{$i} . '/';
             }
-            if(!is_dir($this->options['path'].$dir)) {
-                mkdir($this->options['path'].$dir,0755,true);
+            if (!is_dir($this->options['path'] . $dir)) {
+                mkdir($this->options['path'] . $dir, 0755, true);
             }
-            $filename	=	$dir.$this->options['prefix'].$name.'.php';
-        }else{
-            $filename	=	$this->options['prefix'].$name.'.php';
+            $filename = $dir . $this->options['prefix'] . $name . '.php';
+        } else {
+            $filename = $this->options['prefix'] . $name . '.php';
         }
-        return $this->options['path'].$filename;
+        return $this->options['path'] . $filename;
     }
 
     /**
@@ -83,28 +92,28 @@ class File {
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public function get($name) {
-        $filename   =   $this->filename($name);
+    public function get($name)
+    {
+        $filename = $this->filename($name);
         if (!is_file($filename)) {
-           return false;
+            return false;
         }
-        $content    =   file_get_contents($filename);
-        if( false !== $content) {
-            $expire  =  (int)substr($content,8, 12);
-            if($expire != 0 && time() > filemtime($filename) + $expire) {
+        $content = file_get_contents($filename);
+        if (false !== $content) {
+            $expire = (int) substr($content, 8, 12);
+            if (0 != $expire && time() > filemtime($filename) + $expire) {
                 //缓存过期删除缓存文件
                 unlink($filename);
                 return false;
             }
-            $content   =  substr($content,20, -3);
-            if($this->options['data_compress'] && function_exists('gzcompress')) {
+            $content = substr($content, 20, -3);
+            if ($this->options['data_compress'] && function_exists('gzcompress')) {
                 //启用数据压缩
-                $content   =   gzuncompress($content);
+                $content = gzuncompress($content);
             }
-            $content    =   unserialize($content);
+            $content = unserialize($content);
             return $content;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -117,30 +126,34 @@ class File {
      * @param int $expire  有效时间 0为永久
      * @return boolen
      */
-    public function set($name,$value,$expire=null) {
-        if(is_null($expire)) {
-            $expire =  $this->options['expire'];
+    public function set($name, $value, $expire = null)
+    {
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
         }
-        $filename   =   $this->filename($name);
-        $data   =   serialize($value);
-        if($this->options['data_compress'] && function_exists('gzcompress')) {
+        $filename = $this->filename($name);
+        $data     = serialize($value);
+        if ($this->options['data_compress'] && function_exists('gzcompress')) {
             //数据压缩
-            $data   =   gzcompress($data,3);
+            $data = gzcompress($data, 3);
         }
-        $data    = "<?php\n//".sprintf('%012d',$expire).$data."\n?>";
-        $result  =   file_put_contents($filename,$data);
-        if($result) {
-            if($this->options['length']>0) {
+        $data   = "<?php\n//" . sprintf('%012d', $expire) . $data . "\n?>";
+        $result = file_put_contents($filename, $data);
+        if ($result) {
+            if ($this->options['length'] > 0) {
                 // 记录缓存队列
-                $queue_file =   dirname($filename).'/__info__.php';
-                $queue  =   unserialize(file_get_contents($queue_file));
-                if(!$queue) {
-                    $queue  =   [];
+                $queue_file = dirname($filename) . '/__info__.php';
+                $queue      = unserialize(file_get_contents($queue_file));
+                if (!$queue) {
+                    $queue = [];
                 }
-                if(false===array_search($name, $queue))  array_push($queue,$name);
-                if(count($queue) > $this->options['length']) {
+                if (false === array_search($name, $queue)) {
+                    array_push($queue, $name);
+                }
+
+                if (count($queue) > $this->options['length']) {
                     // 出列
-                    $key =  array_shift($queue);
+                    $key = array_shift($queue);
                     // 删除缓存
                     unlink($this->filename($key));
                 }
@@ -148,7 +161,7 @@ class File {
             }
             clearstatcache();
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -159,7 +172,8 @@ class File {
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public function rm($name) {
+    public function rm($name)
+    {
         return unlink($this->filename($name));
     }
 
@@ -169,15 +183,18 @@ class File {
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public function clear() {
-        $path   =  $this->options['temp'];
-        if ( $dir = opendir( $path ) ) {
-            while ( $file = readdir( $dir ) ) {
-                $check = is_dir( $file );
-                if ( !$check )
-                    unlink( $path . $file );
+    public function clear()
+    {
+        $path = $this->options['temp'];
+        if ($dir = opendir($path)) {
+            while ($file = readdir($dir)) {
+                $check = is_dir($file);
+                if (!$check) {
+                    unlink($path . $file);
+                }
+
             }
-            closedir( $dir );
+            closedir($dir);
             return true;
         }
     }

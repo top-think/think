@@ -22,15 +22,16 @@ namespace think\cache\driver;
  *    );
  * @author    liu21st <liu21st@gmail.com>
  */
-class Db {
+class Db
+{
 
-    protected $handler  =   null;
-    protected $options  =   [
-        'db'            =>  '',
-        'table'         =>  '',
-        'prefix'        =>  '',
-        'expire'        =>  0,
-        'length'        =>  0,
+    protected $handler = null;
+    protected $options = [
+        'db'     => '',
+        'table'  => '',
+        'prefix' => '',
+        'expire' => 0,
+        'length' => 0,
     ];
 
     /**
@@ -38,11 +39,12 @@ class Db {
      * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options=[]) {
-        if(!empty($options)) {
-            $this->options      =   array_merge($this->options,$options);
+    public function __construct($options = [])
+    {
+        if (!empty($options)) {
+            $this->options = array_merge($this->options, $options);
         }
-        $this->handler   = \Think\Db::instance();
+        $this->handler = \Think\Db::instance();
     }
 
     /**
@@ -51,20 +53,20 @@ class Db {
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public function get($name) {
-        $name       =  $this->options['prefix'].addslashes($name);
-        $result     =  $this->handler->query('SELECT `data`,`datacrc` FROM `'.$this->options['table'].'` WHERE `cachekey`=\''.$name.'\' AND (`expire` =0 OR `expire`>'.time().') LIMIT 0,1');
-        if(false !== $result ) {
-            $result   =  $result[0];
-            $content   =  $result['data'];
-            if(function_exists('gzcompress')) {
+    public function get($name)
+    {
+        $name   = $this->options['prefix'] . addslashes($name);
+        $result = $this->handler->query('SELECT `data`,`datacrc` FROM `' . $this->options['table'] . '` WHERE `cachekey`=\'' . $name . '\' AND (`expire` =0 OR `expire`>' . time() . ') LIMIT 0,1');
+        if (false !== $result) {
+            $result  = $result[0];
+            $content = $result['data'];
+            if (function_exists('gzcompress')) {
                 //启用数据压缩
-                $content   =   gzuncompress($content);
+                $content = gzuncompress($content);
             }
-            $content    =   unserialize($content);
+            $content = unserialize($content);
             return $content;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -77,48 +79,52 @@ class Db {
      * @param integer $expire  有效时间（秒）
      * @return boolen
      */
-    public function set($name, $value,$expire=null) {
-        $data   =  serialize($value);
-        $name   =  $this->options['prefix'].addslashes($name);
-        if(function_exists('gzcompress')) {
+    public function set($name, $value, $expire = null)
+    {
+        $data = serialize($value);
+        $name = $this->options['prefix'] . addslashes($name);
+        if (function_exists('gzcompress')) {
             //数据压缩
-            $data   =   gzcompress($data,3);
+            $data = gzcompress($data, 3);
         }
-        if(is_null($expire)) {
-            $expire  =  $this->options['expire'];
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
         }
-        $expire	    =   ($expire==0)?0: (time()+$expire) ;//缓存有效期为0表示永久缓存
-        $result     =   $this->handler->query('select `cachekey` from `'.$this->options['table'].'` where `cachekey`=\''.$name.'\' limit 0,1');
-        if(!empty($result) ) {
-        	//更新记录
-            $result  =  $this->handler->execute('UPDATE '.$this->options['table'].' SET data=\''.$data.'\' ,expire='.$expire.' WHERE `cachekey`=\''.$name.'\'');
-        }else {
-        	//新增记录
-             $result  =  $this->handler->execute('INSERT INTO '.$this->options['table'].' (`cachekey`,`data`,`expire`) VALUES (\''.$name.'\',\''.$data.'\','.$expire.')');
+        $expire = (0 == $expire) ? 0 : (time() + $expire); //缓存有效期为0表示永久缓存
+        $result = $this->handler->query('select `cachekey` from `' . $this->options['table'] . '` where `cachekey`=\'' . $name . '\' limit 0,1');
+        if (!empty($result)) {
+            //更新记录
+            $result = $this->handler->execute('UPDATE ' . $this->options['table'] . ' SET data=\'' . $data . '\' ,expire=' . $expire . ' WHERE `cachekey`=\'' . $name . '\'');
+        } else {
+            //新增记录
+            $result = $this->handler->execute('INSERT INTO ' . $this->options['table'] . ' (`cachekey`,`data`,`expire`) VALUES (\'' . $name . '\',\'' . $data . '\',' . $expire . ')');
         }
-        if($result) {
-            if($this->options['length']>0) {
+        if ($result) {
+            if ($this->options['length'] > 0) {
                 // 记录缓存队列
-                $result   =   $this->handler->query('SELECT `data`,`datacrc` FROM `'.$this->options['table'].'` WHERE `cachekey`=\'__info__\' AND `expire` =0 LIMIT 0,1');
-                $queue  =   xcache_get('__info__');
-                if(!$result) {
-                    $this->handler->execute('INSERT INTO '.$this->options['table'].' (`cachekey`,`data`,`expire`) VALUES (\'__info__\',\'\',0)');
-                    $queue  =   [];
-                }else{
-                    $queue   =  unserialize($result[0]['data']);
+                $result = $this->handler->query('SELECT `data`,`datacrc` FROM `' . $this->options['table'] . '` WHERE `cachekey`=\'__info__\' AND `expire` =0 LIMIT 0,1');
+                $queue  = xcache_get('__info__');
+                if (!$result) {
+                    $this->handler->execute('INSERT INTO ' . $this->options['table'] . ' (`cachekey`,`data`,`expire`) VALUES (\'__info__\',\'\',0)');
+                    $queue = [];
+                } else {
+                    $queue = unserialize($result[0]['data']);
                 }
-                if(false===array_search($name, $queue))  array_push($queue,$name);
-                if(count($queue) > $this->options['length']) {
+                if (false === array_search($name, $queue)) {
+                    array_push($queue, $name);
+                }
+
+                if (count($queue) > $this->options['length']) {
                     // 出列
-                    $key =  array_shift($queue);
+                    $key = array_shift($queue);
                     // 删除缓存
-                    $this->handler->execute('DELETE FROM `'.$this->options['table'].'` WHERE `cachekey`=\''.$key.'\'');
+                    $this->handler->execute('DELETE FROM `' . $this->options['table'] . '` WHERE `cachekey`=\'' . $key . '\'');
                 }
-                $this->handler->execute('UPDATE '.$this->options['table'].' SET data=\''.serialize($queue).'\' ,expire=0 WHERE `cachekey`=\'__info__\'');
+                $this->handler->execute('UPDATE ' . $this->options['table'] . ' SET data=\'' . serialize($queue) . '\' ,expire=0 WHERE `cachekey`=\'__info__\'');
                 xcache_set('__info__', $queue);
             }
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -129,9 +135,10 @@ class Db {
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public function rm($name) {
-        $name  =  $this->options['prefix'].addslashes($name);
-        return $this->handler->execute('DELETE FROM `'.$this->options['table'].'` WHERE `cachekey`=\''.$name.'\'');
+    public function rm($name)
+    {
+        $name = $this->options['prefix'] . addslashes($name);
+        return $this->handler->execute('DELETE FROM `' . $this->options['table'] . '` WHERE `cachekey`=\'' . $name . '\'');
     }
 
     /**
@@ -139,8 +146,9 @@ class Db {
      * @access public
      * @return boolen
      */
-    public function clear() {
-        return $this->handler->execute('TRUNCATE TABLE `'.$this->options['table'].'`');
+    public function clear()
+    {
+        return $this->handler->execute('TRUNCATE TABLE `' . $this->options['table'] . '`');
     }
 
 }

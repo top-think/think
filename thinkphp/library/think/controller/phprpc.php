@@ -11,24 +11,26 @@
 
 namespace think\controller;
 
-abstract class phprpc {
-   /**
+abstract class phprpc
+{
+    /**
      * PHPRpc控制器架构函数
      * @access public
      */
-    public function __construct() {
-    	//导入类库
-    	think\loader::import('vendor.phprpc.phprpc_server');
-    	//实例化phprpc
-    	$server = new \PHPRPC_Server();
+    public function __construct()
+    {
+        //导入类库
+        think\loader::import('vendor.phprpc.phprpc_server');
+        //实例化phprpc
+        $server = new \PHPRPC_Server();
         $server->add($this);
-        if(APP_DEBUG) {
+        if (APP_DEBUG) {
             $server->setDebugMode(true);
         }
         $server->setEnableGZIP(true);
-		$server->start();
-		//C('PHPRPC_COMMENT',$server->comment());
-		echo $server->comment();
+        $server->start();
+        //C('PHPRPC_COMMENT',$server->comment());
+        echo $server->comment();
     }
 
 }

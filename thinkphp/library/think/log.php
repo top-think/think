@@ -11,16 +11,18 @@
 
 namespace think;
 
-class Log {
+class Log
+{
     // 日志信息
-    static protected $log       =  [];
-    static protected $level     =  ['ERR','NOTIC','DEBUG','SQL','INFO'];
-    static protected $storage   =   null;
+    protected static $log     = [];
+    protected static $level   = ['ERR', 'NOTIC', 'DEBUG', 'SQL', 'INFO'];
+    protected static $storage = null;
 
     // 日志初始化
-    static public function init($config=[]){
-        $type   =   isset($config['type'])?$config['type']:'File';
-        $class  =   '\\think\\log\\driver\\'. strtolower($type);
+    public static function init($config = [])
+    {
+        $type  = isset($config['type']) ? $config['type'] : 'File';
+        $class = '\\think\\log\\driver\\' . strtolower($type);
         unset($config['type']);
         self::$storage = new $class($config);
     }
@@ -33,17 +35,19 @@ class Log {
      * @param boolean $record  是否强制记录
      * @return void
      */
-    static public function record($message,$level='INFO') {
-        self::$log[$level][] =   "{$level}: {$message}";
+    public static function record($message, $level = 'INFO')
+    {
+        self::$log[$level][] = "{$level}: {$message}";
     }
- 
+
     /**
      * 获取内存中的日志信息
      * @access public
      * @param string $level  日志级别
      * @return array
      */
-    static public function getLog($level=''){
+    public static function getLog($level = '')
+    {
         return $level ? self::$log[$level] : self::$log;
     }
 
@@ -54,22 +58,23 @@ class Log {
      * @param string $level 保存的日志级别
      * @return void
      */
-    static public function save($destination='',$level='') {
-        $log    =   self::getLog($level);
-        if(empty($log)) {
-            return ;
+    public static function save($destination = '', $level = '')
+    {
+        $log = self::getLog($level);
+        if (empty($log)) {
+            return;
         }
-        $message    =   '';
-        if($level) {
-            $message    .=   implode("\r\n",$log);
-            self::$log[$level]  =   [];
-        }else{
-            foreach($log as $info){
-                $message    .=   implode("\r\n",$info)."\r\n";
+        $message = '';
+        if ($level) {
+            $message .= implode("\r\n", $log);
+            self::$log[$level] = [];
+        } else {
+            foreach ($log as $info) {
+                $message .= implode("\r\n", $info) . "\r\n";
             }
             self::$log = [];
         }
-        self::$storage && self::$storage->write($message,$destination);
+        self::$storage && self::$storage->write($message, $destination);
     }
 
     /**
@@ -80,7 +85,8 @@ class Log {
      * @param string $destination  写入目标
      * @return void
      */
-    static public function write($log,$level='',$destination='') {
-        self::$storage && self::$storage->write("{$level}: {$log}",$destination);
+    public static function write($log, $level = '', $destination = '')
+    {
+        self::$storage && self::$storage->write("{$level}: {$log}", $destination);
     }
 }

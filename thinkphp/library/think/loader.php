@@ -11,51 +11,58 @@
 
 namespace think;
 
-class Loader {
+class Loader
+{
     // 类名映射
-    static protected $map = [];
+    protected static $map = [];
     // 命名空间
-    static protected $namespace = [];
+    protected static $namespace = [];
 
     // 自动加载
-    static public function autoload($class){
+    public static function autoload($class)
+    {
         // 检查是否定义classmap
-        if(isset(self::$map[$class])) {
+        if (isset(self::$map[$class])) {
             include self::$map[$class];
-        }else{ // 命名空间自动加载
-            $name     = strstr($class, '\\', true);
-            if(isset(self::$namespace[$name])){ 
+        } else {
+            // 命名空间自动加载
+            $name = strstr($class, '\\', true);
+            if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
-                $path   =   dirname(self::$namespace[$name]) . '/';
-            }elseif(in_array($name,['think','org','behavior','com']) || is_dir(LIB_PATH.$name)){ 
+                $path = dirname(self::$namespace[$name]) . '/';
+            } elseif (in_array($name, ['think', 'org', 'behavior', 'com']) || is_dir(LIB_PATH . $name)) {
                 // Library目录下面的命名空间自动定位
-                $path   =   LIB_PATH;
-            }else{ // 项目命名空间
-                $path   =   APP_PATH;
+                $path = LIB_PATH;
+            } else {
+                // 项目命名空间
+                $path = APP_PATH;
             }
-            $filename   =   $path . str_replace('\\', '/', str_replace('\\_','\\',strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
-            if(is_file($filename)) {
+            $filename = $path . str_replace('\\', '/', str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
+            if (is_file($filename)) {
                 include $filename;
             }
         }
     }
 
     // 注册classmap
-    static public function addMap($class, $map=''){
-        if(is_array($class)){
+    public static function addMap($class, $map = '')
+    {
+        if (is_array($class)) {
             self::$map = array_merge(self::$map, $class);
-        }else{
+        } else {
             self::$map[$class] = $map;
-        }        
+        }
     }
 
     // 注册命名空间
-    static public function addNamespace($namespace, $path){
+    public static function addNamespace($namespace, $path)
+    {
         self::$namespace[$namespace] = $path;
     }
 
     // 注册自动加载机制
-    static public function register($autoload = ''){
+    public static function register($autoload = '')
+    {
         spl_autoload_register($autoload ? $autoload : ['think\loader', 'autoload']);
     }
 
@@ -66,39 +73,43 @@ class Loader {
      * @param string $ext 导入的文件扩展名
      * @return boolean
      */
-    static public function import($class, $baseUrl = '', $ext= EXT ) {
+    public static function import($class, $baseUrl = '', $ext = EXT)
+    {
         static $_file = [];
-        $class = str_replace(['.', '#'], ['/', '.'], $class);
-        if (isset($_file[$class . $baseUrl]))
+        $class        = str_replace(['.', '#'], ['/', '.'], $class);
+        if (isset($_file[$class . $baseUrl])) {
             return true;
-        else
+        } else {
             $_file[$class . $baseUrl] = true;
+        }
+
         $class_strut = explode('/', $class);
         if (empty($baseUrl)) {
             if ('@' == $class_strut[0] || MODULE_NAME == $class_strut[0]) {
                 //加载当前项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = MODULE_PATH;
-            }elseif (in_array($class_strut[0], ['think','behavior','org', 'com'])) {
+            } elseif (in_array($class_strut[0], ['think', 'behavior', 'org', 'com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl = LIB_PATH;
-            }elseif(in_array($class_strut[0], ['vendor', 'traits'])){
+            } elseif (in_array($class_strut[0], ['vendor', 'traits'])) {
                 $baseUrl = THINK_PATH;
-            }else { // 加载其他项目应用类库
+            } else {
+                // 加载其他项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = APP_PATH . $class_strut[0] . '/';
             }
         }
-        if (substr($baseUrl, -1) != '/'){
+        if (substr($baseUrl, -1) != '/') {
             $baseUrl .= '/';
         }
         // 如果类存在 则导入类库文件
         $filename = $baseUrl . $class . $ext;
-        if(is_file($filename)) {
+        if (is_file($filename)) {
             include $filename;
             return true;
         }
-        return false; 
+        return false;
     }
 
     /**
@@ -107,15 +118,16 @@ class Loader {
      * @param array $options 模型参数
      * @return Model
      */
-    static public function table($name = '', $options=[]) {
+    public static function table($name = '', $options = [])
+    {
         static $_model = [];
-        if(strpos($name, ':')) {
+        if (strpos($name, ':')) {
             list($class, $name) = explode(':', $name);
-        }else{
+        } else {
             $class = 'think\model';
         }
-        $guid =  $name . '_' . $class;
-        if (!isset($_model[$guid])){
+        $guid = $name . '_' . $class;
+        if (!isset($_model[$guid])) {
             $_model[$guid] = new $class($name, $options);
         }
         return $_model[$guid];
@@ -127,23 +139,24 @@ class Loader {
      * @param string $layer 业务层名称
      * @return Object
      */
-    static public function model($name = '', $layer = MODEL_LAYER) {
-        if(empty($name)) {
+    public static function model($name = '', $layer = MODEL_LAYER)
+    {
+        if (empty($name)) {
             return new Model;
         }
         static $_model = [];
-        if(isset($_model[$name . $layer])) {
+        if (isset($_model[$name . $layer])) {
             return $_model[$name . $layer];
         }
-        if(strpos($name, '/')) {
+        if (strpos($name, '/')) {
             list($module, $name) = explode('/', $name);
-        }else{
+        } else {
             $module = MODULE_NAME;
         }
         $class = $module . '\\' . $layer . '\\' . self::parseName($name, 1);
-        if(class_exists($class)) {
+        if (class_exists($class)) {
             $model = new $class($name);
-        }else {
+        } else {
             Log::record('实例化不存在的类：' . $class, 'NOTIC');
             $model = new Model($name);
         }
@@ -158,26 +171,27 @@ class Loader {
      * @param string $empty 空控制器名称
      * @return Object|false
      */
-    static public function controller($name, $layer = '', $empty='') {
+    public static function controller($name, $layer = '', $empty = '')
+    {
         static $_instance = [];
-        $layer =    $layer ? : CONTROLLER_LAYER;
-        if(isset($_instance[$name.$layer])) {
+        $layer            = $layer ?: CONTROLLER_LAYER;
+        if (isset($_instance[$name . $layer])) {
             return $_instance[$name . $layer];
         }
-        if(strpos($name, '/')) {
-            list($module,$name) = explode('/', $name);
-        }else{
+        if (strpos($name, '/')) {
+            list($module, $name) = explode('/', $name);
+        } else {
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . self::parseName($name, 1) ;
-        if(class_exists($class)) {
-            $action = new $class;
+        $class = $module . '\\' . $layer . '\\' . self::parseName($name, 1);
+        if (class_exists($class)) {
+            $action                    = new $class;
             $_instance[$name . $layer] = $action;
             return $action;
-        }elseif($empty && class_exists($module . '\\' . $layer . '\\'.$empty)){
-            $class = $module . '\\' . $layer . '\\'.$empty;
+        } elseif ($empty && class_exists($module . '\\' . $layer . '\\' . $empty)) {
+            $class = $module . '\\' . $layer . '\\' . $empty;
             return new $class;
-        }else{
+        } else {
             return false;
         }
     }
@@ -188,28 +202,30 @@ class Loader {
      * @param boolean $lite 是否采用lite方式连接
      * @return object
      */
-    static public function db($config, $lite = false) {
+    public static function db($config, $lite = false)
+    {
         return Db::instance($config, $lite);
     }
 
     /**
      * 远程调用模块的操作方法 参数格式 [模块/控制器/]操作
      * @param string $url 调用地址
-     * @param string|array $vars 调用参数 支持字符串和数组 
+     * @param string|array $vars 调用参数 支持字符串和数组
      * @param string $layer 要调用的控制层名称
      * @return mixed
      */
-    static public function action($url, $vars = [], $layer = CONTROLLER_LAYER) {
+    public static function action($url, $vars = [], $layer = CONTROLLER_LAYER)
+    {
         $info   = pathinfo($url);
         $action = $info['basename'];
         $module = '.' != $info['dirname'] ? $info['dirname'] : CONTROLLER_NAME;
         $class  = self::controller($module, $layer);
-        if($class){
-            if(is_string($vars)) {
+        if ($class) {
+            if (is_string($vars)) {
                 parse_str($vars, $vars);
             }
-            return call_user_func_array([&$class, $action . Config::get('action_suffix')], $vars);
-        }else{
+            return call_user_func_array([ & $class, $action . Config::get('action_suffix')], $vars);
+        } else {
             return false;
         }
     }
@@ -220,19 +236,23 @@ class Loader {
      * @param string $method 类的静态方法名
      * @return object
      */
-    static public function instance($class, $method = '') {
+    public static function instance($class, $method = '')
+    {
         static $_instance = [];
-        $identify = $class . $method;
-        if(!isset($_instance[$identify])) {
-            if(class_exists($class)){
+        $identify         = $class . $method;
+        if (!isset($_instance[$identify])) {
+            if (class_exists($class)) {
                 $o = new $class();
-                if(!empty($method) && method_exists($o, $method))
-                    $_instance[$identify] = call_user_func_array([&$o, $method]);
-                else
+                if (!empty($method) && method_exists($o, $method)) {
+                    $_instance[$identify] = call_user_func_array([ & $o, $method]);
+                } else {
                     $_instance[$identify] = $o;
-            }
-            else
+                }
+
+            } else {
                 throw new Exception('_CLASS_NOT_EXIST_:' . $class);
+            }
+
         }
         return $_instance[$identify];
     }
@@ -244,9 +264,10 @@ class Loader {
      * @param integer $type 转换类型
      * @return string
      */
-    static public function parseName($name, $type=0) {
+    public static function parseName($name, $type = 0)
+    {
         if ($type) {
-            return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){ return strtoupper($match[1]);}, $name));
+            return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function ($match) {return strtoupper($match[1]);}, $name));
         } else {
             return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
         }

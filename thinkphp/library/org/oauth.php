@@ -17,14 +17,15 @@ namespace think;
 // Oauth::login(); // 跳转到授权登录页面 或者 Oauth::login($callbackUrl);
 // Oauth::call('api','params'); // 调用API接口
 // </code>
-class Oauth {
+class Oauth
+{
 
     /**
      * 操作句柄
      * @var object
      * @access protected
      */
-    static protected $handler  =    null;
+    protected static $handler = null;
 
     /**
      * 连接oauth
@@ -33,39 +34,46 @@ class Oauth {
      * @param array $options  配置数组
      * @return object
      */
-    static public function connect($type,$options=[]) {
-        $class = 'think\\oauth\\driver\\'.strtolower($type);
+    public static function connect($type, $options = [])
+    {
+        $class         = 'think\\oauth\\driver\\' . strtolower($type);
         self::$handler = new $class($options);
         return self::$handler;
     }
 
     // 跳转到授权登录页面
-    static public function login($callback=''){
+    public static function login($callback = '')
+    {
         self::$handler->login($callback);
     }
 
     // 获取access_token
-    static public function getAccessToken($code){
+    public static function getAccessToken($code)
+    {
         self::$handler->getAccessToken($code);
     }
-    
+
     // 设置保存过的token信息
-    static public function setToken($token){
+    public static function setToken($token)
+    {
         self::$handler->setToken($token);
     }
 
     // 获取oauth用户信息
-    static public function getOauthInfo(){
+    public static function getOauthInfo()
+    {
         return self::$handler->getOauthInfo();
     }
 
     // 获取openid信息
-    static public function getOpenId(){
+    public static function getOpenId()
+    {
         return self::$handler->getOpenId();
     }
 
     // 调用oauth接口API
-    static public function call($api,$param='',$method='GET'){
-        return self::$handler->call($api,$param,$method);
+    public static function call($api, $param = '', $method = 'GET')
+    {
+        return self::$handler->call($api, $param, $method);
     }
 }

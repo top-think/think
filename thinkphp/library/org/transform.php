@@ -12,32 +12,36 @@
 namespace think;
 
 // 内容解析类
-class Transform {
-    static private $handler = [];
+use think\Exception as Exception;
+class Transform
+{
+    private static $handler = [];
 
     /**
      * 初始化解析驱动
-     * @static 
+     * @static
      * @access private
      * @param  string $type 驱动类型
      */
-    static private function init($type){
-        if(!isset(self::$handler[$type])) {
-            $class = '\\think\\transform\\driver\\' . strtolower($type);
+    private static function init($type)
+    {
+        if (!isset(self::$handler[$type])) {
+            $class                = '\\think\\transform\\driver\\' . strtolower($type);
             self::$handler[$type] = new $class();
         }
     }
 
     /**
      * 编码内容
-     * @static 
+     * @static
      * @access public
      * @param  mixed  $content 要编码的数据
      * @param  string $type    数据类型
      * @param  array  $config  XML配置参数，JSON格式生成无此参数
      * @return string          编码后的数据
      */
-    static public function encode($content, $type, array $config = []){
+    public static function encode($content, $type, array $config = [])
+    {
         self::init($type);
         return self::$handler[$type]->encode($content, $config);
     }
@@ -50,7 +54,8 @@ class Transform {
      * @param  array   $config  XML配置参数，JSON格式解码无此参数
      * @return mixed            解码后的数据
      */
-    static public function decode($content, $type, $assoc = true, array $config = []){
+    public static function decode($content, $type, $assoc = true, array $config = [])
+    {
         self::init($type);
         return self::$handler[$type]->decode($content, $assoc, $config);
     }
@@ -58,8 +63,9 @@ class Transform {
     // 调用驱动类的方法
     // Transform::xmlEncode('abc')
     // Transform::jsonDecode('abc', true);
-    static public function __callStatic($method, $params){
-        if(empty($params[0])){
+    public static function __callStatic($method, $params)
+    {
+        if (empty($params[0])) {
             return '';
         }
 
@@ -68,11 +74,11 @@ class Transform {
 
         switch (strtolower(substr($method, -6))) {
             case 'encode':
-                $config = empty($params[1]) ? []   : $params[1];
+                $config = empty($params[1]) ? [] : $params[1];
                 return self::encode($params[0], $type, $config);
             case 'decode':
                 $assoc  = empty($params[1]) ? true : $params[1];
-                $config = empty($params[2]) ? []   : $params[2];
+                $config = empty($params[2]) ? [] : $params[2];
                 return self::decode($params[0], $type, $assoc, $config);
             default:
                 throw new Exception("call to undefined method {$method}");

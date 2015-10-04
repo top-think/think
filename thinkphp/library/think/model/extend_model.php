@@ -10,12 +10,14 @@
 // +----------------------------------------------------------------------
 
 namespace think\model;
-use traits\think\model\extend,
-    traits\think\model\query;
+
+use traits\think\model\extend;
+use traits\think\model\query;
 
 T('think/model/extend');
 T('think/model/query');
 
-class ExtendModel extends \think\model {
+class ExtendModel extends \think\model
+{
     use extend, query;
 }

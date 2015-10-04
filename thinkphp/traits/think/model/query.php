@@ -11,17 +11,19 @@
 
 namespace traits\think\model;
 
-trait Query {
+trait Query
+{
 
     /**
      * 启动事务
      * @access public
      * @return void
      */
-    public function startTrans() {
+    public function startTrans()
+    {
         $this->commit();
         $this->db->startTrans();
-        return ;
+        return;
     }
 
     /**
@@ -29,7 +31,8 @@ trait Query {
      * @access public
      * @return boolean
      */
-    public function commit() {
+    public function commit()
+    {
         return $this->db->commit();
     }
 
@@ -38,7 +41,8 @@ trait Query {
      * @access public
      * @return boolean
      */
-    public function rollback() {
+    public function rollback()
+    {
         return $this->db->rollback();
     }
 
@@ -49,15 +53,17 @@ trait Query {
      * @param boolean $parse  是否需要解析SQL
      * @return string
      */
-    public function parseSql($sql,$parse) {
+    public function parseSql($sql, $parse)
+    {
         // 分析表达式
-        if(true === $parse) {
-            $options    =   $this->_parseOptions();
-            $sql        =   $this->db->parseSql($sql,$options);
-        }elseif(is_array($parse)){ // SQL预处理
-            $sql        =   vsprintf($sql,$parse);
-        }else{
-            $sql        =   strtr($sql,['__TABLE__' => $this->getTableName(),'__PREFIX__' => $this->tablePrefix]);
+        if (true === $parse) {
+            $options = $this->_parseOptions();
+            $sql     = $this->db->parseSql($sql, $options);
+        } elseif (is_array($parse)) {
+            // SQL预处理
+            $sql = vsprintf($sql, $parse);
+        } else {
+            $sql = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
         }
         return $sql;
     }
@@ -69,16 +75,17 @@ trait Query {
      * @param array $sql  SQL批处理指令
      * @return boolean
      */
-    public function patchQuery($sql=[]) {
-        if(!is_array($sql)) {
+    public function patchQuery($sql = [])
+    {
+        if (!is_array($sql)) {
             return false;
         }
         // 自动启动事务支持
         $this->startTrans();
-        try{
-            foreach ($sql as $_sql){
-                $result   =  $this->execute($_sql);
-                if(false === $result) {
+        try {
+            foreach ($sql as $_sql) {
+                $result = $this->execute($_sql);
+                if (false === $result) {
                     // 发生错误自动回滚事务
                     $this->rollback();
                     return false;
@@ -90,5 +97,5 @@ trait Query {
             $this->rollback();
         }
         return true;
-    }    
+    }
 }

@@ -10,12 +10,14 @@
 // +----------------------------------------------------------------------
 
 namespace think\db\driver;
+
 use think\db\Driver;
 
 /**
  * Sqlite数据库驱动
  */
-class Sqlite extends Driver {
+class Sqlite extends Driver
+{
 
     /**
      * 解析pdo连接的dsn信息
@@ -23,8 +25,9 @@ class Sqlite extends Driver {
      * @param array $config 连接信息
      * @return string
      */
-    protected function parseDsn($config){
-        $dsn  =   'sqlite:'.$config['database'];
+    protected function parseDsn($config)
+    {
+        $dsn = 'sqlite:' . $config['database'];
         return $dsn;
     }
 
@@ -33,16 +36,17 @@ class Sqlite extends Driver {
      * @access public
      * @return array
      */
-    public function getFields($tableName) {
+    public function getFields($tableName)
+    {
         list($tableName) = explode(' ', $tableName);
-        $result =   $this->query('PRAGMA table_info( '.$tableName.' )');
-        $info   =   [];
-        if($result){
+        $result          = $this->query('PRAGMA table_info( ' . $tableName . ' )');
+        $info            = [];
+        if ($result) {
             foreach ($result as $key => $val) {
                 $info[$val['field']] = [
                     'name'    => $val['field'],
                     'type'    => $val['type'],
-                    'notnull' => (bool) ($val['null'] === ''), // not null is empty, null is yes
+                    'notnull' => (bool) ('' === $val['null']), // not null is empty, null is yes
                     'default' => $val['default'],
                     'primary' => (strtolower($val['dey']) == 'pri'),
                     'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
@@ -57,11 +61,12 @@ class Sqlite extends Driver {
      * @access public
      * @return array
      */
-    public function getTables($dbName='') {
-        $result =   $this->query("SELECT name FROM sqlite_master WHERE type='table' "
-             . "UNION ALL SELECT name FROM sqlite_temp_master "
-             . "WHERE type='table' ORDER BY name");
-        $info   =   [];
+    public function getTables($dbName = '')
+    {
+        $result = $this->query("SELECT name FROM sqlite_master WHERE type='table' "
+            . "UNION ALL SELECT name FROM sqlite_temp_master "
+            . "WHERE type='table' ORDER BY name");
+        $info = [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
         }
@@ -74,7 +79,8 @@ class Sqlite extends Driver {
      * @param string $str  SQL指令
      * @return string
      */
-    public function escapeString($str) {
+    public function escapeString($str)
+    {
         return str_ireplace("'", "''", $str);
     }
 
@@ -83,14 +89,15 @@ class Sqlite extends Driver {
      * @access public
      * @return string
      */
-    public function parseLimit($limit) {
-        $limitStr    = '';
-        if(!empty($limit)) {
-            $limit  =   explode(',',$limit);
-            if(count($limit)>1) {
-                $limitStr .= ' LIMIT '.$limit[1].' OFFSET '.$limit[0].' ';
-            }else{
-                $limitStr .= ' LIMIT '.$limit[0].' ';
+    public function parseLimit($limit)
+    {
+        $limitStr = '';
+        if (!empty($limit)) {
+            $limit = explode(',', $limit);
+            if (count($limit) > 1) {
+                $limitStr .= ' LIMIT ' . $limit[1] . ' OFFSET ' . $limit[0] . ' ';
+            } else {
+                $limitStr .= ' LIMIT ' . $limit[0] . ' ';
             }
         }
         return $limitStr;

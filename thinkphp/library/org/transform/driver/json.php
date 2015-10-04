@@ -11,12 +11,15 @@
 
 namespace think\transform\driver;
 
-class Json{
-	public function encode($data){
-		return json_encode($data, JSON_UNESCAPED_UNICODE);
-	}
+class Json
+{
+    public function encode($data)
+    {
+        return json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 
-	public function decode($data, $assoc = true){
-		return json_decode($data, $assoc);
-	}
+    public function decode($data, $assoc = true)
+    {
+        return json_decode($data, $assoc);
+    }
 }

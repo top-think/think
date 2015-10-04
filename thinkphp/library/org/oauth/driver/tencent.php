@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class Tencent extends Driver{
+class Tencent extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -38,7 +40,8 @@ class Tencent extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET', $multi = false){
+    public function call($api, $param = '', $method = 'GET', $multi = false)
+    {
         /* 腾讯微博调用公共参数 */
         $params = array(
             'oauth_consumer_key' => $this->AppKey,
@@ -47,7 +50,7 @@ class Tencent extends Driver{
             'clientip'           => get_client_ip(),
             'oauth_version'      => '2.a',
             'scope'              => 'all',
-            'format'             => 'json'
+            'format'             => 'json',
         );
 
         $data = $this->http($this->url($api), $this->param($params, $param), $method, $multi);
@@ -55,25 +58,31 @@ class Tencent extends Driver{
     }
 
     /**
-     * 解析access_token方法请求后的返回值 
+     * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         parse_str($result, $data);
         $data = array_merge($data, ['openid' => $_GET['openid'], 'openkey' => $_GET['openkey']]);
-        if($data['access_token'] && $data['expires_in'] && $data['openid'])
+        if ($data['access_token'] && $data['expires_in'] && $data['openid']) {
             return $data;
-        else
+        } else {
             throw new \Exception("获取腾讯微博 ACCESS_TOKEN 出错：{$result}");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
+        }
+
         return null;
     }
 
@@ -81,14 +90,15 @@ class Tencent extends Driver{
      * 获取当前登录的用户信息
      * @return array
      */
-    public function getOauthInfo(){
-        $data   = $this->call('users.getInfo');
+    public function getOauthInfo()
+    {
+        $data = $this->call('users.getInfo');
 
-        if(!isset($data['error_code'])){
-            $userInfo['type']   =   'RENREN';
-            $userInfo['name']   =   $data[0]['name'];
-            $userInfo['nick']   =   $data[0]['name'];
-            $userInfo['avatar'] =   $data[0]['headurl'];
+        if (!isset($data['error_code'])) {
+            $userInfo['type']   = 'RENREN';
+            $userInfo['name']   = $data[0]['name'];
+            $userInfo['nick']   = $data[0]['name'];
+            $userInfo['avatar'] = $data[0]['headurl'];
             return $userInfo;
         } else {
             E("获取人人网用户信息失败：{$data['error_msg']}");

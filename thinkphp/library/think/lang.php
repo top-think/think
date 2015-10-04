@@ -11,13 +11,15 @@
 
 namespace think;
 
-class Lang {
-    static private  $lang  =   [];         // 语言参数
-    static private  $range =   '_sys_';   // 作用域
+class Lang
+{
+    private static $lang  = []; // 语言参数
+    private static $range = '_sys_'; // 作用域
 
     // 设定语言参数的作用域
-    static public function range($range){
-        self::$range   =   $range;
+    public static function range($range)
+    {
+        self::$range = $range;
     }
 
     /**
@@ -27,12 +29,13 @@ class Lang {
      * @param string $range 作用域
      * @return mixed
      */
-    static public function set($name, $value=null,$range='') {
-        $range  =   $range? $range : self::$range;
+    public static function set($name, $value = null, $range = '')
+    {
+        $range = $range ? $range : self::$range;
         // 批量定义
-        if (is_array($name)){
+        if (is_array($name)) {
             return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($name));
-        }else{
+        } else {
             return self::$lang[$range][strtolower($name)] = $value;
         }
     }
@@ -43,10 +46,11 @@ class Lang {
      * @param string $range 作用域
      * @return mixed
      */
-    static public function get($name=null, $range='') {
-        $range  =   $range?$range:self::$range;
+    public static function get($name = null, $range = '')
+    {
+        $range = $range ? $range : self::$range;
         // 空参数返回所有定义
-        if (empty($name)){
+        if (empty($name)) {
             return self::$lang[$range];
         }
         $name = strtolower($name);

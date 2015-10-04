@@ -10,19 +10,23 @@
 // +----------------------------------------------------------------------
 
 namespace think\view\driver;
+
 use think\Template;
 
-class Think {
-    private $template   =   null;
-    public function __construct($config=[]){
-        $this->template =   new Template($config);
+class Think
+{
+    private $template = null;
+    public function __construct($config = [])
+    {
+        $this->template = new Template($config);
     }
 
-    public function fetch($template,$data=[],$cacheId=''){
-        if(is_file($template)) {
-            $this->template->display($template,$data,$cacheId);
-        }else{
-            $this->template->fetch($template,$data);
+    public function fetch($template, $data = [], $cacheId = '')
+    {
+        if (is_file($template)) {
+            $this->template->display($template, $data, $cacheId);
+        } else {
+            $this->template->fetch($template, $data);
         }
     }
 }

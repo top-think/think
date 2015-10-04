@@ -11,13 +11,14 @@
 
 namespace think;
 
-class Cache {
+class Cache
+{
     /**
      * 操作句柄
      * @var object
      * @access protected
      */
-    static protected $handler  =    null;
+    protected static $handler = null;
 
     /**
      * 连接缓存
@@ -25,14 +26,16 @@ class Cache {
      * @param array $options  配置数组
      * @return object
      */
-    static public function connect($options=[]) {
-        $type   =   !empty($options['type'])?$options['type']:'File';
-        $class  =   'think\\cache\\driver\\'.strtolower($type);
+    public static function connect($options = [])
+    {
+        $type          = !empty($options['type']) ? $options['type'] : 'File';
+        $class         = 'think\\cache\\driver\\' . strtolower($type);
         self::$handler = new $class($options);
         return self::$handler;
     }
 
-    static public function __callStatic($method, $params){
+    public static function __callStatic($method, $params)
+    {
         return call_user_func_array([self::$handler, $method], $params);
     }
 }

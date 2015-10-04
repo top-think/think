@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class Qq extends Driver{
+class Qq extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -44,56 +46,66 @@ class Qq extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){
+    public function call($api, $param = '', $method = 'GET')
+    {
         /* 腾讯QQ调用公共参数 */
         $params = array(
             'oauth_consumer_key' => $this->AppKey,
             'access_token'       => $this->token['access_token'],
             'openid'             => $this->openid(),
-            'format'             => 'json'
+            'format'             => 'json',
         );
-        
+
         $data = $this->http($this->url($api), $this->param($params, $param), $method);
         return json_decode($data, true);
     }
 
     /**
-     * 解析access_token方法请求后的返回值 
+     * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         parse_str($result, $data);
-        if($data['access_token'] && $data['expires_in']){
+        if ($data['access_token'] && $data['expires_in']) {
             $data['openid'] = $this->getOpenId();
             return $data;
-        } else
+        } else {
             throw new \Exception("获取腾讯QQ ACCESS_TOKEN 出错：{$result}");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
-        if($data['access_token']){
+        }
+
+        if ($data['access_token']) {
             $data = $this->http($this->url('oauth2.0/me'), array('access_token' => $data['access_token']));
             $data = json_decode(trim(substr($data, 9), " );\n"), true);
-            if(isset($data['openid']))
+            if (isset($data['openid'])) {
                 return $data['openid'];
+            }
+
         }
         return null;
     }
 
-    public function getOauthInfo(){
+    public function getOauthInfo()
+    {
         $data = $this->call('user/get_user_info');
 
-        if($data['ret'] == 0){
-            $userInfo['type']   =   'QQ';
-            $userInfo['name']   =   $data['nickname'];
-            $userInfo['nick']   =   $data['nickname'];
-            $userInfo['avatar'] =   $data['figureurl_2'];
+        if (0 == $data['ret']) {
+            $userInfo['type']   = 'QQ';
+            $userInfo['name']   = $data['nickname'];
+            $userInfo['nick']   = $data['nickname'];
+            $userInfo['avatar'] = $data['figureurl_2'];
             return $userInfo;
         } else {
             E("获取腾讯QQ用户信息失败：{$data['msg']}");

@@ -11,7 +11,8 @@
 
 namespace think;
 
-class Response {
+class Response
+{
 
     /**
      * 返回数据到客户端
@@ -20,33 +21,34 @@ class Response {
      * @param String $type 返回数据格式
      * @return void
      */
-    static public function returnData($data, $type='') {
-        $headers    =   [
-            'json'  =>  'application/json',
-            'xml'   =>  'text/xml',
-            'html'  =>  'text/html',
-            'jsonp' =>  'application/javascript',
-            'script'=>  'application/javascript',
-            'text'  =>  'text/plain',
+    public static function returnData($data, $type = '')
+    {
+        $headers = [
+            'json'   => 'application/json',
+            'xml'    => 'text/xml',
+            'html'   => 'text/html',
+            'jsonp'  => 'application/javascript',
+            'script' => 'application/javascript',
+            'text'   => 'text/plain',
         ];
-        $type       =   strtolower($type);
-        if(isset($headers[$type])){
-            header('Content-Type:'.$headers[$type].'; charset=utf-8');
+        $type = strtolower($type);
+        if (isset($headers[$type])) {
+            header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
 
-        switch ($type){
+        switch ($type) {
             case 'json':
                 // 返回JSON数据格式到客户端 包含状态信息
-                $data   =   json_encode($data, JSON_UNESCAPED_UNICODE);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
                 break;
             case 'xml':
                 // 返回xml格式数据
-                $data   =   \org\Transform::xmlEncode($data);
+                $data = \org\Transform::xmlEncode($data);
                 break;
             case 'jsonp':
                 // 返回JSON数据格式到客户端 包含状态信息
                 $handler = isset($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
-                $data   =   $handler . '(' . Transform::jsonEncode($data) . ');';
+                $data    = $handler . '(' . Transform::jsonEncode($data) . ');';
                 break;
         }
         exit($data);
@@ -57,16 +59,17 @@ class Response {
      * @access protected
      * @param mixed $data 要返回的数据
      * @param integer $code 返回的code
-     * @param mixed $msg 提示信息     
+     * @param mixed $msg 提示信息
      * @param string $type 返回数据格式
      * @return void
      */
-    static public function result($data,$code=0,$msg='',$type='') {
+    public static function result($data, $code = 0, $msg = '', $type = '')
+    {
         $result['code'] = $code;
         $result['msg']  = $msg;
         $result['time'] = NOW_TIME;
         $result['data'] = $data;
-        self::returnData($result,$type);
+        self::returnData($result, $type);
     }
 
     /**
@@ -76,13 +79,15 @@ class Response {
      * @param array $params 其它URL参数
      * @return void
      */
-    static public function redirect($url,$params=[]) {
-        $url    =   Url::build($url,$params);
+    public static function redirect($url, $params = [])
+    {
+        $url = Url::build($url, $params);
         header('Location: ' . $url);
     }
 
     // 发送Http状态信息
-    static public function sendHttpStatus($status) {
+    public static function sendHttpStatus($status)
+    {
         static $_status = [
             // Informational 1xx
             100 => 'Continue',
@@ -98,7 +103,7 @@ class Response {
             // Redirection 3xx
             300 => 'Multiple Choices',
             301 => 'Moved Permanently',
-            302 => 'Moved Temporarily ',  // 1.1
+            302 => 'Moved Temporarily ', // 1.1
             303 => 'See Other',
             304 => 'Not Modified',
             305 => 'Use Proxy',
@@ -130,12 +135,12 @@ class Response {
             503 => 'Service Unavailable',
             504 => 'Gateway Timeout',
             505 => 'HTTP Version Not Supported',
-            509 => 'Bandwidth Limit Exceeded'
+            509 => 'Bandwidth Limit Exceeded',
         ];
-        if(isset($_status[$code])) {
-            header('HTTP/1.1 '.$code.' '.$_status[$code]);
+        if (isset($_status[$code])) {
+            header('HTTP/1.1 ' . $code . ' ' . $_status[$code]);
             // 确保FastCGI模式下正常
-            header('Status:'.$code.' '.$_status[$code]);
+            header('Status:' . $code . ' ' . $_status[$code]);
         }
     }
 

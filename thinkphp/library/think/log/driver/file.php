@@ -11,17 +11,19 @@
 
 namespace think\log\driver;
 
-class File {
+class File
+{
 
-    protected $config  =   [
-        'time_format'   =>  ' c ',
-        'file_size'     =>  2097152,
-        'path'          =>  '',
+    protected $config = [
+        'time_format' => ' c ',
+        'file_size'   => 2097152,
+        'path'        => '',
     ];
 
     // 实例化并传入参数
-    public function __construct($config=[]){
-        $this->config   =   array_merge($this->config,$config);
+    public function __construct($config = [])
+    {
+        $this->config = array_merge($this->config, $config);
     }
 
     /**
@@ -31,13 +33,18 @@ class File {
      * @param string $destination  写入目标
      * @return void
      */
-    public function write($log,$destination='') {
+    public function write($log, $destination = '')
+    {
         $now = date($this->config['time_format']);
-        if(empty($destination))
-            $destination = $this->config['path'].date('y_m_d').'.log';
+        if (empty($destination)) {
+            $destination = $this->config['path'] . date('y_m_d') . '.log';
+        }
+
         //检测日志文件大小，超过配置大小则备份日志文件重新生成
-        if(is_file($destination) && floor($this->config['file_size']) <= filesize($destination) )
-              rename($destination,dirname($destination).'/'.time().'-'.basename($destination));
-        error_log("[{$now}] {$_SERVER['SERVER_ADDR']} {$_SERVER['REMOTE_ADDR']} {$_SERVER['REQUEST_URI']}\r\n{$log}\r\n", 3,$destination);
+        if (is_file($destination) && floor($this->config['file_size']) <= filesize($destination)) {
+            rename($destination, dirname($destination) . '/' . time() . '-' . basename($destination));
+        }
+
+        error_log("[{$now}] {$_SERVER['SERVER_ADDR']} {$_SERVER['REMOTE_ADDR']} {$_SERVER['REQUEST_URI']}\r\n{$log}\r\n", 3, $destination);
     }
 }

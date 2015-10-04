@@ -12,21 +12,24 @@
 namespace think;
 
 // 内容解析类
-class Parser {
+class Parser
+{
 
-    static private  $handler    =   [];
+    private static $handler = [];
 
     // 解析内容
-    static public function parse($content,$type){
-        if(!isset(self::$handler[$type])) {
-            $class  =   '\\think\\parser\\driver\\'.strtolower($type);
-            self::$handler[$type]  =   new $class();
+    public static function parse($content, $type)
+    {
+        if (!isset(self::$handler[$type])) {
+            $class                = '\\think\\parser\\driver\\' . strtolower($type);
+            self::$handler[$type] = new $class();
         }
         return self::$handler[$type]->parse($content);
     }
 
     // 调用驱动类的方法
-    static public function __callStatic($method, $params){
-        return self::parse($params[0],$method);
+    public static function __callStatic($method, $params)
+    {
+        return self::parse($params[0], $method);
     }
 }

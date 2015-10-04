@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class Google extends Driver{
+class Google extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -44,7 +46,8 @@ class Google extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){
+    public function call($api, $param = '', $method = 'GET')
+    {
         /*  Google 调用公共参数 */
         $params = [];
         $header = array("Authorization: Bearer {$this->token['access_token']}");
@@ -57,39 +60,45 @@ class Google extends Driver{
      * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         $data = json_decode($result, true);
-        if($data['access_token'] && $data['token_type'] && $data['expires_in']){
+        if ($data['access_token'] && $data['token_type'] && $data['expires_in']) {
             $data['openid'] = $this->getOpenId();
             return $data;
-        } else
+        } else {
             throw new \Exception("获取 Google ACCESS_TOKEN出错：未知错误");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
-        
+        }
+
         $data = $this->call('userinfo');
-        return !empty($data['id'])?$data['id']:null;
+        return !empty($data['id']) ? $data['id'] : null;
     }
-	
+
     /**
      * 获取当前登录的用户信息
      * @return array
      */
-    public function getOauthInfo(){
-        $data   = $this->call('userinfo');
+    public function getOauthInfo()
+    {
+        $data = $this->call('userinfo');
 
-        if(!empty($data['id'])){
-            $userInfo['type']   =   'GOOGLE';
-            $userInfo['name']   =   $data['name'];
-            $userInfo['nick']   =   $data['name'];
-            $userInfo['avatar'] =   $data['picture'];
+        if (!empty($data['id'])) {
+            $userInfo['type']   = 'GOOGLE';
+            $userInfo['name']   = $data['name'];
+            $userInfo['nick']   = $data['name'];
+            $userInfo['avatar'] = $data['picture'];
             return $userInfo;
         } else {
             E("获取Google用户信息失败：{$data}");

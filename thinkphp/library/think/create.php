@@ -11,20 +11,23 @@
 
 namespace think;
 
-class Create {
-    static public function build($build) {
+class Create
+{
+    public static function build($build)
+    {
         // 锁定
-        $lockfile    =  APP_PATH.'create.lock';
-        if(is_writable($lockfile)) {
-            return ;
+        $lockfile = APP_PATH . 'create.lock';
+        if (is_writable($lockfile)) {
+            return;
         } else {
-            if(!touch($lockfile)){
-                throw new Exception('目录 [ '.APP_PATH.' ] 不可写！');
+            if (!touch($lockfile)) {
+                throw new Exception('目录 [ ' . APP_PATH . ' ] 不可写！');
             }
         }
-        foreach ($build as $module=>$list){
-            if(!is_dir(APP_PATH.$module)) {// 创建模块目录
-                mkdir(APP_PATH.$module);
+        foreach ($build as $module => $list) {
+            if (!is_dir(APP_PATH . $module)) {
+                // 创建模块目录
+                mkdir(APP_PATH . $module);
             }
             // 创建配置文件和公共文件
             self::buildCommonFile($module);
@@ -32,36 +35,36 @@ class Create {
             self::buildHelloController($module);
 
             // 创建子目录和文件
-            foreach($list as $path=>$file){
-                if(is_int($path)) {
+            foreach ($list as $path => $file) {
+                if (is_int($path)) {
                     // 生成文件
-                    if(!is_file(APP_PATH.$module.'/'.$file)) {
-                        file_put_contents(APP_PATH.$module.'/'.$file,"<?php\n");
+                    if (!is_file(APP_PATH . $module . '/' . $file)) {
+                        file_put_contents(APP_PATH . $module . '/' . $file, "<?php\n");
                     }
-                }else{
+                } else {
                     // 创建模块的子目录
-                    if(!is_dir(APP_PATH.$module.'/'.$path)){
-                        mkdir(APP_PATH.$module.'/'.$path);
+                    if (!is_dir(APP_PATH . $module . '/' . $path)) {
+                        mkdir(APP_PATH . $module . '/' . $path);
                     }
-                    foreach($file as $val){
-                        $filename   =   APP_PATH.$module.'/'.$path.'/'.strtolower($val).EXT;
-                        switch($path) {
-	                        case 'controller':// 控制器
-	                            if(!is_file($filename)) {
-	                                file_put_contents($filename,"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
-	                            }
-	                            break;
-	                        case 'model': // 模型
-	                            if(!is_file($filename)) {
-	                                file_put_contents($filename,"<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
-	                            }
-	                            break;
-	                        case 'view': // 视图
-	                            break;
-	                        default:
-	                            if(!is_file($filename)) {
-	                                file_put_contents($filename,"<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
-	                            }
+                    foreach ($file as $val) {
+                        $filename = APP_PATH . $module . '/' . $path . '/' . strtolower($val) . EXT;
+                        switch ($path) {
+                            case 'controller': // 控制器
+                                if (!is_file($filename)) {
+                                    file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
+                                }
+                                break;
+                            case 'model': // 模型
+                                if (!is_file($filename)) {
+                                    file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
+                                }
+                                break;
+                            case 'view': // 视图
+                                break;
+                            default:
+                                if (!is_file($filename)) {
+                                    file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
+                                }
                         }
 
                     }
@@ -73,28 +76,30 @@ class Create {
     }
 
     // 创建欢迎页面
-    static public function buildHelloController($module) {
-        $filename   =   APP_PATH.$module.'/controller/index'.EXT;
-        if(!is_file($filename)) {
-            $content    =   file_get_contents(THINK_PATH.'tpl/default_index.tpl');
-            $content    =   str_replace('{$module}',$module,$content);
-            if(!is_dir(APP_PATH.$module.'/controller')) {
-                mkdir(APP_PATH.$module.'/controller');
+    public static function buildHelloController($module)
+    {
+        $filename = APP_PATH . $module . '/controller/index' . EXT;
+        if (!is_file($filename)) {
+            $content = file_get_contents(THINK_PATH . 'tpl/default_index.tpl');
+            $content = str_replace('{$module}', $module, $content);
+            if (!is_dir(APP_PATH . $module . '/controller')) {
+                mkdir(APP_PATH . $module . '/controller');
             }
-            file_put_contents($filename,$content);
+            file_put_contents($filename, $content);
         }
     }
 
     // 创建模块公共文件
-    static public function buildCommonFile($module){
-        if(!is_file(APP_PATH.$module.'/common.php')) {
-            file_put_contents(APP_PATH.$module.'/common.php',"<?php\n");
+    public static function buildCommonFile($module)
+    {
+        if (!is_file(APP_PATH . $module . '/common.php')) {
+            file_put_contents(APP_PATH . $module . '/common.php', "<?php\n");
         }
-        if(!is_file(APP_PATH.$module.'/config.php')) {
-            file_put_contents(APP_PATH.$module.'/config.php',"<?php\nreturn [\n];");
+        if (!is_file(APP_PATH . $module . '/config.php')) {
+            file_put_contents(APP_PATH . $module . '/config.php', "<?php\nreturn [\n];");
         }
-        if(!is_file(APP_PATH.$module.'/alias.php')) {
-            file_put_contents(APP_PATH.$module.'/alias.php',"<?php\nreturn [\n];");
+        if (!is_file(APP_PATH . $module . '/alias.php')) {
+            file_put_contents(APP_PATH . $module . '/alias.php', "<?php\nreturn [\n];");
         }
     }
 }

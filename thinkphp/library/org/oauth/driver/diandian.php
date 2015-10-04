@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class Diandian extends Driver{
+class Diandian extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -38,12 +40,13 @@ class Diandian extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){		
+    public function call($api, $param = '', $method = 'GET')
+    {
         /* 点点网调用公共参数 */
         $params = array(
             'access_token' => $this->token['access_token'],
         );
-        
+
         $data = $this->http($this->url($api, '.json'), $this->param($params, $param), $method);
         return json_decode($data, true);
     }
@@ -52,23 +55,29 @@ class Diandian extends Driver{
      * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         $data = json_decode($result, true);
-        if($data['access_token'] && $data['expires_in'] && $data['token_type'] && $data['uid']){
+        if ($data['access_token'] && $data['expires_in'] && $data['token_type'] && $data['uid']) {
             $data['openid'] = $data['uid'];
             unset($data['uid']);
             return $data;
-        } else
+        } else {
             throw new \Exception("获取点点网ACCESS_TOKEN出错：{$data['error']}");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
+        }
+
         return null;
     }
 
@@ -76,14 +85,15 @@ class Diandian extends Driver{
      * 获取当前登录的用户信息
      * @return array
      */
-    public function getOauthInfo(){
-        $data      = $this->call('user/info');
+    public function getOauthInfo()
+    {
+        $data = $this->call('user/info');
 
-        if(!empty($data['meta']['status']) && $data['meta']['status'] == 200){
-            $userInfo['type']   =   'DIANDIAN';
-            $userInfo['name']   =   $data['response']['name'];
-            $userInfo['nick']   =   $data['response']['name'];
-            $userInfo['avatar'] =   "https://api.diandian.com/v1/blog/{$data['response']['blogs'][0]['blogUuid']}/avatar/144";
+        if (!empty($data['meta']['status']) && 200 == $data['meta']['status']) {
+            $userInfo['type']   = 'DIANDIAN';
+            $userInfo['name']   = $data['response']['name'];
+            $userInfo['nick']   = $data['response']['name'];
+            $userInfo['avatar'] = "https://api.diandian.com/v1/blog/{$data['response']['blogs'][0]['blogUuid']}/avatar/144";
             return $userInfo;
         } else {
             E("获取点点用户信息失败：{$data}");

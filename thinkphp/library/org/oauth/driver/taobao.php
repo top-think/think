@@ -10,9 +10,11 @@
 // +----------------------------------------------------------------------
 
 namespace think\oauth\driver;
+
 use think\oauth\Driver;
 
-class Taobao extends Driver{
+class Taobao extends Driver
+{
     /**
      * 获取requestCode的api接口
      * @var string
@@ -38,7 +40,8 @@ class Taobao extends Driver{
      * @param  string $method HTTP请求方法 默认为GET
      * @return json
      */
-    public function call($api, $param = '', $method = 'GET'){		
+    public function call($api, $param = '', $method = 'GET')
+    {
         /* 淘宝网调用公共参数 */
         $params = array(
             'method'       => $api,
@@ -54,23 +57,29 @@ class Taobao extends Driver{
      * 解析access_token方法请求后的返回值
      * @param string $result 获取access_token的方法的返回值
      */
-    protected function parseToken($result){
+    protected function parseToken($result)
+    {
         $data = json_decode($result, true);
-        if($data['access_token'] && $data['expires_in'] && $data['taobao_user_id']){
+        if ($data['access_token'] && $data['expires_in'] && $data['taobao_user_id']) {
             $data['openid'] = $data['taobao_user_id'];
             unset($data['taobao_user_id']);
             return $data;
-        } else
+        } else {
             throw new \Exception("获取淘宝网ACCESS_TOKEN出错：{$data['error']}");
+        }
+
     }
 
     /**
      * 获取当前授权应用的openid
      * @return string
      */
-    public function getOpenId(){
-        if(!empty($this->token['openid']))
+    public function getOpenId()
+    {
+        if (!empty($this->token['openid'])) {
             return $this->token['openid'];
+        }
+
         return null;
     }
 
@@ -78,20 +87,21 @@ class Taobao extends Driver{
      * 获取当前登录的用户信息
      * @return array
      */
-    public function getOauthInfo(){
-		$fields = 'user_id,nick,sex,buyer_credit,avatar,has_shop,vip_info';
-		$data   = $this->call('taobao.user.buyer.get', "fields={$fields}");
-		
-		if(!empty($data['user_buyer_get_response']['user'])){
-			$user = $data['user_buyer_get_response']['user'];
-			$userInfo['type']   =   'TAOBAO';
-			$userInfo['name']   =   $user['user_id'];
-			$userInfo['nick']   =   $user['nick'];
-			$userInfo['avatar'] =   $user['avatar'];
-			return $userInfo;
-		} else {
-			E("获取淘宝网用户信息失败：{$data['error_response']['msg']}");
-		}
+    public function getOauthInfo()
+    {
+        $fields = 'user_id,nick,sex,buyer_credit,avatar,has_shop,vip_info';
+        $data   = $this->call('taobao.user.buyer.get', "fields={$fields}");
+
+        if (!empty($data['user_buyer_get_response']['user'])) {
+            $user               = $data['user_buyer_get_response']['user'];
+            $userInfo['type']   = 'TAOBAO';
+            $userInfo['name']   = $user['user_id'];
+            $userInfo['nick']   = $user['nick'];
+            $userInfo['avatar'] = $user['avatar'];
+            return $userInfo;
+        } else {
+            E("获取淘宝网用户信息失败：{$data['error_response']['msg']}");
+        }
     }
 
 }

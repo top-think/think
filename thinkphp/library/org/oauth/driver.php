@@ -11,7 +11,8 @@
 
 namespace think\oauth;
 
-abstract class Driver {
+abstract class Driver
+{
 
     /**
      * oauth版本
@@ -39,7 +40,7 @@ abstract class Driver {
 
     /**
      * grant_type 目前只能为 authorization_code
-     * @var string 
+     * @var string
      */
     protected $grantType = 'authorization_code';
 
@@ -75,18 +76,20 @@ abstract class Driver {
 
     /**
      * 构造方法，配置应用信息
-     * @param array $config 
+     * @param array $config
      */
-    public function __construct($config = []){
+    public function __construct($config = [])
+    {
         $this->appKey    = $config['app_key'];
         $this->appSecret = $config['app_secret'];
         $this->authorize = isset($config['authorize']) ? $config['authorize'] : '';
-        $this->callback  = isset($config['callback'])  ? $config['callback']  : '';
+        $this->callback  = isset($config['callback']) ? $config['callback'] : '';
     }
 
     // 跳转到授权登录页面
-    public function login($callback = ''){
-        if($callback) {
+    public function login($callback = '')
+    {
+        if ($callback) {
             $this->callback = $callback;
         }
         //跳转到授权页面
@@ -95,20 +98,21 @@ abstract class Driver {
     }
 
     /**
-     * 请求code 
+     * 请求code
      */
-    public function getRequestCodeURL(){
+    public function getRequestCodeURL()
+    {
         //Oauth 标准参数
         $params = array(
             'client_id'     => $this->appKey,
             'redirect_uri'  => $this->callback,
             'response_type' => $this->responseType,
         );
-        
+
         //获取额外参数
-        if($this->authorize){
+        if ($this->authorize) {
             parse_str($this->authorize, $_param);
-            if(is_array($_param)){
+            if (is_array($_param)) {
                 $params = array_merge($params, $_param);
             } else {
                 throw new \Exception('AUTHORIZE配置不正确！');
@@ -116,18 +120,19 @@ abstract class Driver {
         }
         return $this->getRequestCodeURL . '?' . http_build_query($params);
     }
-	
+
     /**
      * 获取access_token
      * @param string $code 授权登录成功后得到的code信息
      */
-    public function getAccessToken($code){
+    public function getAccessToken($code)
+    {
         $params = array(
-            'client_id'     =>  $this->appKey,
-            'client_secret' =>  $this->appSecret,
-            'grant_type'    =>  $this->grantType,
-            'redirect_uri'  =>  $this->callback,
-            'code'          =>  $code,
+            'client_id'     => $this->appKey,
+            'client_secret' => $this->appSecret,
+            'grant_type'    => $this->grantType,
+            'redirect_uri'  => $this->callback,
+            'code'          => $code,
         );
         // 获取token信息
         $data = $this->http($this->getAccessTokenURL, $params, 'POST');
@@ -140,8 +145,9 @@ abstract class Driver {
      * 设置access_token
      * @param string $token
      */
-    public function setToken($token){
-        $this->token    =   $token;
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 
     /**
@@ -150,9 +156,12 @@ abstract class Driver {
      * @param array/string $param 额外参数
      * @return array:
      */
-    protected function param($params, $param){
-        if(is_string($param))
+    protected function param($params, $param)
+    {
+        if (is_string($param)) {
             parse_str($param, $param);
+        }
+
         return array_merge($params, $param);
     }
 
@@ -162,7 +171,8 @@ abstract class Driver {
      * @param  string $fix api后缀
      * @return string      请求的完整URL
      */
-    protected function url($api, $fix = ''){
+    protected function url($api, $fix = '')
+    {
         return $this->apiBase . $api . $fix;
     }
 
@@ -173,39 +183,43 @@ abstract class Driver {
      * @param  string $method 请求方法GET/POST
      * @return array  $data   响应数据
      */
-    protected function http($url, $params, $method = 'GET', $header = [], $multi = false){
+    protected function http($url, $params, $method = 'GET', $header = [], $multi = false)
+    {
         $opts = array(
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_HTTPHEADER     => $header
+            CURLOPT_HTTPHEADER     => $header,
         );
 
         /* 根据请求类型设置特定参数 */
-        switch(strtoupper($method)){
+        switch (strtoupper($method)) {
             case 'GET':
                 $opts[CURLOPT_URL] = $url . '?' . http_build_query($params);
                 break;
             case 'POST':
                 //判断是否传输文件
-                $params = $multi ? $params : http_build_query($params);
-                $opts[CURLOPT_URL] = $url;
-                $opts[CURLOPT_POST] = 1;
+                $params                   = $multi ? $params : http_build_query($params);
+                $opts[CURLOPT_URL]        = $url;
+                $opts[CURLOPT_POST]       = 1;
                 $opts[CURLOPT_POSTFIELDS] = $params;
                 break;
             default:
                 throw new \Exception('不支持的请求方式！');
         }
-        
+
         /* 初始化并执行curl请求 */
         $ch = curl_init();
         curl_setopt_array($ch, $opts);
         $data  = curl_exec($ch);
         $error = curl_error($ch);
         curl_close($ch);
-        if($error) throw new \Exception('请求发生错误：' . $error);
-        return  $data;
+        if ($error) {
+            throw new \Exception('请求发生错误：' . $error);
+        }
+
+        return $data;
     }
 
     /**
@@ -224,7 +238,7 @@ abstract class Driver {
      * 抽象方法，在SNSSDK中实现
      * 获取当前授权用户的SNS标识
      */
-    abstract public function getOpenId();	
+    abstract public function getOpenId();
 
     /**
      * 抽象方法
