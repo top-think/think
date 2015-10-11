@@ -15,6 +15,8 @@ define('EXISTS_VALIDATE', 0);
 define('MUST_VALIDATE', 1);
 define('VALUE_VALIDATE', 2);
 
+use think\Lang;
+
 trait Auto
 {
 
@@ -38,7 +40,7 @@ trait Auto
         }
         // 验证数据
         if (empty($data) || !is_array($data)) {
-            $this->error = \think\Lang::get('_DATA_TYPE_INVALID_');
+            $this->error = Lang::get('_DATA_TYPE_INVALID_');
             return false;
         }
 
@@ -209,7 +211,7 @@ trait Auto
                 if (empty($val[5]) || self::MODEL_BOTH == $val[5] || $val[5] == $type) {
                     if (0 == strpos($val[2], '{%') && strpos($val[2], '}')) {
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
-                        $val[2] = \think\Lang::get(substr($val[2], 2, -1));
+                        $val[2] = Lang::get(substr($val[2], 2, -1));
                     }
                     $val[3] = isset($val[3]) ? $val[3] : EXISTS_VALIDATE;
                     $val[4] = isset($val[4]) ? $val[4] : 'regex';
@@ -351,7 +353,7 @@ trait Auto
                     list($min, $max) = explode(',', $rule);
                     return $length >= $min && $length <= $max;
                 } else {
-// 指定长度
+                    // 指定长度
                     return $length == $rule;
                 }
             case 'expire':
@@ -367,6 +369,9 @@ trait Auto
                 return in_array(get_client_ip(), explode(',', $rule));
             case 'ip_deny': // IP 操作禁止验证
                 return !in_array(get_client_ip(), explode(',', $rule));
+            case 'filter': // 使用filter_var验证
+                $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule));
+                return false === $result ? false : true;
             case 'regex':
             default: // 默认使用正则验证 可以使用验证类中定义的验证名称
                 // 检查附加规则
