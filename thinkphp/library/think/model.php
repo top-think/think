@@ -18,7 +18,7 @@ class Model
     const MODEL_UPDATE = 2; //  更新
     const MODEL_BOTH   = 3; //  全部
     // 当前数据库操作对象
-    protected $db   = null;
+    protected $db = null;
     // 数据库对象池
     private $_db = [];
     // 主键名称
@@ -546,7 +546,7 @@ class Model
         $options['model'] = $this->name;
 
         if (isset($options['table'])) {
-// 动态指定表名
+            // 动态指定表名
             $fields = $this->db->getFields($options['table']);
             $fields = $fields ? array_keys($fields) : false;
         } else {
@@ -596,6 +596,8 @@ class Model
                 $data[$key] = floatval($data[$key]);
             } elseif (false !== strpos($fieldType, 'bool')) {
                 $data[$key] = (bool) $data[$key];
+            } elseif (false !== strpos($fieldType, 'json') && is_array($data[$key])) {
+                $data[$key] = json_encode($data[$key]);
             }
         }
     }
@@ -653,7 +655,7 @@ class Model
             return false;
         }
         if (empty($resultSet)) {
-// 查询结果为空
+            // 查询结果为空
             return null;
         }
         if (is_string($resultSet)) {
@@ -917,16 +919,11 @@ class Model
      * SQL查询
      * @access public
      * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
      * @return mixed
      */
-    public function query($sql, $parse = false)
+    public function query($sql)
     {
-        if (!is_bool($parse) && !is_array($parse)) {
-            $parse = func_get_args();
-            array_shift($parse);
-        }
-        $sql = $this->parseSql($sql, $parse);
+        $sql = $this->parseSql($sql);
         return $this->db->query($sql);
     }
 
@@ -934,16 +931,11 @@ class Model
      * 执行SQL语句
      * @access public
      * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
      * @return false | integer
      */
-    public function execute($sql, $parse = false)
+    public function execute($sql)
     {
-        if (!is_bool($parse) && !is_array($parse)) {
-            $parse = func_get_args();
-            array_shift($parse);
-        }
-        $sql = $this->parseSql($sql, $parse);
+        $sql = $this->parseSql($sql);
         return $this->db->execute($sql);
     }
 
@@ -951,24 +943,14 @@ class Model
      * 解析SQL语句
      * @access public
      * @param string $sql  SQL指令
-     * @param boolean $parse  是否需要解析SQL
      * @return string
      */
-    protected function parseSql($sql, $parse)
+    protected function parseSql($sql)
     {
         // 分析表达式
-        if (true === $parse) {
-            $options = $this->_parseOptions();
-            $sql     = $this->db->parseSql($sql, $options);
-        } elseif (is_array($parse)) {
-            // SQL预处理
-            $parse = array_map([$this->db, 'escapeString'], $parse);
-            $sql   = vsprintf($sql, $parse);
-        } else {
-            $sql    = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
-            $prefix = $this->tablePrefix;
-            $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $sql);
-        }
+        $sql    = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
+        $prefix = $this->tablePrefix;
+        $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $sql);
         $this->db->setModel($this->name);
         return $sql;
     }
@@ -1088,11 +1070,11 @@ class Model
     public function field($field, $except = false)
     {
         if (true === $field) {
-// 获取全部字段
+            // 获取全部字段
             $fields = $this->getDbFields();
             $field  = $fields ?: '*';
         } elseif ($except) {
-// 字段排除
+            // 字段排除
             if (is_string($field)) {
                 $field = explode(',', $field);
             }
@@ -1247,14 +1229,23 @@ class Model
     }
 
     /**
-     * 指定排序
+     * 指定排序 order('id','desc') 或者 order(['id'=>'desc','create_time'=>'desc'])
      * @access public
+     * @param string|array $field 排序字段
      * @param string $order 排序
      * @return Model
      */
-    public function order($order)
+    public function order($field, $order = '')
     {
-        $this->options['order'] = $order;
+        if (is_array($field)) {
+            $this->options['order'] = $field;
+        } else {
+            if (!empty($order)) {
+                $this->options['order'][$field] = $order;
+            } else {
+                $this->options['order'][] = $field;
+            }
+        }
         return $this;
     }
 

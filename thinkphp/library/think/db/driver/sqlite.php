@@ -74,17 +74,6 @@ class Sqlite extends Driver
     }
 
     /**
-     * SQL指令安全过滤
-     * @access public
-     * @param string $str  SQL指令
-     * @return string
-     */
-    public function escapeString($str)
-    {
-        return str_ireplace("'", "''", $str);
-    }
-
-    /**
      * limit
      * @access public
      * @return string

@@ -133,17 +133,6 @@ class Oracle extends Driver
     }
 
     /**
-     * SQL指令安全过滤
-     * @access public
-     * @param string $str  SQL指令
-     * @return string
-     */
-    public function escapeString($str)
-    {
-        return str_ireplace("'", "''", $str);
-    }
-
-    /**
      * limit
      * @access public
      * @return string
@@ -175,5 +164,22 @@ class Oracle extends Driver
         }
 
         return ' FOR UPDATE NOWAIT ';
+    }
+
+    /**
+     * 字段和表名处理
+     * @access protected
+     * @param string $key
+     * @return string
+     */
+    protected function parseKey(&$key)
+    {
+        $key = trim($key);
+        if (strpos($key, '$.') && false === strpos($key, '(')) {
+            // JSON字段支持
+            list($field, $name) = explode($key, '$.');
+            $key                = $field . '."' . $name . '"';
+        }
+        return $key;
     }
 }
