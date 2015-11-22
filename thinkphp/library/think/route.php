@@ -65,7 +65,7 @@ class Route
                 }
             } else {
                 if (0 === strpos($rule, '[')) {
-                    self::$rules[$type][substr(substr($rule, -1), 1)] = ['routes' => $route, 'option' => $option];
+                    self::$rules[$type][substr($rule, 1, -1)] = ['routes' => $route, 'option' => $option];
                 } else {
                     self::$rules[$type][$rule] = ['route' => $route, 'option' => $option];
                 }
@@ -75,7 +75,7 @@ class Route
     }
 
     // 路由分组
-    public static function group($name, $routes = [], $type='*',$option = [])
+    public static function group($name, $routes = [], $type = '*', $option = [])
     {
         self::$rules[$type][$name] = ['routes' => $routes, 'option' => $option];
     }
@@ -201,7 +201,6 @@ class Route
         // 路由规则检测
         if (!empty($rules)) {
             foreach ($rules as $rule => $val) {
-
                 $option = $val['option'];
                 // 请求类型检测
                 if (isset($option['method']) && REQUEST_METHOD != strtoupper($option['method'])) {
@@ -229,6 +228,9 @@ class Route
                     }
                     // 匹配到路由分组
                     foreach ($val['routes'] as $key => $route) {
+                        if (is_numeric($key)) {
+                            $key = array_shift($route);
+                        }
                         $regx1 = substr($regx, strlen($rule) + 1);
                         if (0 === strpos($key, '/') && preg_match($key, $regx1, $matches)) {
                             // 检查正则路由
@@ -242,6 +244,9 @@ class Route
                         }
                     }
                 } else {
+                    if (is_numeric($rule)) {
+                        $rule = array_shift($val);
+                    }
                     // 单项路由
                     $route = $val['route'];
                     if (0 === strpos($rule, '/') && preg_match($rule, $regx, $matches)) {
