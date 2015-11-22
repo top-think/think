@@ -48,7 +48,7 @@ class Route
     }
 
     // 注册路由规则
-    public static function register($rule, $route = '', $type = 'GET', $option = [])
+    public static function register($rule, $route = '', $type = '*', $option = [])
     {
         if (strpos($type, '|')) {
             foreach (explode('|', $type) as $val) {
@@ -57,12 +57,27 @@ class Route
         } else {
             if (is_array($rule)) {
                 foreach ($rule as $key => $val) {
-                    self::$rules[$type][$key] = ['route' => $val, 'option' => $option];
+                    if (0 === strpos($key, '[')) {
+                        self::$rules[$type][substr($key, 1, -1)] = ['routes' => $val, 'option' => $option];
+                    } else {
+                        self::$rules[$type][$key] = ['route' => $val, 'option' => $option];
+                    }
                 }
             } else {
-                self::$rules[$type][$rule] = ['route' => $route, 'option' => $option];
+                if (0 === strpos($rule, '[')) {
+                    self::$rules[$type][substr(substr($rule, -1), 1)] = ['routes' => $route, 'option' => $option];
+                } else {
+                    self::$rules[$type][$rule] = ['route' => $route, 'option' => $option];
+                }
+
             }
         }
+    }
+
+    // 路由分组
+    public static function group($name, $routes = [], $type='*',$option = [])
+    {
+        self::$rules[$type][$name] = ['routes' => $routes, 'option' => $option];
     }
 
     // 注册任意请求的路由规则
@@ -176,6 +191,7 @@ class Route
             // URL映射
             return self::parseUrl(self::$map[$regx]);
         }
+
         // 获取当前请求类型的路由规则
         $rules = self::$rules[REQUEST_METHOD];
         if (!empty(self::$rules['*'])) {
@@ -185,9 +201,12 @@ class Route
         // 路由规则检测
         if (!empty($rules)) {
             foreach ($rules as $rule => $val) {
-                $route  = $val['route'];
-                $option = $val['option'];
 
+                $option = $val['option'];
+                // 请求类型检测
+                if (isset($option['method']) && REQUEST_METHOD != strtoupper($option['method'])) {
+                    continue;
+                }
                 // 伪静态后缀检测
                 if (isset($option['ext']) && __EXT__ != $option['ext']) {
                     continue;
@@ -202,50 +221,87 @@ class Route
                         continue;
                     }
                 }
-                if (0 === strpos($rule, '/') && preg_match($rule, $regx, $matches)) {
-                    // 正则路由
-                    if (!empty($option['file'])) {
-                        // 调度到某个文件中执行
-                        include $route;
-                        exit;
+
+                if (!empty($val['routes'])) {
+                    // 分组路由
+                    if (0 !== strpos($regx, $rule)) {
+                        continue;
                     }
-                    if ($route instanceof \Closure) {
-                        // 执行闭包并中止
-                        self::invokeRegx($route, $matches);
-                        exit;
-                    }
-                    return self::parseRegex($matches, $route, $regx);
-                } else {
-                    // 规则路由
-                    $len1 = substr_count($regx, '/');
-                    $len2 = substr_count($rule, '/');
-                    if ($len1 >= $len2) {
-                        if ('$' == substr($rule, -1, 1)) {
-                            // 完整匹配
-                            if ($len1 != $len2) {
-                                continue;
-                            } else {
-                                $rule = substr($rule, 0, -1);
+                    // 匹配到路由分组
+                    foreach ($val['routes'] as $key => $route) {
+                        $regx1 = substr($regx, strlen($rule) + 1);
+                        if (0 === strpos($key, '/') && preg_match($key, $regx1, $matches)) {
+                            // 检查正则路由
+                            return self::checkRegx($route, $regx1, $matches);
+                        } else {
+                            // 检查规则路由
+                            $result = self::checkRule($key, $route, $regx1);
+                            if (false !== $result) {
+                                return $result;
                             }
                         }
-                        if (false !== $var = self::match($regx, $rule)) {
-                            if (!empty($option['file'])) {
-                                // 调度到某个文件中执行
-                                include $route;
-                                exit;
-                            }
-                            if ($route instanceof \Closure) {
-                                // 执行闭包并中止
-                                self::invokeRule($route, $var);
-                                exit;
-                            }
-                            return self::parseRule($rule, $route, $regx);
+                    }
+                } else {
+                    // 单项路由
+                    $route = $val['route'];
+                    if (0 === strpos($rule, '/') && preg_match($rule, $regx, $matches)) {
+                        return self::checkRegx($route, $regx, $matches);
+                    } else {
+                        // 规则路由
+                        $result = self::checkRule($rule, $route, $regx);
+                        if (false !== $result) {
+                            return $result;
                         }
                     }
                 }
+
             }
         }
         return self::parseUrl($regx);
+    }
+
+    /**
+     * 检查正则路由
+     */
+    private function checkRegx($route, $regx, $matches)
+    {
+        // 正则路由
+        if ($route instanceof \Closure) {
+            // 执行闭包
+            $result = self::invokeRegx($route, $matches);
+            // 如果返回布尔值 则继续执行
+            return is_bool($result) ? $result : exit;
+        }
+        return self::parseRegex($matches, $route, $regx);
+    }
+
+    /**
+     * 检查规则路由
+     */
+    private function checkRule($rule, $route, $regx)
+    {
+        $len1 = substr_count($regx, '/');
+        $len2 = substr_count($rule, '/');
+        if ($len1 >= $len2) {
+            if ('$' == substr($rule, -1, 1)) {
+                // 完整匹配
+                if ($len1 != $len2) {
+                    return false;
+                } else {
+                    $rule = substr($rule, 0, -1);
+                }
+            }
+            if (false !== $match = self::match($regx, $rule)) {
+                if ($route instanceof \Closure) {
+                    // 执行闭包
+                    $result = self::invokeRule($route, $match);
+                    // 如果返回布尔值 则继续执行
+                    return is_bool($result) ? $result : exit;
+                }
+                return self::parseRule($rule, $route, $regx);
+            }
+        }
+        return false;
     }
 
     /**

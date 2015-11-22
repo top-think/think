@@ -253,9 +253,13 @@ class App
                 if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
                     throw new Exception('URL_SUFFIX_DENY');
                 }
-                $paths = explode($config['pathinfo_depr'], __INFO__, 2);
+                // 路由检测
+                Route::register($config['routes']);
+                Route::check($_SERVER['PATH_INFO'], $config['pathinfo_depr']);
+
                 // 获取URL中的模块名
                 if ($config['require_module'] && !isset($_GET[VAR_MODULE])) {
+                    $paths = explode($config['pathinfo_depr'], __INFO__, 2);
                     $_GET[VAR_MODULE]     = array_shift($paths);
                     $_SERVER['PATH_INFO'] = implode('/', $paths);
                 }
@@ -278,8 +282,6 @@ class App
         } else {
             throw new Exception('module not exists :' . MODULE_NAME);
         }
-        // 路由检测和控制器、操作解析
-        Route::check($_SERVER['PATH_INFO'], $config['pathinfo_depr']);
 
         // 获取控制器名
         define('CONTROLLER_NAME', strip_tags(strtolower(isset($_GET[VAR_CONTROLLER]) ? $_GET[VAR_CONTROLLER] : $config['default_controller'])));
