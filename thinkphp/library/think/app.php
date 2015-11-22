@@ -254,12 +254,15 @@ class App
                     throw new Exception('URL_SUFFIX_DENY');
                 }
                 // 路由检测
-                Route::register($config['routes']);
-                Route::check($_SERVER['PATH_INFO'], $config['pathinfo_depr']);
+                if (!empty($config['url_route_on'])) {
+                    // 开启路由 则检测路由配置 并默认读取 url_route_rules 参数
+                    Route::register($config['url_route_rules']);
+                    Route::check($_SERVER['PATH_INFO'], $config['pathinfo_depr']);
+                }
 
                 // 获取URL中的模块名
                 if ($config['require_module'] && !isset($_GET[VAR_MODULE])) {
-                    $paths = explode($config['pathinfo_depr'], __INFO__, 2);
+                    $paths                = explode($config['pathinfo_depr'], __INFO__, 2);
                     $_GET[VAR_MODULE]     = array_shift($paths);
                     $_SERVER['PATH_INFO'] = implode('/', $paths);
                 }
