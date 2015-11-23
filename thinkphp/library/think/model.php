@@ -881,9 +881,10 @@ class Model
             unset($fields['_pk'], $fields['_type']);
             return $fields;
         } else {
-            $fields = Cache::get(md5($this->getTableName()));
+            $tableName = $this->getTableName();
+            $fields    = Cache::get(md5($tableName));
             if (!$fields) {
-                $fields       = $this->db->getFields($this->getTableName());
+                $fields       = $this->db->getFields($tableName);
                 $this->fields = array_keys($fields);
                 foreach ($fields as $key => $val) {
                     // 记录字段类型
@@ -905,7 +906,7 @@ class Model
                 }
                 // 记录字段类型信息
                 $this->fields['_type'] = $type;
-                Cache::set(md5($this->trueTableName), $this->fields);
+                Cache::set(md5($tableName), $this->fields);
                 $fields = $this->fields;
             } else {
                 $this->fields = $fields;
