@@ -63,13 +63,13 @@ class App
         Hook::listen('app_run');
 
         // 执行操作
-        if (!preg_match('/^[A-Za-z](\/|\w)*$/', CONTROLLER_NAME)) {
+        if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
             // 安全检测
             $instance = false;
         } elseif ($config['action_bind_class']) {
             // 操作绑定到类：模块\controller\控制器\操作
-            if (is_dir(MODULE_PATH . CONTROLLER_LAYER . '/' . CONTROLLER_NAME)) {
-                $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . CONTROLLER_NAME . '\\';
+            if (is_dir(MODULE_PATH . CONTROLLER_LAYER . '/' . str_replace('.', '/', CONTROLLER_NAME))) {
+                $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . str_replace('.', '\\', CONTROLLER_NAME) . '\\';
             } else {
                 // 空控制器
                 $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . $config['empty_controller'] . '\\';
@@ -92,7 +92,7 @@ class App
             $action = ACTION_NAME . $config['action_suffix'];
         }
         if (!$instance) {
-            throw new Exception('[ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(CONTROLLER_NAME, 1) . ' ] not exists');
+            throw new Exception('[ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
         }
 
         try {
