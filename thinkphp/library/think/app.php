@@ -15,7 +15,6 @@ namespace think;
  * App 应用管理
  * @author  liu21st <liu21st@gmail.com>
  */
-
 class App
 {
 
@@ -260,13 +259,18 @@ class App
                     // 开启路由 则检测路由配置 并默认读取 url_route_rules 参数
                     Route::register($config['url_route_rules']);
                     $result = Route::check(__INFO__, $config['pathinfo_depr']);
+
                     if (false === $result) {
-                        throw new Exception('route not define ');
+                        // 路由无效
+                        if ($config['url_route_must']) {
+                            throw new Exception('route not define ');
+                        } else {
+                            $result = Route::parseUrl(__INFO__);
+                        }
                     }
                 } else {
                     $result = Route::parseUrl(__INFO__);
                 }
-
             }
             // 去除URL后缀
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', $_SERVER['PATH_INFO']);
