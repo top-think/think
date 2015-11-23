@@ -153,7 +153,7 @@ class Loader
         } else {
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . self::parseName($name, 1);
+        $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('.', '\\', $name), 1);
         if (class_exists($class)) {
             $model = new $class($name);
         } else {
