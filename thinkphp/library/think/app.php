@@ -15,6 +15,7 @@ namespace think;
  * App 应用管理
  * @author  liu21st <liu21st@gmail.com>
  */
+
 class App
 {
 
@@ -239,6 +240,7 @@ class App
             }
         }
 
+        $result = [];
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
@@ -257,22 +259,33 @@ class App
                 if (!empty($config['url_route_on'])) {
                     // 开启路由 则检测路由配置 并默认读取 url_route_rules 参数
                     Route::register($config['url_route_rules']);
-                    Route::check($_SERVER['PATH_INFO'], $config['pathinfo_depr']);
+                    $result = Route::check(__INFO__, $config['pathinfo_depr']);
+                    if (false === $result) {
+                        throw new Exception('route not define ');
+                    }
+                } else {
+                    $result = Route::parseUrl(__INFO__);
                 }
 
-                // 获取URL中的模块名
-                if ($config['require_module'] && !isset($_GET[VAR_MODULE])) {
-                    $paths                = explode($config['pathinfo_depr'], __INFO__, 2);
-                    $_GET[VAR_MODULE]     = array_shift($paths);
-                    $_SERVER['PATH_INFO'] = implode('/', $paths);
-                }
             }
             // 去除URL后缀
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', $_SERVER['PATH_INFO']);
         }
 
+        $module = strtolower($result[0] ? $result[0] : $config['default_module']);
+        if ($maps = $config['url_module_map']) {
+            if (isset($maps[$module])) {
+                // 记录当前别名
+                define('MODULE_ALIAS', $module);
+                // 获取实际的项目名
+                $module = $maps[MODULE_ALIAS];
+            } elseif (array_search($module, $maps)) {
+                // 禁止访问原始项目
+                $module = '';
+            }
+        }
         // 获取模块名称
-        define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : self::getModule($config));
+        define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
 
         // 模块初始化
         if (MODULE_NAME && MODULE_NAME != $config['common_module'] && is_dir(APP_PATH . MODULE_NAME)) {
@@ -287,14 +300,11 @@ class App
         }
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strip_tags(strtolower(isset($_GET[VAR_CONTROLLER]) ? $_GET[VAR_CONTROLLER] : $config['default_controller'])));
+        define('CONTROLLER_NAME', strip_tags(strtolower($result[1] ? $result[1] : $config['default_controller'])));
 
         // 获取操作名
-        define('ACTION_NAME', strip_tags(strtolower(isset($_GET[VAR_ACTION]) ? $_GET[VAR_ACTION] : $config['default_action'])));
+        define('ACTION_NAME', strip_tags(strtolower($result[2] ? $result[2] : $config['default_action'])));
 
-        unset($_GET[VAR_ACTION], $_GET[VAR_CONTROLLER], $_GET[VAR_MODULE]);
-        //保证$_REQUEST正常取值
-        $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
     }
 
     /**

@@ -11,6 +11,9 @@
 
 namespace think;
 
+use think\Config as Config;
+use think\Transform as Transform;
+use think\Url as Url;
 class Response
 {
 
@@ -83,6 +86,18 @@ class Response
     {
         $url = Url::build($url, $params);
         header('Location: ' . $url);
+    }
+
+    /**
+     * 设置响应头
+     * @access protected
+     * @param string $name 参数名
+     * @param string $value 参数值
+     * @return void
+     */
+    public static function header($name, $value)
+    {
+        header($name . ':' . $value);
     }
 
     // 发送Http状态信息

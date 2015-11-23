@@ -155,7 +155,8 @@ class Route
                     exit;
                 }
                 if (is_array($rule)) {
-                    $_GET[VAR_MODULE] = $rule[0];
+                    define('BIND_MODULE', $rule[0]);
+                    //$_GET[VAR_MODULE] = $rule[0];
                     if (isset($rule[1])) {
                         // 传入参数
                         parse_str($rule[1], $parms);
@@ -169,7 +170,8 @@ class Route
                         $_GET = array_merge($_GET, $parms);
                     }
                 } else {
-                    $_GET[VAR_MODULE] = $rule;
+                    define('BIND_MODULE', $rule);
+                    //$_GET[VAR_MODULE] = $rule;
                 }
             }
         }
@@ -262,7 +264,7 @@ class Route
 
             }
         }
-        return self::parseUrl($regx);
+        return false;
     }
 
     /**
@@ -360,24 +362,18 @@ class Route
     }
 
     // 解析模块的URL地址 [模块/]控制器/操作
-    private static function parseUrl($url)
+    public static function parseUrl($url)
     {
         if ('/' == $url) {
             return;
         }
         $paths = explode('/', $url);
 
-        if (!defined('BIND_MODULE') && !isset($_GET[VAR_MODULE])) {
-            $_GET[VAR_MODULE] = array_shift($paths);
-        }
+        $module = defined('BIND_MODULE') ? BIND_MODULE : array_shift($paths);
 
-        if (!defined('BIND_CONTROLLER') && !isset($_GET[VAR_CONTROLLER])) {
-            $_GET[VAR_CONTROLLER] = array_shift($paths);
-        }
+        $controller = defined('BIND_CONTROLLER') ? BIND_CONTROLLER : array_shift($paths);
 
-        if ($paths) {
-            $_GET[VAR_ACTION] = array_shift($paths);
-        }
+        $action = $paths ? array_shift($paths) : null;
 
         // 解析剩余的URL参数
         $var = [];
@@ -385,6 +381,7 @@ class Route
             preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {$var[strtolower($match[1])] = strip_tags($match[2]);}, implode('/', $paths));
         }
         $_GET = array_merge($var, $_GET);
+        return [$module, $controller, $action];
     }
 
     // 解析规范的路由地址
@@ -405,16 +402,12 @@ class Route
             parse_str($url, $var);
         }
         if (isset($path)) {
-            $action           = array_pop($path);
-            $_GET[VAR_ACTION] = '[rest]' == $action ? REQUEST_METHOD : $action;
-            if (!empty($path)) {
-                $_GET[VAR_CONTROLLER] = array_pop($path);
-            }
-            if (!empty($path)) {
-                $_GET[VAR_MODULE] = array_pop($path);
-            }
+            $action     = array_pop($path);
+            $action     = '[rest]' == $action ? REQUEST_METHOD : $action;
+            $controller = !empty($path) ? array_pop($path) : null;
+            $module     = !empty($path) ? array_pop($path) : null;
         }
-        return $var;
+        return ['route' => [$module, $controller, $action], 'var' => $var];
     }
 
     // 检测URL和规则路由是否匹配
@@ -495,7 +488,8 @@ class Route
             exit;
         } else {
             // 解析路由地址
-            $var = self::parseRoute($url);
+            $result = self::parseRoute($url);
+            $var    = $result['var'];
             // 解析路由地址里面的动态参数
             $values = array_values($matches);
             foreach ($var as $key => $val) {
@@ -516,6 +510,7 @@ class Route
                 $var = array_merge($var, $params);
             }
             $_GET = array_merge($var, $_GET);
+            return $result['route'];
         }
     }
 
@@ -538,7 +533,8 @@ class Route
             exit;
         } else {
             // 解析路由地址
-            $var = self::parseRoute($url);
+            $result = self::parseRoute($url);
+            $var    = $result['var'];
             // 解析剩余的URL参数
             $regx = substr_replace($regx, '', 0, strlen($matches[0]));
             if ($regx) {
@@ -552,6 +548,7 @@ class Route
                 $var = array_merge($var, $params);
             }
             $_GET = array_merge($var, $_GET);
+            return $result['route'];
         }
     }
 }
