@@ -14,9 +14,9 @@ namespace think;
 class Config
 {
     // 配置参数
-    private static $config = []; 
+    private static $config = [];
     // 参数作用域
-    private static $range  = '_sys_'; 
+    private static $range = '_sys_';
 
     // 设定配置参数的作用域
     public static function range($range)
@@ -35,9 +35,9 @@ class Config
     }
 
     // 加载配置文件
-    public static function load($file, $range = '')
+    public static function load($file, $name = '', $range = '')
     {
-        return self::set(include $file, '', $range);
+        return self::set(include $file, $name, $range);
     }
 
     // 检测配置是否存在
@@ -100,8 +100,11 @@ class Config
             return;
         } elseif (is_array($name)) {
             // 批量设置
-            self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
-            return self::$config[$range];
+            if (!empty($value)) {
+                return self::$config[$range][$value] = array_change_key_case($name);
+            } else {
+                return self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
+            }
         } else {
             return null; // 避免非法参数
         }
