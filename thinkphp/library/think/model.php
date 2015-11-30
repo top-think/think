@@ -562,8 +562,6 @@ class Model
                     if (is_scalar($val) && empty($options['bind'][':' . $key])) {
                         $this->_parseType($options['where'], $key);
                     }
-                } elseif ('_' != substr($key, 0, 1) && false === strpos($key, '.') && false === strpos($key, '(') && false === strpos($key, '|') && false === strpos($key, '&')) {
-                    unset($options['where'][$key]);
                 }
             }
         }
