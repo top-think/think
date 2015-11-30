@@ -29,9 +29,6 @@ defined('EXT') or define('EXT', '.php');
 defined('MODEL_LAYER') or define('MODEL_LAYER', 'model');
 defined('VIEW_LAYER') or define('VIEW_LAYER', 'view');
 defined('CONTROLLER_LAYER') or define('CONTROLLER_LAYER', 'controller');
-defined('VAR_MODULE') or define('VAR_MODULE', 'm');
-defined('VAR_CONTROLLER') or define('VAR_CONTROLLER', 'c');
-defined('VAR_ACTION') or define('VAR_ACTION', 'a');
 defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口

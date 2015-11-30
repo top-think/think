@@ -365,7 +365,7 @@ class Route
     public static function parseUrl($url)
     {
         if ('/' == $url) {
-            return;
+            return [null, null, null];
         }
         $paths = explode('/', $url);
 

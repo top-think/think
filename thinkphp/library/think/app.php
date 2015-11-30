@@ -44,11 +44,11 @@ class App
             // 自动化创建脚本
             Create::build(include APP_PATH . 'build.php');
         }
-        // 监听app_init
-        Hook::listen('app_init');
 
         // 初始化公共模块
         self::initModule(APP_PATH . $config['common_module'] . '/', $config);
+        // 监听app_init
+        Hook::listen('app_init');
 
         // 启动session
         if ($config['use_session']) {
@@ -239,7 +239,7 @@ class App
             }
         }
 
-        $result = [];
+        $result = [null, null, null];
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
@@ -276,7 +276,7 @@ class App
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', $_SERVER['PATH_INFO']);
         }
 
-        $module = strtolower($result[0] ? $result[0] : $config['default_module']);
+        $module = strtolower($result[0] ?: $config['default_module']);
         if ($maps = $config['url_module_map']) {
             if (isset($maps[$module])) {
                 // 记录当前别名
@@ -304,30 +304,10 @@ class App
         }
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strip_tags(strtolower($result[1] ? $result[1] : $config['default_controller'])));
+        define('CONTROLLER_NAME', strip_tags(strtolower($result[1] ?: $config['default_controller'])));
 
         // 获取操作名
-        define('ACTION_NAME', strip_tags(strtolower($result[2] ? $result[2] : $config['default_action'])));
+        define('ACTION_NAME', strip_tags(strtolower($result[2] ?: $config['default_action'])));
 
-    }
-
-    /**
-     * @param $config
-     */
-    private static function getModule($config)
-    {
-        $module = strtolower(isset($_GET[VAR_MODULE]) ? $_GET[VAR_MODULE] : $config['default_module']);
-        if ($maps = $config['url_module_map']) {
-            if (isset($maps[$module])) {
-                // 记录当前别名
-                define('MODULE_ALIAS', $module);
-                // 获取实际的项目名
-                $module = $maps[MODULE_ALIAS];
-            } elseif (array_search($module, $maps)) {
-                // 禁止访问原始项目
-                $module = '';
-            }
-        }
-        return strip_tags($module);
     }
 }
