@@ -14,6 +14,7 @@ namespace think;
 use think\Config as Config;
 use think\Transform as Transform;
 use think\Url as Url;
+
 class Response
 {
 
@@ -54,7 +55,7 @@ class Response
                 $data    = $handler . '(' . Transform::jsonEncode($data) . ');';
                 break;
         }
-        exit($data);
+        return $data;
     }
 
     /**

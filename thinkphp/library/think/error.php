@@ -99,7 +99,7 @@ class Error
             $data['code'] = $code;
             $data['msg']  = $message;
             $data['time'] = NOW_TIME;
-            Response::returnData($data);
+            exit(Response::returnData($data));
         }
         $e = [];
         if (APP_DEBUG) {
@@ -129,7 +129,7 @@ class Error
             }
         }
         // 包含异常页面模板
-        include Config::get('exception_tmpl');
-        exit;
+        $data = include Config::get('exception_tmpl');
+        exit(Response::returnData($data));
     }
 }

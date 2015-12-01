@@ -8,23 +8,8 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id$
 
-namespace index\controller;
-
-use think\View;
-
-class Index
-{
-
-    public function index()
-    {
-        $view = new View();
-        return $view->fetch();
-    }
-
-    public function hello($name = '')
-    {
-        echo 'hello,' . $name;
-    }
-
-}
+return [
+    'url_route_on' => true,
+];

@@ -25,33 +25,39 @@ class App
      */
     public static function run(array $config = [])
     {
-
         if (version_compare(PHP_VERSION, '5.4.0', '<')) {
             throw new Exception('require PHP > 5.4.0 !');
         }
+
+        // 初始化公共模块
+        self::initModule(COMMON_MODULE, $config);
+
+        // 读取扩展配置文件
+        if ($config['extra_config_list']) {
+            foreach ($config['extra_config_list'] as $file) {
+                Config::load($file, $file);
+            }
+        }
+
+        // 获取配置参数
+        $config = Config::get();
+
         // 日志初始化
         Log::init($config['log']);
-
         // 缓存初始化
         Cache::connect($config['cache']);
 
-        // 加载框架底层语言包
-        if (is_file(THINK_PATH . 'Lang/' . strtolower($config['default_lang']) . EXT)) {
-            Lang::set(include THINK_PATH . 'Lang/' . strtolower($config['default_lang']) . EXT);
-        }
+        // 默认语言
+        $lang = strtolower($config['default_lang']);
+        Lang::range($lang);
+        // 加载默认语言包
+        Lang::load(THINK_PATH . 'Lang/' . $lang . EXT);
 
-        if (is_file(APP_PATH . 'build.php')) {
-            // 自动化创建脚本
-            Create::build(include APP_PATH . 'build.php');
-        }
-
-        // 初始化公共模块
-        self::initModule(APP_PATH . $config['common_module'] . '/', $config);
         // 监听app_init
         Hook::listen('app_init');
 
         // 启动session
-        if ($config['use_session']) {
+        if (!IS_CLI && $config['use_session']) {
             Session::init($config['session']);
         }
 
@@ -66,22 +72,7 @@ class App
             // 安全检测
             $instance = false;
         } elseif ($config['action_bind_class']) {
-            // 操作绑定到类：模块\controller\控制器\操作
-            if (is_dir(MODULE_PATH . CONTROLLER_LAYER . '/' . str_replace('.', '/', CONTROLLER_NAME))) {
-                $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . str_replace('.', '\\', CONTROLLER_NAME) . '\\';
-            } else {
-                // 空控制器
-                $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . $config['empty_controller'] . '\\';
-            }
-            $actionName = strtolower(ACTION_NAME);
-            if (class_exists($namespace . $actionName)) {
-                $class = $namespace . $actionName;
-            } elseif (class_exists($namespace . '_empty')) {
-                // 空操作
-                $class = $namespace . '_empty';
-            } else {
-                throw new Exception('_ERROR_ACTION_:' . ACTION_NAME);
-            }
+            $class    = self::bindActionClass($config['empty_controller']);
             $instance = new $class;
             // 操作绑定到类后 固定执行run入口
             $action = 'run';
@@ -107,30 +98,9 @@ class App
             if ($method->isPublic()) {
                 // URL参数绑定检测
                 if ($config['url_params_bind'] && $method->getNumberOfParameters() > 0) {
-                    switch ($_SERVER['REQUEST_METHOD']) {
-                        case 'POST':
-                            $vars = array_merge($_GET, $_POST);
-                            break;
-                        case 'PUT':
-                            parse_str(file_get_contents('php://input'), $vars);
-                            break;
-                        default:
-                            $vars = $_GET;
-                    }
-                    $params         = $method->getParameters();
-                    $paramsBindType = $config['url_parmas_bind_type'];
-                    foreach ($params as $param) {
-                        $name = $param->getName();
-                        if (1 == $paramsBindType && !empty($vars)) {
-                            $args[] = array_shift($vars);
-                        }if (0 == $paramsBindType && isset($vars[$name])) {
-                            $args[] = $vars[$name];
-                        } elseif ($param->isDefaultValueAvailable()) {
-                            $args[] = $param->getDefaultValue();
-                        } else {
-                            throw new Exception('_PARAM_ERROR_:' . $name);
-                        }
-                    }
+                    // 获取绑定参数
+                    $args = self::getBindParams($method, $config['url_parmas_bind_type']);
+                    // 全局过滤
                     array_walk_recursive($args, 'Input::filterExp');
                     $data = $method->invokeArgs($instance, $args);
                 } else {
@@ -139,7 +109,12 @@ class App
                 // 操作方法执行完成监听
                 Hook::listen('action_end', $data);
                 // 返回数据
-                Response::returnData($data, $config['default_return_type']);
+                $data = Response::returnData($data, $config['default_return_type']);
+                if ($config['response_exit']) {
+                    exit($data);
+                } else {
+                    echo $data;
+                }
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -156,46 +131,89 @@ class App
         return;
     }
 
+    // 操作绑定到类：模块\controller\控制器\操作类
+    private static function bindActionClass($emptyController)
+    {
+        if (is_dir(MODULE_PATH . CONTROLLER_LAYER . '/' . str_replace('.', '/', CONTROLLER_NAME))) {
+            $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . str_replace('.', '\\', CONTROLLER_NAME) . '\\';
+        } else {
+            // 空控制器
+            $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . $emptyController . '\\';
+        }
+        $actionName = strtolower(ACTION_NAME);
+        if (class_exists($namespace . $actionName)) {
+            $class = $namespace . $actionName;
+        } elseif (class_exists($namespace . '_empty')) {
+            // 空操作
+            $class = $namespace . '_empty';
+        } else {
+            throw new Exception('_ERROR_ACTION_:' . ACTION_NAME);
+        }
+        return $class;
+    }
+
+    private static function getBindParams($method, $paramsBindType)
+    {
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'POST':
+                $vars = array_merge($_GET, $_POST);
+                break;
+            case 'PUT':
+                parse_str(file_get_contents('php://input'), $vars);
+                break;
+            default:
+                $vars = $_GET;
+        }
+        $params = $method->getParameters();
+        foreach ($params as $param) {
+            $name = $param->getName();
+            if (1 == $paramsBindType && !empty($vars)) {
+                $args[] = array_shift($vars);
+            }if (0 == $paramsBindType && isset($vars[$name])) {
+                $args[] = $vars[$name];
+            } elseif ($param->isDefaultValueAvailable()) {
+                $args[] = $param->getDefaultValue();
+            } else {
+                throw new Exception('_PARAM_ERROR_:' . $name);
+            }
+        }
+        return $args;
+    }
     /**
      * 初始化模块
      * @access private
      * @return void
      */
-    private static function initModule($path, &$config)
+    private static function initModule($module, &$config)
     {
         // 加载初始化文件
-        if (is_file($path . 'init' . EXT)) {
-            include $path . 'init' . EXT;
+        if (is_file(APP_PATH . $module . '/init' . EXT)) {
+            include APP_PATH . $module . '/init' . EXT;
         } else {
-            // 检测配置文件
-            if (is_file($path . 'config' . EXT)) {
-                $config = Config::set(include $path . 'config' . EXT);
+
+            // 定位模块目录
+            $module = COMMON_MODULE == $module ? '' : $module . '/';
+            // 加载模块配置
+            $config = Config::load($module . 'config');
+
+            // 加载应用状态配置
+            if ($config['app_status'] && is_file(APP_PATH . $module . $config['app_status'] . EXT)) {
+                $config = Config::load($module . $config['app_status']);
             }
 
-            // 检测额外配置
-            if ($config['extra_config_list']) {
-                foreach ($config['extra_config_list'] as $conf) {
-                    if (is_file($path . $conf . EXT)) {
-                        $config = Config::set(include $path . $conf . EXT);
-                    }
-                }
-            }
-
-            // 加载应用状态配置文件
-            if ($config['app_status'] && is_file($path . $config['app_status'] . EXT)) {
-                $config = Config::set(include $path . $config['app_status'] . EXT);
-            }
             // 加载别名文件
-            if (is_file($path . 'alias' . EXT)) {
-                Loader::addMap(include $path . 'alias' . EXT);
+            if (is_file(APP_PATH . $module . 'alias' . EXT)) {
+                Loader::addMap(include APP_PATH . $module . 'alias' . EXT);
             }
-            // 加载公共文件
-            if (is_file($path . 'common' . EXT)) {
-                include $path . 'common' . EXT;
-            }
+
             // 加载行为扩展文件
-            if (is_file($path . 'tags' . EXT)) {
-                Hook::import(include $path . 'tags' . EXT);
+            if (is_file(APP_PATH . $module . 'tags' . EXT)) {
+                Hook::import(include APP_PATH . $module . 'tags' . EXT);
+            }
+
+            // 加载公共文件
+            if (is_file(APP_PATH . $module . 'common' . EXT)) {
+                include APP_PATH . $module . 'common' . EXT;
             }
         }
     }
@@ -217,7 +235,7 @@ class App
         }
 
         // 检测域名部署
-        if (!IS_CLI && isset($config['sub_domain_deploy']) && $config['sub_domain_deploy']) {
+        if (!IS_CLI && !empty($config['domain_deploy'])) {
             Route::checkDomain();
         }
 
@@ -256,10 +274,9 @@ class App
                 }
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
-                    // 开启路由 则检测路由配置 并默认读取 url_route_rules 参数
-                    Route::register($config['url_route_rules']);
+                    // 开启路由 则检测路由配置
+                    Route::register($config['route']);
                     $result = Route::check(__INFO__, $config['pathinfo_depr']);
-
                     if (false === $result) {
                         // 路由无效
                         if ($config['url_route_must']) {
@@ -298,7 +315,7 @@ class App
             define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . '/');
 
             // 初始化模块
-            self::initModule(MODULE_PATH, $config);
+            self::initModule(MODULE_NAME, $config);
         } else {
             throw new Exception('module not exists :' . MODULE_NAME);
         }
@@ -308,6 +325,5 @@ class App
 
         // 获取操作名
         define('ACTION_NAME', strip_tags(strtolower($result[2] ?: $config['default_action'])));
-
     }
 }

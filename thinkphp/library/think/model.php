@@ -1414,9 +1414,9 @@ class Model
      * @access public
      * @return Model
      */
-    public function readMaster()
+    public function master()
     {
-        $this->options['read_master'] = true;
+        $this->options['master'] = true;
         return $this;
     }
 }

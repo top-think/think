@@ -156,7 +156,6 @@ class Route
                 }
                 if (is_array($rule)) {
                     define('BIND_MODULE', $rule[0]);
-                    //$_GET[VAR_MODULE] = $rule[0];
                     if (isset($rule[1])) {
                         // 传入参数
                         parse_str($rule[1], $parms);
@@ -171,7 +170,6 @@ class Route
                     }
                 } else {
                     define('BIND_MODULE', $rule);
-                    //$_GET[VAR_MODULE] = $rule;
                 }
             }
         }

@@ -14,11 +14,11 @@ namespace think;
 class Lang
 {
     // 语言参数
-    private static $lang  = []; 
-    // 作用域
-    private static $range = '_sys_'; 
+    private static $lang = [];
+    // 语言作用域
+    private static $range = '';
 
-    // 设定语言参数的作用域
+    // 设定语言参数的作用域（语言）
     public static function range($range)
     {
         self::$range = $range;
@@ -40,6 +40,20 @@ class Lang
         } else {
             return self::$lang[$range][strtolower($name)] = $value;
         }
+    }
+
+    /**
+     * 加载语言定义(不区分大小写)
+     * @param string $file 语言文件
+     * @param string $range 作用域
+     * @return mixed
+     */
+    public static function load($file, $range = '')
+    {
+        $range = $range ? $range : self::$range;
+        $lang  = is_file($file) ? include $file : [];
+        // 批量定义
+        return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
     }
 
     /**

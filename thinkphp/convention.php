@@ -5,12 +5,12 @@ return [
     'app_status'            => 'debug',
     // PATHINFO变量名 用于兼容模式
     'var_pathinfo'          => 's',
-    'extra_config_list'     => [],
+    // 兼容PATH_INFO获取
     'pathinfo_fetch'        => 'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
+    // 扩展配置文件
+    'extra_config_list'     => ['database', 'route'],
     // pathinfo分隔符
     'pathinfo_depr'         => '/',
-    // 是否显示模块
-    'require_module'        => true,
     // 默认模块名
     'default_module'        => 'index',
     // 默认控制器名
@@ -43,9 +43,9 @@ return [
     'default_jsonp_handler' => 'jsonpReturn',
     'var_jsonp_handler'     => 'callback',
     'template_engine'       => 'think',
-    'common_module'         => 'common',
     'action_bind_class'     => false,
     'url_module_map'        => [],
+    'response_exit'         => true,
 
     /* 错误设置 */
     //错误显示信息,非调试模式有效

@@ -49,17 +49,17 @@ class Create
                     foreach ($file as $val) {
                         $filename = APP_PATH . $module . '/' . $path . '/' . strtolower($val) . EXT;
                         switch ($path) {
-                            case 'controller': // 控制器
+                            case 'controller':    // 控制器
                                 if (!is_file($filename)) {
                                     file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
                                 }
                                 break;
-                            case 'model': // 模型
+                            case 'model':    // 模型
                                 if (!is_file($filename)) {
                                     file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
                                 }
                                 break;
-                            case 'view': // 视图
+                            case 'view':    // 视图
                                 break;
                             default:
                                 if (!is_file($filename)) {

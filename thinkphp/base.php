@@ -19,6 +19,7 @@ defined('TRAIT_PATH') or define('TRAIT_PATH', THINK_PATH . 'traits/');
 defined('CORE_PATH') or define('CORE_PATH', LIB_PATH . 'think/');
 defined('ORG_PATH') or define('ORG_PATH', LIB_PATH . 'org/');
 defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+defined('COMMON_MODULE') or define('COMMON_MODULE', 'common');
 defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH) . '/runtime/');
 defined('DATA_PATH') or define('DATA_PATH', RUNTIME_PATH . 'data/');
 defined('LOG_PATH') or define('LOG_PATH', RUNTIME_PATH . 'log/');

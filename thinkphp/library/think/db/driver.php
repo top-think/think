@@ -15,7 +15,7 @@ use PDO;
 use think\Config;
 use think\Debug;
 use think\Exception;
-use think\Lang as Lang;
+use think\Lang;
 use think\Log;
 
 abstract class Driver
@@ -1035,7 +1035,7 @@ abstract class Driver
         $this->model = $options['model'];
         $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
         $sql    = $this->buildSelectSql($options);
-        $result = $this->query($sql, !empty($options['fetch_sql']) ? true : false, !empty($options['read_master']) ? true : false);
+        $result = $this->query($sql, !empty($options['fetch_sql']) ? true : false, !empty($options['master']) ? true : false);
         return $result;
     }
 
@@ -1169,13 +1169,11 @@ abstract class Driver
      */
     protected function initConnect($master = true)
     {
-        if (!empty($this->config['deploy']))
-        // 采用分布式数据库
-        {
+        if (!empty($this->config['deploy'])) {
+            // 采用分布式数据库
             $this->_linkID = $this->multiConnect($master);
-        } else
-        // 默认单数据库
-        if (!$this->_linkID) {
+        } elseif (!$this->_linkID) {
+            // 默认单数据库
             $this->_linkID = $this->connect();
         }
 
