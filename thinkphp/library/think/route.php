@@ -273,9 +273,7 @@ class Route
         // 正则路由
         if ($route instanceof \Closure) {
             // 执行闭包
-            $result = self::invokeRegx($route, $matches);
-            // 如果返回布尔值 则继续执行
-            return is_bool($result) ? $result : exit;
+            return self::invokeRegx($route, $matches);
         }
         return self::parseRegex($matches, $route, $regx);
     }
@@ -299,9 +297,7 @@ class Route
             if (false !== $match = self::match($regx, $rule)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
-                    $result = self::invokeRule($route, $match);
-                    // 如果返回布尔值 则继续执行
-                    return is_bool($result) ? $result : exit;
+                    return self::invokeRule($route, $match);
                 }
                 return self::parseRule($rule, $route, $regx);
             }
