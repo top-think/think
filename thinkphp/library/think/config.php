@@ -37,7 +37,7 @@ class Config
     // 加载配置文件
     public static function load($file, $name = '', $range = '')
     {
-        $file = is_file($file) ? $file : APP_PATH . $file . EXT;
+        $file = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
         return is_file($file) ? self::set(include $file, $name, $range) : self::$config[$range];
     }
 

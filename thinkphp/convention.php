@@ -2,7 +2,7 @@
 
 return [
     // 应用模式状态
-    'app_status'            => 'debug',
+    'app_status'            => '',
     // PATHINFO变量名 用于兼容模式
     'var_pathinfo'          => 's',
     // 兼容PATH_INFO获取

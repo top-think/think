@@ -55,7 +55,7 @@ class Response
                 $data    = $handler . '(' . Transform::jsonEncode($data) . ');';
                 break;
         }
-        return $data;
+        echo $data;
     }
 
     /**

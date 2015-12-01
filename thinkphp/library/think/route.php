@@ -111,11 +111,11 @@ class Route
     }
 
     // 检测子域名部署
-    public static function checkDomain()
+    public static function checkDomain($rules = '')
     {
+        $rules = $rules ?: self::$domain;
         // 开启子域名部署 支持二级和三级域名
-        if (!empty(self::$domain)) {
-            $rules = self::$domain;
+        if (!empty($rules)) {
             if (isset($rules[$_SERVER['HTTP_HOST']])) {
                 // 完整域名或者IP配置
                 $rule = $rules[$_SERVER['HTTP_HOST']];
@@ -339,7 +339,7 @@ class Route
                 $args[] = $param->getDefaultValue();
             }
         }
-        $reflect->invokeArgs($args);
+        return $reflect->invokeArgs($args);
     }
 
     // 执行规则匹配下的闭包方法 支持参数调用
@@ -356,7 +356,7 @@ class Route
                 $args[] = $param->getDefaultValue();
             }
         }
-        $reflect->invokeArgs($args);
+        return $reflect->invokeArgs($args);
     }
 
     // 解析模块的URL地址 [模块/]控制器/操作
@@ -365,13 +365,10 @@ class Route
         if ('/' == $url) {
             return [null, null, null];
         }
-        $paths = explode('/', $url);
-
-        $module = defined('BIND_MODULE') ? BIND_MODULE : array_shift($paths);
-
+        $paths      = explode('/', $url);
+        $module     = defined('BIND_MODULE') ? BIND_MODULE : array_shift($paths);
         $controller = defined('BIND_CONTROLLER') ? BIND_CONTROLLER : array_shift($paths);
-
-        $action = $paths ? array_shift($paths) : null;
+        $action     = $paths ? array_shift($paths) : null;
 
         // 解析剩余的URL参数
         $var = [];

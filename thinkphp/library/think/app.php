@@ -109,11 +109,9 @@ class App
                 // 操作方法执行完成监听
                 Hook::listen('action_end', $data);
                 // 返回数据
-                $data = Response::returnData($data, $config['default_return_type']);
+                Response::returnData($data, $config['default_return_type']);
                 if ($config['response_exit']) {
-                    exit($data);
-                } else {
-                    echo $data;
+                    exit;
                 }
             } else {
                 // 操作方法不是Public 抛出异常
@@ -128,7 +126,6 @@ class App
                 throw new Exception('[ ' . (new \ReflectionClass($instance))->getName() . ':' . $action . ' ] not exists ', 404);
             }
         }
-        return;
     }
 
     // 操作绑定到类：模块\controller\控制器\操作类
@@ -152,6 +149,7 @@ class App
         return $class;
     }
 
+    // 获取操作方法的参数绑定
     private static function getBindParams($method, $paramsBindType)
     {
         switch ($_SERVER['REQUEST_METHOD']) {
@@ -179,41 +177,39 @@ class App
         }
         return $args;
     }
-    /**
-     * 初始化模块
-     * @access private
-     * @return void
-     */
+
+    // 初始化模块
     private static function initModule($module, &$config)
     {
-        // 加载初始化文件
-        if (is_file(APP_PATH . $module . '/init' . EXT)) {
-            include APP_PATH . $module . '/init' . EXT;
-        } else {
+        // 定位模块目录
+        $module = COMMON_MODULE == $module ? '' : $module . '/';
 
-            // 定位模块目录
-            $module = COMMON_MODULE == $module ? '' : $module . '/';
+        // 加载初始化文件
+        if (is_file(APP_PATH . $module . 'init' . EXT)) {
+            include APP_PATH . $module . 'init' . EXT;
+        } else {
+            $path = APP_PATH . $module;
             // 加载模块配置
             $config = Config::load($module . 'config');
 
             // 加载应用状态配置
-            if ($config['app_status'] && is_file(APP_PATH . $module . $config['app_status'] . EXT)) {
+            if ($config['app_status']) {
                 $config = Config::load($module . $config['app_status']);
             }
 
             // 加载别名文件
-            if (is_file(APP_PATH . $module . 'alias' . EXT)) {
-                Loader::addMap(include APP_PATH . $module . 'alias' . EXT);
+            if (is_file($path . 'alias' . EXT)) {
+                Loader::addMap(include $path . 'alias' . EXT);
             }
 
             // 加载行为扩展文件
-            if (is_file(APP_PATH . $module . 'tags' . EXT)) {
-                Hook::import(include APP_PATH . $module . 'tags' . EXT);
+            if (is_file($path . 'tags' . EXT)) {
+                Hook::import(include $path . 'tags' . EXT);
             }
 
             // 加载公共文件
-            if (is_file(APP_PATH . $module . 'common' . EXT)) {
-                include APP_PATH . $module . 'common' . EXT;
+            if (is_file($path . 'common' . EXT)) {
+                include $path . 'common' . EXT;
             }
         }
     }
@@ -236,7 +232,7 @@ class App
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['domain_deploy'])) {
-            Route::checkDomain();
+            Route::checkDomain($config['domain_rules']);
         }
 
         // 监听path_info
