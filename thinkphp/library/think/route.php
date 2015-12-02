@@ -286,7 +286,7 @@ class Route
     {
         $len1 = substr_count($regx, '/');
         $len2 = substr_count($rule, '/');
-        if ($len1 >= $len2) {
+        if ($len1 >= $len2 || strpos($rule, '[')) {
             if ('$' == substr($rule, -1, 1)) {
                 // 完整匹配
                 if ($len1 != $len2) {
@@ -410,7 +410,14 @@ class Route
         $m2  = explode('/', $rule);
         $var = [];
         foreach ($m2 as $key => $val) {
+            if (0 === strpos($val, '[:')) {
+                $val = substr($val, 1, -1);
+            }
             if (0 === strpos($val, ':')) {
+                if ($pos = strpos($val, '|')) {
+                    // 使用函数过滤
+                    $val = substr($val, 1, $pos - 1);
+                }
                 // 动态变量
                 if (strpos($val, '\\')) {
                     $type = substr($val, -1);
@@ -419,7 +426,7 @@ class Route
                     }
                     $name = substr($val, 1, -2);
                 } elseif ($pos = strpos($val, '^')) {
-                    $array = explode('|', substr(strstr($val, '^'), 1));
+                    $array = explode('-', substr(strstr($val, '^'), 1));
                     if (in_array($m1[$key], $array)) {
                         return false;
                     }
@@ -455,8 +462,17 @@ class Route
         $matches = [];
         $rule    = explode('/', $rule);
         foreach ($rule as $item) {
+            $fun = '';
+            if (0 === strpos($item, '[:')) {
+                $item = substr($item, 1, -1);
+            }
             if (0 === strpos($item, ':')) {
                 // 动态变量获取
+                if ($pos = strpos($item, '|')) {
+                    // 支持函数过滤
+                    $fun  = substr($item, $pos + 1);
+                    $item = substr($item, 0, $pos);
+                }
                 if ($pos = strpos($item, '^')) {
                     $var = substr($item, 1, $pos - 1);
                 } elseif (strpos($item, '\\')) {
@@ -465,6 +481,10 @@ class Route
                     $var = substr($item, 1);
                 }
                 $matches[$var] = array_shift($paths);
+                if (!empty($fun)) {
+                    $matches[$var] = $fun($matches[$var]);
+                }
+
             } else {
                 // 过滤URL中的静态变量
                 array_shift($paths);
