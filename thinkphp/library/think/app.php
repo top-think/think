@@ -25,10 +25,6 @@ class App
      */
     public static function run(array $config = [])
     {
-        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-            throw new Exception('require PHP > 5.4.0 !');
-        }
-
         // 初始化公共模块
         self::initModule(COMMON_MODULE, $config);
 

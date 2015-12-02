@@ -273,7 +273,8 @@ class Route
         // 正则路由
         if ($route instanceof \Closure) {
             // 执行闭包
-            return self::invokeRegx($route, $matches);
+            $result = self::invokeRegx($route, $matches);
+            return is_array($result) ? $result : exit($result);
         }
         return self::parseRegex($matches, $route, $regx);
     }
@@ -297,7 +298,8 @@ class Route
             if (false !== $match = self::match($regx, $rule)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
-                    return self::invokeRule($route, $match);
+                    $result = self::invokeRule($route, $match);
+                    return is_array($result) ? $result : exit($result);
                 }
                 return self::parseRule($rule, $route, $regx);
             }

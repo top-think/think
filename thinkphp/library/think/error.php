@@ -124,12 +124,12 @@ class Error
                 if (Config::get('show_error_msg')) {
                     $e['message'] = is_array($error) ? $error['message'] : $error;
                 } else {
-                    $e['message'] = C('error_message');
+                    $e['message'] = Config::get('error_message');
                 }
             }
         }
         // 包含异常页面模板
-        $data = include Config::get('exception_tmpl');
-        exit(Response::returnData($data));
+        include Config::get('exception_tmpl');
+        exit;
     }
 }
