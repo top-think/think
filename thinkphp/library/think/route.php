@@ -32,29 +32,29 @@ class Route
     // 添加URL映射规则
     public static function map($map, $route = '')
     {
-        self::afflux('map', $map, $route);
+        self::setting('map', $map, $route);
     }
 
     // 添加变量规则
     public static function pattern($name, $rule = '')
     {
-        self::afflux('pattern', $name, $rule);
+        self::setting('pattern', $name, $rule);
     }
 
     // 添加路由别名
     public static function alias($name, $rule = '')
     {
-        self::afflux('alias', $name, $rule);
+        self::setting('alias', $name, $rule);
     }
 
     // 添加子域名部署规则
     public static function domain($domain, $rule = '')
     {
-        self::afflux('domain', $domain, $rule);
+        self::setting('domain', $domain, $rule);
     }
 
-    // 添加子域名部署规则
-    private static function afflux($var, $name, $value = '')
+    // 属性设置
+    private static function setting($var, $name, $value = '')
     {
         if (is_array($name)) {
             self::${$var} = array_merge(self::${$var}, $name);
@@ -64,7 +64,7 @@ class Route
     }
 
     // 注册路由规则
-    public static function register($rule, $route = '', $type = '*', $option = [])
+    public static function register($rule, $route = '', $type = '*', $option = [], $pattern = [])
     {
         if (strpos($type, '|')) {
             foreach (explode('|', $type) as $val) {
@@ -72,6 +72,7 @@ class Route
             }
         } else {
             if (is_array($rule)) {
+
                 // 检查变量规则
                 if (isset($rule['__pattern__'])) {
                     self::pattern($rule['__pattern__']);
@@ -88,21 +89,24 @@ class Route
                     unset($rule['__alias__']);
                 }
                 foreach ($rule as $key => $val) {
+                    if (is_numeric($key)) {
+                        $key = array_shift($val);
+                    }
                     if (0 === strpos($key, '[')) {
-                        self::$rules[$type][substr($key, 1, -1)] = ['routes' => $val, 'option' => $option];
+                        self::$rules[$type][substr($key, 1, -1)] = ['routes' => $val, 'option' => $option, 'pattern' => $pattern];
                     } elseif (is_array($val)) {
-                        self::$rules[$type][$key] = ['route' => $val[0], 'option' => $val[1]];
+                        self::$rules[$type][$key] = ['route' => $val[0], 'option' => $val[1], 'pattern' => $val[2]];
                     } else {
-                        self::$rules[$type][$key] = ['route' => $val, 'option' => $option];
+                        self::$rules[$type][$key] = ['route' => $val, 'option' => $option, 'pattern' => $pattern];
                     }
                 }
             } else {
                 if (0 === strpos($rule, '[')) {
-                    self::$rules[$type][substr($rule, 1, -1)] = ['routes' => $route, 'option' => $option];
+                    self::$rules[$type][substr($rule, 1, -1)] = ['routes' => $route, 'option' => $option, 'pattern' => $pattern];
                 } elseif (is_array($route)) {
-                    self::$rules[$type][$rule] = ['route' => $route[0], 'option' => $route[1]];
+                    self::$rules[$type][$rule] = ['route' => $route[0], 'option' => $route[1], 'pattern' => $route[2]];
                 } else {
-                    self::$rules[$type][$rule] = ['route' => $route, 'option' => $option];
+                    self::$rules[$type][$rule] = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
                 }
 
             }
@@ -110,39 +114,39 @@ class Route
     }
 
     // 路由分组
-    public static function group($name, $routes = [], $type = '*', $option = [])
+    public static function group($name, $routes = [], $type = '*', $option = [], $pattern = [])
     {
-        self::$rules[$type][$name] = ['routes' => $routes, 'option' => $option];
+        self::$rules[$type][$name] = ['routes' => $routes, 'option' => $option, 'pattern' => $pattern];
     }
 
     // 注册任意请求的路由规则
-    public static function any($rule, $route = '', $option = [])
+    public static function any($rule, $route = '', $option = [], $pattern = [])
     {
-        self::register($rule, $route, '*', $option);
+        self::register($rule, $route, '*', $option, $pattern);
     }
 
     // 注册get请求的路由规则
-    public static function get($rule, $route = '', $option = [])
+    public static function get($rule, $route = '', $option = [], $pattern = [])
     {
-        self::register($rule, $route, 'GET', $option);
+        self::register($rule, $route, 'GET', $option, $pattern);
     }
 
     // 注册post请求的路由规则
-    public static function post($rule, $route = '', $option = [])
+    public static function post($rule, $route = '', $option = [], $pattern = [])
     {
-        self::register($rule, $route, 'POST', $option);
+        self::register($rule, $route, 'POST', $option, $pattern);
     }
 
     // 注册put请求的路由规则
-    public static function put($rule, $route = '', $option = [])
+    public static function put($rule, $route = '', $option = [], $pattern = [])
     {
-        self::register($rule, $route, 'PUT', $option);
+        self::register($rule, $route, 'PUT', $option, $pattern);
     }
 
     // 注册delete请求的路由规则
-    public static function delete($rule, $route = '', $option = [])
+    public static function delete($rule, $route = '', $option = [], $pattern = [])
     {
-        self::register($rule, $route, 'DELETE', $option);
+        self::register($rule, $route, 'DELETE', $option, $pattern);
     }
 
     // 检测子域名部署
@@ -237,7 +241,8 @@ class Route
         // 路由规则检测
         if (!empty($rules)) {
             foreach ($rules as $rule => $val) {
-                $option = $val['option'];
+                $option  = $val['option'];
+                $pattern = $val['pattern'];
                 // 请求类型检测
                 if (isset($option['method']) && REQUEST_METHOD != strtoupper($option['method'])) {
                     continue;
@@ -273,7 +278,24 @@ class Route
                             return self::checkRegx($route, $regx1, $matches);
                         } else {
                             // 检查规则路由
-                            $result = self::checkRule($key, $route, $regx1);
+                            if (is_array($route)) {
+                                $option1 = $route[1];
+                                // 请求类型检测
+                                if (isset($option1['method']) && REQUEST_METHOD != strtoupper($option1['method'])) {
+                                    continue;
+                                }
+                                // 伪静态后缀检测
+                                if (isset($option1['ext']) && __EXT__ != $option1['ext']) {
+                                    continue;
+                                }
+                                // https检测
+                                if (!empty($option1['https']) && !self::isSsl()) {
+                                    continue;
+                                }
+                                $pattern = array_merge($pattern, isset($route[2]) ? $route[2] : []);
+                                $route   = $route[0];
+                            }
+                            $result = self::checkRule($key, $route, $regx1, $pattern);
                             if (false !== $result) {
                                 return $result;
                             }
@@ -289,7 +311,7 @@ class Route
                         return self::checkRegx($route, $regx, $matches);
                     } else {
                         // 规则路由
-                        $result = self::checkRule($rule, $route, $regx);
+                        $result = self::checkRule($rule, $route, $regx, $pattern);
                         if (false !== $result) {
                             return $result;
                         }
@@ -318,7 +340,7 @@ class Route
     /**
      * 检查规则路由
      */
-    private function checkRule($rule, $route, $regx)
+    private function checkRule($rule, $route, $regx, $pattern)
     {
         $len1 = substr_count($regx, '/');
         $len2 = substr_count($rule, '/');
@@ -331,7 +353,8 @@ class Route
                     $rule = substr($rule, 0, -1);
                 }
             }
-            if (false !== $match = self::match($regx, $rule)) {
+            $pattern = array_merge(self::$pattern, $pattern);
+            if (false !== $match = self::match($regx, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
                     $result = self::invokeRule($route, $match);
@@ -430,11 +453,12 @@ class Route
     }
 
     // 检测URL和规则路由是否匹配
-    private static function match($regx, $rule)
+    private static function match($regx, $rule, $pattern)
     {
         $m1  = explode('/', $regx);
         $m2  = explode('/', $rule);
         $var = [];
+
         foreach ($m2 as $key => $val) {
             if (0 === strpos($val, '[:')) {
                 $val = substr($val, 1, -1);
@@ -460,7 +484,7 @@ class Route
                 } else {
                     $name = substr($val, 1);
                 }
-                if (isset(self::$pattern[$name]) && !preg_match(self::$pattern[$name], $m1[$key])) {
+                if (isset($pattern[$name]) && !preg_match($pattern[$name], $m1[$key])) {
                     // 检查变量规则
                     return false;
                 }
