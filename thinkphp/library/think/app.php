@@ -232,6 +232,9 @@ class App
         if (!IS_CLI && !empty($config['domain_deploy'])) {
             if ($match = Route::checkDomain($config['domain_rules'])) {
                 $result = $match;
+                (!defined('BIND_MODULE') && !empty($result[0])) && define('BIND_MODULE', $result[0]);
+                (!defined('BIND_CONTROLLER') && !empty($result[1])) && define('BIND_CONTROLLER', $result[1]);
+                (!defined('BIND_ACTION') && !empty($result[2])) && define('BIND_ACTION', $result[2]);
             }
         }
 
@@ -316,9 +319,11 @@ class App
         }
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strip_tags(strtolower($result[1] ?: $config['default_controller'])));
+        $controller = strip_tags(strtolower($result[1] ?: $config['default_controller']));
+        define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
 
         // 获取操作名
-        define('ACTION_NAME', strip_tags(strtolower($result[2] ?: $config['default_action'])));
+        $action     = strip_tags(strtolower($result[2] ?: $config['default_action']));
+        define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
     }
 }
