@@ -225,15 +225,13 @@ class App
             // CLI模式下 index.php module/controller/action/params/...
             $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
         }
+        // [模块,控制器,操作]
+        $result = [null, null, null];
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['domain_deploy'])) {
-            $result = Route::checkDomain($config['domain_rules']);
-            if (null != $result) {
-                define('BIND_MODULE', $result[0]);
-                if (isset($result[1])) {
-                    define('BIND_CONTROLLER', $result[1]);
-                }
+            if ($match = Route::checkDomain($config['domain_rules'])) {
+                $result = $match;
             }
         }
 
@@ -255,7 +253,6 @@ class App
             }
         }
 
-        $result = [null, null, null];
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
