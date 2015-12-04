@@ -446,19 +446,17 @@ class Route
             parse_str($url, $var);
         }
         if (isset($path)) {
-            $params = [];
+            // 解析path额外的参数
             if (!empty($path[3])) {
-                $params = explode('/', array_pop($path));
+                preg_replace_callback('/([^\/]+)\/([^\/]+)/', function ($match) use (&$var) {
+                    $var[strtolower($match[1])] = strip_tags($match[2]);
+                }, array_pop($path));
             }
             // 解析[模块/控制器/操作]
             $action     = array_pop($path);
             $action     = '[rest]' == $action ? REQUEST_METHOD : $action;
             $controller = !empty($path) ? array_pop($path) : null;
             $module     = !empty($path) ? array_pop($path) : null;
-            // 解析path额外的参数
-            for ($i = 0; $i < count($params); $i++) {
-                $var[$params[$i]] = $params[++$i];
-            }
         }
         return ['route' => [$module, $controller, $action], 'var' => $var];
     }
