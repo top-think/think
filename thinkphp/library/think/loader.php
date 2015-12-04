@@ -63,7 +63,7 @@ class Loader
     // 注册自动加载机制
     public static function register($autoload = '')
     {
-        spl_autoload_register($autoload ? $autoload : ['think\loader', 'autoload']);
+        spl_autoload_register($autoload ? $autoload : ['think\\loader', 'autoload']);
     }
 
     /**
@@ -124,7 +124,7 @@ class Loader
         if (strpos($name, ':')) {
             list($class, $name) = explode(':', $name);
         } else {
-            $class = 'think\model';
+            $class = 'think\\model';
         }
         $guid = $name . '_' . $class;
         if (!isset($_model[$guid])) {

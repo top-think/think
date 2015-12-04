@@ -30,7 +30,7 @@ class Config
         if (empty($type)) {
             $type = substr(strrchr($config, '.'), 1);
         }
-        $class = '\\think\\config\driver\\' . strtolower($type);
+        $class = '\\think\\config\\driver\\' . strtolower($type);
         self::set((new $class())->parse($config), '', $range);
     }
 
