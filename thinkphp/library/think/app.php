@@ -266,25 +266,27 @@ class App
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'], PATHINFO_EXTENSION)));
             $_SERVER['PATH_INFO'] = __INFO__;
-            if (__INFO__ && !defined('BIND_MODULE')) {
+            if (__INFO__) {
                 if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
                     throw new Exception('URL_SUFFIX_DENY');
                 }
+                // 还原劫持后真实pathinfo
+                $path_info = (defined('BIND_MODULE')?BIND_MODULE.'/':'') . (defined('BIND_CONTROLLER')?BIND_CONTROLLER.'/':'') . (defined('BIND_ACTION')?BIND_ACTION.'/':'') . __INFO__;
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
                     // 开启路由 则检测路由配置
                     Route::register($config['route']);
-                    $result = Route::check(__INFO__, $config['pathinfo_depr']);
+                    $result = Route::check($path_info, $config['pathinfo_depr']);
                     if (false === $result) {
                         // 路由无效
                         if ($config['url_route_must']) {
                             throw new Exception('route not define ');
                         } else {
-                            $result = Route::parseUrl(__INFO__);
+                            $result = Route::parseUrl($path_info);
                         }
                     }
                 } else {
-                    $result = Route::parseUrl(__INFO__);
+                    $result = Route::parseUrl($path_info);
                 }
             }
             // 去除URL后缀
