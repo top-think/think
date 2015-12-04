@@ -186,11 +186,12 @@ class Route
             }
             if (!empty($rule)) {
                 // 子域名部署规则
-                // '子域名'=>'模块[/控制器]'
-                // '子域名'=>['模块[/控制器]','var1=a&var2=b&var3=*'];
+                // '子域名'=>'模块[/控制器/操作]'
+                // '子域名'=>['模块[/控制器/操作]','var1=a&var2=b&var3=*'];
                 if ($rule instanceof \Closure) {
                     // 执行闭包并中止
                     $result = self::invokeRule($route);
+                    // 返回 [模块,控制器,操作]
                     return is_array($result) ? $result : exit($result);
                 }
                 if (is_array($rule)) {
@@ -216,7 +217,7 @@ class Route
     }
 
     // 检测URL路由
-    public static function check($url, $depr = '/')
+    public static function check($url, $depr = '/', &$result = [])
     {
         // 优先检测是否存在PATH_INFO
         if (empty($url)) {
@@ -417,7 +418,7 @@ class Route
         return $reflect->invokeArgs($args);
     }
 
-    // 解析模块的URL地址 [控制器/操作?]参数1=值1&参数2=值2...
+    // 解析模块的URL地址 [模块/控制器/操作?]参数1=值1&参数2=值2...
     public static function parseUrl($url)
     {
         $result = self::parseRoute($url);
@@ -428,32 +429,34 @@ class Route
     }
 
     // 解析规范的路由地址
-    // 地址格式 [控制器/操作?]参数1=值1&参数2=值2...
+    // 地址格式 [模块/控制器/操作?]参数1=值1&参数2=值2...
     private static function parseRoute($url)
     {
         $var = [];
         if (false !== strpos($url, '?')) {
-            // [控制器/操作?]参数1=值1&参数2=值2...
+            // [模块/控制器/操作?]参数1=值1&参数2=值2...
             $info = parse_url($url);
             $path = explode('/', $info['path'], 4);
             parse_str($info['query'], $var);
         } elseif (strpos($url, '/')) {
-            // [控制器/操作]
+            // [模块/控制器/操作]
             $path = explode('/', $url, 4);
         } else {
             // 参数1=值1&参数2=值2...
             parse_str($url, $var);
         }
         if (isset($path)) {
-            $param      = [];
-            if(!empty($path[3])) $param = explode('/', array_pop($path));
             // 解析[模块/控制器/操作]
             $action     = array_pop($path);
             $action     = '[rest]' == $action ? REQUEST_METHOD : $action;
             $controller = !empty($path) ? array_pop($path) : null;
             $module     = !empty($path) ? array_pop($path) : null;
             // 解析path额外的参数
-            for ($i=0; $i<count($param);$i++) {
+            $param = [];
+            if (!empty($path)) {
+                $param = explode('/', array_pop($path));
+            }
+            for ($i = 0; $i < count($param); $i++) {
                 $var[$param[$i]] = $param[++$i];
             }
         }
@@ -573,12 +576,6 @@ class Route
                 }
             }
             $var = array_merge($matches, $var);
-            // 解析剩余的URL参数
-            if (!empty($paths)) {
-                preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
-                    $var[strtolower($match[1])] = strip_tags($match[2]);
-                }, implode('/', $paths));
-            }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
                 parse_str($route[1], $params);
@@ -610,13 +607,6 @@ class Route
             // 解析路由地址
             $result = self::parseRoute($url);
             $var    = $result['var'];
-            // 解析剩余的URL参数
-            $url = substr_replace($url, '', 0, strlen($matches[0]));
-            if ($url) {
-                preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
-                    $var[strtolower($match[1])] = strip_tags($match[2]);
-                }, $url);
-            }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
                 parse_str($route[1], $params);
