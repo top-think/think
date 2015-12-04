@@ -228,7 +228,10 @@ class App
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['domain_deploy'])) {
-            Route::checkDomain($config['domain_rules']);
+            $module = Route::checkDomain($config['domain_rules']);
+            if (null != $module) {
+                define('BIND_MODULE', $module);
+            }
         }
 
         // 监听path_info

@@ -194,7 +194,7 @@ class Route
                     exit;
                 }
                 if (is_array($rule)) {
-                    define('BIND_MODULE', $rule[0]);
+                    $module = $rule[0];
                     if (isset($rule[1])) {
                         // 传入参数
                         parse_str($rule[1], $parms);
@@ -208,10 +208,11 @@ class Route
                         $_GET = array_merge($_GET, $parms);
                     }
                 } else {
-                    define('BIND_MODULE', $rule);
+                    $module = $rule;
                 }
             }
         }
+        return isset($module) ? $module : null;
     }
 
     // 检测URL路由
