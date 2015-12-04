@@ -228,9 +228,12 @@ class App
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['domain_deploy'])) {
-            $module = Route::checkDomain($config['domain_rules']);
-            if (null != $module) {
-                define('BIND_MODULE', $module);
+            $result = Route::checkDomain($config['domain_rules']);
+            if (null != $result) {
+                define('BIND_MODULE', $result[0]);
+                if (isset($result[1])) {
+                    define('BIND_CONTROLLER', $result[1]);
+                }
             }
         }
 

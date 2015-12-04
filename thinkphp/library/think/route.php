@@ -186,15 +186,15 @@ class Route
             }
             if (!empty($rule)) {
                 // 子域名部署规则
-                // '子域名'=>'模块名'
-                // '子域名'=>['模块名','var1=a&var2=b&var3=*'];
+                // '子域名'=>'模块[/控制器]'
+                // '子域名'=>['模块[/控制器]','var1=a&var2=b&var3=*'];
                 if ($rule instanceof \Closure) {
                     // 执行闭包并中止
-                    self::invokeRule($rule);
-                    exit;
+                    $result = self::invokeRule($route);
+                    return is_array($result) ? $result : exit($result);
                 }
                 if (is_array($rule)) {
-                    $module = $rule[0];
+                    $result = $rule[0];
                     if (isset($rule[1])) {
                         // 传入参数
                         parse_str($rule[1], $parms);
@@ -208,28 +208,28 @@ class Route
                         $_GET = array_merge($_GET, $parms);
                     }
                 } else {
-                    $module = $rule;
+                    $result = $rule;
                 }
             }
         }
-        return isset($module) ? $module : null;
+        return isset($result) ? explode('/', $result) : null;
     }
 
     // 检测URL路由
-    public static function check($regx, $depr = '/')
+    public static function check($url, $depr = '/')
     {
         // 优先检测是否存在PATH_INFO
-        if (empty($regx)) {
-            $regx = '/';
+        if (empty($url)) {
+            $url = '/';
         }
 
         // 分隔符替换 确保路由定义使用统一的分隔符
         if ('/' != $depr) {
-            $regx = str_replace($depr, '/', $regx);
+            $url = str_replace($depr, '/', $url);
         }
-        if (isset(self::$map[$regx])) {
+        if (isset(self::$map[$url])) {
             // URL映射
-            return self::parseUrl(self::$map[$regx]);
+            return self::parseUrl(self::$map[$url]);
         }
 
         // 获取当前请求类型的路由规则
@@ -265,7 +265,7 @@ class Route
 
                 if (!empty($val['routes'])) {
                     // 分组路由
-                    if (0 !== strpos($regx, $rule)) {
+                    if (0 !== strpos($url, $rule)) {
                         continue;
                     }
                     // 匹配到路由分组
@@ -273,10 +273,10 @@ class Route
                         if (is_numeric($key)) {
                             $key = array_shift($route);
                         }
-                        $regx1 = substr($regx, strlen($rule) + 1);
-                        if (0 === strpos($key, '/') && preg_match($key, $regx1, $matches)) {
+                        $url1 = substr($url, strlen($rule) + 1);
+                        if (0 === strpos($key, '/') && preg_match($key, $url1, $matches)) {
                             // 检查正则路由
-                            return self::checkRegx($route, $regx1, $matches);
+                            return self::checkRegex($route, $url1, $matches);
                         } else {
                             // 检查规则路由
                             if (is_array($route)) {
@@ -296,7 +296,7 @@ class Route
                                 $pattern = array_merge($pattern, isset($route[2]) ? $route[2] : []);
                                 $route   = $route[0];
                             }
-                            $result = self::checkRule($key, $route, $regx1, $pattern);
+                            $result = self::checkRule($key, $route, $url1, $pattern);
                             if (false !== $result) {
                                 return $result;
                             }
@@ -308,11 +308,11 @@ class Route
                     }
                     // 单项路由
                     $route = $val['route'];
-                    if (0 === strpos($rule, '/') && preg_match($rule, $regx, $matches)) {
-                        return self::checkRegx($route, $regx, $matches);
+                    if (0 === strpos($rule, '/') && preg_match($rule, $url, $matches)) {
+                        return self::checkRegex($route, $url, $matches);
                     } else {
                         // 规则路由
-                        $result = self::checkRule($rule, $route, $regx, $pattern);
+                        $result = self::checkRule($rule, $route, $url, $pattern);
                         if (false !== $result) {
                             return $result;
                         }
@@ -327,23 +327,23 @@ class Route
     /**
      * 检查正则路由
      */
-    private function checkRegx($route, $regx, $matches)
+    private function checkRegex($route, $url, $matches)
     {
         // 正则路由
         if ($route instanceof \Closure) {
             // 执行闭包
-            $result = self::invokeRegx($route, $matches);
+            $result = self::invokeRegex($route, $matches);
             return is_array($result) ? $result : exit($result);
         }
-        return self::parseRegex($matches, $route, $regx);
+        return self::parseRegex($matches, $route, $url);
     }
 
     /**
      * 检查规则路由
      */
-    private function checkRule($rule, $route, $regx, $pattern)
+    private function checkRule($rule, $route, $url, $pattern)
     {
-        $len1 = substr_count($regx, '/');
+        $len1 = substr_count($url, '/');
         $len2 = substr_count($rule, '/');
         if ($len1 >= $len2 || strpos($rule, '[')) {
             if ('$' == substr($rule, -1, 1)) {
@@ -355,13 +355,13 @@ class Route
                 }
             }
             $pattern = array_merge(self::$pattern, $pattern);
-            if (false !== $match = self::match($regx, $rule, $pattern)) {
+            if (false !== $match = self::match($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
                     $result = self::invokeRule($route, $match);
                     return is_array($result) ? $result : exit($result);
                 }
-                return self::parseRule($rule, $route, $regx);
+                return self::parseRule($rule, $route, $url);
             }
         }
         return false;
@@ -383,7 +383,7 @@ class Route
     }
 
     // 执行正则匹配下的闭包方法 支持参数调用
-    private static function invokeRegx($closure, $var = [])
+    private static function invokeRegex($closure, $var = [])
     {
         $reflect = new \ReflectionFunction($closure);
         $params  = $reflect->getParameters();
@@ -454,9 +454,9 @@ class Route
     }
 
     // 检测URL和规则路由是否匹配
-    private static function match($regx, $rule, $pattern)
+    private static function match($url, $rule, $pattern)
     {
-        $m1  = explode('/', $regx);
+        $m1  = explode('/', $url);
         $m2  = explode('/', $rule);
         $var = [];
 
@@ -507,12 +507,12 @@ class Route
     // 外部地址中可以用动态变量 采用 :1 :2 的方式
     // 'news/:month/:day/:id'=>['News/read?cate=1','status=1'],
     // 'new/:id'=>['/new.php?id=:1',301], 重定向
-    private static function parseRule($rule, $route, $regx)
+    private static function parseRule($rule, $route, $url)
     {
         // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;
         // 获取URL地址中的参数
-        $paths = explode('/', $regx);
+        $paths = explode('/', $url);
         // 解析路由规则
         $matches = [];
         $rule    = explode('/', $rule);
@@ -590,7 +590,7 @@ class Route
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
     // '/new\/(\d+)\/(\d+)/'=>['News/read?id=:1&page=:2&cate=1','status=1'],
     // '/new\/(\d+)/'=>['/new.php?id=:1&page=:2&status=1','301'], 重定向
-    private static function parseRegex($matches, $route, $regx)
+    private static function parseRegex($matches, $route, $url)
     {
         // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;
@@ -604,11 +604,11 @@ class Route
             $result = self::parseRoute($url);
             $var    = $result['var'];
             // 解析剩余的URL参数
-            $regx = substr_replace($regx, '', 0, strlen($matches[0]));
-            if ($regx) {
+            $url = substr_replace($url, '', 0, strlen($matches[0]));
+            if ($url) {
                 preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
                     $var[strtolower($match[1])] = strip_tags($match[2]);
-                }, $regx);
+                }, $url);
             }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
