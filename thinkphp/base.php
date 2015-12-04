@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 //  版本信息
-define('THINK_VERSION', '4.0beta');
+define('THINK_VERSION', '5.0beta');
 // 系统常量
 defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . '/');
 defined('LIB_PATH') or define('LIB_PATH', THINK_PATH . 'library/');
