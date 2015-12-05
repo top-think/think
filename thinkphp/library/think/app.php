@@ -226,16 +226,13 @@ class App
             // CLI模式下 index.php module/controller/action/params/...
             $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
         }
-        // [模块,控制器,操作]
-        $result = [null, null, null];
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['domain_deploy'])) {
             if ($match = Route::checkDomain($config['domain_rules'])) {
-                $result = $match;
-                (!defined('BIND_MODULE') && !empty($result[0])) && define('BIND_MODULE', $result[0]);
-                (!defined('BIND_CONTROLLER') && !empty($result[1])) && define('BIND_CONTROLLER', $result[1]);
-                (!defined('BIND_ACTION') && !empty($result[2])) && define('BIND_ACTION', $result[2]);
+                (!defined('BIND_MODULE') && !empty($match[0])) && define('BIND_MODULE', $match[0]);
+                (!defined('BIND_CONTROLLER') && !empty($match[1])) && define('BIND_CONTROLLER', $match[1]);
+                (!defined('BIND_ACTION') && !empty($match[2])) && define('BIND_ACTION', $match[2]);
             }
         }
 
@@ -257,6 +254,9 @@ class App
             }
         }
 
+        // [模块,控制器,操作]
+        $result = [null, null, null];
+
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
@@ -266,28 +266,35 @@ class App
             define('__INFO__', $_SERVER['PATH_INFO']);
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'], PATHINFO_EXTENSION)));
-            $_SERVER['PATH_INFO'] = __INFO__;
             if (__INFO__) {
                 if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
                     throw new Exception('URL_SUFFIX_DENY');
                 }
+                $depr = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
-                $path_info = (defined('BIND_MODULE')?BIND_MODULE.'/':'') . (defined('BIND_CONTROLLER')?BIND_CONTROLLER.'/':'') . (defined('BIND_ACTION')?BIND_ACTION.'/':'') . __INFO__;
+                $path_info =
+                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                    __INFO__;
+
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
                     // 开启路由 则检测路由配置
                     Route::register($config['route']);
-                    $result = Route::check($path_info, $config['pathinfo_depr']);
+                    $result = Route::check($path_info, $depr);
                     if (false === $result) {
                         // 路由无效
                         if ($config['url_route_must']) {
                             throw new Exception('route not define ');
                         } else {
-                            $result = Route::parseUrl($path_info);
+                            // 继续分析URL
+                            $result = Route::parseUrl($path_info, $depr);
                         }
                     }
                 } else {
-                    $result = Route::parseUrl($path_info);
+                    // 分析URL地址
+                    $result = Route::parseUrl($path_info, $depr);
                 }
             }
             // 去除URL后缀
@@ -326,7 +333,7 @@ class App
         define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
 
         // 获取操作名
-        $action     = strip_tags(strtolower($result[2] ?: $config['default_action']));
+        $action = strip_tags(strtolower($result[2] ?: $config['default_action']));
         define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
     }
 }

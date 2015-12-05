@@ -217,13 +217,12 @@ class Route
     }
 
     // 检测URL路由
-    public static function check($url, $depr = '/', &$result = [])
+    public static function check($url, $depr = '/')
     {
         // 优先检测是否存在PATH_INFO
         if (empty($url)) {
             $url = '/';
         }
-
         // 分隔符替换 确保路由定义使用统一的分隔符
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
@@ -419,8 +418,12 @@ class Route
     }
 
     // 解析模块的URL地址 [模块/控制器/操作?]参数1=值1&参数2=值2...
-    public static function parseUrl($url)
+    public static function parseUrl($url, $depr = '/')
     {
+        // 分隔符替换 确保路由定义使用统一的分隔符
+        if ('/' != $depr) {
+            $url = str_replace($depr, '/', $url);
+        }
         $result = self::parseRoute($url);
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
@@ -446,19 +449,17 @@ class Route
             parse_str($url, $var);
         }
         if (isset($path)) {
-            $params = [];
+            // 解析path额外的参数
             if (!empty($path[3])) {
-                $params = explode('/', array_pop($path));
+                preg_replace_callback('/([^\/]+)\/([^\/]+)/', function ($match) use (&$var) {
+                    $var[strtolower($match[1])] = strip_tags($match[2]);
+                }, array_pop($path));
             }
             // 解析[模块/控制器/操作]
             $action     = array_pop($path);
             $action     = '[rest]' == $action ? REQUEST_METHOD : $action;
             $controller = !empty($path) ? array_pop($path) : null;
             $module     = !empty($path) ? array_pop($path) : null;
-            // 解析path额外的参数
-            for ($i = 0; $i < count($params); $i++) {
-                $var[$params[$i]] = $params[++$i];
-            }
         }
         return ['route' => [$module, $controller, $action], 'var' => $var];
     }
