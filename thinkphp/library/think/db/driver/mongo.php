@@ -32,7 +32,10 @@ class Mongo extends Driver
     /**
      * 架构函数 读取数据库配置信息
      * @access public
-     * @param array $config 数据库配置数组
+     *
+     * @param array|string $config 数据库配置数组
+     *
+     * @throws Exception
      */
     public function __construct($config = '')
     {
@@ -45,11 +48,18 @@ class Mongo extends Driver
                 $this->config['params'] = [];
             }
         }
+        $this->config = $config;
     }
 
     /**
      * 连接数据库方法
      * @access public
+     *
+     * @param string $config
+     * @param int    $linkNum
+     *
+     * @return
+     * @throws Exception
      */
     public function connect($config = '', $linkNum = 0)
     {
@@ -71,10 +81,12 @@ class Mongo extends Driver
     /**
      * 切换当前操作的Db和Collection
      * @access public
-     * @param string $collection  collection
-     * @param string $db  db
-     * @param boolean $master 是否主服务器
-     * @return void
+     *
+     * @param string  $collection collection
+     * @param string  $db         db
+     * @param boolean $master     是否主服务器
+     *
+     * @throws Exception
      */
     public function switchCollection($collection, $db = '', $master = true)
     {
@@ -137,9 +149,12 @@ class Mongo extends Driver
     /**
      * 执行语句
      * @access public
-     * @param string $code  sql指令
-     * @param array $args  参数
+     *
+     * @param string $code sql指令
+     * @param array  $args 参数
+     *
      * @return mixed
+     * @throws Exception
      */
     public function execute($code, $args = [])
     {
@@ -185,10 +200,13 @@ class Mongo extends Driver
     /**
      * 插入记录
      * @access public
-     * @param mixed $data 数据
-     * @param array $options 参数表达式
+     *
+     * @param mixed   $data    数据
+     * @param array   $options 参数表达式
      * @param boolean $replace 是否replace
-     * @return false | integer
+     *
+     * @return false|int
+     * @throws Exception
      */
     public function insert($data, $options = [], $replace = false)
     {
@@ -222,9 +240,12 @@ class Mongo extends Driver
     /**
      * 插入多条记录
      * @access public
+     *
      * @param array $dataList 数据
-     * @param array $options 参数表达式
+     * @param array $options  参数表达式
+     *
      * @return bool
+     * @throws Exception
      */
     public function insertAll($dataList, $options = [])
     {
@@ -246,8 +267,11 @@ class Mongo extends Driver
     /**
      * 生成下一条记录ID 用于自增非MongoId主键
      * @access public
+     *
      * @param string $pk 主键名
-     * @return integer
+     *
+     * @return int
+     * @throws Exception
      */
     public function getMongoNextId($pk)
     {
@@ -268,9 +292,12 @@ class Mongo extends Driver
     /**
      * 更新记录
      * @access public
-     * @param mixed $data 数据
+     *
+     * @param mixed $data    数据
      * @param array $options 表达式
+     *
      * @return bool
+     * @throws Exception
      */
     public function update($data, $options)
     {

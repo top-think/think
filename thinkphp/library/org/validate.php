@@ -34,10 +34,13 @@ class Validate
 
     /**
      * 自动表单验证
-     * @access protected
+     * @access   protected
+     *
      * @param array $data 创建数据
-     * @param string $type 创建类型
-     * @return boolean
+     * @param array $rule
+     *
+     * @return bool
+     * @internal param string $type 创建类型
      */
     public function valid($data, $rule = [])
     {
@@ -96,7 +99,7 @@ class Validate
                 return false;
             }
         }
-        return;
+        return true;
     }
 
     /**

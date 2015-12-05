@@ -11,6 +11,8 @@
 
 namespace think\image\driver;
 
+use Exception;
+
 class Gd
 {
     /**
@@ -18,6 +20,9 @@ class Gd
      * @var resource
      */
     private $im;
+    /**
+     * @var $git \think\image\driver\Gif
+*/
     private $gif;
     /**
      * 图像信息，包括width,height,type,mime,size
@@ -36,7 +41,11 @@ class Gd
 
     /**
      * 打开一张图像
+     *
      * @param  string $imgname 图像路径
+     *
+     * @return $this
+     * @throws \Exception
      */
     public function open($imgname)
     {
@@ -50,7 +59,7 @@ class Gd
 
         //检测图像合法性
         if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
-            throw new \Exception('非法图像文件');
+            throw new Exception('非法图像文件');
         }
 
         //设置图像信息
@@ -78,14 +87,18 @@ class Gd
 
     /**
      * 保存图像
+     *
      * @param  string  $imgname   图像保存名称
      * @param  string  $type      图像类型
      * @param  boolean $interlace 是否对JPEG类型图像设置隔行扫描
+     *
+     * @return $this
+     * @throws Exception
      */
     public function save($imgname, $type = null, $interlace = true)
     {
         if (empty($this->im)) {
-            throw new \Exception('没有可以被保存的图像资源');
+            throw new Exception('没有可以被保存的图像资源');
         }
 
         //自动获取图像类型
@@ -113,12 +126,13 @@ class Gd
 
     /**
      * 返回图像宽度
-     * @return integer 图像宽度
+     * @return int 图像宽度
+     * @throws Exception
      */
     public function width()
     {
         if (empty($this->im)) {
-            throw new \Exception('没有指定图像资源');
+            throw new Exception('没有指定图像资源');
         }
 
         return $this->info['width'];
@@ -126,12 +140,13 @@ class Gd
 
     /**
      * 返回图像高度
-     * @return integer 图像高度
+     * @return int 图像高度
+     * @throws Exception
      */
     public function height()
     {
         if (empty($this->im)) {
-            throw new \Exception('没有指定图像资源');
+            throw new Exception('没有指定图像资源');
         }
 
         return $this->info['height'];
@@ -140,11 +155,12 @@ class Gd
     /**
      * 返回图像类型
      * @return string 图像类型
+     * @throws Exception
      */
     public function type()
     {
         if (empty($this->im)) {
-            throw new \Exception('没有指定图像资源');
+            throw new Exception('没有指定图像资源');
         }
 
         return $this->info['type'];
@@ -153,11 +169,12 @@ class Gd
     /**
      * 返回图像MIME类型
      * @return string 图像MIME类型
+     * @throws Exception
      */
     public function mime()
     {
         if (empty($this->im)) {
-            throw new \Exception('没有指定图像资源');
+            throw new Exception('没有指定图像资源');
         }
 
         return $this->info['mime'];
@@ -166,11 +183,12 @@ class Gd
     /**
      * 返回图像尺寸数组 0 - 图像宽度，1 - 图像高度
      * @return array 图像尺寸
+     * @throws Exception
      */
     public function size()
     {
         if (empty($this->im)) {
-            throw new \Exception('没有指定图像资源');
+            throw new Exception('没有指定图像资源');
         }
 
         return [$this->info['width'], $this->info['height']];
@@ -178,17 +196,21 @@ class Gd
 
     /**
      * 裁剪图像
+     *
      * @param  integer $w      裁剪区域宽度
      * @param  integer $h      裁剪区域高度
      * @param  integer $x      裁剪区域x坐标
      * @param  integer $y      裁剪区域y坐标
      * @param  integer $width  图像保存宽度
      * @param  integer $height 图像保存高度
+     *
+     * @return $this
+     * @throws Exception
      */
     public function crop($w, $h, $x = 0, $y = 0, $width = null, $height = null)
     {
         if (empty($this->im)) {
-            throw new \Exception('没有可以被裁剪的图像资源');
+            throw new Exception('没有可以被裁剪的图像资源');
         }
 
         //设置保存尺寸
@@ -217,14 +239,18 @@ class Gd
 
     /**
      * 生成缩略图
+     *
      * @param  integer $width  缩略图最大宽度
      * @param  integer $height 缩略图最大高度
-     * @param  integer $type   缩略图裁剪类型
+     * @param int      $type   缩略图裁剪类型
+     *
+     * @return $this
+     * @throws Exception
      */
-    public function thumb($width, $height, $type = THINKIMAGE_THUMB_SCALE)
+    public function thumb($width, $height, $type = THINKIMAGE_THUMB_SCALING)
     {
         if (empty($this->im)) {
-            throw new \Exception('没有可以被缩略的图像资源');
+            throw new Exception('没有可以被缩略的图像资源');
         }
 
         //原图宽度和高度
@@ -237,7 +263,7 @@ class Gd
             case THINKIMAGE_THUMB_SCALING:
                 //原图尺寸小于缩略图尺寸则不进行缩略
                 if ($w < $width && $h < $height) {
-                    return;
+                    return false;
                 }
 
                 //计算缩放比例
@@ -296,6 +322,8 @@ class Gd
                 //设置缩略图的坐标及宽度和高度
                 $neww = $w * $scale;
                 $newh = $h * $scale;
+                $x = $this->info['width'] - $w;
+                $y = $this->info['height'] - $h;
                 $posx = ($width - $w * $scale) / 2;
                 $posy = ($height - $h * $scale) / 2;
 
@@ -322,7 +350,7 @@ class Gd
                 break;
 
             default:
-                throw new \Exception('不支持的缩略图裁剪类型');
+                throw new Exception('不支持的缩略图裁剪类型');
         }
 
         /* 裁剪图像 */
@@ -332,25 +360,29 @@ class Gd
 
     /**
      * 添加水印
-     * @param  string  $source 水印图片路径
-     * @param  integer $locate 水印位置
-     * @param  integer $alpha  水印透明度
+     *
+     * @param  string $source 水印图片路径
+     * @param int     $locate 水印位置
+     *
+     * @return $this
+     * @throws Exception
+     * @internal param int $alpha 水印透明度
      */
     public function water($source, $locate = THINKIMAGE_WATER_SOUTHEAST)
     {
         //资源检测
         if (empty($this->im)) {
-            throw new \Exception('没有可以被添加水印的图像资源');
+            throw new Exception('没有可以被添加水印的图像资源');
         }
 
         if (!is_file($source)) {
-            throw new \Exception('水印图像不存在');
+            throw new Exception('水印图像不存在');
         }
 
         //获取水印图像信息
         $info = getimagesize($source);
         if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
-            throw new \Exception('非法水印文件');
+            throw new Exception('非法水印文件');
         }
 
         //创建水印图像资源
@@ -420,7 +452,7 @@ class Gd
                 if (is_array($locate)) {
                     list($x, $y) = $locate;
                 } else {
-                    throw new \Exception('不支持的水印位置类型');
+                    throw new Exception('不支持的水印位置类型');
                 }
         }
 
@@ -446,23 +478,27 @@ class Gd
 
     /**
      * 图像添加文字
+     *
      * @param  string  $text   添加的文字
      * @param  string  $font   字体路径
      * @param  integer $size   字号
      * @param  string  $color  文字颜色
-     * @param  integer $locate 文字写入位置
+     * @param int      $locate 文字写入位置
      * @param  integer $offset 文字相对当前位置的偏移量
      * @param  integer $angle  文字倾斜角度
+     *
+     * @return $this
+     * @throws Exception
      */
     public function text($text, $font, $size, $color = '#00000000',
         $locate = THINKIMAGE_WATER_SOUTHEAST, $offset = 0, $angle = 0) {
         //资源检测
         if (empty($this->im)) {
-            throw new \Exception('没有可以被写入文字的图像资源');
+            throw new Exception('没有可以被写入文字的图像资源');
         }
 
         if (!is_file($font)) {
-            throw new \Exception("不存在的字体文件：{$font}");
+            throw new Exception("不存在的字体文件：{$font}");
         }
 
         //获取文字信息
@@ -536,7 +572,7 @@ class Gd
                     $x += $posx;
                     $y += $posy;
                 } else {
-                    throw new \Exception('不支持的文字位置类型');
+                    throw new Exception('不支持的文字位置类型');
                 }
         }
 
@@ -557,7 +593,7 @@ class Gd
                 $color[3] = 0;
             }
         } elseif (!is_array($color)) {
-            throw new \Exception('错误的颜色值');
+            throw new Exception('错误的颜色值');
         }
 
         do {

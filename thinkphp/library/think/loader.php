@@ -229,12 +229,14 @@ class Loader
             return false;
         }
     }
-
     /**
      * 取得对象实例 支持调用类的静态方法
-     * @param string $class 对象类名
+     *
+     * @param string $class  对象类名
      * @param string $method 类的静态方法名
-     * @return object
+     *
+     * @return mixed
+     * @throws Exception
      */
     public static function instance($class, $method = '')
     {
@@ -244,7 +246,7 @@ class Loader
             if (class_exists($class)) {
                 $o = new $class();
                 if (!empty($method) && method_exists($o, $method)) {
-                    $_instance[$identify] = call_user_func_array([ & $o, $method]);
+                    $_instance[$identify] = call_user_func_array([ & $o, $method],[]);
                 } else {
                     $_instance[$identify] = $o;
                 }

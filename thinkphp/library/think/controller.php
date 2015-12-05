@@ -26,6 +26,8 @@ class Controller
     /**
      * 架构函数 初始化视图类 并采用内置模板引擎
      * @access public
+     *
+     * @param array $config
      */
     public function __construct($config = [])
     {
@@ -63,8 +65,8 @@ class Controller
                     $this->config[$key] = $config[$key];
                 }
             }
-            return $this;
         }
+        return $this;
     }
 
     /**

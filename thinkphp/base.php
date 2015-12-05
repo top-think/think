@@ -62,7 +62,7 @@ function C($name = '', $value = null, $range = '')
     if (is_null($value)) {
         return think\Config::get($name, $range);
     } else {
-        think\Config::set($name, $value, $range);
+        return think\Config::set($name, $value, $range);
     }
 }
 
@@ -100,7 +100,7 @@ function G($start, $end = '', $dec = 6)
  * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
  * @param string $tablePrefix 表前缀
  * @param mixed $connection 数据库连接信息
- * @return Model
+ * @return \Think\Model
  */
 function M($name = '', $tablePrefix = '', $connection = '')
 {
@@ -188,9 +188,11 @@ function T($class, $ext = EXT)
 
 /**
  * 抛出异常处理
- * @param string $msg 异常消息
+ *
+ * @param string  $msg  异常消息
  * @param integer $code 异常代码 默认为0
- * @return void
+ *
+ * @throws \think\Exception
  */
 function E($msg, $code = 0)
 {
@@ -213,7 +215,7 @@ function dump($var, $echo = true, $label = null)
  * 渲染输出Widget
  * @param string $name Widget名称
  * @param array $data 传人的参数
- * @return void
+ * @return mixed
  */
 function W($name, $data = [])
 {
@@ -238,7 +240,7 @@ function session($name, $value = '')
         return think\Session::get($name);
     } elseif (is_null($value)) {
         // 删除session
-        return think\Session::delete($name);
+         think\Session::delete($name);
     } else {
         // 设置session
         think\Session::set($name, $value);

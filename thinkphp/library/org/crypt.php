@@ -15,10 +15,14 @@ class Crypt
 {
     /**
      * 加密字符串
-     * @access public
-     * @param string $str 字符串
+     * @access   public
+     *
+     * @param        $data
      * @param string $key 加密key
+     * @param int    $expire
+     *
      * @return string
+     * @internal param string $str 字符串
      */
     public static function encrypt($data, $key, $expire = 0)
     {
@@ -45,10 +49,13 @@ class Crypt
 
     /**
      * 解密字符串
-     * @access public
-     * @param string $str 字符串
+     * @access   public
+     *
+     * @param        $data
      * @param string $key 加密key
+     *
      * @return string
+     * @internal param string $str 字符串
      */
     public static function decrypt($data, $key)
     {

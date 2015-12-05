@@ -113,10 +113,14 @@ class View
     /**
      * 解析和获取模板内容 用于输出
      * @access public
+     *
      * @param string $template 模板文件名或者内容
      * @param array  $vars     模板输出变量
      * @param string $cache_id 模板缓存标识
+     * @param bool   $renderContent
+     *
      * @return string
+     * @throws Exception
      */
     public function fetch($template = '', $vars = [], $cache_id = '', $renderContent = false)
     {
