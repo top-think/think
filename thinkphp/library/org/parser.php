@@ -15,6 +15,9 @@ namespace think;
 class Parser
 {
 
+    /**
+     * @var array $handler
+     */
     private static $handler = [];
 
     // 解析内容

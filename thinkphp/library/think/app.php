@@ -66,8 +66,9 @@ class App
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
             // 安全检测
-            $instance = false;
-        } elseif ($config['action_bind_class']) {
+            throw new Exception('[ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
+        }
+        if ($config['action_bind_class']) {
             $class    = self::bindActionClass($config['empty_controller']);
             $instance = new $class;
             // 操作绑定到类后 固定执行run入口
@@ -76,9 +77,6 @@ class App
             $instance = Loader::controller(CONTROLLER_NAME, '', $config['empty_controller']);
             // 获取当前操作名
             $action = ACTION_NAME . $config['action_suffix'];
-        }
-        if (!$instance) {
-            throw new Exception('[ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
         }
 
         try {
@@ -213,7 +211,10 @@ class App
     /**
      * URL调度
      * @access public
-     * @return void
+     *
+     * @param $config
+     *
+     * @throws Exception
      */
     public static function dispatch($config)
     {

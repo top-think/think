@@ -179,9 +179,12 @@ class Session
 
     /**
      * 判断session数据
+     *
      * @param string $name session名称
-     * @param mixed $value session值
-     * @return boolean
+     * @param string $prefix
+     *
+     * @return bool
+     * @internal param mixed $value session值
      */
     public static function has($name, $prefix = '')
     {

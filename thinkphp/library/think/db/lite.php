@@ -332,6 +332,7 @@ class Lite
      * 并显示当前的SQL语句
      * @access public
      * @return string
+     * @throws Exception
      */
     public function error()
     {

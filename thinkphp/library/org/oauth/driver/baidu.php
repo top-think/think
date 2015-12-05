@@ -38,7 +38,7 @@ class Baidu extends Driver
      * @param  string $api    百度API
      * @param  string $param  调用API的额外参数
      * @param  string $method HTTP请求方法 默认为GET
-     * @return json
+     * @return array
      */
     public function call($api, $param = '', $method = 'GET')
     {

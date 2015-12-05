@@ -62,7 +62,7 @@ class Xcache
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value, $expire = null)
     {
@@ -98,7 +98,7 @@ class Xcache
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name)
     {
@@ -108,7 +108,7 @@ class Xcache
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear()
     {

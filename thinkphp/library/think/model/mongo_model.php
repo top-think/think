@@ -36,9 +36,12 @@ class MongoModel extends \Think\Model
     /**
      * 利用__call方法实现一些特殊的Model方法
      * @access public
+     *
      * @param string $method 方法名称
-     * @param array $args 调用参数
+     * @param array  $args   调用参数
+     *
      * @return mixed
+     * @throws \think\Exception
      */
     public function __call($method, $args)
     {
@@ -54,7 +57,6 @@ class MongoModel extends \Think\Model
             return $this->where($where)->getField($args[1]);
         } else {
             throw new \think\Exception(__CLASS__ . ':' . $method . Lang::get('_METHOD_NOT_EXIST_'));
-            return;
         }
     }
 

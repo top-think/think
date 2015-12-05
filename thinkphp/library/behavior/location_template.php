@@ -27,9 +27,12 @@ class LocationTemplate
 
     /**
      * 自动定位模板文件
-     * @access private
-     * @param string $templateFile 文件名
+     * @access   private
+     *
+     * @param $template
+     *
      * @return string
+     * @internal param string $templateFile 文件名
      */
     private function parseTemplateFile($template)
     {
@@ -39,8 +42,6 @@ class LocationTemplate
             $template = CONTROLLER_NAME . '/' . ACTION_NAME;
         } elseif (false === strpos($template, '/')) {
             $template = CONTROLLER_NAME . '/' . $template;
-        } elseif (false === strpos($template, '.')) {
-            $template = $template;
         }
         $templateFile = MODULE_PATH . 'view/' . $template . '.html';
         return $templateFile;

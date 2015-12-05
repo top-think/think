@@ -84,9 +84,11 @@ class Error
 
     /**
      * 错误输出
+     *
      * @param mixed $error 错误
-     * @param int $errno 错误代码
-     * @return void
+     * @param int   $code
+     *
+     * @internal param int $errno 错误代码
      */
     public static function halt($error, $code = 1)
     {
@@ -99,7 +101,8 @@ class Error
             $data['code'] = $code;
             $data['msg']  = $message;
             $data['time'] = NOW_TIME;
-            exit(Response::returnData($data));
+            Response::returnData($data);
+            exit();
         }
         $e = [];
         if (APP_DEBUG) {
