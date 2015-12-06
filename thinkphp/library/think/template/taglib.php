@@ -74,9 +74,14 @@ class TagLib
 
     /**
      * TagLib标签属性分析 返回标签属性数组
-     * @access public
-     * @param string $tagStr 标签内容
+     * @access   public
+     *
+     * @param $attr
+     * @param $tag
+     *
      * @return array
+     * @throws Exception
+     * @internal param string $tagStr 标签内容
      */
     public function parseXmlAttr($attr, $tag)
     {
@@ -92,25 +97,25 @@ class TagLib
         }
         $xml   = (array) ($xml->tag->attributes());
         $array = array_change_key_case($xml['@attributes']);
-        if ($array) {
-            $tag = strtolower($tag);
-            if (isset($this->tags[$tag]['attr'])) {
-                $attrs = explode(',', $this->tags[$tag]['attr']);
-                if (isset($this->tags[strtolower($tag)]['must'])) {
-                    $must = explode(',', $this->tags[$tag]['must']);
-                } else {
-                    $must = [];
-                }
-                foreach ($attrs as $name) {
-                    if (isset($array[$name])) {
-                        $array[$name] = str_replace('___', '&', $array[$name]);
-                    } elseif (false !== array_search($name, $must)) {
-                        throw new Exception('_PARAM_ERROR_:' . $name);
-                    }
+        if (!is_array($array)) return [];
+        $tag = strtolower($tag);
+        if (isset($this->tags[$tag]['attr'])) {
+            $attrs = explode(',', $this->tags[$tag]['attr']);
+            if (isset($this->tags[strtolower($tag)]['must'])) {
+                $must = explode(',', $this->tags[$tag]['must']);
+            } else {
+                $must = [];
+            }
+            foreach ($attrs as $name) {
+                if (isset($array[$name])) {
+                    $array[$name] = str_replace('___', '&', $array[$name]);
+                } elseif (false !== array_search($name, $must)) {
+                    throw new Exception('_PARAM_ERROR_:' . $name);
                 }
             }
-            return $array;
         }
+
+        return $array;
     }
 
     /**

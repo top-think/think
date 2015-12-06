@@ -45,7 +45,11 @@ class Image
 
     /**
      * 初始化方法，用于实例化一个图片处理对象
+     *
      * @param string $type 要使用的类库，默认使用GD库
+     * @param null   $imgname
+     *
+     * @return resource
      */
     public static function init($type = 'Gd', $imgname = null)
     {

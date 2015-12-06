@@ -159,10 +159,16 @@ class Input
 
     /**
      * 获取系统变量 支持过滤和默认值
-     * @access public
-     * @param string $method 输入数据类型
-     * @param array $args 参数 [key,filter,default]
+     * @access   public
+     *
+     * @param $name
+     * @param $input
+     * @param $filter
+     * @param $default
+     *
      * @return mixed
+     * @internal param string $method 输入数据类型
+     * @internal param array $args 参数 [key,filter,default]
      */
     private static function getData($name, $input, $filter, $default)
     {

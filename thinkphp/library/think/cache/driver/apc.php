@@ -28,7 +28,10 @@ class Apc
 
     /**
      * 架构函数
+     *
      * @param array $options 缓存参数
+     *
+     * @throws Exception
      * @access public
      */
     public function __construct($options = [])
@@ -58,7 +61,7 @@ class Apc
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return bool
      */
     public function set($name, $value, $expire = null)
     {
@@ -89,11 +92,12 @@ class Apc
         return $result;
     }
 
-    /**
-     * 删除缓存
+    /**删除缓存
      * @access public
+     *
      * @param string $name 缓存变量名
-     * @return boolen
+     *
+     * @return bool|\string[]
      */
     public function rm($name)
     {
@@ -103,7 +107,7 @@ class Apc
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return bool
      */
     public function clear()
     {

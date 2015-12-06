@@ -26,6 +26,8 @@ class Simple
     /**
      * 架构函数
      * @access public
+     *
+     * @param array $options
      */
     public function __construct($options = [])
     {
@@ -67,13 +69,15 @@ class Simple
 
     /**
      * 写入缓存
-     * @access public
-     * @param string $name 缓存变量名
-     * @param mixed $value  存储数据
-     * @param int $expire  有效时间 0为永久
-     * @return boolen
+     * @access   public
+     *
+     * @param string $name  缓存变量名
+     * @param mixed  $value 存储数据
+     *
+     * @return bool
+     * @internal param int $expire 有效时间 0为永久
      */
-    public function set($name, $value, $expire = null)
+    public function set($name, $value)
     {
         $filename = $this->filename($name);
         // 缓存数据
@@ -88,7 +92,7 @@ class Simple
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name)
     {
@@ -97,9 +101,9 @@ class Simple
 
     /**
      * 清除缓存
-     * @access public
-     * @param string $name 缓存变量名
-     * @return boolen
+     * @access   public
+     * @return bool
+     * @internal param string $name 缓存变量名
      */
     public function clear()
     {

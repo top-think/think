@@ -94,6 +94,10 @@ class Oracle extends Driver
     /**
      * 取得数据表的字段信息
      * @access public
+     *
+     * @param $tableName
+     *
+     * @return array
      */
     public function getFields($tableName)
     {
@@ -120,9 +124,11 @@ class Oracle extends Driver
 
     /**
      * 取得数据库的表信息（暂时实现取得用户表信息）
-     * @access public
+     * @access   public
+     * @return array
+     * @internal param string $dbName
      */
-    public function getTables($dbName = '')
+    public function getTables()
     {
         $result = $this->query("select table_name from user_tables");
         $info   = [];
@@ -151,10 +157,11 @@ class Oracle extends Driver
         }
         return $limitStr ? ' WHERE ' . $limitStr : '';
     }
-
     /**
      * 设置锁机制
      * @access protected
+     * @param bool|false $lock
+     *
      * @return string
      */
     protected function parseLock($lock = false)

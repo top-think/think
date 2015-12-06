@@ -104,7 +104,7 @@ class ReadHtmlCache
      * @access public
      * @param string $cacheFile  静态文件名
      * @param integer $cacheTime  缓存有效期
-     * @return boolen
+     * @return bool
      */
     public static function checkHTMLCache($cacheFile = '', $cacheTime = '')
     {

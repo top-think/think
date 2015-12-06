@@ -57,9 +57,12 @@ abstract class rest
     /**
      * REST 调用
      * @access public
+     *
      * @param string $method 方法名
-     * @param array $args 参数
+     * @param array  $args   参数
+     *
      * @return mixed
+     * @throws \think\Exception
      */
     public function _empty($method, $args)
     {

@@ -29,11 +29,12 @@ class Log
 
     /**
      * 记录日志 并且会过滤未经设置的级别
-     * @access public
+     * @access   public
+     *
      * @param string $message 日志信息
-     * @param string $level  日志级别
-     * @param boolean $record  是否强制记录
-     * @return void
+     * @param string $level   日志级别
+     *
+     * @internal param bool $record 是否强制记录
      */
     public static function record($message, $level = 'INFO')
     {

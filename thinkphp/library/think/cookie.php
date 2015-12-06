@@ -51,17 +51,19 @@ class Cookie
     {
         if (empty($prefix)) {
             return self::$config['prefix'];
-        } else {
-            self::$config['prefix'] = $prefix;
         }
+        self::$config['prefix'] = $prefix;
     }
 
     /**
      * Cookie 设置、获取、删除
-     * @param string $name cookie名称
-     * @param mixed $value cookie值
-     * @param mixed $options cookie参数
+     *
+     * @param string $name  cookie名称
+     * @param mixed  $value cookie值
+     * @param null   $option
+     *
      * @return mixed
+     * @internal param mixed $options cookie参数
      */
     public static function set($name, $value = '', $option = null)
     {

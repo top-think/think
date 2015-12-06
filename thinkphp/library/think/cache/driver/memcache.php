@@ -72,7 +72,7 @@ class Memcache
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return bool
      */
     public function set($name, $value, $expire = null)
     {
@@ -106,9 +106,11 @@ class Memcache
 
     /**
      * 删除缓存
-     * @access public
-     * @param string $name 缓存变量名
-     * @return boolen
+     *
+     * @param    string  $name 缓存变量名
+     * @param bool|false $ttl
+     *
+     * @return bool
      */
     public function rm($name, $ttl = false)
     {
@@ -121,7 +123,7 @@ class Memcache
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return bool
      */
     public function clear()
     {
