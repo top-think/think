@@ -216,7 +216,7 @@ class App
      *
      * @throws Exception
      */
-    public static function dispatch($config)
+    public static function dispatch(&$config)
     {
         if (isset($_GET[$config['var_pathinfo']])) {
             // 判断URL里面是否有兼容模式参数
