@@ -14,9 +14,8 @@ namespace traits\think\model;
 use think\Lang;
 use think\Loader;
 
-trait Extend
+trait Adv
 {
-
     protected $partition = [];
 
     /**
