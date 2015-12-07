@@ -9,7 +9,7 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace think;
+namespace org;
 
 /* 缩略图相关常量定义 */
 define('THINKIMAGE_THUMB_SCALING', 1); //常量，标识缩略图等比例缩放类型
