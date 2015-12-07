@@ -124,7 +124,8 @@ class Cookie
         $prefix = $prefix ? $prefix : $config['prefix'];
         $name   = $prefix . $name;
         setcookie($name, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
-        unset($_COOKIE[$name]); // 删除指定cookie
+        // 删除指定cookie
+        unset($_COOKIE[$name]);
     }
 
     /**
@@ -143,7 +144,7 @@ class Cookie
         $config = self::$config;
         $prefix = $prefix ? $prefix : $config['prefix'];
         if ($prefix) {
-// 如果前缀为空字符串将不作处理直接返回
+            // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === strpos($key, $prefix)) {
                     setcookie($key, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
