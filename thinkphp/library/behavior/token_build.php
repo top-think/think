@@ -9,6 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace think\behavior;
+
 use think\Behavior;
 
 /**
@@ -54,7 +55,7 @@ class TokenBuild extends Behavior
         // 标识当前页面唯一性
         $tokenKey = md5($_SERVER['REQUEST_URI']);
         if (isset($_SESSION[$tokenName][$tokenKey])) {
-// 相同页面不重复生成session
+            // 相同页面不重复生成session
             $tokenValue = $_SESSION[$tokenName][$tokenKey];
         } else {
             $tokenValue                      = $tokenType(microtime(true));
