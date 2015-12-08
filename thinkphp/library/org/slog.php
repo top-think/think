@@ -37,9 +37,9 @@ class Slog
         'big'           =>  'font-size:20px;color:red;',
     ];
 
-    public static function sql($sql, $link)
+    public static function sql($sql, $pdo)
     {
-        if (is_object($link)) {
+        if (is_object($pdo)) {
             if (!self::check()) {
                 return;
             }
@@ -187,18 +187,18 @@ class Slog
 
     protected static function check()
     {
-        if (!self::getConfig('enable')) {
+        if (!self::$config['enable']) {
             return false;
         }
         $tabid = self::getClientArg('tabid');
         //是否记录日志的检查
-        if (!$tabid && !self::getConfig('force_client_id')) {
+        if (!$tabid && !self::$config['force_client_id']) {
             return false;
         }
         //用户认证
-        $allow_client_ids = self::getConfig('allow_client_ids');
+        $allow_client_ids = self::$config['allow_client_ids'];
         if (!empty($allow_client_ids)) {
-            if (!$tabid && in_array(self::getConfig('force_client_id'), $allow_client_ids)) {
+            if (!$tabid && in_array(self::$config['force_client_id'], $allow_client_ids)) {
                 return true;
             }
 
@@ -326,7 +326,7 @@ class Slog
             'css'  => self::$css['page'],
         ]);
 
-        if (self::getConfig('show_included_files')) {
+        if (self::$config['show_included_files']) {
             self::$logs[] = [
                 'type' => 'groupCollapsed',
                 'msg'  => 'included_files',
@@ -354,7 +354,7 @@ class Slog
         if (!$client_id = self::getClientArg('client_id')) {
             $client_id = '';
         }
-        if ($force_client_id = self::getConfig('force_client_id')) {
+        if ($force_client_id = self::$config['force_client_id']) {
             $client_id = $force_client_id;
         }
         $logs = [
@@ -365,7 +365,7 @@ class Slog
         ];
         $msg     = @json_encode($logs);
         $address = '/' . $client_id; //将client_id作为地址， server端通过地址判断将日志发布给谁
-        self::send(self::getConfig('host'), $msg, $address);
+        self::send(self::$config['host'], $msg, $address);
 
     }
 
