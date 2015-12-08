@@ -58,6 +58,14 @@ return [
     'show_error_msg'        => false,
     //默认输出类型
     'default_return_type'   => 'html',
+    //默认语言
+    'default_lang'          => 'zh-cn', 
+    //是否使用session
+    'use_session'           => true,
+    //url地址的后缀
+    'url_deny_suffix'       => '',
+    //是否必须使用路由
+    'url_route_must'        => false,
 
     'log'                   => [
         'type' => 'File',
@@ -112,7 +120,6 @@ return [
     ],
     /* SocketLog 调试  */
     'slog'                  => [
-        'enable'              => false, //是否记录日志的开关
         'host'                => 'localhost',
         //是否显示利于优化的参数，如果允许时间，消耗内存等
         'optimize'            => true,

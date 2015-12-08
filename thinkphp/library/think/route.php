@@ -327,7 +327,7 @@ class Route
     /**
      * 检查正则路由
      */
-    private function checkRegex($route, $url, $matches)
+    private static function checkRegex($route, $url, $matches)
     {
         // 正则路由
         if ($route instanceof \Closure) {
@@ -341,7 +341,7 @@ class Route
     /**
      * 检查规则路由
      */
-    private function checkRule($rule, $route, $url, $pattern)
+    private static function checkRule($rule, $route, $url, $pattern)
     {
         $len1 = substr_count($url, '/');
         $len2 = substr_count($rule, '/');
