@@ -43,6 +43,11 @@ class App
         // 缓存初始化
         Cache::connect($config['cache']);
 
+        // 如果启动SocketLog调试， 进行SocketLog配置
+        if (SLOG_ON) {
+            \org\Slog::config($config['slog']);
+        }
+
         // 默认语言
         $lang = strtolower($config['default_lang']);
         Lang::range($lang);
@@ -55,11 +60,6 @@ class App
         // 启动session
         if (!IS_CLI && $config['use_session']) {
             Session::init($config['session']);
-        }
-        //判断，如果启动SocketLog调试， 进行SocketLog配置
-        if ($config['slog']['enable']) {
-            define('SLOG_ENABLE',true);
-            \org\Slog::config($config['slog']);
         }
 
         // 应用URL调度
@@ -275,10 +275,10 @@ class App
                 $depr = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
-                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                    __INFO__;
+                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                __INFO__;
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {

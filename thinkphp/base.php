@@ -13,20 +13,20 @@
 define('THINK_VERSION', '5.0beta');
 // 系统常量
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
-defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__).DS);
-defined('LIB_PATH') or define('LIB_PATH', THINK_PATH.'library'.DS);
-defined('MODE_PATH') or define('MODE_PATH', THINK_PATH.'mode'.DS); // 系统应用模式目录
-defined('TRAIT_PATH') or define('TRAIT_PATH', THINK_PATH.'traits'.DS);
-defined('CORE_PATH') or define('CORE_PATH', LIB_PATH.'think'.DS);
-defined('ORG_PATH') or define('ORG_PATH', LIB_PATH . 'org'.DS);
-defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']).DS);
+defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . DS);
+defined('LIB_PATH') or define('LIB_PATH', THINK_PATH . 'library' . DS);
+defined('MODE_PATH') or define('MODE_PATH', THINK_PATH . 'mode' . DS); // 系统应用模式目录
+defined('TRAIT_PATH') or define('TRAIT_PATH', THINK_PATH . 'traits' . DS);
+defined('CORE_PATH') or define('CORE_PATH', LIB_PATH . 'think' . DS);
+defined('ORG_PATH') or define('ORG_PATH', LIB_PATH . 'org' . DS);
+defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . DS);
 defined('COMMON_MODULE') or define('COMMON_MODULE', 'common');
-defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH).DS.'runtime'.DS);
-defined('DATA_PATH') or define('DATA_PATH', RUNTIME_PATH.'data'.DS);
-defined('LOG_PATH') or define('LOG_PATH', RUNTIME_PATH.'log'.DS);
-defined('CACHE_PATH') or define('CACHE_PATH', RUNTIME_PATH.'cache'.DS);
-defined('TEMP_PATH') or define('TEMP_PATH', RUNTIME_PATH.'temp'.DS);
-defined('VENDOR_PATH') or define('VENDOR_PATH', THINK_PATH.'vendor'.DS);
+defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH) . DS . 'runtime' . DS);
+defined('DATA_PATH') or define('DATA_PATH', RUNTIME_PATH . 'data' . DS);
+defined('LOG_PATH') or define('LOG_PATH', RUNTIME_PATH . 'log' . DS);
+defined('CACHE_PATH') or define('CACHE_PATH', RUNTIME_PATH . 'cache' . DS);
+defined('TEMP_PATH') or define('TEMP_PATH', RUNTIME_PATH . 'temp' . DS);
+defined('VENDOR_PATH') or define('VENDOR_PATH', THINK_PATH . 'vendor' . DS);
 defined('EXT') or define('EXT', '.php');
 defined('MODEL_LAYER') or define('MODEL_LAYER', 'model');
 defined('VIEW_LAYER') or define('VIEW_LAYER', 'view');
@@ -34,6 +34,7 @@ defined('CONTROLLER_LAYER') or define('CONTROLLER_LAYER', 'controller');
 defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
+defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
 
 // 应用模式 默认为普通模式
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');

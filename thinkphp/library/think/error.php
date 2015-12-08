@@ -21,17 +21,16 @@ class Error
     public static function appException($e)
     {
         $error = [
-            'message'   => $e->getMessage(),
-            'file'      => $e->getFile(),
-            'line'      => $e->getLine(),
-            'trace'     => $e->getTraceAsString(),
-            'code'      => $e->getCode(),
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+            'trace'   => $e->getTraceAsString(),
+            'code'    => $e->getCode(),
         ];
         // 记录异常日志
         Log::record($error['message'], 'ERR');
-        // 发送500信息
-        header('HTTP/1.1 500 Internal Server Error');
-        header('Status:500 Internal Server Error');
+        // 发送http状态信息
+        Response::sendHttpStatus(Config::get('exception_http_status'));
         // 输出异常页面
         self::halt($error);
     }
@@ -70,7 +69,7 @@ class Error
     {
         // 记录日志
         Log::save();
-        if(defined('SLOG_ENABLE') && SLOG_ENABLE) {
+        if (SLOG_ON) {
             \org\Slog::sendLog();
         }
         if ($e = error_get_last()) {
@@ -99,7 +98,7 @@ class Error
     {
         $message = is_array($error) ? $error['message'] : $error;
         $code    = is_array($error) ? $error['code'] : $code;
-        $e = [];
+        $e       = [];
         if (APP_DEBUG) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
