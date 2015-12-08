@@ -56,6 +56,10 @@ class App
         if (!IS_CLI && $config['use_session']) {
             Session::init($config['session']);
         }
+        //判断，如果启动SocketLog调试， 进行SocketLog配置
+        if($config['slog']['enable']) {
+            slog::config($config['slog']); 
+        }
 
         // 应用URL调度
         self::dispatch($config);

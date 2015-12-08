@@ -32,11 +32,11 @@ return [
     // url变量绑定
     'url_params_bind'       => true,
     // 异常页面的模板文件
-    'exception_tmpl'        => THINK_PATH . 'Tpl/think_exception.tpl',
+    'exception_tmpl'        => THINK_PATH . 'tpl/think_exception.tpl',
     // 默认错误跳转对应的模板文件
-    'error_tmpl'            => THINK_PATH . 'Tpl/dispatch_jump.tpl',
+    'error_tmpl'            => THINK_PATH . 'tpl/dispatch_jump.tpl',
     // 默认成功跳转对应的模板文件
-    'success_tmpl'          => THINK_PATH . 'Tpl/dispatch_jump.tpl',
+    'success_tmpl'          => THINK_PATH . 'tpl/dispatch_jump.tpl',
     // 默认AJAX 数据返回格式,可选JSON XML ...
     'default_ajax_return'   => 'JSON',
     // 默认JSONP格式返回的处理方法
@@ -54,6 +54,9 @@ return [
     'error_page'            => '',
     // 显示错误信息
     'show_error_msg'        => false,
+    //默认输出类型
+    'default_return_type'   => 'html',
+    'common_module'         => '',
 
     'log'                   => [
         'type' => 'File',
@@ -106,4 +109,17 @@ return [
         // 指定从服务器序号
         'slave_no'    => '',
     ],
+    /* SocketLog 调试  */
+    'slog'=> [
+        'enable'=>false, //是否记录日志的开关
+        'host'=>'localhost',
+        //是否显示利于优化的参数，如果允许时间，消耗内存等
+        'optimize'=>true,
+        'show_included_files'=>true,
+        'error_handler'=>true,
+        //日志强制记录到配置的client_id
+        'force_client_id'=>'',
+        //限制允许读取日志的client_id
+        'allow_client_ids'=>array()
+    ]
 ];

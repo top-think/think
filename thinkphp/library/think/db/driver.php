@@ -17,6 +17,7 @@ use think\Debug;
 use think\Exception;
 use think\Lang;
 use think\Log;
+use think\slog;
 
 abstract class Driver
 {
@@ -742,14 +743,16 @@ abstract class Driver
     protected function parseOrder($order)
     {
         $array = [];
-        foreach ($order as $key => $val) {
-            if (is_numeric($key)) {
-                if (false === strpos($val, '(')) {
-                    $array[] = $this->parseKey($val);
+        if(is_array($order)) {
+            foreach ($order as $key => $val) {
+                if (is_numeric($key)) {
+                    if (false === strpos($val, '(')) {
+                        $array[] = $this->parseKey($val);
+                    }
+                } else {
+                    $sort    = in_array(strtolower(trim($val)), ['asc', 'desc']) ? ' ' . $val : '';
+                    $array[] = $this->parseKey($key) . ' ' . $sort;
                 }
-            } else {
-                $sort    = in_array(strtolower(trim($val)), ['asc', 'desc']) ? ' ' . $val : '';
-                $array[] = $this->parseKey($key) . ' ' . $sort;
             }
         }
         $order = implode(',', $array);
@@ -1158,6 +1161,11 @@ abstract class Driver
                 Debug::remark('queryEndTime', 'time');
                 Log::record($this->queryStr . ' [ RunTime:' . Debug::getUseTime('queryStartTime', 'queryEndTime') . 's ]', 'SQL');
             }
+        }
+
+        $slog_config=Config::get('slog');
+        if($slog_config['enable'] && $start) {
+            slog::sql($this->queryStr,$this->_linkID); 
         }
     }
 

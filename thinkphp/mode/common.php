@@ -44,6 +44,7 @@ return [
         'think\Input'                => CORE_PATH . 'input' . EXT,
         'think\Parser'               => CORE_PATH . 'parser' . EXT,
         'think\Lang'                 => CORE_PATH . 'lang' . EXT,
+        'think\slog'                 => CORE_PATH . 'slog' . EXT
     ],
 
     'init'   => [],
