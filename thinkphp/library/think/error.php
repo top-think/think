@@ -70,6 +70,7 @@ class Error
     {
         // 记录日志
         Log::save();
+        \org\Slog::sendLog();
         if ($e = error_get_last()) {
             switch ($e['type']) {
                 case E_ERROR:

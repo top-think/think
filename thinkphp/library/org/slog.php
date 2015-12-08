@@ -5,14 +5,14 @@
  */
 namespace org;
 
+use think\Exception;
+
 class Slog
 {
-    public static $start_time   = 0;
-    public static $start_memory = 0;
-    public static $port         = 1116; //SocketLog 服务的http的端口号
-    public static $log_types    = ['log', 'info', 'error', 'warn', 'table', 'group', 'groupCollapsed', 'groupEnd', 'alert'];
-
-    protected static $_instance;
+    public static $start_time   =   0;
+    public static $start_memory =   0;
+    public static $port         =   1116; //SocketLog 服务的http的端口号
+    public static $log_types    =   ['log', 'info', 'error', 'warn', 'table', 'group', 'groupCollapsed', 'groupEnd', 'alert'];
 
     protected static $config = [
         'enable'              => true, //是否记录日志的开关
@@ -30,40 +30,37 @@ class Slog
     protected static $logs = [];
 
     protected static $css = [
-        'sql'           => 'color:#009bb4;',
-        'sql_warn'      => 'color:#009bb4;font-size:14px;',
-        'error_handler' => 'color:#f4006b;font-size:14px;',
-        'page'          => 'color:#40e2ff;background:#171717;',
+        'sql'           =>  'color:#009bb4;',
+        'sql_warn'      =>  'color:#009bb4;font-size:14px;',
+        'error_handler' =>  'color:#f4006b;font-size:14px;',
+        'page'          =>  'color:#40e2ff;background:#171717;',
+        'big'           =>  'font-size:20px;color:red;',
     ];
-
-    public static function __callStatic($method, $args)
-    {
-        if (in_array($method, self::$log_types)) {
-            array_unshift($args, $method);
-            return call_user_func_array([self::getInstance(), 'record'], $args);
-        }
-    }
 
     public static function sql($sql, $link)
     {
-        if (is_object($link) && 'mysqli' == get_class($link)) {
-            return self::mysqlilog($sql, $link);
-        }
+        if (is_object($link)) {
+            if (!self::check()) {
+                return;
+            }
+            $css = self::$css['sql'];
+            if (preg_match('/^SELECT /i', $sql)) {
+                //explain
+                try {
+                    $obj = $pdo->query("EXPLAIN " . $sql);
+                    if (is_object($obj) && method_exists($obj, 'fetch')) {
+                        $arr = $obj->fetch(\PDO::FETCH_ASSOC);
+                        self::sqlexplain($arr, $sql, $css);
+                    }
+                } catch (Exception $e) {
 
-        if (is_resource($link) && ('mysql link' == get_resource_type($link) || 'mysql link persistent' == get_resource_type($link))) {
-            return self::mysqllog($sql, $link);
-        }
-
-        if (is_object($link) && 'PDO' == get_class($link)) {
-            return self::pdolog($sql, $link);
+                }
+            }
+            self::sqlwhere($sql, $css);
+            self::trace($sql, 2, $css);
         }
 
         throw new Exception('SocketLog can not support this database link');
-    }
-
-    public static function big($log)
-    {
-        self::log($log, 'font-size:20px;color:red;');
     }
 
     public static function trace($msg, $trace_level = 2, $css = '')
@@ -82,70 +79,14 @@ class Slog
             $line      = isset($trace['line']) ? $trace['line'] : 'unknown line';
             $trace_msg = '#' . $i . '  ' . $fun . ' called at [' . $file . ':' . $line . ']';
             if (!empty($trace['args'])) {
-                self::groupCollapsed($trace_msg);
-                self::log($trace['args']);
-                self::groupEnd();
+                self::record('groupCollapsed',$trace_msg);
+                self::record('log',$trace['args']);
+                self::record('groupEnd');
             } else {
-                self::log($trace_msg);
+                self::record('log',$trace_msg);
             }
         }
-        self::groupEnd();
-    }
-
-    public static function mysqlilog($sql, $db)
-    {
-        if (!self::check()) {
-            return;
-        }
-
-        $css = self::$css['sql'];
-        if (preg_match('/^SELECT /i', $sql)) {
-            //explain
-            $query = @mysqli_query($db, "EXPLAIN " . $sql);
-            $arr   = mysqli_fetch_array($query);
-            self::sqlexplain($arr, $sql, $css);
-        }
-        self::sqlwhere($sql, $css);
-        self::trace($sql, 2, $css);
-    }
-
-    public static function mysqllog($sql, $db)
-    {
-        if (!self::check()) {
-            return;
-        }
-        $css = self::$css['sql'];
-        if (preg_match('/^SELECT /i', $sql)) {
-            //explain
-            $query = @mysql_query("EXPLAIN " . $sql, $db);
-            $arr   = mysql_fetch_array($query);
-            self::sqlexplain($arr, $sql, $css);
-        }
-        //判断sql语句是否有where
-        self::sqlwhere($sql, $css);
-        self::trace($sql, 2, $css);
-    }
-
-    public static function pdolog($sql, $pdo)
-    {
-        if (!self::check()) {
-            return;
-        }
-        $css = self::$css['sql'];
-        if (preg_match('/^SELECT /i', $sql)) {
-            //explain
-            try {
-                $obj = $pdo->query("EXPLAIN " . $sql);
-                if (is_object($obj) && method_exists($obj, 'fetch')) {
-                    $arr = $obj->fetch(\PDO::FETCH_ASSOC);
-                    self::sqlexplain($arr, $sql, $css);
-                }
-            } catch (Exception $e) {
-
-            }
-        }
-        self::sqlwhere($sql, $css);
-        self::trace($sql, 2, $css);
+        self::record('groupEnd');
     }
 
     private static function sqlexplain($arr, &$sql, &$css)
@@ -240,21 +181,8 @@ class Slog
         // 保存日志记录
         if ($e = error_get_last()) {
             self::error_handler($e['type'], $e['message'], $e['file'], $e['line']);
-            self::sendLog(); //此类终止不会调用类的 __destruct 方法，所以此处手动sendLog
+            self::sendLog(); 
         }
-    }
-
-    public static function getInstance()
-    {
-        if (null === self::$_instance) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
-    }
-
-    protected static function _log($type, $logs, $css = '')
-    {
-        self::getInstance()->record($type, $logs, $css);
     }
 
     protected static function check()
@@ -314,7 +242,6 @@ class Slog
         $config       = array_merge(self::$config, $config);
         self::$config = $config;
         if (self::check()) {
-            self::getInstance(); //强制初始化SocketLog实例
             if ($config['optimize']) {
                 self::$start_time   = microtime(true);
                 self::$start_memory = memory_get_usage();
@@ -329,11 +256,7 @@ class Slog
     //获得配置
     public static function getConfig($name)
     {
-        if (isset(self::$config[$name])) {
-            return self::$config[$name];
-        }
-
-        return null;
+        return isset(self::$config[$name]) ? self::$config[$name] : null;
     }
 
     //记录日志
@@ -446,9 +369,12 @@ class Slog
 
     }
 
-    public function __destruct()
+    public static function __callStatic($method, $args)
     {
-        self::sendLog();
+        if (in_array($method, self::$log_types)) {
+            array_unshift($args, $method);
+            return call_user_func_array(self::record, $args);
+        }
     }
 
 }

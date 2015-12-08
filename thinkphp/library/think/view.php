@@ -14,13 +14,13 @@ namespace think;
 class View
 {
     // 模板引擎实例
-    protected $engine = null; 
+    protected $engine = null;
     // 模板主题名称
-    protected $theme  = ''; 
+    protected $theme = '';
     // 模板变量
-    protected $data   = []; 
+    protected $data = [];
     // 视图参数
-    protected $config = [ 
+    protected $config = [
         'theme_on'          => false,
         'auto_detect_theme' => false,
         'var_theme'         => 't',
@@ -35,7 +35,7 @@ class View
 
     public function __construct(array $config = [])
     {
-        $this->config(empty($config) ? Config::get() : $config);
+        $this->config($config);
         $this->engine($this->config['engine_type']);
     }
 

@@ -11,10 +11,6 @@
 
 namespace think;
 
-use think\Config as Config;
-use think\Transform as Transform;
-use think\Url as Url;
-
 class Response
 {
 
@@ -23,9 +19,10 @@ class Response
      * @access protected
      * @param mixed $data 要返回的数据
      * @param String $type 返回数据格式
+     * @param bool $exit 是否终止执行
      * @return void
      */
-    public static function returnData($data, $type = '')
+    public static function returnData($data, $type = '', $exit = true)
     {
         $headers = [
             'json'   => 'application/json',
@@ -55,7 +52,11 @@ class Response
                 $data    = $handler . '(' . Transform::jsonEncode($data) . ');';
                 break;
         }
-        echo $data;
+        if ($exit) {
+            exit($data);
+        } else {
+            echo $data;
+        }
     }
 
     /**
@@ -70,10 +71,10 @@ class Response
     public static function result($data, $code = 0, $msg = '', $type = '')
     {
         $result = [
-            'code'  => $code, 
-            'msg'   => $msg, 
-            'time'  => NOW_TIME, 
-            'data'  => $data
+            'code' => $code,
+            'msg'  => $msg,
+            'time' => NOW_TIME,
+            'data' => $data,
         ];
         self::returnData($result, $type);
     }

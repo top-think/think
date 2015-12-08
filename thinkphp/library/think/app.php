@@ -107,10 +107,7 @@ class App
                 // 操作方法执行完成监听
                 Hook::listen('action_end', $data);
                 // 返回数据
-                Response::returnData($data, $config['default_return_type']);
-                if ($config['response_exit']) {
-                    exit;
-                }
+                Response::returnData($data, $config['default_return_type'], $config['response_exit']);
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
