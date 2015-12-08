@@ -53,6 +53,9 @@ class Lang
         $range = $range ? $range : self::$range;
         $lang  = is_file($file) ? include $file : [];
         // 批量定义
+        if(!isset(self::$lang[$range])) {
+            self::$lang[$range] = [];
+        }
         return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
     }
 
