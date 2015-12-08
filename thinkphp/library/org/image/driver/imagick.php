@@ -9,7 +9,7 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace think\image\driver;
+namespace org\image\driver;
 
 use think\Lang;
 
@@ -17,18 +17,21 @@ class Imagick
 {
     /**
      * 图像资源对象
+     *
      * @var resource
      */
     private $im;
 
     /**
-     * 图像信息，包括width,height,type,mime,size
+     * 图像信息，包括 width, height, type, mime, size
+     *
      * @var array
      */
     private $info;
 
     /**
      * 构造方法，可用于打开一张图像
+     *
      * @param string $imgname 图像路径
      */
     public function __construct($imgname = null)
@@ -41,6 +44,7 @@ class Imagick
 
     /**
      * 打开一张图像
+     *
      * @param  string $imgname 图像路径
      */
     public function open($imgname)
@@ -67,6 +71,7 @@ class Imagick
 
     /**
      * 保存图像
+     *
      * @param  string  $imgname   图像保存名称
      * @param  string  $type      图像类型
      * @param  boolean $interlace 是否对JPEG类型图像设置隔行扫描
@@ -104,6 +109,7 @@ class Imagick
 
     /**
      * 返回图像宽度
+     *
      * @return integer 图像宽度
      */
     public function width()
@@ -117,6 +123,7 @@ class Imagick
 
     /**
      * 返回图像高度
+     *
      * @return integer 图像高度
      */
     public function height()
@@ -130,6 +137,7 @@ class Imagick
 
     /**
      * 返回图像类型
+     *
      * @return string 图像类型
      */
     public function type()
@@ -143,6 +151,7 @@ class Imagick
 
     /**
      * 返回图像MIME类型
+     *
      * @return string 图像MIME类型
      */
     public function mime()
@@ -156,6 +165,7 @@ class Imagick
 
     /**
      * 返回图像尺寸数组 0 - 图像宽度，1 - 图像高度
+     *
      * @return array 图像尺寸
      */
     public function size()
@@ -169,6 +179,7 @@ class Imagick
 
     /**
      * 裁剪图像
+     *
      * @param  integer $w      裁剪区域宽度
      * @param  integer $h      裁剪区域高度
      * @param  integer $x      裁剪区域x坐标
@@ -204,7 +215,10 @@ class Imagick
         }
     }
 
-    /* 裁剪图片，内部调用 */
+    /**
+     * 裁剪图片，内部调用
+     *
+     */
     private function _crop($w, $h, $x, $y, $width, $height, $img = null)
     {
         is_null($img) && $img = $this->im;
@@ -228,6 +242,7 @@ class Imagick
 
     /**
      * 生成缩略图
+     *
      * @param  integer $width  缩略图最大宽度
      * @param  integer $height 缩略图最大高度
      * @param  integer $type   缩略图裁剪类型
@@ -364,7 +379,10 @@ class Imagick
         $this->crop($w, $h, $x, $y, $width, $height);
     }
 
-    /* 填充指定图像，内部使用 */
+    /**
+     * 填充指定图像，内部使用
+     *
+     */
     private function _fill($newimg, $posx, $posy, $neww, $newh, $img = null)
     {
         is_null($img) && $img = $this->im;
@@ -381,6 +399,7 @@ class Imagick
 
     /**
      * 添加水印
+     *
      * @param  string  $source 水印图片路径
      * @param  integer $locate 水印位置
      * @param  integer $alpha  水印透明度
@@ -493,6 +512,7 @@ class Imagick
 
     /**
      * 图像添加文字
+     *
      * @param  string  $text   添加的文字
      * @param  string  $font   字体路径
      * @param  integer $size   字号
@@ -633,9 +653,11 @@ class Imagick
 
     /**
      * 析构方法，用于销毁图像资源
+     *
      */
     public function __destruct()
     {
         empty($this->im) || $this->im->destroy();
     }
+
 }

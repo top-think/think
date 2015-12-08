@@ -9,9 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think;
+namespace org;
 
-use think\Image;
+use org\Image;
 
 class Upload
 {

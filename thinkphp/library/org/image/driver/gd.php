@@ -9,7 +9,7 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace think\image\driver;
+namespace org\image\driver;
 
 use Exception;
 
@@ -17,21 +17,26 @@ class Gd
 {
     /**
      * 图像资源对象
+     * 
      * @var resource
      */
     private $im;
+
     /**
-     * @var $git \think\image\driver\Gif
-*/
+     * @var $git org\image\driver\Gif
+     */
     private $gif;
+
     /**
-     * 图像信息，包括width,height,type,mime,size
+     * 图像信息，包括 width, height, type, mime, size
+     * 
      * @var array
      */
     private $info;
 
     /**
      * 构造方法，可用于打开一张图像
+     * 
      * @param string $imgname 图像路径
      */
     public function __construct($imgname = null)
@@ -322,8 +327,8 @@ class Gd
                 //设置缩略图的坐标及宽度和高度
                 $neww = $w * $scale;
                 $newh = $h * $scale;
-                $x = $this->info['width'] - $w;
-                $y = $this->info['height'] - $h;
+                $x    = $this->info['width'] - $w;
+                $y    = $this->info['height'] - $h;
                 $posx = ($width - $w * $scale) / 2;
                 $posy = ($height - $h * $scale) / 2;
 

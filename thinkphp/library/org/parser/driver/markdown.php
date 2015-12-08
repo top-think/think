@@ -13,7 +13,7 @@
 
 # 应用到ThinkPHP中，因而修改为ThinkPHP规范的命名空间
 # namespace Michelf;
-namespace think\parser\driver;
+namespace org\parser\driver;
 
 #
 # The following two constants are deprecated: avoid using them, they'll

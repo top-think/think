@@ -9,9 +9,9 @@
 // | Author: 麦当苗儿 <zuojiazi.cn@gmail.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 
-namespace think\oauth\driver;
+namespace org\oauth\driver;
 
-use think\oauth\Driver;
+use org\oauth\Driver;
 
 class Github extends Driver
 {
