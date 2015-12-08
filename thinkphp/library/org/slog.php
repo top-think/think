@@ -269,7 +269,7 @@ class Slog
         self::$logs[] = [
             'type' => $type,
             'msg'  => $msg,
-            'css'  => $css,
+            'css'  => isset(self::$css[$css]) ? self::$css[$css] : $css,
         ];
     }
 
