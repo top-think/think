@@ -39,6 +39,7 @@ class Slog
 
     public static function sql($sql, $pdo)
     {
+        
         if (is_object($pdo)) {
             if (!self::check()) {
                 return;
@@ -58,9 +59,10 @@ class Slog
             }
             self::sqlwhere($sql, $css);
             self::trace($sql, 2, $css);
+        }else{
+            throw new Exception('SocketLog can not support this database link');
         }
 
-        throw new Exception('SocketLog can not support this database link');
     }
 
     public static function trace($msg, $trace_level = 2, $css = '')
