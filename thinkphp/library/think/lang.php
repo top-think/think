@@ -35,6 +35,9 @@ class Lang
     {
         $range = $range ? $range : self::$range;
         // 批量定义
+        if (!isset(self::$lang[$range])) {
+            self::$lang[$range] = [];
+        }
         if (is_array($name)) {
             return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($name));
         } else {
@@ -52,6 +55,9 @@ class Lang
     {
         $range = $range ? $range : self::$range;
         $lang  = is_file($file) ? include $file : [];
+        if (!isset(self::$lang[$range])) {
+            self::$lang[$range] = [];
+        }
         // 批量定义
         return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
     }

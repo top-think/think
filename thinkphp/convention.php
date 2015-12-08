@@ -46,6 +46,8 @@ return [
     'action_bind_class'     => false,
     'url_module_map'        => [],
     'response_exit'         => true,
+    'default_lang'          => 'zh-cn',
+    'use_session'           => false,
 
     /* 错误设置 */
     //错误显示信息,非调试模式有效
