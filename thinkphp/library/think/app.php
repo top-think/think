@@ -71,7 +71,7 @@ class App
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
             // 安全检测
-            throw new Exception('[ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
+            throw new Exception('class [ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
         }
         if ($config['action_bind_class']) {
             $class    = self::bindActionClass($config['empty_controller']);
@@ -84,6 +84,9 @@ class App
             $action = ACTION_NAME . $config['action_suffix'];
         }
 
+        if (!$instance) {
+            throw new Exception('class [ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
+        }
         try {
             // 操作方法开始监听
             $call = [$instance, $action];
@@ -119,7 +122,7 @@ class App
                 $method = new \ReflectionMethod($instance, '_empty');
                 $method->invokeArgs($instance, [$action, '']);
             } else {
-                throw new Exception('[ ' . (new \ReflectionClass($instance))->getName() . ':' . $action . ' ] not exists ', 404);
+                throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ');
             }
         }
     }
