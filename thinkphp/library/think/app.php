@@ -321,7 +321,7 @@ class App
         define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
 
         // 模块初始化
-        if (MODULE_NAME && MODULE_NAME != $config['common_module'] && is_dir(APP_PATH . MODULE_NAME)) {
+        if (MODULE_NAME && MODULE_NAME != COMMON_MODULE && is_dir(APP_PATH . MODULE_NAME)) {
             Hook::listen('app_begin');
             define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
             define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . '/');
