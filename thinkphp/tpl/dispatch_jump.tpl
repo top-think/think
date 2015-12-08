@@ -16,16 +16,17 @@ body{ background: #fff; font-family: '微软雅黑'; color: #333; font-size: 16p
 </head>
 <body>
 <div class="system-message">
-<present name="message">
-<h1>:)</h1>
-<p class="success"><?php echo(strip_tags($message)); ?></p>
-<else/>
-<h1>:(</h1>
-<p class="error"><?php echo(strip_tags($error)); ?></p>
-</present>
+<switch name="code">
+<case value="1"><h1>:)</h1>
+<p class="success"><?php echo(strip_tags($msg)); ?></p>
+</case>
+<case value="0"><h1>:(</h1>
+<p class="error"><?php echo(strip_tags($msg)); ?></p>
+</case>
+</switch>
 <p class="detail"></p>
 <p class="jump">
-页面自动 <a id="href" href="<?php echo($jumpUrl); ?>">跳转</a> 等待时间： <b id="wait"><?php echo($waitSecond); ?></b>
+页面自动 <a id="href" href="<?php echo($url); ?>">跳转</a> 等待时间： <b id="wait"><?php echo($wait); ?></b>
 </p>
 </div>
 <script type="text/javascript">

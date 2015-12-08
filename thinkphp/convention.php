@@ -33,10 +33,8 @@ return [
     'url_params_bind'       => true,
     // 异常页面的模板文件
     'exception_tmpl'        => THINK_PATH . 'tpl/think_exception.tpl',
-    // 默认错误跳转对应的模板文件
-    'error_tmpl'            => THINK_PATH . 'tpl/dispatch_jump.tpl',
-    // 默认成功跳转对应的模板文件
-    'success_tmpl'          => THINK_PATH . 'tpl/dispatch_jump.tpl',
+    // 默认跳转页面对应的模板文件
+    'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
     // 默认AJAX 数据返回格式,可选JSON XML ...
     'default_ajax_return'   => 'JSON',
     // 默认JSONP格式返回的处理方法
