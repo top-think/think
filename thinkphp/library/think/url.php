@@ -48,11 +48,11 @@ class Url
             $domain = $host . (strpos($host, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
         } elseif (true === $domain) {
             $domain = $_SERVER['HTTP_HOST'];
-            if ($config['app_sub_domain_deplay']) {
+            if ($config['domain_deplay']) {
                 // 开启子域名部署
                 $domain = 'localhost' == $domain ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
                 // '子域名'=>array('项目[/分组]');
-                foreach ($config['app_sub_domain_rules'] as $key => $rule) {
+                foreach ($config['domain_rules'] as $key => $rule) {
                     if (false === strpos($key, '*') && 0 === strpos($url, $rule[0])) {
                         $domain = $key . strstr($domain, '.'); // 生成对应子域名
                         $url    = substr_replace($url, '', 0, strlen($rule[0]));
@@ -79,7 +79,7 @@ class Url
         $depr = $config['pathinfo_depr'];
         if ($url) {
             if (0 === strpos($url, '/')) {
-// 定义路由
+                // 定义路由
                 $route = true;
                 $url   = substr($url, 1);
                 if ('/' != $depr) {
@@ -104,38 +104,27 @@ class Url
             }
         }
 
-        if (0 == $config['url_model']) {
-            // 普通模式URL转换
-            $url = $config['base_url'] . '?' . http_build_query(array_reverse($var));
-            if (!empty($vars)) {
+        $url = $config['base_url'] . '/' . (isset($route) ? rtrim($url, $depr) : implode($depr, array_reverse($var)));
+
+        if (!empty($vars)) {
+            // 添加参数
+            if ($config['url_common_param']) {
                 $vars = urldecode(http_build_query($vars));
-                $url .= '&' . $vars;
-            }
-        } else {
-            // PATHINFO模式或者兼容URL模式
-            if (isset($route)) {
-                $url = $config['base_url'] . '/' . rtrim($url, $depr);
+                $url .= '?' . $vars;
             } else {
-                $url = $config['base_url'] . '/' . implode($depr, array_reverse($var));
-            }
-            if (!empty($vars)) {
-                // 添加参数
-                foreach ($vars as $var => $val) {
-                    if ('' !== trim($val)) {
-                        $url .= $depr . $var . $depr . urlencode($val);
-                    }
-                }
-            }
-            if ($suffix) {
-                $suffix = true === $suffix ? $config['url_html_suffix'] : $suffix;
-                if ($pos = strpos($suffix, '|')) {
-                    $suffix = substr($suffix, 0, $pos);
-                }
-                if ($suffix && '/' != substr($url, -1)) {
-                    $url .= '.' . ltrim($suffix, '.');
-                }
+                $url .= $depr . implode($depr, $vars);
             }
         }
+        if ($suffix) {
+            $suffix = true === $suffix ? $config['url_html_suffix'] : $suffix;
+            if ($pos = strpos($suffix, '|')) {
+                $suffix = substr($suffix, 0, $pos);
+            }
+            if ($suffix && '/' != substr($url, -1)) {
+                $url .= '.' . ltrim($suffix, '.');
+            }
+        }
+
         if (isset($anchor)) {
             $url .= '#' . $anchor;
         }
