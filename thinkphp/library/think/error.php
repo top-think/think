@@ -20,11 +20,13 @@ class Error
      */
     public static function appException($e)
     {
-        $error['message'] = $e->getMessage();
-        $error['file']    = $e->getFile();
-        $error['line']    = $e->getLine();
-        $error['trace']   = $e->getTraceAsString();
-        $error['code']    = $e->getCode();
+        $error = [
+            'message'   => $e->getMessage(),
+            'file'      => $e->getFile(),
+            'line'      => $e->getLine(),
+            'trace'     => $e->getTraceAsString(),
+            'code'      => $e->getCode(),
+        ];
         // 记录异常日志
         Log::record($error['message'], 'ERR');
         // 发送404信息
@@ -98,9 +100,11 @@ class Error
             exit($message);
         } elseif (IS_API) {
             // API接口
-            $data['code'] = $code;
-            $data['msg']  = $message;
-            $data['time'] = NOW_TIME;
+            $data = [
+                'code'  => $code,
+                'msg'   => $message,
+                'time'  => NOW_TIME,
+            ];
             Response::returnData($data);
             exit();
         }

@@ -55,18 +55,23 @@ class ReadHtmlCache
             $moduleName = strtolower(MODULE_NAME);
             $actionName = strtolower(ACTION_NAME);
             if (isset($htmls[$moduleName . ':' . $actionName])) {
-                $html = $htmls[$moduleName . ':' . $actionName]; // 某个模块的操作的静态规则
+                // 某个模块的操作的静态规则
+                $html = $htmls[$moduleName . ':' . $actionName]; 
             } elseif (isset($htmls[$moduleName . ':'])) {
-// 某个模块的静态规则
+                // 某个模块的静态规则
                 $html = $htmls[$moduleName . ':'];
             } elseif (isset($htmls[$actionName])) {
-                $html = $htmls[$actionName]; // 所有操作的静态规则
+                // 所有操作的静态规则
+                $html = $htmls[$actionName]; 
             } elseif (isset($htmls['*'])) {
-                $html = $htmls['*']; // 全局静态规则
+                // 全局静态规则
+                $html = $htmls['*']; 
             } elseif (isset($htmls['empty:index']) && !class_exists(MODULE_NAME . 'Action')) {
-                $html = $htmls['empty:index']; // 空模块静态规则
+                // 空模块静态规则
+                $html = $htmls['empty:index']; 
             } elseif (isset($htmls[$moduleName . ':_empty']) && self::isEmptyAction(MODULE_NAME, ACTION_NAME)) {
-                $html = $htmls[$moduleName . ':_empty']; // 空操作静态规则
+                // 空操作静态规则
+                $html = $htmls[$moduleName . ':_empty']; 
             }
             if (!empty($html)) {
                 // 解读静态规则
@@ -88,7 +93,8 @@ class ReadHtmlCache
                     $rule = $html[2]($rule);
                 }
                 // 应用附加函数
-                $cacheTime = isset($html[1]) ? $html[1] : C('HTML_CACHE_TIME'); // 缓存有效期
+                // 缓存有效期
+                $cacheTime = isset($html[1]) ? $html[1] : C('HTML_CACHE_TIME');
                 // 当前缓存文件
                 define('HTML_FILE_NAME', HTML_PATH . $rule . C('HTML_FILE_SUFFIX'));
                 return $cacheTime;
@@ -130,5 +136,4 @@ class ReadHtmlCache
         $class     = new $className;
         return !method_exists($class, $action);
     }
-
 }

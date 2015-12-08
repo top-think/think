@@ -35,10 +35,10 @@ class ContentReplace
     {
         if(IS_CGI) {
             //CGI/FASTCGI模式下
-            $_temp  = explode('.php',$_SERVER['PHP_SELF']);
-            $script_name    =   rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/');
+            $_temp          = explode('.php',$_SERVER['PHP_SELF']);
+            $script_name    = rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/');
         } else {
-            $script_name    =   rtrim($_SERVER['SCRIPT_NAME'],'/');
+            $script_name    = rtrim($_SERVER['SCRIPT_NAME'],'/');
         }
         define('ROOT_URL',   rtrim(dirname(str_replace("\\","\/",$script_name)),'/'));
         define('MODULE_URL',    ROOT_URL.'/'.(defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME));
@@ -47,13 +47,19 @@ class ContentReplace
 
         // 系统默认的特殊变量替换
         $replace =  [
-            '__ROOT__'      =>  ROOT_URL,       // 当前网站地址
-            '__APP__'       =>  MODULE_URL,        // 当前项目地址
-            '__CONTROLL__'  =>  CONTROLLER_URL,     // 当前操作地址
-            '__URL__'       =>  CONTROLLER_URL,
-            '__ACTION__'    =>  ACTION_URL,     // 当前操作地址
-            '__SELF__'      =>  $_SERVER['PHP_SELF'],       // 当前页面地址
-            '__PUBLIC__'    =>  ROOT_URL.'/Public',// 站点公共目录
+            // 当前网站地址
+            '__ROOT__'      => ROOT_URL,
+            // 当前项目地址
+            '__APP__'       => MODULE_URL,
+            // 当前操作地址
+            '__CONTROLL__'  => CONTROLLER_URL,
+            '__URL__'       => CONTROLLER_URL,
+            // 当前操作地址
+            '__ACTION__'    => ACTION_URL,
+            // 当前页面地址
+            '__SELF__'      => $_SERVER['PHP_SELF'],
+            // 站点公共目录
+            '__PUBLIC__'    => ROOT_URL.'/Public', 
         ];
         // 允许用户自定义模板的字符串替换
         if(is_array(Config::get('tmpl_parse_string')) ){

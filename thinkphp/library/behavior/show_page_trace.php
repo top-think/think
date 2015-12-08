@@ -65,16 +65,19 @@ class ShowPageTrace
         $tabs  = Config::get('trace_page_tabs');
         foreach ($tabs as $name => $title) {
             switch (strtoupper($name)) {
-                case 'BASE': // 基本信息
+                // 基本信息
+                case 'BASE': 
                     $trace[$title] = $base;
                     break;
-                case 'FILE': // 文件信息
+                // 文件信息
+                case 'FILE': 
                     $trace[$title] = $info;
                     break;
-                default: // 调试信息
+                // 调试信息
+                default: 
                     $name = strtoupper($name);
                     if (strpos($name, '|')) {
-// 多组信息
+                        // 多组信息
                         $array  = explode('|', $name);
                         $result = [];
                         foreach ($array as $name) {

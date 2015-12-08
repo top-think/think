@@ -69,10 +69,12 @@ class Response
      */
     public static function result($data, $code = 0, $msg = '', $type = '')
     {
-        $result['code'] = $code;
-        $result['msg']  = $msg;
-        $result['time'] = NOW_TIME;
-        $result['data'] = $data;
+        $result = [
+            'code'  => $code, 
+            'msg'   => $msg, 
+            'time'  => NOW_TIME, 
+            'data'  => $data
+        ];
         self::returnData($result, $type);
     }
 

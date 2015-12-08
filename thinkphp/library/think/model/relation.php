@@ -11,8 +11,8 @@
 
 namespace think\model;
 
-T('think/model/view');
-class ViewModel extends \think\model
+T('think/model/relation');
+class Relation extends \think\model
 {
-    use \traits\think\model\view;
+    use \traits\think\model\relation;
 }

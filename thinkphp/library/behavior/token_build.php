@@ -9,6 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace think\behavior;
+
 use think\Behavior;
 
 /**
@@ -22,10 +23,14 @@ class TokenBuild extends Behavior
 {
     // 行为参数定义
     protected $options = [
-        'TOKEN_ON'    => false, // 开启令牌验证
-        'TOKEN_NAME'  => '__hash__', // 令牌验证的表单隐藏字段名称
-        'TOKEN_TYPE'  => 'md5', // 令牌验证哈希规则
-        'TOKEN_RESET' => true, // 令牌错误后是否重置
+        // 开启令牌验证
+        'TOKEN_ON'    => false, 
+        // 令牌验证的表单隐藏字段名称
+        'TOKEN_NAME'  => '__hash__', 
+        // 令牌验证哈希规则
+        'TOKEN_TYPE'  => 'md5', 
+        // 令牌错误后是否重置
+        'TOKEN_RESET' => true, 
     ];
 
     public function run(&$content)
@@ -54,7 +59,7 @@ class TokenBuild extends Behavior
         // 标识当前页面唯一性
         $tokenKey = md5($_SERVER['REQUEST_URI']);
         if (isset($_SESSION[$tokenName][$tokenKey])) {
-// 相同页面不重复生成session
+            // 相同页面不重复生成session
             $tokenValue = $_SESSION[$tokenName][$tokenKey];
         } else {
             $tokenValue                      = $tokenType(microtime(true));

@@ -17,7 +17,7 @@ use think\Loader;
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
  */
-class MongoModel extends \Think\Model
+class Mongo extends \Think\Model
 {
     // 主键类型
     const TYPE_OBJECT = 1;

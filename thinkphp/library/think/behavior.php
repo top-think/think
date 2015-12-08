@@ -19,7 +19,7 @@ namespace think;
 abstract class Behavior {
 
     // 行为参数 和配置参数设置相同
-    protected $options =  array();
+    protected $options = [];
 
    /**
      * 架构函数
