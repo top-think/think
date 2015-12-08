@@ -57,8 +57,8 @@ class App
             Session::init($config['session']);
         }
         //判断，如果启动SocketLog调试， 进行SocketLog配置
-        if($config['slog']['enable']) {
-            slog::config($config['slog']); 
+        if ($config['slog']['enable']) {
+            \org\Slog::config($config['slog']);
         }
 
         // 应用URL调度

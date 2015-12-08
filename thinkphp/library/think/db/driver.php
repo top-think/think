@@ -17,7 +17,6 @@ use think\Debug;
 use think\Exception;
 use think\Lang;
 use think\Log;
-use think\Slog;
 
 abstract class Driver
 {
@@ -743,7 +742,7 @@ abstract class Driver
     protected function parseOrder($order)
     {
         $array = [];
-        if(is_array($order)) {
+        if (is_array($order)) {
             foreach ($order as $key => $val) {
                 if (is_numeric($key)) {
                     if (false === strpos($val, '(')) {
@@ -1163,9 +1162,9 @@ abstract class Driver
             }
         }
 
-        $slog_config=Config::get('slog');
-        if($slog_config['enable'] && $start) {
-            slog::sql($this->queryStr,$this->_linkID); 
+        $slog_config = Config::get('slog');
+        if ($slog_config['enable'] && $start) {
+            \org\Slog::sql($this->queryStr, $this->_linkID);
         }
     }
 

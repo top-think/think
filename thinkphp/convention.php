@@ -56,7 +56,6 @@ return [
     'show_error_msg'        => false,
     //默认输出类型
     'default_return_type'   => 'html',
-    'common_module'         => '',
 
     'log'                   => [
         'type' => 'File',
@@ -110,16 +109,16 @@ return [
         'slave_no'    => '',
     ],
     /* SocketLog 调试  */
-    'slog'=> [
-        'enable'=>false, //是否记录日志的开关
-        'host'=>'localhost',
+    'slog'                  => [
+        'enable'              => false, //是否记录日志的开关
+        'host'                => 'localhost',
         //是否显示利于优化的参数，如果允许时间，消耗内存等
-        'optimize'=>true,
-        'show_included_files'=>true,
-        'error_handler'=>true,
+        'optimize'            => true,
+        'show_included_files' => true,
+        'error_handler'       => true,
         //日志强制记录到配置的client_id
-        'force_client_id'=>'',
+        'force_client_id'     => '',
         //限制允许读取日志的client_id
-        'allow_client_ids'=>array()
-    ]
+        'allow_client_ids'    => array(),
+    ],
 ];
