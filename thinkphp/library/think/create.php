@@ -25,85 +25,133 @@ class Create
             }
         }
         foreach ($build as $module => $list) {
-            if (!is_dir(APP_PATH . $module)) {
-                // 创建模块目录
-                mkdir(APP_PATH . $module);
-            }
-            // 创建配置文件和公共文件
-            self::buildCommonFile($module);
-            // 创建欢迎页面
-            self::buildHelloController($module);
-
-            // 创建子目录和文件
-            foreach ($list as $path => $file) {
-                if (is_int($path)) {
-                    // 生成文件
-                    if (!is_file(APP_PATH . $module . '/' . $file)) {
-                        file_put_contents(APP_PATH . $module . '/' . $file, "<?php\n");
-                    }
-                } else {
-                    // 创建模块的子目录
-                    if (!is_dir(APP_PATH . $module . '/' . $path)) {
-                        mkdir(APP_PATH . $module . '/' . $path);
-                    }
-                    foreach ($file as $val) {
-                        if (strpos($val, '.')) {
-                            // 文件
-                            $filename = $val;
-                            $content  = '';
-                        } else {
-                            $filename = APP_PATH . $module . '/' . $path . '/' . strtolower($val) . EXT;
-                            switch ($path) {
-                                case 'controller':    // 控制器
-                                    $content = "<?php\nnamespace {$module}\\{$path};\nclass {$val} {\n}";
-                                    break;
-                                case 'model':    // 模型
-                                    $content = "<?php\nnamespace {$module}\\{$path};\nclass {$val} extends \Think\Model{\n}";
-                                    break;
-                                case 'view':    // 视图
-                                    $content = '';
-                                    break;
-                                default:
-                                    $content = "<?php\nnamespace {$module}\\{$path};\nclass {$val} {\n}";
-                            }
-                        }
-
-                        if (!is_file($filename)) {
-                            file_put_contents($filename, $content);
-                        }
-                    }
-                }
+            if ('__dir__' == $module) {
+                // 创建目录列表
+                self::buildDir($list);
+            } elseif ('__file__' == $module) {
+                // 创建文件列表
+                self::buildFile($list);
+            } else {
+                // 创建模块
+                self::buildModule($module, $list);
             }
         }
         // 解除锁定
         unlink($lockfile);
     }
 
-    // 创建欢迎页面
-    public static function buildHelloController($module)
+    // 创建目录
+    protected static function buildDir($list)
     {
-        $filename = APP_PATH . $module . '/controller/index' . EXT;
+        foreach ($list as $dir) {
+            if (!is_dir(APP_PATH . $dir)) {
+                // 创建目录
+                mkdir(APP_PATH . $dir, 0777, true);
+            }
+        }
+    }
+
+    // 创建文件
+    protected static function buildFile($list)
+    {
+        foreach ($list as $file) {
+            if (!is_dir(APP_PATH . dirname($file))) {
+                // 创建目录
+                mkdir(APP_PATH . dirname($file), 0777, true);
+            }
+            if (!is_file(APP_PATH . $file)) {
+                file_put_contents(APP_PATH . $file, '');
+            }
+        }
+    }
+
+    // 创建模块
+    protected static function buildModule($module, $list)
+    {
+        if (!is_dir(APP_PATH . $module)) {
+            // 创建模块目录
+            mkdir(APP_PATH . $module);
+        }
+        // 创建配置文件和公共文件
+        self::buildCommon($module);
+        // 创建模块的默认页面
+        self::buildHello($module);
+
+        // 创建子目录和文件
+        foreach ($list as $path => $file) {
+            $modulePath = APP_PATH . $module . '/';
+            if ('__dir__' == $path) {
+                // 生成子目录
+                foreach ($file as $dir) {
+                    if (!is_dir($modulePath . $dir)) {
+                        // 创建目录
+                        mkdir($modulePath . $dir, 0777, true);
+                    }
+                }
+            } elseif ('__file__' == $path) {
+                // 生成（空白）文件
+                foreach ($file as $name) {
+                    if (!is_file($modulePath . $name)) {
+                        file_put_contents($modulePath . $name, '');
+                    }
+                }
+            } else {
+                // 生成相关MVC文件
+                foreach ($file as $val) {
+                    $filename = $modulePath . $path . '/' . Loader::parseName($val) . EXT;
+                    switch ($path) {
+                        case CONTROLLER_LAYER: // 控制器
+                            $content = "<?php\nnamespace {$module}\\{$path};\n\nclass {$val} {\n\n}";
+                            break;
+                        case MODEL_LAYER: // 模型
+                            $content = "<?php\nnamespace {$module}\\{$path};\n\nclass {$val} extends \Think\Model{\n\n}";
+                            break;
+                        case VIEW_LAYER: // 视图
+                            $filename = $modulePath . $path . '/' . Loader::parseName($val) . '.html';
+                            if (!is_dir(dirname($filename))) {
+                                // 创建目录
+                                mkdir(dirname($filename), 0777, true);
+                            }
+                            $content = '';
+                            break;
+                        default:
+                            // 其他文件
+                            $content = "<?php\nnamespace {$module}\\{$path};\n\nclass {$val} {\n\n}";
+                    }
+
+                    if (!is_file($filename)) {
+                        file_put_contents($filename, $content);
+                    }
+                }
+            }
+        }
+    }
+
+    // 创建欢迎页面
+    protected static function buildHello($module)
+    {
+        $filename = APP_PATH . $module . '/' . CONTROLLER_LAYER . '/' . Config::get('default_module') . EXT;
         if (!is_file($filename)) {
             $content = file_get_contents(THINK_PATH . 'tpl/default_index.tpl');
             $content = str_replace('{$module}', $module, $content);
-            if (!is_dir(APP_PATH . $module . '/controller')) {
-                mkdir(APP_PATH . $module . '/controller');
+            if (!is_dir(APP_PATH . $module . '/' . CONTROLLER_LAYER)) {
+                mkdir(APP_PATH . $module . '/' . CONTROLLER_LAYER);
             }
             file_put_contents($filename, $content);
         }
     }
 
     // 创建模块公共文件
-    public static function buildCommonFile($module)
+    protected static function buildCommon($module)
     {
         if (!is_file(APP_PATH . $module . '/common.php')) {
             file_put_contents(APP_PATH . $module . '/common.php', "<?php\n");
         }
         if (!is_file(APP_PATH . $module . '/config.php')) {
-            file_put_contents(APP_PATH . $module . '/config.php', "<?php\nreturn [\n];");
+            file_put_contents(APP_PATH . $module . '/config.php', "<?php\nreturn [\n\n];");
         }
         if (!is_file(APP_PATH . $module . '/alias.php')) {
-            file_put_contents(APP_PATH . $module . '/alias.php', "<?php\nreturn [\n];");
+            file_put_contents(APP_PATH . $module . '/alias.php', "<?php\nreturn [\n\n];");
         }
     }
 }

@@ -278,10 +278,10 @@ class App
                 $depr = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
-                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                __INFO__;
+                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                    __INFO__;
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
@@ -322,7 +322,7 @@ class App
         define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
 
         // 模块初始化
-        if (MODULE_NAME && MODULE_NAME != COMMON_MODULE && is_dir(APP_PATH . MODULE_NAME)) {
+        if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
             Hook::listen('app_begin');
             define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
             define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . '/');

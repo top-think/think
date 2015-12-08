@@ -13,6 +13,8 @@ return [
     'pathinfo_depr'         => '/',
     // 默认模块名
     'default_module'        => 'index',
+    // 禁止访问模块
+    'deny_module_list'      => [COMMON_MODULE, 'runtime'],
     // 默认控制器名
     'default_controller'    => 'index',
     // 默认操作名
@@ -21,8 +23,6 @@ return [
     'empty_controller'      => 'error',
     // 操作方法后缀
     'action_suffix'         => '',
-    // URL模式
-    'url_model'             => 1,
     // 获取当前页面地址的系统变量 默认为REQUEST_URI
     'url_request_uri'       => 'REQUEST_URI',
     // 基础URL路径
@@ -59,7 +59,7 @@ return [
     //默认输出类型
     'default_return_type'   => 'html',
     //默认语言
-    'default_lang'          => 'zh-cn', 
+    'default_lang'          => 'zh-cn',
     //是否使用session
     'use_session'           => true,
     //url地址的后缀
