@@ -12,12 +12,14 @@
 namespace index\controller;
 
 use think\View;
+use org\Slog;
 
 class Index
 {
 
     public function index()
     {
+        Slog::log('调试');
         $view = new View();
         return $view->fetch();
     }

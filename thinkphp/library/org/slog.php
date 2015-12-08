@@ -120,7 +120,7 @@ class Slog
         }
 
         set_error_handler([__CLASS__, 'error_handler']);
-        register_shutdown_function([__CLASS__, 'fatalError']));
+        register_shutdown_function([__CLASS__, 'fatalError']);
     }
 
     public static function error_handler($errno, $errstr, $errfile, $errline)
@@ -260,7 +260,7 @@ class Slog
     }
 
     //记录日志
-    public function record($type, $msg = '', $css = '')
+    public static function record($type, $msg = '', $css = '')
     {
         if (!self::check()) {
             return;
@@ -373,7 +373,7 @@ class Slog
     {
         if (in_array($method, self::$log_types)) {
             array_unshift($args, $method);
-            return call_user_func_array(self::record, $args);
+            return call_user_func_array(['\org\Slog','record'], $args);
         }
     }
 

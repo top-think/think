@@ -42,8 +42,7 @@ return [
         'think\Url'                  => CORE_PATH . 'url' . EXT,
         'think\Debug'                => CORE_PATH . 'debug' . EXT,
         'think\Input'                => CORE_PATH . 'input' . EXT,
-        'think\Lang'                 => CORE_PATH . 'lang' . EXT,
-        'think\Slog'                 => CORE_PATH . 'slog' . EXT
+        'think\Lang'                 => CORE_PATH . 'lang' . EXT
     ],
 
     'init'   => [],

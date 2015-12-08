@@ -58,6 +58,7 @@ class App
         }
         //判断，如果启动SocketLog调试， 进行SocketLog配置
         if ($config['slog']['enable']) {
+            define('SLOG_ENABLE',true);
             \org\Slog::config($config['slog']);
         }
 
