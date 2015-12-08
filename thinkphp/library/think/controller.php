@@ -114,7 +114,7 @@ class Controller
      */
     public function show($content, $vars = [])
     {
-        return $this->view->fetch($content, $vars, '', true);
+        return $this->view->show($content, $vars);
     }
 
     /**

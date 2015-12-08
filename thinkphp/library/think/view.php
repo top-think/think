@@ -58,10 +58,11 @@ class View
     /**
      * 设置视图参数
      * @access public
-     * @param array $config 视图参数
+     * @param mixed $config 视图参数或者数组
+     * @param string $value 值
      * @return View
      */
-    public function config(array $config = [])
+    public function config($config = '',$value='')
     {
         if (is_array($config)) {
             foreach ($this->config as $key => $val) {
@@ -69,8 +70,10 @@ class View
                     $this->config[$key] = $config[$key];
                 }
             }
-            return $this;
+        }else{
+            $this->config[$config]  =   $value;
         }
+        return $this;
     }
 
     /**
@@ -146,6 +149,18 @@ class View
         }
         // 获取并清空缓存
         return ob_get_clean();
+    }
+
+    /**
+     * 渲染内容输出
+     * @access public
+     * @param string $content 内容
+     * @param array  $vars    模板输出变量
+     * @return mixed
+     */
+    public function show($content, $vars = [])
+    {
+        return $this->fetch($content, $vars, '', true);
     }
 
     /**
