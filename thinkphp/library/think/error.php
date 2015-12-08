@@ -29,9 +29,9 @@ class Error
         ];
         // 记录异常日志
         Log::record($error['message'], 'ERR');
-        // 发送404信息
-        header('HTTP/1.1 404 Not Found');
-        header('Status:404 Not Found');
+        // 发送500信息
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Status:500 Internal Server Error');
         // 输出异常页面
         self::halt($error);
     }
@@ -96,18 +96,6 @@ class Error
     {
         $message = is_array($error) ? $error['message'] : $error;
         $code    = is_array($error) ? $error['code'] : $code;
-        if (IS_CLI) {
-            exit($message);
-        } elseif (IS_API) {
-            // API接口
-            $data = [
-                'code'  => $code,
-                'msg'   => $message,
-                'time'  => NOW_TIME,
-            ];
-            Response::returnData($data);
-            exit();
-        }
         $e = [];
         if (APP_DEBUG) {
             //调试模式下输出错误信息
@@ -135,8 +123,10 @@ class Error
                 }
             }
         }
-        // 包含异常页面模板
-        include Config::get('exception_tmpl');
+        // 异常信息输出监听
+        Hook::listen('error_output', $e);
+        // 输出异常内容
+        Response::returnData($e, Config::get('default_return_type'));
         exit;
     }
 }
