@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think;
+namespace org;
 
 // 内容解析类
 class Parser
@@ -24,7 +24,7 @@ class Parser
     public static function parse($content, $type)
     {
         if (!isset(self::$handler[$type])) {
-            $class                = '\\think\\parser\\driver\\' . strtolower($type);
+            $class                = '\\org\\parser\\driver\\' . strtolower($type);
             self::$handler[$type] = new $class();
         }
         return self::$handler[$type]->parse($content);

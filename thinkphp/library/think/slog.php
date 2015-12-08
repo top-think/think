@@ -4,7 +4,7 @@
  * @author luofei614<weibo.com/luofei614>
  */
 namespace think;
-class slog
+class Slog
 {
     public static $start_time=0;
     public static $start_memory=0;

@@ -17,7 +17,7 @@ use think\Debug;
 use think\Exception;
 use think\Lang;
 use think\Log;
-use think\slog;
+use think\Slog;
 
 abstract class Driver
 {
