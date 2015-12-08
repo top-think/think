@@ -330,7 +330,7 @@ class App
             // 初始化模块
             self::initModule(MODULE_NAME, $config);
         } else {
-            throw new Exception('module not exists :' . MODULE_NAME);
+            throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ');
         }
 
         // 获取控制器名
