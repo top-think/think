@@ -47,26 +47,30 @@ class Create
                         mkdir(APP_PATH . $module . '/' . $path);
                     }
                     foreach ($file as $val) {
-                        $filename = APP_PATH . $module . '/' . $path . '/' . strtolower($val) . EXT;
-                        switch ($path) {
-                            case 'controller':    // 控制器
-                                if (!is_file($filename)) {
-                                    file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
-                                }
-                                break;
-                            case 'model':    // 模型
-                                if (!is_file($filename)) {
-                                    file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} extends \Think\Model{\n}");
-                                }
-                                break;
-                            case 'view':    // 视图
-                                break;
-                            default:
-                                if (!is_file($filename)) {
-                                    file_put_contents($filename, "<?php\nnamespace {$module}\\{$path};\nclass {$filename} {\n}");
-                                }
+                        if (strpos($val, '.')) {
+                            // 文件
+                            $filename = $val;
+                            $content  = '';
+                        } else {
+                            $filename = APP_PATH . $module . '/' . $path . '/' . strtolower($val) . EXT;
+                            switch ($path) {
+                                case 'controller':    // 控制器
+                                    $content = "<?php\nnamespace {$module}\\{$path};\nclass {$val} {\n}";
+                                    break;
+                                case 'model':    // 模型
+                                    $content = "<?php\nnamespace {$module}\\{$path};\nclass {$val} extends \Think\Model{\n}";
+                                    break;
+                                case 'view':    // 视图
+                                    $content = '';
+                                    break;
+                                default:
+                                    $content = "<?php\nnamespace {$module}\\{$path};\nclass {$val} {\n}";
+                            }
                         }
 
+                        if (!is_file($filename)) {
+                            file_put_contents($filename, $content);
+                        }
                     }
                 }
             }
