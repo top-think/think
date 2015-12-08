@@ -19,4 +19,5 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 
 ThinkPHP5的运行环境要求PHP5.4以上，目前处于开发测试阶段，不排除正式发布之前有所调整，
 请谨慎用于实际项目 ^_^。
+简单的使用文档参考 http://www.kancloud.cn/thinkphp/thinkphp5-guide 
 
