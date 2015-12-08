@@ -22,6 +22,9 @@ class Config
     public static function range($range)
     {
         self::$range = $range;
+        if (!isset(self::$config[$range])) {
+            self::$config[$range] = [];
+        }
     }
 
     // 解析其他格式的配置参数
@@ -38,6 +41,9 @@ class Config
     public static function load($file, $name = '', $range = '')
     {
         $file = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
+        if (!isset(self::$config[$range])) {
+            self::$config[$range] = [];
+        }
         return is_file($file) ? self::set(include $file, $name, $range) : self::$config[$range];
     }
 
@@ -107,7 +113,8 @@ class Config
                 return self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
             }
         } else {
-            return null; // 避免非法参数
+            // 为空直接返回 已有配置
+            return self::$config[$range];
         }
     }
 
