@@ -110,7 +110,6 @@ return [
     ],
     /* SocketLog 调试  */
     'slog'                  => [
-        'enable'              => false, //是否记录日志的开关
         'host'                => 'localhost',
         //是否显示利于优化的参数，如果允许时间，消耗内存等
         'optimize'            => true,

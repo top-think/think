@@ -189,7 +189,7 @@ class Slog
 
     protected static function check()
     {
-        if (!self::$config['enable']) {
+        if (!SLOG_ON) {
             return false;
         }
         $tabid = self::getClientArg('tabid');
