@@ -424,7 +424,7 @@ class Route
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
         }
-        $result = self::parseRoute($url);
+        $result = self::parseRoute($url, true);
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
         }
@@ -433,7 +433,7 @@ class Route
 
     // 解析规范的路由地址
     // 地址格式 [模块/控制器/操作?]参数1=值1&参数2=值2...
-    private static function parseRoute($url)
+    private static function parseRoute($url, $reverse = false)
     {
         $var = [];
         if (false !== strpos($url, '?')) {
@@ -444,10 +444,13 @@ class Route
         } elseif (strpos($url, '/')) {
             // [模块/控制器/操作]
             $path = explode('/', $url, 4);
-        } else {
+        } elseif (false !== strpos($url, '=')) {
             // 参数1=值1&参数2=值2...
             parse_str($url, $var);
+        } else {
+            $path = [$url];
         }
+        $route = [null, null, null];
         if (isset($path)) {
             // 解析path额外的参数
             if (!empty($path[3])) {
@@ -456,12 +459,19 @@ class Route
                 }, array_pop($path));
             }
             // 解析[模块/控制器/操作]
-            $action     = array_pop($path);
-            $action     = '[rest]' == $action ? REQUEST_METHOD : $action;
-            $controller = !empty($path) ? array_pop($path) : null;
-            $module     = !empty($path) ? array_pop($path) : null;
+            if ($reverse) {
+                $module     = array_shift($path);
+                $controller = !empty($path) ? array_shift($path) : null;
+                $action     = !empty($path) ? array_shift($path) : null;
+            } else {
+                $action     = array_pop($path);
+                $controller = !empty($path) ? array_pop($path) : null;
+                $module     = !empty($path) ? array_pop($path) : null;
+            }
+            $action = '[rest]' == $action ? REQUEST_METHOD : $action;
+            $route  = [$module, $controller, $action];
         }
-        return ['route' => [$module, $controller, $action], 'var' => $var];
+        return ['route' => $route, 'var' => $var];
     }
 
     // 检测URL和规则路由是否匹配

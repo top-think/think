@@ -125,10 +125,16 @@ class Error
                 }
             }
         }
-        // 异常信息输出监听
-        Hook::listen('error_output', $e);
-        // 输出异常内容
-        Response::returnData($e, Config::get('default_return_type'));
+
+        $type = Config::get('default_return_type');
+        if ('html' == $type) {
+            include Config::get('exception_tmpl');
+        } else {
+            // 异常信息输出监听
+            Hook::listen('error_output', $e);
+            // 输出异常内容
+            Response::returnData($e, $type);
+        }
         exit;
     }
 }
