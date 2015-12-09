@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 //  版本信息
-define('THINK_VERSION', '5.0beta');
+define('THINK_VERSION', '5.0.0beta');
 // 系统常量
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . DS);
