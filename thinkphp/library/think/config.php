@@ -33,6 +33,7 @@ class Config
         if (empty($type)) {
             $type = substr(strrchr($config, '.'), 1);
         }
+        $range = $range ? $range : self::$range;
         $class = '\\think\\config\\driver\\' . strtolower($type);
         self::set((new $class())->parse($config), '', $range);
     }
@@ -40,7 +41,8 @@ class Config
     // 加载配置文件
     public static function load($file, $name = '', $range = '')
     {
-        $file = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
+        $range = $range ? $range : self::$range;
+        $file  = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
         if (!isset(self::$config[$range])) {
             self::$config[$range] = [];
         }
