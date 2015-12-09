@@ -156,10 +156,10 @@ class Response
             505 => 'HTTP Version Not Supported',
             509 => 'Bandwidth Limit Exceeded',
         ];
-        if (isset($_status[$code])) {
-            header('HTTP/1.1 ' . $code . ' ' . $_status[$code]);
+        if (isset($_status[$status])) {
+            header('HTTP/1.1 ' . $status . ' ' . $_status[$status]);
             // 确保FastCGI模式下正常
-            header('Status:' . $code . ' ' . $_status[$code]);
+            header('Status:' . $status . ' ' . $_status[$status]);
         }
     }
 
