@@ -103,7 +103,7 @@ class App
                     // 获取绑定参数
                     $args = self::getBindParams($method, $config['url_parmas_bind_type']);
                     // 全局过滤
-                    array_walk_recursive($args, 'Input::filterExp');
+                    array_walk_recursive($args, 'think\\Input::filterExp');
                     $data = $method->invokeArgs($instance, $args);
                 } else {
                     $data = $method->invoke($instance);

@@ -23,6 +23,8 @@ return [
     'empty_controller'      => 'error',
     // 操作方法后缀
     'action_suffix'         => '',
+
+    /* URL设置 */
     // 获取当前页面地址的系统变量 默认为REQUEST_URI
     'url_request_uri'       => 'REQUEST_URI',
     // 基础URL路径
@@ -31,8 +33,20 @@ return [
     'url_html_suffix'       => '.html',
     // url变量绑定
     'url_params_bind'       => true,
-    // 异常页面的模板文件
-    'exception_tmpl'        => THINK_PATH . 'tpl/think_exception.tpl',
+    // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
+    'url_parmas_bind_type'  => 0,
+    //url地址的后缀
+    'url_deny_suffix'       => '',
+    //是否必须使用路由
+    'url_route_must'        => false,
+
+    // 默认输出类型
+    'default_return_type'   => 'html',
+    // 默认语言
+    'default_lang'          => 'zh-cn',
+    // 是否使用session
+    'use_session'           => true,
+
     // 默认跳转页面对应的模板文件
     'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
     // 默认AJAX 数据返回格式,可选JSON XML ...
@@ -46,22 +60,14 @@ return [
     'response_exit'         => true,
 
     /* 错误设置 */
-    //错误显示信息,非调试模式有效
+    // 异常页面的模板文件
+    'exception_tmpl'        => THINK_PATH . 'tpl/think_exception.tpl',
+    // 错误显示信息,非调试模式有效
     'error_message'         => '页面错误！请稍后再试～',
     // 错误定向页面
     'error_page'            => '',
     // 显示错误信息
     'show_error_msg'        => false,
-    //默认输出类型
-    'default_return_type'   => 'html',
-    //默认语言
-    'default_lang'          => 'zh-cn',
-    //是否使用session
-    'use_session'           => true,
-    //url地址的后缀
-    'url_deny_suffix'       => '',
-    //是否必须使用路由
-    'url_route_must'        => false,
 
     'log'                   => [
         'type' => 'File',
