@@ -1,6 +1,7 @@
 <?php 
 /**
  * 用法：
+ * T('think/controller/view');
  * class index
  * {
  *     use \traits\think\controller\view;
