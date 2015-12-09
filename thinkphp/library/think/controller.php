@@ -11,14 +11,21 @@
 
 namespace think;
 
-use think\View;
-
 class Controller
 {
     /**
+     * 控制器参数
+     * @var config
+     * @access protected
+     */
+    protected $config = [
+        // 前置操作方法
+        'before_action_list' => [],
+    ];
+
+    /**
      * 架构函数 初始化视图类 并采用内置模板引擎
      * @access public
-     *
      * @param array $config
      */
     public function __construct($config = [])
@@ -45,7 +52,7 @@ class Controller
      * 设置控制器参数
      * @access public
      * @param array $config 视图参数
-     * @return View
+     * @return Think\Controller
      */
     public function config($config = [])
     {
