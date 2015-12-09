@@ -983,7 +983,7 @@ class Model
      * @param string $type JOIN类型
      * @return Model
      */
-    public function join($join, $type = 'INNER')
+    public function _join($join, $type = 'INNER')
     {
         $prefix = $this->tablePrefix;
         if (is_array($join)) {
@@ -999,6 +999,72 @@ class Model
         }
         return $this;
     }
+    
+    /**
+     * 查询SQL组装 join
+     * @access public
+     * @param mixed $join 关联的表名
+     * @param mixed $condition 条件
+     * @param string $type JOIN类型
+     * @return Model
+     */
+    public function join($join, $condition = null, $type = 'INNER')
+    {
+        if (empty($join)) return $this;
+        if (empty($condition)) {
+            if (is_array($join) && is_array($join[0])) {
+                // 如果为组数，则循环调用join
+                foreach ($join as $key => $value) {
+                    if (is_array($value) && 2 <= count($value)) {
+                        $this->join($value[0], $value[1], isset($value[2]) ? $value[2] : $type);
+                    }
+                }
+            } else {
+                $this->_join($join, $condition); // 兼容原来的join写法
+            }
+        } elseif (in_array(strtoupper($condition), array('INNER', 'LEFT', 'RIGHT', 'ALL'))) {
+            $this->_join($join, $condition);  // 兼容原来的join写法
+        } else {
+            $prefix = $this->tablePrefix;
+            // 传入的表名为数组
+            if (is_array($join)) {
+                if (0 !== key($join)) {
+                    // 键名为表名，键值作为表的别名
+                    $table = key($join) . ' ' . current($join);
+                } else {
+                    $table = current($join);
+                }
+                if (isset($join[1])) {
+                    // 第二个元素为字符串则把第二元素作为表前缀
+                    if (is_string($join[1])) {
+                        $table = $join[1] . $table;
+                    }
+                } else {
+                    // 加上默认的表前缀
+                    $table = $prefix . $table;
+                }
+            } else {
+                $join = trim($join);
+                if (0 === strpos($join, '__')) {
+                    //将__TABLE_NAME__字符串替换成带前缀的表名
+                    $table = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                        return $prefix . strtolower($match[1]);
+                    }, $join);
+                } elseif (false === strpos($join, '(') && 0 !== strpos($join, $prefix)) {
+                    // 传入的表名中不带有'('并且不以默认的表前缀开头时加上默认的表前缀
+                    $table = $prefix . $join;
+                } else {
+                    $table = $join;
+                }
+            }
+            if (is_array($condition)) {
+                $condition = implode(' AND ', $condition);
+            }
+            $this->options['join'][] = strtoupper($type) . ' JOIN ' . $table . ' ON ' . $condition;
+        }
+        return $this;
+    }
+
 
     /**
      * 查询SQL组装 union
