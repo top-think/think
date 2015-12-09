@@ -13,7 +13,6 @@
 return [
     'url_route_on' => true,
     'slog'                  => [
-        'enable'              => true, //是否记录日志的开关
         'host'                => '111.202.76.133',
         //是否显示利于优化的参数，如果允许时间，消耗内存等
         'optimize'            => true,
