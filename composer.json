@@ -15,8 +15,9 @@
         "php": ">=5.4.0"
     },
     "minimum-stability": "dev",
-    "repositories": [
-        {"type": "composer", "url": "http://packagist.phpcomposer.com"},
-        {"packagist": false}
-    ]
+    "autoload": {
+        "psr-4": {
+            "think\\": "thinkphp/library/think/"
+        }
+    },
 }
