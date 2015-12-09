@@ -76,7 +76,7 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
-        self::returnData($result, $type);
+        self::returnData($result, $type, true);
     }
 
     /**
