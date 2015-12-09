@@ -27,18 +27,13 @@ trait Ajax
      */
     public function result($data = '', $msg = '', $code = 0, $url = '', $wait = 0)
     {
-        $result = [
+        return [
             'code' => $code,
             'msg'  => $msg,
             'data' => $data,
             'url'  => $url,
             'wait' => $wait,
         ];
-        if ('html' == Config::get('default_return_type')) {
-            return $this->fetch(Config::get('dispatch_jump_tmpl'), $result);
-        } else {
-            return $result;
-        }
     }
 
     /**
