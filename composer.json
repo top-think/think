@@ -1,0 +1,22 @@
+{
+    "name": "topthink/think",
+    "description": "the new thinkphp framework",
+    "type": "framework",
+    "keywords": ["framework","thinkphp","ORM"],
+    "homepage": "http://thinkphp.cn/",
+    "license": "Apache2",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "minimum-stability": "dev",
+    "repositories": [
+        {"type": "composer", "url": "http://packagist.phpcomposer.com"},
+        {"packagist": false}
+    ]
+}
