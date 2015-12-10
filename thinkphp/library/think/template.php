@@ -186,7 +186,7 @@ class Template
     private function checkCache($template, $cacheFile)
     {
         if (!$this->config['tpl_cache']) {
-// 优先对配置设定检测
+            // 优先对配置设定检测
             return false;
         }
         // 检查编译存储是否有效
