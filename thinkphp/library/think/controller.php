@@ -11,8 +11,12 @@
 
 namespace think;
 
+T('think/controller/view');
+
 class Controller
 {
+    use \traits\think\controller\view;
+
     /**
      * 控制器参数
      * @var config
