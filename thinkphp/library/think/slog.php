@@ -3,7 +3,7 @@
  * github: https://github.com/luofei614/SocketLog
  * @author luofei614<weibo.com/luofei614>
  */
-namespace org;
+namespace think;
 
 use think\Exception;
 
@@ -375,7 +375,7 @@ class Slog
     {
         if (in_array($method, self::$log_types)) {
             array_unshift($args, $method);
-            return call_user_func_array(['\org\Slog','record'], $args);
+            return call_user_func_array(['\think\Slog','record'], $args);
         }
     }
 

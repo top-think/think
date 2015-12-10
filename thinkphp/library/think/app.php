@@ -45,7 +45,7 @@ class App
 
         // 如果启动SocketLog调试， 进行SocketLog配置
         if (SLOG_ON) {
-            \org\Slog::config($config['slog']);
+            Slog::config($config['slog']);
         }
 
         // 默认语言

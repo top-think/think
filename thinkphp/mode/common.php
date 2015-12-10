@@ -45,7 +45,7 @@ return [
         'think\template\driver\File' => CORE_PATH . 'template' . DS . 'driver' . DS . 'file' . EXT,
         'think\log\driver\File'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'file' . EXT,
         'think\cache\driver\File'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'file' . EXT,
-        'org\Slog'                   => ORG_PATH . 'slog'.EXT,
+        'think\Slog'                 => CORE_PATH . 'slog'.EXT,
     ],
 
 ];
