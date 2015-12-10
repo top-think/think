@@ -43,7 +43,7 @@ if (isset($mode['tags'])) {
 }
 
 // 自动生成
-if (is_file(APP_PATH . 'build.php')) {
+if ('sae' != APP_MODE && is_file(APP_PATH . 'build.php')) {
     Create::build(include APP_PATH . 'build.php');
 }
 
