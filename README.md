@@ -25,10 +25,31 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 
 ## 目录结构
 
+初始的目录结构如下：
+
+~~~
+www  WEB部署目录（或者子目录）
+├─index.php       入口文件
+├─composer.json   composer定义文件
+├─README.md       README文件
+├─router.php      快速测试文件
+├─.htaccess       用于apache的重写
+├─LICENSE.txt     授权说明文件
+├─application     应用目录
+├─public          资源目录
+└─thinkphp        框架目录
+~~~
+
+> router.php用于php自带webserver支持，可用于快速测试
+> 启动命令：php -S localhost:8888 -t . router.php
+> 上面的目录结构和名称是可以改变的，这取决于你的入口文件和配置参数。
+> 第一次访问入口文件会自动生成application目录下面的相关子目录，参考后面的入口文件部分。
+
+
 框架目录结构如下：
 
 ~~~
-├─thinkphp 				框架系统目录（部署在非web目录下面）
+├─thinkphp 				框架系统目录（部署在非web目录下面，可以更改）
 │  ├─library      		框架类库目录
 │  │  ├─behavior  		行为类库目录
 │  │  ├─com       		Com类库包目录
@@ -47,7 +68,7 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 
 应用目录结构
 ~~~
-├─application 			应用目录（可以更改）
+├─application 			应用目录（建议部署在非web目录下面，可以更改）
 │  ├─common      		公共模块目录（可以更改）
 │  ├─runtime     		应用的运行时目录（可写，可定制）
 │  ├─module      		模块目录
