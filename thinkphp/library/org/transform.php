@@ -26,7 +26,7 @@ class Transform
     private static function init($type)
     {
         if (!isset(self::$handler[$type])) {
-            $class                = '\\think\\transform\\driver\\' . strtolower($type);
+            $class                = '\\org\\transform\\driver\\' . strtolower($type);
             self::$handler[$type] = new $class();
         }
     }
