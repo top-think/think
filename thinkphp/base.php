@@ -305,3 +305,15 @@ function S($name, $value = '', $options = null)
         return $cache->set($name, $value, $expire);
     }
 }
+
+/**
+ * 添加Trace记录到SocketLog
+ * @param mixed $log log信息 支持字符串和数组
+ * @param string $level 日志级别
+ * @param string $css 样式
+ * @return void|array
+ */
+function trace($log,$level='log',$css='')
+{
+    return think\Slog::record($level,$log,$css);
+}
