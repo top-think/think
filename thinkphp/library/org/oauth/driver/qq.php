@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -49,12 +49,12 @@ class Qq extends Driver
     public function call($api, $param = '', $method = 'GET')
     {
         /* 腾讯QQ调用公共参数 */
-        $params = array(
+        $params = [
             'oauth_consumer_key' => $this->AppKey,
             'access_token'       => $this->token['access_token'],
             'openid'             => $this->openid(),
             'format'             => 'json',
-        );
+        ];
 
         $data = $this->http($this->url($api), $this->param($params, $param), $method);
         return json_decode($data, true);
@@ -87,7 +87,7 @@ class Qq extends Driver
         }
 
         if ($data['access_token']) {
-            $data = $this->http($this->url('oauth2.0/me'), array('access_token' => $data['access_token']));
+            $data = $this->http($this->url('oauth2.0/me'), ['access_token' => $data['access_token']]);
             $data = json_decode(trim(substr($data, 9), " );\n"), true);
             if (isset($data['openid'])) {
                 return $data['openid'];

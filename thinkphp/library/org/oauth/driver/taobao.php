@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2010 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -43,12 +43,12 @@ class Taobao extends Driver
     public function call($api, $param = '', $method = 'GET')
     {
         /* 淘宝网调用公共参数 */
-        $params = array(
+        $params = [
             'method'       => $api,
             'access_token' => $this->token['access_token'],
             'format'       => 'json',
             'v'            => '2.0',
-        );
+        ];
         $data = $this->http($this->url(''), $this->param($params, $param), $method);
         return json_decode($data, true);
     }

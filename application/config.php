@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -21,6 +21,6 @@ return [
         //日志强制记录到配置的client_id
         'force_client_id'     => isset($_REQUEST['slog_force_client_id']) ? $_REQUEST['slog_force_client_id'] : '',
         //限制允许读取日志的client_id
-        'allow_client_ids'    => array(),
+        'allow_client_ids'    => [],
     ],
 ];
