@@ -40,7 +40,6 @@ defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');
 
 // 环境常量
-define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
 define('IS_CGI', strpos(PHP_SAPI, 'cgi') === 0 ? 1 : 0);
 define('IS_WIN', strstr(PHP_OS, 'WIN') ? 1 : 0);
 define('IS_CLI', PHP_SAPI == 'cli' ? 1 : 0);
