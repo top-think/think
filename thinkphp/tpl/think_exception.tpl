@@ -5,18 +5,18 @@
 <style type="text/css">
 *{ padding: 0; margin: 0; }
 html{ overflow-y: scroll; }
-body{ background: #fff; font-family: '微软雅黑'; color: #333; font-size: 16px; }
+body{ background: #fff; font-family: "Microsoft Yahei","Helvetica Neue",Helvetica,Arial,sans-serif; color: #333; font-size: 16px; }
 img{ border: 0; }
 .error{ padding: 24px 48px; }
-.face{ font-size: 100px; font-weight: normal; line-height: 120px; margin-bottom: 12px; }
-h1{ font-size: 32px; line-height: 48px; }
-.error .content{ padding-top: 10px}
+.face{ font-size: 10.25em; color:red;font-weight: 400; line-height: 1.0; margin-bottom: .15em; }
+.error .content{ padding-top: 10px;}
 .error .info{ margin-bottom: 12px; }
 .error .info .title{ margin-bottom: 3px; }
-.error .info .title h3{ color: #000; font-weight: 700; font-size: 16px; }
+h1{ font-size:2.75em;line-height:1.2;font-weight:200}
+h2{ padding-bottom:.3em;line-height:1.225;border-bottom:1px solid #eee;color: #000; font-weight: 300; font-size: 1.75em; }
 .error .info .text{ line-height: 24px; }
-.copyright{ padding: 12px 48px; color: #999; }
-.copyright a{ color: #000; text-decoration: none; }
+.copyright{ font-weight:200;padding: 12px 48px; color: #999; }
+.copyright a{ color: #000; text-decoration: none;font-weight:300;font-size:1.1em }
 </style>
 </head>
 <body>
@@ -25,29 +25,29 @@ h1{ font-size: 32px; line-height: 48px; }
 <h1><?php echo strip_tags($e['message']);?></h1>
 <div class="content">
 <?php if(isset($e['file'])) {?>
-	<div class="info">
-		<div class="title">
-			<h3>错误位置</h3>
-		</div>
-		<div class="text">
-			<p>FILE: <?php echo $e['file'] ;?> &#12288;LINE: <?php echo $e['line'];?></p>
-		</div>
+<div class="info">
+	<div class="title">
+		<h2>错误位置</h2>
 	</div>
+	<div class="text">
+		<p>FILE: <?php echo $e['file'] ;?> &#12288;LINE: <?php echo $e['line'];?></p>
+	</div>
+</div>
 <?php }?>
 <?php if(isset($e['trace'])) {?>
-	<div class="info">
-		<div class="title">
-			<h3>TRACE</h3>
-		</div>
-		<div class="text">
-			<p><?php echo nl2br($e['trace']);?></p>
-		</div>
+<div class="info">
+	<div class="title">
+		<h2>TRACE</h2>
 	</div>
+	<div class="text">
+		<p><?php echo nl2br($e['trace']);?></p>
+	</div>
+</div>
 <?php }?>
 </div>
 </div>
 <div class="copyright">
-<p><a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a><sup><?php echo THINK_VERSION ?></sup> { Fast & Simple OOP PHP Framework } -- [ WE CAN DO IT JUST THINK ]</p>
+<p><a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> <sup><?php echo THINK_VERSION ?></sup> { Fast & Simple OOP PHP Framework } -- [ WE CAN DO IT JUST THINK ]</p>
 </div>
 </body>
 </html>

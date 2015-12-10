@@ -98,7 +98,8 @@ class Error
     {
         $message = is_array($error) ? $error['message'] : $error;
         $code    = is_array($error) ? $error['code'] : $code;
-        $e       = [];
+
+        $e = ['mssage' => $message, 'code' => $code];
         if (APP_DEBUG) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
@@ -112,26 +113,22 @@ class Error
             } else {
                 $e = $error;
             }
-        } else {
+        } elseif (!IS_API) {
             //否则定向到错误页面
             $error_page = Config::get('error_page');
             if (!empty($error_page)) {
                 header('Location: ' . $error_page);
             } else {
-                if (Config::get('show_error_msg')) {
-                    $e['message'] = is_array($error) ? $error['message'] : $error;
-                } else {
-                    $e['message'] = Config::get('error_message');
-                }
+                $e['message'] = Config::get('show_error_msg') ? $message : Config::get('error_message');
             }
         }
 
         $type = Config::get('default_return_type');
-        if ('html' == $type) {
+        if (!IS_API && 'html' == $type) {
             include Config::get('exception_tmpl');
         } else {
             // 异常信息输出监听
-            Hook::listen('error_output', $e);
+            APP_HOOK && Hook::listen('error_output', $e);
             // 输出异常内容
             Response::returnData($e, $type);
         }
