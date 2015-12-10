@@ -72,7 +72,7 @@ class Xml
      * @param  string $id   数字索引key转换为的属性名
      * @return string
      */
-    public static function data2xml(SimpleXMLElement $xml, $data, $item = 'item', $id = 'id')
+    public static function data2xml(\SimpleXMLElement $xml, $data, $item = 'item', $id = 'id')
     {
         foreach ($data as $key => $value) {
             //指定默认的数字key
