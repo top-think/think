@@ -130,7 +130,7 @@ class App
     // 操作绑定到类：模块\controller\控制器\操作类
     private static function bindActionClass($emptyController)
     {
-        if (is_dir(MODULE_PATH . CONTROLLER_LAYER . '/' . str_replace('.', '/', CONTROLLER_NAME))) {
+        if (is_dir(MODULE_PATH . CONTROLLER_LAYER . DS . str_replace('.', DS, CONTROLLER_NAME))) {
             $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . str_replace('.', '\\', CONTROLLER_NAME) . '\\';
         } else {
             // 空控制器
@@ -181,7 +181,7 @@ class App
     private static function initModule($module, &$config)
     {
         // 定位模块目录
-        $module = COMMON_MODULE == $module ? '' : $module . '/';
+        $module = COMMON_MODULE == $module ? '' : $module . DS;
 
         // 加载初始化文件
         if (is_file(APP_PATH . $module . 'init' . EXT)) {
@@ -324,8 +324,8 @@ class App
         // 模块初始化
         if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
             Hook::listen('app_begin');
-            define('MODULE_PATH', APP_PATH . MODULE_NAME . '/');
-            define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . '/');
+            define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
+            define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
 
             // 初始化模块
             self::initModule(MODULE_NAME, $config);
