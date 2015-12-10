@@ -38,7 +38,7 @@ if (isset($mode['config'])) {
 }
 
 // 加载模式行为定义
-if (isset($mode['tags'])) {
+if (APP_HOOK && isset($mode['tags'])) {
     Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
 }
 

@@ -48,7 +48,7 @@ return [
     // PATHINFO变量名 用于兼容模式
     'var_pathinfo'          => 's',
     // 兼容PATH_INFO获取
-    'pathinfo_fetch'        => 'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
+    'pathinfo_fetch'        => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
     // pathinfo分隔符
     'pathinfo_depr'         => '/',
     // 获取当前页面地址的系统变量 默认为REQUEST_URI

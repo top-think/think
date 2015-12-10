@@ -55,10 +55,10 @@ class App
         Lang::load(THINK_PATH . 'Lang/' . $lang . EXT);
 
         // 监听app_init
-        Hook::listen('app_init');
+        APP_HOOK && Hook::listen('app_init');
 
-        // 启动session
-        if (!IS_CLI && $config['use_session']) {
+        // 启动session API CLI 不开启
+        if (!IS_CLI && !IS_API && $config['use_session']) {
             Session::init($config['session']);
         }
 
@@ -66,7 +66,7 @@ class App
         self::dispatch($config);
 
         // 监听app_run
-        Hook::listen('app_run');
+        APP_HOOK && Hook::listen('app_run');
 
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
@@ -90,7 +90,7 @@ class App
         try {
             // 操作方法开始监听
             $call = [$instance, $action];
-            Hook::listen('action_begin', $call);
+            APP_HOOK && Hook::listen('action_begin', $call);
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 // 非法操作
                 throw new \ReflectionException();
@@ -109,7 +109,7 @@ class App
                     $data = $method->invoke($instance);
                 }
                 // 操作方法执行完成监听
-                Hook::listen('action_end', $data);
+                APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
                 Response::returnData($data, $config['default_return_type'], $config['response_exit']);
             } else {
@@ -202,7 +202,7 @@ class App
             }
 
             // 加载行为扩展文件
-            if (is_file($path . 'tags' . EXT)) {
+            if (APP_HOOK && is_file($path . 'tags' . EXT)) {
                 Hook::import(include $path . 'tags' . EXT);
             }
 
@@ -242,16 +242,11 @@ class App
         }
 
         // 监听path_info
-        Hook::listen('path_info');
+        APP_HOOK && Hook::listen('path_info');
         // 分析PATHINFO信息
         if (!isset($_SERVER['PATH_INFO']) && $_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
-            $types = explode(',', $config['pathinfo_fetch']);
-            foreach ($types as $type) {
-                if (0 === strpos($type, ':')) {
-                    // 支持函数判断
-                    $_SERVER['PATH_INFO'] = call_user_func(substr($type, 1));
-                    break;
-                } elseif (!empty($_SERVER[$type])) {
+            foreach ($config['pathinfo_fetch'] as $type) {
+                if (!empty($_SERVER[$type])) {
                     $_SERVER['PATH_INFO'] = (0 === strpos($_SERVER[$type], $_SERVER['SCRIPT_NAME'])) ?
                     substr($_SERVER[$type], strlen($_SERVER['SCRIPT_NAME'])) : $_SERVER[$type];
                     break;
@@ -273,7 +268,7 @@ class App
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'], PATHINFO_EXTENSION)));
             if (__INFO__) {
                 if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
-                    throw new Exception('URL_SUFFIX_DENY');
+                    throw new Exception('url suffix deny');
                 }
                 $depr = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
@@ -323,7 +318,7 @@ class App
 
         // 模块初始化
         if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
-            Hook::listen('app_begin');
+            APP_HOOK && Hook::listen('app_begin');
             define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
             define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
 
