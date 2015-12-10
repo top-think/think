@@ -82,7 +82,8 @@ class Cookie
         $name = $config['prefix'] . $name;
         // 设置cookie
         if (is_array($value)) {
-            $value = 'think:' . json_encode(array_map('urlencode', $value));
+            array_walk_recursive($value, $this->jsonFormatProtect, 'encode');
+            $value = 'think:' . json_encode($value);
         }
         $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
         setcookie($name, $value, $expire, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
@@ -103,10 +104,10 @@ class Cookie
             $value = $_COOKIE[$name];
             if (0 === strpos($value, 'think:')) {
                 $value = substr($value, 6);
-                return array_map('urldecode', json_decode($value, true));
-            } else {
-                return $value;
+                $value = json_decode(MAGIC_QUOTES_GPC ? stripslashes($value) : $value, true);
+                array_walk_recursive($value, $this->jsonFormatProtect, 'decode');
             }
+            return $value;
         } else {
             return null;
         }
@@ -156,4 +157,12 @@ class Cookie
         }
         return;
     }
+    
+    private static function jsonFormatProtect(&$val, $key, $type = 'encode')
+    {
+        if (!empty($val) && true !== $val) {
+            $val = 'decode' == $type ? urldecode($val) : urlencode($val);
+        }
+    }
+
 }
