@@ -11,5 +11,4 @@
 // $Id$
 
 return [
-    'default_return_type'   => 'json',
 ];

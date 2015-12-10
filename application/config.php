@@ -27,14 +27,5 @@ return [
         //限制允许读取日志的client_id
         'allow_client_ids'    => array(),
     ],
-    'use_session'=>true,
-    'session'               => [
-        'id'=>I('token'),
-        'prefix'     => 'think',
-        'type'       => '',
-        'auto_start' => true,
-    ],
-
-
 ];
 
