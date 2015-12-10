@@ -315,5 +315,5 @@ function S($name, $value = '', $options = null)
  */
 function trace($log,$level='log',$css='')
 {
-    return think\Slog::record($level,$log,$css);
+    think\Slog::record($level,$log,$css);
 }
