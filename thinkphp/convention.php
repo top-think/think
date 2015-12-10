@@ -1,16 +1,33 @@
 <?php
 
 return [
+    // +----------------------------------------------------------------------
+    // | 应用设置
+    // +----------------------------------------------------------------------
+
     // 应用模式状态
     'app_status'            => '',
-    // PATHINFO变量名 用于兼容模式
-    'var_pathinfo'          => 's',
-    // 兼容PATH_INFO获取
-    'pathinfo_fetch'        => 'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
     // 扩展配置文件
     'extra_config_list'     => ['database', 'route'],
-    // pathinfo分隔符
-    'pathinfo_depr'         => '/',
+    // 默认输出类型
+    'default_return_type'   => 'html',
+    // 默认语言
+    'default_lang'          => 'zh-cn',
+    // 是否使用session
+    'use_session'           => true,
+    // response输出终止执行
+    'response_exit'         => true,
+    // 默认AJAX 数据返回格式,可选JSON XML ...
+    'default_ajax_return'   => 'JSON',
+    // 默认JSONP格式返回的处理方法
+    'default_jsonp_handler' => 'jsonpReturn',
+    // 默认JSONP处理方法
+    'var_jsonp_handler'     => 'callback',
+
+    // +----------------------------------------------------------------------
+    // | 模块设置
+    // +----------------------------------------------------------------------
+
     // 默认模块名
     'default_module'        => 'index',
     // 禁止访问模块
@@ -23,8 +40,19 @@ return [
     'empty_controller'      => 'error',
     // 操作方法后缀
     'action_suffix'         => '',
+    // 操作绑定到类
+    'action_bind_class'     => false,
 
-    /* URL设置 */
+    // +----------------------------------------------------------------------
+    // | URL设置
+    // +----------------------------------------------------------------------
+
+    // PATHINFO变量名 用于兼容模式
+    'var_pathinfo'          => 's',
+    // 兼容PATH_INFO获取
+    'pathinfo_fetch'        => 'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL',
+    // pathinfo分隔符
+    'pathinfo_depr'         => '/',
     // 获取当前页面地址的系统变量 默认为REQUEST_URI
     'url_request_uri'       => 'REQUEST_URI',
     // 基础URL路径
@@ -37,29 +65,26 @@ return [
     'url_parmas_bind_type'  => 0,
     //url地址的后缀
     'url_deny_suffix'       => '',
-    //是否必须使用路由
+    // 是否开启路由
+    'url_route_on'          => true,
+    // 是否强制使用路由
     'url_route_must'        => false,
+    // URL模块映射
+    'url_module_map'        => [],
 
-    // 默认输出类型
-    'default_return_type'   => 'html',
-    // 默认语言
-    'default_lang'          => 'zh-cn',
-    // 是否使用session
-    'use_session'           => true,
+    // +----------------------------------------------------------------------
+    // | 视图及模板设置
+    // +----------------------------------------------------------------------
 
     // 默认跳转页面对应的模板文件
     'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
-    // 默认AJAX 数据返回格式,可选JSON XML ...
-    'default_ajax_return'   => 'JSON',
-    // 默认JSONP格式返回的处理方法
-    'default_jsonp_handler' => 'jsonpReturn',
-    'var_jsonp_handler'     => 'callback',
+    // 默认的模板引擎
     'template_engine'       => 'think',
-    'action_bind_class'     => false,
-    'url_module_map'        => [],
-    'response_exit'         => true,
 
-    /* 错误设置 */
+    // +----------------------------------------------------------------------
+    // | 异常及错误设置
+    // +----------------------------------------------------------------------
+
     // 异常页面的模板文件
     'exception_tmpl'        => THINK_PATH . 'tpl/think_exception.tpl',
     // 错误显示信息,非调试模式有效
@@ -69,10 +94,18 @@ return [
     // 显示错误信息
     'show_error_msg'        => false,
 
+    // +----------------------------------------------------------------------
+    // | 日志设置
+    // +----------------------------------------------------------------------
+
     'log'                   => [
         'type' => 'File',
         'path' => LOG_PATH,
     ],
+
+    // +----------------------------------------------------------------------
+    // | 缓存设置
+    // +----------------------------------------------------------------------
 
     'cache'                 => [
         'type'   => 'File',
@@ -81,13 +114,20 @@ return [
         'expire' => 0,
     ],
 
+    // +----------------------------------------------------------------------
+    // | 会话设置
+    // +----------------------------------------------------------------------
+
     'session'               => [
         'prefix'     => 'think',
         'type'       => '',
         'auto_start' => true,
     ],
 
-    /* 数据库设置 */
+    // +----------------------------------------------------------------------
+    // | 数据库设置
+    // +----------------------------------------------------------------------
+
     'database'              => [
         // 数据库类型
         'type'        => 'mysql',
@@ -120,7 +160,11 @@ return [
         // 指定从服务器序号
         'slave_no'    => '',
     ],
-    /* SocketLog 调试  */
+
+    // +----------------------------------------------------------------------
+    // | SocketLog设置
+    // +----------------------------------------------------------------------
+
     'slog'                  => [
         'host'                => 'localhost',
         //是否显示利于优化的参数，如果允许时间，消耗内存等
@@ -130,6 +174,6 @@ return [
         //日志强制记录到配置的client_id
         'force_client_id'     => '',
         //限制允许读取日志的client_id
-        'allow_client_ids'    => array(),
+        'allow_client_ids'    => [],
     ],
 ];
