@@ -12,7 +12,7 @@ class Slog
     public static $start_time   = 0;
     public static $start_memory = 0;
     public static $port         = 1116; //SocketLog 服务的http的端口号
-    public static $log_types    = ['log', 'info', 'error', 'warn', 'table', 'alert'];
+    public static $log_types    = ['log', 'info', 'error', 'warn', 'table', 'group','groupCollapsed','groupEnd','alert'];
 
     protected static $config = [
         'enable'              => true, //是否记录日志的开关
