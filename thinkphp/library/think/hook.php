@@ -111,17 +111,17 @@ class Hook
 
     /**
      * 执行某个行为
-     * @param string $name 行为名称
+     * @param string $class 行为类名称
      * @param string $tag 方法名（标签名）
      * @param Mixed $params 传人的参数
      * @return void
      */
-    public static function exec($name, $tag, &$params = null)
+    public static function exec($class, $tag = '', &$params = null)
     {
-        if ($name instanceof \Closure) {
-            return $name($params);
+        if ($class instanceof \Closure) {
+            return $class($params);
         }
-        $addon = new $name();
-        return method_exists($addon, $tag) ? $addon->$tag($params) : $addon->run($params);
+        $obj = new $class();
+        return ($tag && is_callable([$obj, $tag])) ? $obj->$tag($params) : $obj->run($params);
     }
 }
