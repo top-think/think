@@ -26,7 +26,7 @@ class Loader
             include self::$map[$class];
         } else {
             // 命名空间自动加载
-            $name = strstr($class, '\\', true);
+            $name = strtolower(strstr($class, '\\', true));
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $path = dirname(self::$namespace[$name]) . '/';
@@ -246,7 +246,7 @@ class Loader
             if (class_exists($class)) {
                 $o = new $class();
                 if (!empty($method) && method_exists($o, $method)) {
-                    $_instance[$identify] = call_user_func_array([ & $o, $method],[]);
+                    $_instance[$identify] = call_user_func_array([ & $o, $method], []);
                 } else {
                     $_instance[$identify] = $o;
                 }

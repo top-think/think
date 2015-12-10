@@ -62,7 +62,7 @@ class View
      * @param string $value 值
      * @return View
      */
-    public function config($config = '',$value='')
+    public function config($config = '', $value = '')
     {
         if (is_array($config)) {
             foreach ($this->config as $key => $val) {
@@ -70,8 +70,8 @@ class View
                     $this->config[$key] = $config[$key];
                 }
             }
-        }else{
-            $this->config[$config]  =   $value;
+        } else {
+            $this->config[$config] = $value;
         }
         return $this;
     }
@@ -85,7 +85,7 @@ class View
      */
     public function engine($engine, array $config = [])
     {
-        $class        = '\\think\\view\\driver\\' . strtolower($engine);
+        $class        = '\\think\\view\\driver\\' . ucwords($engine);
         $this->engine = new $class($config);
         return $this;
     }
