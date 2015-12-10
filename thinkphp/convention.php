@@ -13,8 +13,6 @@ return [
     'default_return_type'   => 'html',
     // 默认语言
     'default_lang'          => 'zh-cn',
-    // 是否使用session
-    'use_session'           => true,
     // response输出终止执行
     'response_exit'         => true,
     // 默认AJAX 数据返回格式,可选JSON XML ...
@@ -72,10 +70,6 @@ return [
     // URL模块映射
     'url_module_map'        => [],
 
-    // 默认输出类型
-    'default_return_type'   => 'html',
-    // 默认语言
-    'default_lang'          => 'zh-cn',
     // +----------------------------------------------------------------------
     // | 视图及模板设置
     // +----------------------------------------------------------------------
@@ -117,13 +111,13 @@ return [
         'prefix' => '',
         'expire' => 0,
     ],
-    // 是否使用session
-    'use_session'           => true,
 
     // +----------------------------------------------------------------------
     // | 会话设置
     // +----------------------------------------------------------------------
 
+    // 是否使用session
+    'use_session'           => true,
     'session'               => [
         'id'         => '',
         'prefix'     => 'think',
