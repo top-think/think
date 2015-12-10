@@ -44,8 +44,6 @@ return [
     'default_return_type'   => 'html',
     // 默认语言
     'default_lang'          => 'zh-cn',
-    // 是否使用session
-    'use_session'           => true,
 
     // 默认跳转页面对应的模板文件
     'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
@@ -80,8 +78,11 @@ return [
         'prefix' => '',
         'expire' => 0,
     ],
+    // 是否使用session
+    'use_session'           => true,
 
     'session'               => [
+        'id'         => '',
         'prefix'     => 'think',
         'type'       => '',
         'auto_start' => true,

@@ -19,9 +19,10 @@ class Index
 
     public function index()
     {
-        Slog::log('调试');
-        $view = new View();
-        return $view->fetch();
+       return ['a'=>'aaa','b'=>'bbb','session_id'=>session_id()];
+       // Slog::log('调试');
+       // $view = new View();
+       // return $view->fetch();
     }
 
     public function hello($name = '')

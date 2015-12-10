@@ -39,7 +39,7 @@ class Session
         if (isset($config['prefix'])) {
             self::$prefix = $config['prefix'];
         }
-        if (isset($config['id'])) {
+        if (isset($config['id']) && !empty($config['id'])) {
             session_id($config['id']);
         }
         if (isset($config['name'])) {
