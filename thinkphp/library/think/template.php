@@ -19,9 +19,9 @@ namespace think;
 class Template
 {
     // 模板变量
-    protected $data   = []; 
+    protected $data = [];
     // 引擎配置
-    protected $config = [ 
+    protected $config = [
         'tpl_path'           => VIEW_PATH, // 模板路径
         'tpl_suffix'         => '.html', // 默认模板文件后缀
         'cache_suffix'       => '.php', // 默认模板缓存后缀
@@ -63,7 +63,7 @@ class Template
 
         // 初始化模板编译存储器
         $type          = $this->config['compile_type'] ? $this->config['compile_type'] : 'File';
-        $class         = '\\think\\template\\driver\\' . strtolower($type);
+        $class         = '\\think\\template\\driver\\' . ucwords($type);
         $this->storage = new $class();
     }
 
@@ -658,10 +658,10 @@ class Template
             //模板函数过滤
             $fun = strtolower(trim($args[0]));
             switch ($fun) {
-                case 'default': // 特殊模板函数
+                case 'default':    // 特殊模板函数
                     $name = '(' . $name . ')?(' . $name . '):' . $args[1];
                     break;
-                default: // 通用模板函数
+                default:    // 通用模板函数
                     if (!in_array($fun, $template_deny_funs)) {
                         if (isset($args[1])) {
                             if (strstr($args[1], '###')) {

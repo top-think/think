@@ -22,7 +22,7 @@ class Log
     public static function init($config = [])
     {
         $type  = isset($config['type']) ? $config['type'] : 'File';
-        $class = '\\think\\log\\driver\\' . strtolower($type);
+        $class = '\\think\\log\\driver\\' . ucwords($type);
         unset($config['type']);
         self::$storage = new $class($config);
     }

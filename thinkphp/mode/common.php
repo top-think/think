@@ -23,11 +23,12 @@ return [
         'think\Log'                  => CORE_PATH . 'log' . EXT,
         'think\log\driver\File'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'file' . EXT,
         'think\Config'               => CORE_PATH . 'config' . EXT,
+        'think\Create'               => CORE_PATH . 'create' . EXT,
         'think\Route'                => CORE_PATH . 'route' . EXT,
         'think\Exception'            => CORE_PATH . 'exception' . EXT,
         'think\Model'                => CORE_PATH . 'model' . EXT,
         'think\Db'                   => CORE_PATH . 'db' . EXT,
-        'think\Db\Driver'            => CORE_PATH . 'db'.DS.'driver' . EXT,
+        'think\Db\Driver'            => CORE_PATH . 'db' . DS . 'driver' . EXT,
         'think\Template'             => CORE_PATH . 'template' . EXT,
         'think\view\driver\Think'    => CORE_PATH . 'view' . DS . 'driver' . DS . 'think' . EXT,
         'think\template\driver\File' => CORE_PATH . 'template' . DS . 'driver' . DS . 'file' . EXT,
@@ -42,7 +43,7 @@ return [
         'think\Url'                  => CORE_PATH . 'url' . EXT,
         'think\Debug'                => CORE_PATH . 'debug' . EXT,
         'think\Input'                => CORE_PATH . 'input' . EXT,
-        'think\Lang'                 => CORE_PATH . 'lang' . EXT
+        'think\Lang'                 => CORE_PATH . 'lang' . EXT,
     ],
 
     'init'   => [],
