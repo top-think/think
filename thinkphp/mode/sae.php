@@ -48,24 +48,27 @@ return [
             // 指定从服务器序号
             'slave_no'    => '',
         ],
-        'log_type'         => 'Sae',
-        'data_cache_type'  => 'Memcachesae',
-        'check_app_dir'    => false,
+        'log'                   => [
+            'type' => 'Sae',
+        ],
+        'cache'                 => [
+            'type'   => 'Sae',
+        ],
         'file_upload_type' => 'Sae',
+        'compile_type'     => 'Sae',
     ],
 
     // 别名定义
     'alias'  => [
-        'think\Log'                   => CORE_PATH . 'log' . EXT,
-        'think\log\driver\File'       => CORE_PATH . 'log/driver/file' . EXT,
-        'think\log\driver\Sae'        => CORE_PATH . 'log/driver/sae' . EXT,
-        'think\Exception'             => CORE_PATH . 'exception' . EXT,
-        'think\Model'                 => CORE_PATH . 'model' . EXT,
-        'think\Db'                    => CORE_PATH . 'db' . EXT,
-        'think\Template'              => CORE_PATH . 'template' . EXT,
-        'think\Cache'                 => CORE_PATH . 'cache' . EXT,
-        'think\cache\driver\File'     => CORE_PATH . 'cache/driver/file' . EXT,
-        'think\cache\driver\Memcache' => CORE_PATH . 'cache/driver/memcache' . EXT,
+        'think\Log'                 => CORE_PATH . 'log' . EXT,
+        'think\log\driver\Sae'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'sae' . EXT,
+        'think\Exception'           => CORE_PATH . 'exception' . EXT,
+        'think\Model'               => CORE_PATH . 'model' . EXT,
+        'think\Db'                  => CORE_PATH . 'db' . EXT,
+        'think\Template'            => CORE_PATH . 'template' . EXT,
+        'think\Cache'               => CORE_PATH . 'cache' . EXT,
+        'think\cache\driver\Sae'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'sae' . EXT,
+        'think\template\driver\Sae' => CORE_PATH . 'template' . DS . 'driver' . DS . 'sae' . EXT,
     ],
 
 ];

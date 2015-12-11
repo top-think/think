@@ -38,12 +38,12 @@ if (isset($mode['config'])) {
 }
 
 // 加载模式行为定义
-if (isset($mode['tags'])) {
+if (APP_HOOK && isset($mode['tags'])) {
     Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
 }
 
 // 自动生成
-if (is_file(APP_PATH . 'build.php')) {
+if ('sae' != APP_MODE && is_file(APP_PATH . 'build.php')) {
     Create::build(include APP_PATH . 'build.php');
 }
 

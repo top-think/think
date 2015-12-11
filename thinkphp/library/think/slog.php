@@ -3,16 +3,16 @@
  * github: https://github.com/luofei614/SocketLog
  * @author luofei614<weibo.com/luofei614>
  */
-namespace org;
+namespace think;
 
 use think\Exception;
 
 class Slog
 {
-    public static $start_time   =   0;
-    public static $start_memory =   0;
-    public static $port         =   1116; //SocketLog 服务的http的端口号
-    public static $log_types    =   ['log', 'info', 'error', 'warn', 'table', 'group', 'groupCollapsed', 'groupEnd', 'alert'];
+    public static $start_time   = 0;
+    public static $start_memory = 0;
+    public static $port         = 1116; //SocketLog 服务的http的端口号
+    public static $log_types    = ['log', 'info', 'error', 'warn', 'table', 'group','groupCollapsed','groupEnd','alert'];
 
     protected static $config = [
         'enable'              => true, //是否记录日志的开关
@@ -30,16 +30,16 @@ class Slog
     protected static $logs = [];
 
     protected static $css = [
-        'sql'           =>  'color:#009bb4;',
-        'sql_warn'      =>  'color:#009bb4;font-size:14px;',
-        'error_handler' =>  'color:#f4006b;font-size:14px;',
-        'page'          =>  'color:#40e2ff;background:#171717;',
-        'big'           =>  'font-size:20px;color:red;',
+        'sql'           => 'color:#009bb4;',
+        'sql_warn'      => 'color:#009bb4;font-size:14px;',
+        'error_handler' => 'color:#f4006b;font-size:14px;',
+        'page'          => 'color:#40e2ff;background:#171717;',
+        'big'           => 'font-size:20px;color:red;',
     ];
 
     public static function sql($sql, $pdo)
     {
-        
+
         if (is_object($pdo)) {
             if (!self::check()) {
                 return;
@@ -59,7 +59,7 @@ class Slog
             }
             self::sqlwhere($sql, $css);
             self::trace($sql, 2, $css);
-        }else{
+        } else {
             throw new Exception('SocketLog can not support this database link');
         }
 
@@ -70,7 +70,7 @@ class Slog
         if (!self::check()) {
             return;
         }
-        self::groupCollapsed($msg, $css);
+        self::record('groupCollapsed', $msg, $css);
         $traces = debug_backtrace(false);
         $traces = array_reverse($traces);
         $max    = count($traces) - $trace_level;
@@ -81,11 +81,11 @@ class Slog
             $line      = isset($trace['line']) ? $trace['line'] : 'unknown line';
             $trace_msg = '#' . $i . '  ' . $fun . ' called at [' . $file . ':' . $line . ']';
             if (!empty($trace['args'])) {
-                self::record('groupCollapsed',$trace_msg);
-                self::record('log',$trace['args']);
+                self::record('groupCollapsed', $trace_msg);
+                self::record('log', $trace['args']);
                 self::record('groupEnd');
             } else {
-                self::record('log',$trace_msg);
+                self::record('log', $trace_msg);
             }
         }
         self::record('groupEnd');
@@ -183,7 +183,7 @@ class Slog
         // 保存日志记录
         if ($e = error_get_last()) {
             self::error_handler($e['type'], $e['message'], $e['file'], $e['line']);
-            self::sendLog(); 
+            self::sendLog();
         }
     }
 
@@ -375,7 +375,7 @@ class Slog
     {
         if (in_array($method, self::$log_types)) {
             array_unshift($args, $method);
-            return call_user_func_array(['\org\Slog','record'], $args);
+            return call_user_func_array(['\think\Slog', 'record'], $args);
         }
     }
 

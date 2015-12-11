@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2010 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -44,7 +44,7 @@ class Douban extends Driver
     {
         /* 豆瓣调用公共参数 */
         $params = [];
-        $header = array("Authorization: Bearer {$this->token['access_token']}");
+        $header = ["Authorization: Bearer {$this->token['access_token']}"];
         $data   = $this->http($this->url($api), $this->param($params, $param), $method, $header);
         return json_decode($data, true);
     }

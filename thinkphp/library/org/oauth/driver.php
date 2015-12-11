@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -103,11 +103,11 @@ abstract class Driver
     public function getRequestCodeURL()
     {
         //Oauth 标准参数
-        $params = array(
+        $params = [
             'client_id'     => $this->appKey,
             'redirect_uri'  => $this->callback,
             'response_type' => $this->responseType,
-        );
+        ];
 
         //获取额外参数
         if ($this->authorize) {
@@ -127,13 +127,13 @@ abstract class Driver
      */
     public function getAccessToken($code)
     {
-        $params = array(
+        $params = [
             'client_id'     => $this->appKey,
             'client_secret' => $this->appSecret,
             'grant_type'    => $this->grantType,
             'redirect_uri'  => $this->callback,
             'code'          => $code,
-        );
+        ];
         // 获取token信息
         $data = $this->http($this->getAccessTokenURL, $params, 'POST');
         // 解析token
@@ -185,13 +185,13 @@ abstract class Driver
      */
     protected function http($url, $params, $method = 'GET', $header = [], $multi = false)
     {
-        $opts = array(
+        $opts = [
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_HTTPHEADER     => $header,
-        );
+        ];
 
         /* 根据请求类型设置特定参数 */
         switch (strtoupper($method)) {

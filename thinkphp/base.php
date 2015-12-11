@@ -32,6 +32,7 @@ defined('MODEL_LAYER') or define('MODEL_LAYER', 'model');
 defined('VIEW_LAYER') or define('VIEW_LAYER', 'view');
 defined('CONTROLLER_LAYER') or define('CONTROLLER_LAYER', 'controller');
 defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
+defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
 defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
@@ -40,7 +41,6 @@ defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');
 
 // 环境常量
-define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
 define('IS_CGI', strpos(PHP_SAPI, 'cgi') === 0 ? 1 : 0);
 define('IS_WIN', strstr(PHP_OS, 'WIN') ? 1 : 0);
 define('IS_CLI', PHP_SAPI == 'cli' ? 1 : 0);
@@ -305,4 +305,16 @@ function S($name, $value = '', $options = null)
         }
         return $cache->set($name, $value, $expire);
     }
+}
+
+/**
+ * 添加Trace记录到SocketLog
+ * @param mixed $log log信息 支持字符串和数组
+ * @param string $level 日志级别
+ * @param string $css 样式
+ * @return void|array
+ */
+function trace($log, $level = 'log', $css = '')
+{
+    think\Slog::record($level, $log, $css);
 }

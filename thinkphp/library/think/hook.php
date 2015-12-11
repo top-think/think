@@ -24,6 +24,9 @@ class Hook
      */
     public static function add($tag, $behavior)
     {
+        if (!isset(self::$tags[$tag])) {
+            self::$tags[$tag] = [];
+        }
         if (is_array($behavior)) {
             self::$tags[$tag] = array_merge(self::$tags[$tag], $behavior);
         } else {
@@ -32,13 +35,48 @@ class Hook
     }
 
     /**
-     * 批量导入行为
-     * @param array $tags 标签行为
+     * 批量导入插件
+     * @param array $data 插件信息
+     * @param boolean $recursive 是否递归合并
      * @return void
      */
-    public static function import($tags)
+    public static function import($tags, $recursive = true)
     {
-        self::$tags = array_merge(self::$tags, $tags);
+        if (!$recursive) {
+            // 覆盖导入
+            self::$tags = array_merge(self::$tags, $tags);
+        } else {
+            // 合并导入
+            foreach ($tags as $tag => $val) {
+                if (!isset(self::$tags[$tag])) {
+                    self::$tags[$tag] = [];
+                }
+
+                if (!empty($val['_overlay'])) {
+                    // 可以针对某个标签指定覆盖模式
+                    unset($val['_overlay']);
+                    self::$tags[$tag] = $val;
+                } else {
+                    // 合并模式
+                    self::$tags[$tag] = array_merge(self::$tags[$tag], $val);
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取插件信息
+     * @param string $tag 插件位置 留空获取全部
+     * @return array
+     */
+    public static function get($tag = '')
+    {
+        if (empty($tag)) {
+            // 获取全部的插件信息
+            return self::$tags;
+        } else {
+            return self::$tags[$tag];
+        }
     }
 
     /**
@@ -73,17 +111,17 @@ class Hook
 
     /**
      * 执行某个行为
-     * @param string $name 行为名称
+     * @param string $class 行为类名称
      * @param string $tag 方法名（标签名）
      * @param Mixed $params 传人的参数
      * @return void
      */
-    public static function exec($name, $tag, &$params = null)
+    public static function exec($class, $tag = '', &$params = null)
     {
-        if ($name instanceof \Closure) {
-            return $name($params);
+        if ($class instanceof \Closure) {
+            return $class($params);
         }
-        $addon = new $name();
-        return method_exists($addon, $tag) ? $addon->$tag($params) : $addon->run($params);
+        $obj = new $class();
+        return ($tag && is_callable([$obj, $tag])) ? $obj->$tag($params) : $obj->run($params);
     }
 }

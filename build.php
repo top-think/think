@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2011 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,12 +12,12 @@
 
 return [
     // 生成运行时目录
-    'runtime' => [
-        '__dir__' => ['cache', 'log', 'temp'],
-    ],
+    '__dir__'  => ['runtime/cache', 'runtime/log', 'runtime/temp'],
+    '__file__' => ['tags.php'],
+
     // 定义index模块的自动生成
-    'index'   => [
-        '__file__'   => ['config.php', 'alias.php', 'common.php'],
+    'index'    => [
+        '__file__'   => ['tags.php'],
         '__dir__'    => ['behavior', 'controller', 'model', 'view'],
         'controller' => ['Index', 'Test', 'UserType'],
         'model'      => [],

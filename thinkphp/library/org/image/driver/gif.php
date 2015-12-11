@@ -1,8 +1,8 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2010 http://topthink.com All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -117,18 +117,18 @@ class GIFEncode
     public $GIF = "GIF89a"; /* GIF header 6 bytes    */
     public $VER = "GIFEncoder V2.05"; /* Encoder version        */
 
-    public $BUF = array();
+    public $BUF = [];
     public $LOP = 0;
     public $DIS = 2;
     public $COL = -1;
     public $IMG = -1;
 
-    public $ERR = array(
+    public $ERR = [
         'ERR00' => "Does not supported function for only one image!",
         'ERR01' => "Source is not a GIF image!",
         'ERR02' => "Unintelligible flag ",
         'ERR03' => "Does not make animation from animated GIF source",
-    );
+    ];
 
     /*
     :::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -348,15 +348,15 @@ class GIFEncode
 
 class GIFDecoder
 {
-    public $GIF_buffer = array();
-    public $GIF_arrays = array();
-    public $GIF_delays = array();
+    public $GIF_buffer = [];
+    public $GIF_arrays = [];
+    public $GIF_delays = [];
     public $GIF_stream = "";
     public $GIF_string = "";
     public $GIF_bfseek = 0;
 
-    public $GIF_screen = array();
-    public $GIF_global = array();
+    public $GIF_screen = [];
+    public $GIF_global = [];
     public $GIF_sorted;
     public $GIF_colorS;
     public $GIF_colorC;
@@ -536,7 +536,7 @@ class GIFDecoder
      */
     public function GIFGetByte($len)
     {
-        $this->GIF_buffer = array();
+        $this->GIF_buffer = [];
 
         for ($i = 0; $i < $len; $i++) {
             if ($this->GIF_bfseek > strlen($this->GIF_stream)) {

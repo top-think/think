@@ -29,7 +29,7 @@ class Loader
             $name = strtolower(strstr($class, '\\', true));
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
-                $path = dirname(self::$namespace[$name]) . '/';
+                $path = dirname(self::$namespace[$name]) . DS;
             } elseif (in_array($name, ['think', 'org', 'behavior', 'com']) || is_dir(LIB_PATH . $name)) {
                 // Library目录下面的命名空间自动定位
                 $path = LIB_PATH;
@@ -37,7 +37,7 @@ class Loader
                 // 项目命名空间
                 $path = APP_PATH;
             }
-            $filename = $path . str_replace('\\', '/', str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
+            $filename = $path . str_replace('\\', DS, str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
             if (is_file($filename)) {
                 include $filename;
             }
@@ -97,11 +97,11 @@ class Loader
             } else {
                 // 加载其他项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-                $baseUrl = APP_PATH . $class_strut[0] . '/';
+                $baseUrl = APP_PATH . $class_strut[0] . DS;
             }
         }
-        if (substr($baseUrl, -1) != '/') {
-            $baseUrl .= '/';
+        if (substr($baseUrl, -1) != DS) {
+            $baseUrl .= DS;
         }
         // 如果类存在 则导入类库文件
         $filename = $baseUrl . $class . $ext;

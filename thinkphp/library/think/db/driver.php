@@ -1162,9 +1162,8 @@ abstract class Driver
             }
         }
 
-        $slog_config = Config::get('slog');
-        if ($slog_config['enable'] && $start) {
-            \org\Slog::sql($this->queryStr, $this->_linkID);
+        if (SLOG_ON && $start) {
+            \think\Slog::sql($this->queryStr, $this->_linkID);
         }
     }
 
