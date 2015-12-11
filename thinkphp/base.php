@@ -316,5 +316,9 @@ function S($name, $value = '', $options = null)
  */
 function trace($log, $level = 'log', $css = '')
 {
-    think\Slog::record($level, $log, $css);
+    if ('trace' == $level) {
+        \think\Slog::trace($log, 2, $css);
+    } else {
+        \think\Slog::record($level, $log, $css);
+    }
 }
