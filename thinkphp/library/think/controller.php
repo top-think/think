@@ -11,11 +11,11 @@
 
 namespace think;
 
-T('think/controller/view');
+T('controller/view');
 
 class Controller
 {
-    use \traits\think\controller\view;
+    use \traits\controller\view;
 
     /**
      * 控制器参数
