@@ -28,6 +28,8 @@ class Route
     private static $domain = [];
     // 变量规则
     private static $pattern = [];
+    // 路由别名 用于自动生成
+    public static $alias = [];
 
     // 添加URL映射规则
     public static function map($map, $route = '')
