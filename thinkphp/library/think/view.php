@@ -30,6 +30,7 @@ class View
         'view_suffix'       => '.html',
         'view_depr'         => '/',
         'view_layer'        => VIEW_LAYER,
+        'parse_str'         => [],
         'engine_type'       => 'think',
     ];
 
@@ -148,7 +149,13 @@ class View
             is_file($template) ? include $template : eval('?>' . $template);
         }
         // 获取并清空缓存
-        return ob_get_clean();
+        $content = ob_get_clean();
+        // 允许用户自定义模板的字符串替换
+        if (!empty($this->config['parse_str'])) {
+            $replace = $this->config['parse_str'];
+            $content = str_replace(array_keys($replace), array_values($replace), $content);
+        }
+        return $content;
     }
 
     /**
