@@ -50,7 +50,6 @@ class Model
 
     /**
      * 架构函数
-     * 取得DB类的实例对象 字段检查
      * @access public
      * @param string $name 模型名称
      * @param array $config 模型配置
@@ -70,21 +69,21 @@ class Model
             list($this->dbName, $this->name) = explode('.', $this->name);
         }
 
-        if (isset($config['prefix'])) {
+        if (!empty($config['prefix'])) {
             $this->tablePrefix = $config['prefix'];
         } else {
             $this->tablePrefix = Config::get('database.prefix');
         }
-        if (isset($config['connection'])) {
+        if (!empty($config['connection'])) {
             $this->connection = $config['connection'];
         }
-        if (isset($config['table_name'])) {
+        if (!empty($config['table_name'])) {
             $this->tableName = $config['table_name'];
         }
-        if (isset($config['true_table_name'])) {
+        if (!empty($config['true_table_name'])) {
             $this->trueTableName = $config['true_table_name'];
         }
-        if (isset($config['db_name'])) {
+        if (!empty($config['db_name'])) {
             $this->dbName = $config['db_name'];
         }
 
@@ -999,7 +998,7 @@ class Model
         }
         return $this;
     }
-    
+
     /**
      * 查询SQL组装 join
      * @access public
@@ -1010,7 +1009,10 @@ class Model
      */
     public function join($join, $condition = null, $type = 'INNER')
     {
-        if (empty($join)) return $this;
+        if (empty($join)) {
+            return $this;
+        }
+
         if (empty($condition)) {
             if (is_array($join) && is_array($join[0])) {
                 // 如果为组数，则循环调用join
@@ -1023,7 +1025,7 @@ class Model
                 $this->_join($join, $condition); // 兼容原来的join写法
             }
         } elseif (in_array(strtoupper($condition), array('INNER', 'LEFT', 'RIGHT', 'ALL'))) {
-            $this->_join($join, $condition);  // 兼容原来的join写法
+            $this->_join($join, $condition); // 兼容原来的join写法
         } else {
             $prefix = $this->tablePrefix;
             // 传入的表名为数组
@@ -1064,7 +1066,6 @@ class Model
         }
         return $this;
     }
-
 
     /**
      * 查询SQL组装 union

@@ -57,6 +57,8 @@ return [
     'base_url'              => $_SERVER["SCRIPT_NAME"],
     // URL伪静态后缀
     'url_html_suffix'       => '.html',
+    // URL普通方式参数 用于自动生成
+    'url_common_param'      => false,
     // url变量绑定
     'url_params_bind'       => true,
     // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
@@ -69,6 +71,10 @@ return [
     'url_route_must'        => false,
     // URL模块映射
     'url_module_map'        => [],
+    // 域名部署
+    'url_domain_deploy'     => false,
+    // 域名部署规则
+    'url_domain_rules'      => [],
 
     // +----------------------------------------------------------------------
     // | 视图及模板设置

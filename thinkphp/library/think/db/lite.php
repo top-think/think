@@ -348,7 +348,7 @@ class Lite
         // 记录错误日志
         Log::record($this->error, 'ERR');
         if ($this->config['debug']) {
-// 开启数据库调试模式
+            // 开启数据库调试模式
             throw new Exception($this->error);
         } else {
             return $this->error;
@@ -416,7 +416,7 @@ class Lite
     protected function debug($start)
     {
         if ($this->config['debug']) {
-// 开启数据库调试模式
+            // 开启数据库调试模式
             if ($start) {
                 Debug::remark('queryStartTime', 'time');
             } else {
@@ -437,13 +437,11 @@ class Lite
      */
     protected function initConnect($master = true)
     {
-        if (!empty($this->config['deploy']))
-        // 采用分布式数据库
-        {
+        if (!empty($this->config['deploy'])) {
+            // 采用分布式数据库
             $this->_linkID = $this->multiConnect($master);
-        } else
-        // 默认单数据库
-        if (!$this->_linkID) {
+        } elseif (!$this->_linkID) {
+            // 默认单数据库
             $this->_linkID = $this->connect();
         }
 
@@ -476,7 +474,7 @@ class Lite
                 $r = floor(mt_rand(0, $this->config['master_num'] - 1));
             } else {
                 if (is_numeric($this->config['slave_no'])) {
-// 指定服务器读
+                    // 指定服务器读
                     $r = $this->config['slave_no'];
                 } else {
                     // 读操作连接从服务器

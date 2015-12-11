@@ -23,7 +23,7 @@ abstract class rest
     protected $restDefaultMethod = 'get';
     protected $restTypeList      = 'html|xml|json|rss';
     protected $restDefaultType   = 'html';
-    protected $restOutputType    = [// REST允许输出的资源类型列表
+    protected $restOutputType    = [ // REST允许输出的资源类型列表
         'xml'  => 'application/xml',
         'json' => 'application/json',
         'html' => 'text/html',
@@ -78,7 +78,7 @@ abstract class rest
             $this->$fun();
         } else {
             // 抛出异常
-            throw new \think\Exception(\think\Lang::get('_ERROR_ACTION_:') . ACTION_NAME);
+            throw new \Exception('error action :' . ACTION_NAME);
         }
     }
 

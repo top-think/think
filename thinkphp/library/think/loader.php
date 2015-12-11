@@ -149,13 +149,17 @@ class Loader
             return $_model[$name . $layer];
         }
         if (strpos($name, '/')) {
-            list($module, $name) = explode('/', $name);
+            list($module, $name) = explode('/', $name, 2);
         } else {
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('.', '\\', $name), 1);
+        $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
         if (class_exists($class)) {
             $model = new $class($name);
+        } elseif (false === strpos($name, '/')) {
+            // 自动加载公共模块下面的模型
+            $class = COMMON_MODULE . strstr($class, '\\');
+            $model = class_exists($class) ? new $class($name) : new Model($name);
         } else {
             Log::record('实例化不存在的类：' . $class, 'NOTIC');
             $model = new Model($name);
