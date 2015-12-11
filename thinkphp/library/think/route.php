@@ -29,7 +29,7 @@ class Route
     // 变量规则
     private static $pattern = [];
     // 路由别名 用于自动生成
-    public static $alias = [];
+    private static $alias = [];
 
     // 添加URL映射规则
     public static function map($map, $route = '')
@@ -627,6 +627,29 @@ class Route
             }
             $_GET = array_merge($var, $_GET);
             return $result['route'];
+        }
+    }
+
+    // 根据路由别名和参数获取URL地址
+    public static function getRouteUrl($name, $params = [])
+    {
+        if (!empty(self::$alias[$name])) {
+            $url = self::$alias[$name];
+            if (is_string($params)) {
+                parse_str($params, $vars);
+            } else {
+                $vars = $params;
+            }
+            foreach ($vars as $key => $val) {
+                if (false !== strpos($url, '[:' . $key . ']')) {
+                    $url = str_replace('[:' . $key . ']', $val, $url);
+                } else {
+                    $url = str_replace(':' . $key, $val, $url);
+                }
+            }
+            return $url;
+        } else {
+            return null;
         }
     }
 }
