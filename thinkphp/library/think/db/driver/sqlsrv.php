@@ -93,24 +93,13 @@ class Sqlsrv extends Driver
     }
 
     /**
-     * order分析
+     * 随机排序
      * @access protected
-     * @param mixed $order
      * @return string
      */
-    protected function parseOrder($order)
+    protected function parseRand()
     {
-        $array = [];
-        foreach ($order as $key => $val) {
-            if (is_numeric($key)) {
-                $array[] = $this->parseKey($val);
-            } else {
-                $sort    = in_array(strtolower(trim($val)), ['asc', 'desc']) ? ' ' . $val : '';
-                $array[] = $this->parseKey($key) . ' ' . $sort;
-            }
-        }
-        $order = implode(',', $array);
-        return !empty($order) ? ' ORDER BY ' . $order : ' ORDER BY rand()';
+        return 'rand()';
     }
 
     /**

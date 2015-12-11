@@ -15,7 +15,6 @@ use PDO;
 use think\Config;
 use think\Debug;
 use think\Exception;
-use think\Lang;
 use think\Log;
 
 abstract class Driver
@@ -58,7 +57,7 @@ abstract class Driver
         'slave_no'    => '', // 指定从服务器序号
     ];
     // 数据库表达式
-    protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=', 'notlike' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'notin' => 'NOT IN','not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN', 'notbetween' => 'NOT BETWEEN'];
+    protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=', 'notlike' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'notin' => 'NOT IN', 'not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN', 'notbetween' => 'NOT BETWEEN'];
     // 查询表达式
     protected $selectSql = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%LOCK%%COMMENT%';
     // 查询次数
@@ -636,7 +635,7 @@ abstract class Driver
                     $data = is_string($val[1]) ? explode(',', $val[1]) : $val[1];
                     $whereStr .= $key . ' ' . $this->exp[$exp] . ' ' . $this->parseValue($data[0]) . ' AND ' . $this->parseValue($data[1]);
                 } else {
-                    throw new Exception('where express error:'. $val[0]);
+                    throw new Exception('where express error:' . $val[0]);
                 }
             } else {
                 $count = count($val);
@@ -715,7 +714,7 @@ abstract class Driver
      */
     protected function parseLimit($limit)
     {
-        return !empty($limit) ? ' LIMIT ' . $limit . ' ' : '';
+        return (!empty($limit) && false === strpos($limit, '(')) ? ' LIMIT ' . $limit . ' ' : '';
     }
 
     /**
@@ -747,6 +746,8 @@ abstract class Driver
                 if (is_numeric($key)) {
                     if (false === strpos($val, '(')) {
                         $array[] = $this->parseKey($val);
+                    } elseif ('[rand]' == $val) {
+                        $array[] = $this->parseRand();
                     }
                 } else {
                     $sort    = in_array(strtolower(trim($val)), ['asc', 'desc']) ? ' ' . $val : '';

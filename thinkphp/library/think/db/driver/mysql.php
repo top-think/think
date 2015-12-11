@@ -107,4 +107,14 @@ class Mysql extends Driver
         return $key;
     }
 
+
+    /**
+     * 随机排序
+     * @access protected
+     * @return string
+     */
+    protected function parseRand()
+    {
+        return 'rand()';
+    }
 }
