@@ -16,9 +16,9 @@ defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . DS);
 defined('LIB_PATH') or define('LIB_PATH', THINK_PATH . 'library' . DS);
 defined('MODE_PATH') or define('MODE_PATH', THINK_PATH . 'mode' . DS); // 系统应用模式目录
-defined('TRAIT_PATH') or define('TRAIT_PATH', THINK_PATH . 'traits' . DS);
 defined('CORE_PATH') or define('CORE_PATH', LIB_PATH . 'think' . DS);
 defined('ORG_PATH') or define('ORG_PATH', LIB_PATH . 'org' . DS);
+defined('TRAIT_PATH') or define('TRAIT_PATH', LIB_PATH . 'traits' . DS);
 defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . DS);
 defined('COMMON_MODULE') or define('COMMON_MODULE', 'common');
 defined('RUNTIME_PATH') or define('RUNTIME_PATH', realpath(APP_PATH) . DS . 'runtime' . DS);

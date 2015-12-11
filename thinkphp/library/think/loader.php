@@ -30,7 +30,7 @@ class Loader
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $path = dirname(self::$namespace[$name]) . DS;
-            } elseif (in_array($name, ['think', 'org', 'behavior', 'com']) || is_dir(LIB_PATH . $name)) {
+            } elseif (in_array($name, ['think', 'org', 'behavior', 'com', 'traits']) || is_dir(LIB_PATH . $name)) {
                 // Library目录下面的命名空间自动定位
                 $path = LIB_PATH;
             } else {
@@ -89,10 +89,10 @@ class Loader
                 //加载当前项目应用类库
                 $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
                 $baseUrl = MODULE_PATH;
-            } elseif (in_array($class_strut[0], ['think', 'behavior', 'org', 'com'])) {
+            } elseif (in_array($class_strut[0], ['traits', 'think', 'behavior', 'org', 'com'])) {
                 // org 第三方公共类库 com 企业公共类库
                 $baseUrl = LIB_PATH;
-            } elseif (in_array($class_strut[0], ['vendor', 'traits'])) {
+            } elseif (in_array($class_strut[0], ['vendor'])) {
                 $baseUrl = THINK_PATH;
             } else {
                 // 加载其他项目应用类库
