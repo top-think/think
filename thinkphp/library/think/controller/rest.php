@@ -39,7 +39,7 @@ abstract class rest
         if ('' == __EXT__) {
             // 自动检测资源类型
             $this->_type = $this->getAcceptType();
-        } elseif (!preg_match('/\(' . $this->restTypeList . ')$/i', __EXT__)) {
+        } elseif (!preg_match('/\(' . $this->restTypeList . '\)$/i', __EXT__)) {
             // 资源类型非法 则用默认资源类型访问
             $this->_type = $this->restDefaultType;
         } else {
