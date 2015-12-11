@@ -290,7 +290,7 @@ function S($name, $value = '', $options = null)
         return think\Cache::get($name);
     } elseif (is_null($value)) {
         // 删除缓存
-        return $think\Cache::rm($name);
+        return think\Cache::rm($name);
     } else {
         // 缓存数据
         if (is_array($options)) {
