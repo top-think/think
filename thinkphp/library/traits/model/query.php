@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace traits\think\model;
+namespace traits\model;
 
 trait Query
 {

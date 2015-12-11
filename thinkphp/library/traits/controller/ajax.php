@@ -1,17 +1,17 @@
-<?php 
+<?php
+
 /**
  * 用法：
- * T('think/controller/ajax');
+ * T('controller/ajax');
  * class index
  * {
- *     use \traits\think\controller\ajax;
+ *     use \traits\controller\ajax;
  *     public function index(){
  *         $this->result();
  *     }
  * }
  */
-namespace traits\think\controller;
-use think\Config;
+namespace traits\controller;
 
 trait Ajax
 {

@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace traits\think\model;
+namespace traits\model;
 
 define('EXISTS_VALIDATE', 0);
 define('MUST_VALIDATE', 1);
@@ -62,8 +62,8 @@ trait Auto
                 $fields = explode(',', $fields);
             }
             // 判断令牌验证字段
-            if (C('TOKEN_ON')) {
-                $fields[] = C('TOKEN_NAME');
+            if (Config::get('token_on')) {
+                $fields[] = Config::get('token_name');
             }
 
             foreach ($data as $key => $val) {

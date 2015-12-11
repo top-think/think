@@ -1,23 +1,25 @@
-<?php 
+<?php
+
 /**
  * 用法：
- * T('think/controller/view');
+ * T('controller/view');
  * class index
  * {
- *     use \traits\think\controller\view;
+ *     use \traits\controller\view;
  *     public function index(){
  *         $this->assign();
  *         $this->show();
  *     }
  * }
  */
-namespace traits\think\controller;
+namespace traits\controller;
+
 use think\Config;
 
 trait View
 {
     // 视图类实例
-    protected $view   = null;
+    protected $view = null;
 
     /**
      * 架构函数 初始化视图类 并采用内置模板引擎
@@ -26,8 +28,8 @@ trait View
     public function initView()
     {
         // 模板引擎参数
-        if(is_null($this->view)){
-            $this->view = new \think\View(Config::get());  // 只能这样写，不然view会冲突
+        if (is_null($this->view)) {
+            $this->view = new \think\View(Config::get()); // 只能这样写，不然view会冲突
         }
     }
 

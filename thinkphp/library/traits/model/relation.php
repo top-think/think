@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace traits\think\model;
+namespace traits\model;
 
 define('HAS_ONE', 1);
 define('BELONGS_TO', 2);
@@ -288,7 +288,7 @@ trait Relation
                                         $pk = $model->getPk();
                                         foreach ($mappingData as $vo) {
                                             if (isset($vo[$pk])) {
-// 更新数据
+                                                // 更新数据
                                                 $mappingCondition = "$pk ={$vo[$pk]}";
                                                 $result           = $model->where($mappingCondition)->save($vo);
                                             } else {

@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace traits\think\model;
+namespace traits\model;
 
 trait View
 {
@@ -92,7 +92,7 @@ trait View
     private function _checkFields($name, $fields)
     {
         if (false !== $pos = array_search('*', $fields)) {
-// 定义所有字段
+            // 定义所有字段
             $fields = array_merge($fields, M($name)->getDbFields());
             unset($fields[$pos]);
         }
