@@ -61,7 +61,7 @@ function L($name)
 // 获取配置参数
 function C($name = '', $value = null, $range = '')
 {
-    if (is_null($value)) {
+    if (is_null($value) && is_string($name)) {
         return think\Config::get($name, $range);
     } else {
         return think\Config::set($name, $value, $range);
