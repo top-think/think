@@ -530,12 +530,12 @@ class Route
     // 外部地址中可以用动态变量 采用 :1 :2 的方式
     // 'news/:month/:day/:id'=>['News/read?cate=1','status=1'],
     // 'new/:id'=>['/new.php?id=:1',301], 重定向
-    private static function parseRule($rule, $route, $url)
+    private static function parseRule($rule, $route, $pathinfo)
     {
+        // 获取URL地址中的参数
+        $paths = explode('/', $pathinfo);
         // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;
-        // 获取URL地址中的参数
-        $paths = explode('/', $url);
         // 解析路由规则
         $matches = [];
         $rule    = explode('/', $rule);
@@ -589,6 +589,10 @@ class Route
                 }
             }
             $var = array_merge($matches, $var);
+            // 解析剩余的URL参数
+            if (!empty($paths)) {
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {$var[strtolower($match[1])] = strip_tags($match[2]);}, implode('/', $paths));
+            }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
                 parse_str($route[1], $params);
@@ -607,7 +611,7 @@ class Route
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
     // '/new\/(\d+)\/(\d+)/'=>['News/read?id=:1&page=:2&cate=1','status=1'],
     // '/new\/(\d+)/'=>['/new.php?id=:1&page=:2&status=1','301'], 重定向
-    private static function parseRegex($matches, $route, $url)
+    private static function parseRegex($matches, $route, $pathinfo)
     {
         // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;
@@ -620,6 +624,13 @@ class Route
             // 解析路由地址
             $result = self::parseRoute($url);
             $var    = $result['var'];
+            // 解析剩余的URL参数
+            $regx = substr_replace($pathinfo, '', 0, strlen($matches[0]));
+            if ($regx) {
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
+                    $var[strtolower($match[1])] = strip_tags($match[2]);
+                }, $regx);
+            }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
                 parse_str($route[1], $params);

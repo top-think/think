@@ -91,20 +91,18 @@ class Error
      *
      * @param mixed $error 错误
      * @param int   $code
-     *
-     * @internal param int $errno 错误代码
      */
     public static function halt($error, $code = 1)
     {
         $message = is_array($error) ? $error['message'] : $error;
         $code    = is_array($error) ? $error['code'] : $code;
 
-        $e = ['mssage' => $message, 'code' => $code];
         if (APP_DEBUG) {
             //调试模式下输出错误信息
             if (!is_array($error)) {
                 $trace        = debug_backtrace();
                 $e['message'] = $error;
+                $e['code']    = $code;
                 $e['file']    = $trace[0]['file'];
                 $e['line']    = $trace[0]['line'];
                 ob_start();
@@ -119,8 +117,11 @@ class Error
             if (!empty($error_page)) {
                 header('Location: ' . $error_page);
             } else {
+                $e['code']    = $code;
                 $e['message'] = Config::get('show_error_msg') ? $message : Config::get('error_message');
             }
+        } else {
+            $e = ['mssage' => $message, 'code' => $code];
         }
 
         $type = Config::get('default_return_type');
