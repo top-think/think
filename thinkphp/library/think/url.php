@@ -105,8 +105,9 @@ class Url
     // 解析URL和参数 域名
     protected static function parseUrl($url, $vars, $domain)
     {
-        $info = parse_url($url);
-        $url  = !empty($info['path']) ? $info['path'] : ACTION_NAME;
+        $info   = parse_url($url);
+        $url    = !empty($info['path']) ? $info['path'] : ACTION_NAME;
+        $anchor = '';
         if (isset($info['fragment'])) {
             // 解析锚点
             $anchor = $info['fragment'];
