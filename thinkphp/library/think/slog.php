@@ -313,7 +313,7 @@ class Slog
             $time_str = "[运行时间：{$runtime}s][吞吐率：{$reqs}req/s]";
         }
         if (self::$start_memory) {
-            $memory_use = number_format(memory_get_usage() - self::$start_memory / 1024, 2);
+            $memory_use = number_format((memory_get_usage() - self::$start_memory) / 1024, 2);
             $memory_str = "[内存消耗：{$memory_use}kb]";
         }
 
