@@ -278,24 +278,19 @@ function cookie($name, $value = '')
  */
 function S($name, $value = '', $options = null)
 {
-    static $cache = null;
     if (is_array($options)) {
         // 缓存操作的同时初始化
-        $cache = think\Cache::connect($options);
+        think\Cache::connect($options);
     } elseif (is_array($name)) {
         // 缓存初始化
-        $cache = think\Cache::connect($name);
-        return $cache;
-    } elseif (is_null($cache)) {
-        // 自动初始化
-        $cache = think\Cache::connect();
+        return think\Cache::connect($name);
     }
     if ('' === $value) {
         // 获取缓存
-        return $cache->get($name);
+        return think\Cache::get($name);
     } elseif (is_null($value)) {
         // 删除缓存
-        return $cache->rm($name);
+        return $think\Cache::rm($name);
     } else {
         // 缓存数据
         if (is_array($options)) {
@@ -303,7 +298,7 @@ function S($name, $value = '', $options = null)
         } else {
             $expire = is_numeric($options) ? $options : null; //默认快捷缓存设置过期时间
         }
-        return $cache->set($name, $value, $expire);
+        return think\Cache::set($name, $value, $expire);
     }
 }
 
