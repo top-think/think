@@ -40,6 +40,7 @@ abstract class Driver
     protected $_linkID = null;
     // 数据库连接参数配置
     protected $config = [
+        'db_like_fields'=>'', //like字段自动替换为%%包裹
         'type'        => '', // 数据库类型
         'hostname'    => '127.0.0.1', // 服务器地址
         'database'    => '', // 数据库名
