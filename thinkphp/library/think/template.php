@@ -301,7 +301,7 @@ class Template
         }
         // PHP语法检查
         if ($this->config['tpl_deny_php'] && false !== strpos($content, '<?php')) {
-            throw new Exception('_NOT_ALLOW_PHP_');
+            throw new Exception('not allow php tag', 11600);
         }
         return $content;
     }
@@ -388,7 +388,7 @@ class Template
         $xml = '<tpl><tag ' . $attrs . ' /></tpl>';
         $xml = simplexml_load_string($xml);
         if (!$xml) {
-            throw new Exception('_XML_TAG_ERROR_');
+            throw new Exception('template tag define error', 11601);
         }
         $xml   = (array) ($xml->tag->attributes());
         $array = array_change_key_case($xml['@attributes']);
@@ -658,10 +658,10 @@ class Template
             //模板函数过滤
             $fun = strtolower(trim($args[0]));
             switch ($fun) {
-                case 'default':    // 特殊模板函数
+                case 'default': // 特殊模板函数
                     $name = '(' . $name . ')?(' . $name . '):' . $args[1];
                     break;
-                default:    // 通用模板函数
+                default: // 通用模板函数
                     if (!in_array($fun, $template_deny_funs)) {
                         if (isset($args[1])) {
                             if (strstr($args[1], '###')) {

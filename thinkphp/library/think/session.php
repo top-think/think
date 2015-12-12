@@ -71,7 +71,9 @@ class Session
             // 读取session驱动
             $class = '\\think\\session\\driver\\' . strtolower($config['type']);
             // 检查驱动类
-            session_set_save_handler(new $class());
+            if (!session_set_save_handler(new $class())) {
+                throw new Exception('error session handler', 11700);
+            }
         }
         // 启动session
         if (!empty($config['auto_start'])) {

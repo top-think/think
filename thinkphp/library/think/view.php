@@ -133,7 +133,7 @@ class View
             $template = $this->parseTemplate($template);
             // 模板不存在 抛出异常
             if (!is_file($template)) {
-                throw new Exception('template file not exists:' . $template);
+                throw new Exception('template file not exists:' . $template, 10700);
             }
         }
         $vars = $vars ? $vars : $this->data;

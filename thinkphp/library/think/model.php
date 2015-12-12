@@ -969,7 +969,7 @@ class Model
         } elseif (is_string($data)) {
             parse_str($data, $data);
         } elseif (!is_array($data)) {
-            throw new Exception(Lang::get('_DATA_TYPE_INVALID_'));
+            throw new Exception('data type invalid', 10300);
         }
         $this->data = $data;
         return $this;
@@ -1099,7 +1099,7 @@ class Model
                 $options = $union;
             }
         } else {
-            throw new Exception(Lang::get('_DATA_TYPE_INVALID_'));
+            throw new Exception('data type invalid', 10300);
         }
         $this->options['union'][] = $options;
         return $this;

@@ -21,7 +21,7 @@ class Create
             return;
         } else {
             if (!touch($lockfile)) {
-                throw new Exception('应用目录[' . APP_PATH . ']不可写，目录无法自动生成！<BR>请手动生成项目目录~');
+                throw new Exception('应用目录[' . APP_PATH . ']不可写，目录无法自动生成！<BR>请手动生成项目目录~', 10006);
             }
         }
         foreach ($build as $module => $list) {

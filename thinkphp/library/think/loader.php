@@ -256,7 +256,7 @@ class Loader
                 }
 
             } else {
-                throw new Exception('_CLASS_NOT_EXIST_:' . $class);
+                throw new Exception('class not exist :' . $class, 10007);
             }
 
         }

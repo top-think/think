@@ -71,7 +71,7 @@ class App
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
             // 安全检测
-            throw new Exception('class [ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
+            throw new Exception('illegal controller name:' . CONTROLLER_NAME, 10000);
         }
         if ($config['action_bind_class']) {
             $class    = self::bindActionClass($config['empty_controller']);
@@ -85,7 +85,7 @@ class App
         }
 
         if (!$instance) {
-            throw new Exception('class [ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists');
+            throw new Exception('class [ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists', 10001);
         }
         try {
             // 操作方法开始监听
@@ -122,7 +122,7 @@ class App
                 $method = new \ReflectionMethod($instance, '_empty');
                 $method->invokeArgs($instance, [$action, '']);
             } else {
-                throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ');
+                throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
         }
     }
@@ -143,7 +143,7 @@ class App
             // 空操作
             $class = $namespace . '_empty';
         } else {
-            throw new Exception('_ERROR_ACTION_:' . ACTION_NAME);
+            throw new Exception('bind action class not exists :' . ACTION_NAME, 10003);
         }
         return $class;
     }
@@ -171,7 +171,7 @@ class App
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
             } else {
-                throw new Exception('_PARAM_ERROR_:' . $name);
+                throw new Exception('url param bind error:' . $name, 10004);
             }
         }
         return $args;
@@ -325,7 +325,7 @@ class App
             // 初始化模块
             self::initModule(MODULE_NAME, $config);
         } else {
-            throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ');
+            throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ', 10005);
         }
 
         // 获取控制器名
