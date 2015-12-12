@@ -65,7 +65,7 @@ class Slog
 
     }
 
-    public static function trace($msg, $trace_level = 2, $css = '')
+    public static function trace($msg, $trace_level = 1, $css = '')
     {
         if (!self::check()) {
             return;
