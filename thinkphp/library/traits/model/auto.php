@@ -11,14 +11,14 @@
 
 namespace traits\model;
 
-define('EXISTS_VALIDATE', 0);
-define('MUST_VALIDATE', 1);
-define('VALUE_VALIDATE', 2);
-
 use think\Lang;
 
 trait Auto
 {
+
+    const EXISTS_VALIDATE   =   0;  // 存在就验证
+    const MUST_VALIDATE     =   1;  // 必须验证
+    const VALUE_VALIDATE    =   2;  // 有值就验证
 
     protected $validate = []; // 自动验证定义
     protected $auto     = []; // 自动完成定义
