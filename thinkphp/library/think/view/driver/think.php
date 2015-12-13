@@ -21,10 +21,10 @@ class Think
         $this->template = new Template($config);
     }
 
-    public function fetch($template, $data = [], $cacheId = '')
+    public function fetch($template, $data = [], $cache = [])
     {
         if (is_file($template)) {
-            $this->template->display($template, $data, $cacheId);
+            $this->template->display($template, $data, $cache);
         } else {
             $this->template->fetch($template, $data);
         }
