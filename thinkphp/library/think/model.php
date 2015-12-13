@@ -235,10 +235,10 @@ class Model
         return $result;
     }
     // 插入数据前的回调方法
-    protected function _before_insert(&$data, $options)
+    protected function _before_insert(&$data, $options = [])
     {}
     // 插入成功后的回调方法
-    protected function _after_insert($data, $options)
+    protected function _after_insert($data, $options = [])
     {}
 
     public function addAll($dataList, $options = [], $replace = false)
@@ -336,10 +336,10 @@ class Model
         return $result;
     }
     // 更新数据前的回调方法
-    protected function _before_update(&$data, $options)
+    protected function _before_update(&$data, $options = [])
     {}
     // 更新成功后的回调方法
-    protected function _after_update($data, $options)
+    protected function _after_update($data, $options = [])
     {}
 
     /**
@@ -409,7 +409,7 @@ class Model
         return $result;
     }
     // 删除成功后的回调方法
-    protected function _after_delete($data, $options)
+    protected function _after_delete($data, $options = [])
     {}
 
     /**
@@ -512,7 +512,7 @@ class Model
         return $resultSet;
     }
     // 查询成功后的回调方法
-    protected function _after_select(&$resultSet)
+    protected function _after_select(&$resultSet, $options = [])
     {}
 
     /**
@@ -689,7 +689,7 @@ class Model
         return $data;
     }
     // 数据读取成功后的回调方法
-    protected function _after_find(&$result)
+    protected function _after_find(&$result, $options = [])
     {}
 
     /**

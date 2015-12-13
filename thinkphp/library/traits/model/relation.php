@@ -35,7 +35,7 @@ trait Relation
     }
 
     // 查询成功后的回调方法
-    protected function _after_find(&$result, $options)
+    protected function _after_find(&$result, $options = [])
     {
         // 获取关联数据 并附加到结果中
         if (!empty($options['link'])) {
@@ -45,7 +45,7 @@ trait Relation
     }
 
     // 查询数据集成功后的回调方法
-    protected function _after_select(&$result, $options)
+    protected function _after_select(&$result, $options = [])
     {
         // 获取关联数据 并附加到结果中
         if (!empty($options['link'])) {
@@ -55,7 +55,7 @@ trait Relation
     }
 
     // 写入成功后的回调方法
-    protected function _after_insert($data, $options)
+    protected function _after_insert($data, $options = [])
     {
         // 关联写入
         if (!empty($options['link'])) {
@@ -65,7 +65,7 @@ trait Relation
     }
 
     // 更新成功后的回调方法
-    protected function _after_update($data, $options)
+    protected function _after_update($data, $options = [])
     {
         // 关联更新
         if (!empty($options['link'])) {
@@ -75,7 +75,7 @@ trait Relation
     }
 
     // 删除成功后的回调方法
-    protected function _after_delete($data, $options)
+    protected function _after_delete($data, $options = [])
     {
         // 关联删除
         if (!empty($options['link'])) {
