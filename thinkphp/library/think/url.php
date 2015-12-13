@@ -75,7 +75,7 @@ class Url
             }
         }
 
-        if (isset($anchor)) {
+        if (!empty($anchor)) {
             $url .= '#' . $anchor;
         }
         if ($domain) {
