@@ -120,13 +120,13 @@ class View
      *
      * @param string $template 模板文件名或者内容
      * @param array  $vars     模板输出变量
-     * @param string $cache_id 模板缓存标识
+     * @param array  $cache 模板缓存参数
      * @param bool   $renderContent
      *
      * @return string
      * @throws Exception
      */
-    public function fetch($template = '', $vars = [], $cache_id = '', $renderContent = false)
+    public function fetch($template = '', $vars = [], $cache = [], $renderContent = false)
     {
         if (!$renderContent) {
             // 获取模板文件名
@@ -142,7 +142,7 @@ class View
         ob_implicit_flush(0);
         if ($this->engine) {
             // 指定模板引擎
-            $this->engine->fetch($template, $vars, $cache_id);
+            $this->engine->fetch($template, $vars, $cache);
         } else {
             // 原生PHP解析
             extract($vars, EXTR_OVERWRITE);
@@ -155,6 +155,7 @@ class View
             $replace = $this->config['parse_str'];
             $content = str_replace(array_keys($replace), array_values($replace), $content);
         }
+
         return $content;
     }
 
