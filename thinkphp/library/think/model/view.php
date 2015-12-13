@@ -11,8 +11,8 @@
 
 namespace think\model;
 
-T('think/model/view');
+T('model/view');
 class View extends \think\model
 {
-    use \traits\think\model\view;
+    use \traits\model\view;
 }

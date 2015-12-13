@@ -11,11 +11,11 @@
 
 namespace think\model;
 
-T('think/model/adv');
-T('think/model/query');
+T('model/adv');
+T('model/query');
 
 class Adv extends \think\model
 {
-    use traits\think\model\adv;
-    use traits\think\model\query;
+    use traits\model\adv;
+    use traits\model\query;
 }
