@@ -459,7 +459,7 @@ class Model
         if (isset($options['cache'])) {
             $cache = $options['cache'];
             $key   = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
-            $data  = Cache::get($key, '', $cache);
+            $data  = Cache::get($key);
             if (false !== $data) {
                 return $data;
             }
@@ -493,7 +493,7 @@ class Model
         }
 
         if (isset($cache)) {
-            Cache::set($key, $resultSet, $cache);
+            Cache::set($key, $resultSet, $cache['expire']);
         }
 
         return $resultSet;
@@ -641,7 +641,7 @@ class Model
         if (isset($options['cache'])) {
             $cache = $options['cache'];
             $key   = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
-            $data  = Cache::get($key, '', $cache);
+            $data  = Cache::get($key);
             if (false !== $data) {
                 $this->data = $data;
                 return $data;
@@ -663,7 +663,7 @@ class Model
         // 数据对象赋值
         $this->data = $data;
         if (isset($cache)) {
-            Cache::set($key, $data, $cache);
+            Cache::set($key, $data, $cache['expire']);
         }
         return $this->data;
     }
