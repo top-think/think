@@ -93,7 +93,7 @@ class Url
                 $suffix = substr($suffix, 0, $pos);
             }
         }
-        return 0 === strpos($suffix,'.') ? $suffix : '.'.$suffix;
+        return 0 === strpos($suffix,'.') ? $suffix : (empty($suffix)? $suffix: '.'.$suffix);
     }
 
     // 根据路由名称和参数生成URL地址
