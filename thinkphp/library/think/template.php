@@ -32,7 +32,7 @@ class Template
         'strip_space'        => false, // 是否去除模板文件里面的html空格与换行
         'tpl_cache'          => true, // 是否开启模板编译缓存,设为false则每次都会重新编译
         'compile_type'       => 'file', // 模板编译类型
-        'cache_path'         => CACHE_PATH, // 模板缓存目录
+        'cache_path'         => RUNTIME_PATH . 'template' . DS, // 模板缓存目录
         'cache_prefix'       => '', // 模板缓存前缀标识，可以动态改变
         'cache_time'         => 0, // 模板缓存有效期 0 为永久，(以数字为值，单位:秒)
         'layout_item'        => '{__CONTENT__}', // 布局模板的内容替换标识

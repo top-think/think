@@ -22,7 +22,7 @@ h2{ padding-bottom:.3em;line-height:1.225;border-bottom:1px solid #eee;color: #0
 <body>
 <div class="error">
 <p class="face">:(</p>
-<h1><?php echo '<span style="color:#999">[ '.$e['code'].' ]</span> '.strip_tags($e['message']);?></h1>
+<h1><?php if(!empty($e['code'])){ echo '<span style="color:#999">[ '.$e['code'].' ]</span> ';} echo strip_tags($e['message']);?></h1>
 <div class="content">
 <?php if(isset($e['file'])) {?>
 <div class="info">
