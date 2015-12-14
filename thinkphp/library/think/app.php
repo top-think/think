@@ -47,6 +47,8 @@ class App
         if (SLOG_ON) {
             Slog::config($config['slog']);
         }
+        // 设置系统时区
+        date_default_timezone_set($config['default_timezone']);
 
         // 默认语言
         $lang = strtolower($config['default_lang']);
@@ -273,10 +275,10 @@ class App
                 $depr = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
-                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                    __INFO__;
+                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                __INFO__;
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
