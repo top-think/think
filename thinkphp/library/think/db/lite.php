@@ -89,7 +89,7 @@ class Lite
      * 连接数据库方法
      * @access public
      */
-    public function connect($config = '', $linkNum = 0)
+    public function connect($config = '', $linkNum = 0,$autoConnection = false)
     {
         if (!isset($this->linkID[$linkNum])) {
             if (empty($config)) {
@@ -102,7 +102,12 @@ class Lite
                 }
                 $this->linkID[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $config['params']);
             } catch (\PDOException $e) {
-                throw new Exception($e->getMessage());
+                if ($autoConnection) {
+                    Log::record($e->getMessage(), 'ERR');
+                    return $this->connect($autoConnection, $linkNum);
+                } elseif ($config['debug']) {
+                    throw new Exception($e->getMessage());
+                }
             }
         }
         return $this->linkID[$linkNum];
@@ -121,19 +126,24 @@ class Lite
      * 执行查询 返回数据集
      * @access public
      * @param string $str  sql指令
-     * @param array $bind  参数绑定
+     * @param boolean $fetchSql  不执行只是获取SQL
+     * @param boolean $master  是否在主服务器读操作
      * @return mixed
      */
-    public function query($str, $bind = [])
+    public function query($str, $fetchSql = false, $master = false)
     {
-        $this->initConnect(false);
+        $this->initConnect($master);
         if (!$this->_linkID) {
             return false;
         }
 
         $this->queryStr = $str;
-        if (!empty($bind)) {
-            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
+        if (!empty($this->bind)) {
+            $that           = $this;
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
+        }
+        if ($fetchSql) {
+            return $this->queryStr;
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -148,13 +158,14 @@ class Lite
             $this->error();
             return false;
         }
-        foreach ($bind as $key => $val) {
+        foreach ($this->bind as $key => $val) {
             if (is_array($val)) {
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             } else {
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
+        $this->bind = [];
         try {
             $result = $this->PDOStatement->execute();
             // 调试结束
@@ -175,10 +186,10 @@ class Lite
      * 执行语句
      * @access public
      * @param string $str  sql指令
-     * @param array $bind  参数绑定
+     * @param boolean $fetchSql  不执行只是获取SQL
      * @return integer
      */
-    public function execute($str, $bind = [])
+    public function execute($str, $fetchSql = false)
     {
         $this->initConnect(true);
         if (!$this->_linkID) {
@@ -186,8 +197,12 @@ class Lite
         }
 
         $this->queryStr = $str;
-        if (!empty($bind)) {
-            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
+        if (!empty($this->bind)) {
+            $that           = $this;
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
+        }
+        if ($fetchSql) {
+            return $this->queryStr;
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -202,13 +217,14 @@ class Lite
             $this->error();
             return false;
         }
-        foreach ($bind as $key => $val) {
+        foreach ($this->bind as $key => $val) {
             if (is_array($val)) {
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             } else {
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
+        $this->bind = [];
         try {
             $result = $this->PDOStatement->execute();
             $this->debug(false);
@@ -226,6 +242,7 @@ class Lite
             $this->error();
             return false;
         }
+
     }
 
     /**
@@ -392,9 +409,9 @@ class Lite
      * @param string $str  SQL字符串
      * @return string
      */
-    public function escapeString($str)
+    public function quote($str)
     {
-        return addslashes($str);
+        return $this->_linkID ? $this->_linkID->quote($str) : $str;
     }
 
     /**
@@ -455,23 +472,23 @@ class Lite
      */
     protected function multiConnect($master = false)
     {
-        static $_config = [];
-        if (empty($_config)) {
-            // 缓存分布式数据库配置解析
-            $_config['username'] = explode(',', $$this->config['username']);
-            $_config['password'] = explode(',', $$this->config['password']);
-            $_config['hostname'] = explode(',', $$this->config['hostname']);
-            $_config['hostport'] = explode(',', $$this->config['hostport']);
-            $_config['database'] = explode(',', $$this->config['database']);
-            $_config['dsn']      = explode(',', $$this->config['dsn']);
-        }
+        // 分布式数据库配置解析
+        $_config['username'] = explode(',', $this->config['username']);
+        $_config['password'] = explode(',', $this->config['password']);
+        $_config['hostname'] = explode(',', $this->config['hostname']);
+        $_config['hostport'] = explode(',', $this->config['hostport']);
+        $_config['database'] = explode(',', $this->config['database']);
+        $_config['dsn']      = explode(',', $this->config['dsn']);
+        $_config['charset']  = explode(',', $this->config['charset']);
+
+        $m = floor(mt_rand(0, $this->config['master_num'] - 1));
         // 数据库读写是否分离
         if ($this->config['rw_separate']) {
             // 主从式采用读写分离
             if ($master)
             // 主服务器写入
             {
-                $r = floor(mt_rand(0, $this->config['master_num'] - 1));
+                $r = $m;
             } else {
                 if (is_numeric($this->config['slave_no'])) {
                     // 指定服务器读
@@ -485,6 +502,18 @@ class Lite
             // 读写操作不区分服务器
             $r = floor(mt_rand(0, count($_config['hostname']) - 1)); // 每次随机连接的数据库
         }
+
+        if ($m != $r) {
+            $db_master = [
+                'username' => isset($_config['username'][$m]) ? $_config['username'][$m] : $_config['username'][0],
+                'password' => isset($_config['password'][$m]) ? $_config['password'][$m] : $_config['password'][0],
+                'hostname' => isset($_config['hostname'][$m]) ? $_config['hostname'][$m] : $_config['hostname'][0],
+                'hostport' => isset($_config['hostport'][$m]) ? $_config['hostport'][$m] : $_config['hostport'][0],
+                'database' => isset($_config['database'][$m]) ? $_config['database'][$m] : $_config['database'][0],
+                'dsn'      => isset($_config['dsn'][$m]) ? $_config['dsn'][$m] : $_config['dsn'][0],
+                'charset'  => isset($_config['charset'][$m]) ? $_config['charset'][$m] : $_config['charset'][0],
+            ];
+        }
         $db_config = [
             'username' => isset($_config['username'][$r]) ? $_config['username'][$r] : $_config['username'][0],
             'password' => isset($_config['password'][$r]) ? $_config['password'][$r] : $_config['password'][0],
@@ -492,8 +521,9 @@ class Lite
             'hostport' => isset($_config['hostport'][$r]) ? $_config['hostport'][$r] : $_config['hostport'][0],
             'database' => isset($_config['database'][$r]) ? $_config['database'][$r] : $_config['database'][0],
             'dsn'      => isset($_config['dsn'][$r]) ? $_config['dsn'][$r] : $_config['dsn'][0],
+            'charset'  => isset($_config['charset'][$r]) ? $_config['charset'][$r] : $_config['charset'][0],
         ];
-        return $this->connect($db_config, $r);
+        return $this->connect($db_config, $r, $r == $m ? false : $db_master);
     }
 
     /**

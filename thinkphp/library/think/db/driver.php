@@ -153,7 +153,7 @@ abstract class Driver
         $this->queryStr = $str;
         if (!empty($this->bind)) {
             $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->escapeString($val);}, $this->bind));
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -193,7 +193,6 @@ abstract class Driver
             $this->error();
             return false;
         }
-
     }
 
     /**
@@ -213,7 +212,7 @@ abstract class Driver
         $this->queryStr = $str;
         if (!empty($this->bind)) {
             $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->escapeString($val);}, $this->bind));
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -256,7 +255,6 @@ abstract class Driver
             $this->error();
             return false;
         }
-
     }
 
     /**
@@ -411,7 +409,7 @@ abstract class Driver
             } elseif (is_scalar($val)) {
                 // 过滤非标量数据
                 if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
-                    $set[] = $this->parseKey($key) . '=' . $this->escapeString($val);
+                    $set[] = $this->parseKey($key) . '=' . $this->quote($val);
                 } else {
                     $name  = count($this->bind);
                     $set[] = $this->parseKey($key) . '=:' . $name;
@@ -454,9 +452,9 @@ abstract class Driver
     protected function parseValue($value)
     {
         if (is_string($value)) {
-            $value = strpos($value, ':') === 0 && in_array($value, array_keys($this->bind)) ? $value : $this->escapeString($value);
+            $value = strpos($value, ':') === 0 && in_array($value, array_keys($this->bind)) ? $value : $this->quote($value);
         } elseif (isset($value[0]) && is_string($value[0]) && strtolower($value[0]) == 'exp') {
-            $value = $this->escapeString($value[1]);
+            $value = $this->quote($value[1]);
         } elseif (is_array($value)) {
             $value = array_map([$this, 'parseValue'], $value);
         } elseif (is_bool($value)) {
@@ -1127,9 +1125,9 @@ abstract class Driver
      * @param string $str  SQL字符串
      * @return string
      */
-    public function escapeString($str)
+    public function quote($str)
     {
-        return $this->_linkID->quote($str);
+        return $this->_linkID ? $this->_linkID->quote($str) : $str;
     }
 
     /**

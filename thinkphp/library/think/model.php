@@ -1206,7 +1206,7 @@ class Model
                 $parse = func_get_args();
                 array_shift($parse);
             }
-            $parse = array_map([$this->db, 'escapeString'], $parse);
+            $parse = array_map([$this->db, 'quote'], $parse);
             $where = vsprintf($where, $parse);
         } elseif (is_object($where)) {
             $where = get_object_vars($where);
