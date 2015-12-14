@@ -121,7 +121,7 @@ class Error
                 $e['message'] = Config::get('show_error_msg') ? $message : Config::get('error_message');
             }
         } else {
-            $e = ['mssage' => $message, 'code' => $code];
+            $e = ['message' => $message, 'code' => $code];
         }
 
         $type = Config::get('default_return_type');
