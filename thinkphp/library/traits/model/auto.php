@@ -15,11 +15,6 @@ use think\Lang;
 
 trait Auto
 {
-
-    const EXISTS_VALIDATE   =   0;  // 存在就验证
-    const MUST_VALIDATE     =   1;  // 必须验证
-    const VALUE_VALIDATE    =   2;  // 有值就验证
-
     protected $validate = []; // 自动验证定义
     protected $auto     = []; // 自动完成定义
 
@@ -213,17 +208,17 @@ trait Auto
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
                         $val[2] = Lang::get(substr($val[2], 2, -1));
                     }
-                    $val[3] = isset($val[3]) ? $val[3] : EXISTS_VALIDATE;
+                    $val[3] = isset($val[3]) ? $val[3] : self::EXISTS_VALIDATE;
                     $val[4] = isset($val[4]) ? $val[4] : 'regex';
                     // 判断验证条件
                     switch ($val[3]) {
-                        case MUST_VALIDATE: // 必须验证 不管表单是否有设置该字段
+                        case self::MUST_VALIDATE: // 必须验证 不管表单是否有设置该字段
                             if (false === $this->_validationField($data, $val)) {
                                 return false;
                             }
 
                             break;
-                        case VALUE_VALIDATE: // 值不为空的时候才验证
+                        case self::VALUE_VALIDATE: // 值不为空的时候才验证
                             if ('' != trim($data[$val[0]])) {
                                 if (false === $this->_validationField($data, $val)) {
                                     return false;

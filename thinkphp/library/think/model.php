@@ -17,6 +17,9 @@ class Model
     const MODEL_INSERT = 1; //  新增
     const MODEL_UPDATE = 2; //  更新
     const MODEL_BOTH   = 3; //  全部
+    const EXISTS_VALIDATE   =   0;  // 存在就验证
+    const MUST_VALIDATE     =   1;  // 必须验证
+    const VALUE_VALIDATE    =   2;  // 有值就验证
     // 当前数据库操作对象
     protected $db = null;
     // 数据库对象池
