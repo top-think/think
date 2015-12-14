@@ -32,6 +32,7 @@ class View
         'view_layer'        => VIEW_LAYER,
         'parse_str'         => [],
         'engine_type'       => 'think',
+        'parse_var'         => false,
     ];
 
     public function __construct(array $config = [])
@@ -155,7 +156,11 @@ class View
             $replace = $this->config['parse_str'];
             $content = str_replace(array_keys($replace), array_values($replace), $content);
         }
-
+        if (APP_DEBUG && $this->config['parse_var']) {
+            // debug模式时，将后台分配变量输出到浏览器控制台
+            $parseVar = empty($vars) ? json_encode([]) : json_encode($vars);
+            $content .= '<script type="text/javascript">var __VAR__ = ' . $parseVar . ';</script>';
+        }
         return $content;
     }
 
