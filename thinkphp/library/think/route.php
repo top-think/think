@@ -644,6 +644,11 @@ class Route
     // 根据路由别名和参数获取URL地址
     public static function getRouteUrl($name, $params = [])
     {
+        if (strpos($name, '?')) {
+            // [路由别名?]参数1=值1&参数2=值2...
+            list($name, $parsms) = explode('?', $name);
+        }
+
         if (!empty(self::$alias[$name])) {
             $url = self::$alias[$name];
             if (is_string($params)) {
