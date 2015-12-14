@@ -122,7 +122,9 @@ class App
             // 操作不存在
             if (method_exists($instance, '_empty')) {
                 $method = new \ReflectionMethod($instance, '_empty');
-                $method->invokeArgs($instance, [$action, '']);
+                $data   = $method->invokeArgs($instance, [$action, '']);
+                // 返回数据
+                Response::returnData($data, $config['default_return_type'], $config['response_exit']);
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
@@ -275,10 +277,10 @@ class App
                 $depr = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
-                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                __INFO__;
+                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                    __INFO__;
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {

@@ -11,6 +11,7 @@
 
 namespace traits\model;
 
+use think\Cache;
 use think\Lang;
 use think\Loader;
 
@@ -69,26 +70,58 @@ trait Adv
     }
 
     /**
-     * 字段值增长
+     * 字段值(延迟)增长
      * @access public
      * @param string $field  字段名
      * @param integer $step  增长值
+     * @param integer $lazyTime  延时时间(s)
      * @return boolean
      */
-    public function setInc($field, $step = 1)
+    public function setInc($field, $step = 1, $lazyTime = 0)
     {
+        $condition = $this->options['where'];
+        if (empty($condition)) {
+            // 没有条件不做任何更新
+            return false;
+        }
+        if ($lazyTime > 0) {
+            // 延迟写入
+            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
+            $step = $this->lazyWrite($guid, $step, $lazyTime);
+            if (empty($step)) {
+                return true; // 等待下次写入
+            } elseif ($step < 0) {
+                $step = '-' . $step;
+            }
+        }
         return $this->setField($field, ['exp', $field . '+' . $step]);
     }
 
     /**
-     * 字段值减少
+     * 字段值（延迟）减少
      * @access public
      * @param string $field  字段名
      * @param integer $step  减少值
+     * @param integer $lazyTime  延时时间(s)
      * @return boolean
      */
-    public function setDec($field, $step = 1)
+    public function setDec($field, $step = 1, $lazyTime = 0)
     {
+        $condition = $this->options['where'];
+        if (empty($condition)) {
+            // 没有条件不做任何更新
+            return false;
+        }
+        if ($lazyTime > 0) {
+            // 延迟写入
+            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
+            $step = $this->lazyWrite($guid, -$step, $lazyTime);
+            if (empty($step)) {
+                return true; // 等待下次写入
+            } elseif ($step > 0) {
+                $step = '-' . $step;
+            }
+        }
         return $this->setField($field, ['exp', $field . '-' . $step]);
     }
 
@@ -104,6 +137,15 @@ trait Adv
         $options['field'] = $field;
         $options          = $this->_parseOptions($options);
         $field            = trim($field);
+        // 判断查询缓存
+        if (isset($options['cache'])) {
+            $cache = $options['cache'];
+            $key   = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
+            $data  = Cache::get($key);
+            if (false !== $data) {
+                return $data;
+            }
+        }
         if (strpos($field, ',')) {
             // 多字段
             if (!isset($options['limit'])) {
@@ -111,18 +153,25 @@ trait Adv
             }
             $resultSet = $this->db->select($options);
             if (!empty($resultSet)) {
-                $field = array_keys($resultSet[0]);
-                $key   = array_shift($field);
-                $key2  = array_shift($field);
-                $cols  = [];
-                $count = count(explode(',', $field));
+                if (is_string($resultSet)) {
+                    return $resultSet;
+                }
+                $_field = explode(',', $field);
+                $field  = array_keys($resultSet[0]);
+                $key1   = array_shift($field);
+                $key2   = array_shift($field);
+                $cols   = array();
+                $count  = count($_field);
                 foreach ($resultSet as $result) {
-                    $name = $result[$key];
+                    $name = $result[$key1];
                     if (2 == $count) {
                         $cols[$name] = $result[$key2];
                     } else {
-                        $cols[$name] = is_string($sepa) ? implode($sepa, $result) : $result;
+                        $cols[$name] = is_string($sepa) ? implode($sepa, array_slice($result, 1)) : $result;
                     }
+                }
+                if (isset($cache)) {
+                    Cache::set($key, $cols, $cache['expire']);
                 }
                 return $cols;
             }
@@ -135,70 +184,26 @@ trait Adv
             }
             $result = $this->db->select($options);
             if (!empty($result)) {
+                if (is_string($result)) {
+                    return $result;
+                }
                 if (true !== $sepa && 1 == $options['limit']) {
-                    return reset($result[0]);
+                    $data = reset($result[0]);
+                    if (isset($cache)) {
+                        Cache::set($key, $data, $cache['expire']);
+                    }
+                    return $data;
                 }
                 foreach ($result as $val) {
                     $array[] = $val[$field];
+                }
+                if (isset($cache)) {
+                    Cache::set($key, $array, $cache['expire']);
                 }
                 return $array;
             }
         }
         return null;
-    }
-
-    /**
-     * 字段值延迟增长
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  增长值
-     * @param integer $lazyTime  延时时间(s)
-     * @return boolean
-     */
-    public function setLazyInc($field, $step = 1, $lazyTime = 0)
-    {
-        $condition = $this->options['where'];
-        if (empty($condition)) {
-            // 没有条件不做任何更新
-            return false;
-        }
-        if ($lazyTime > 0) {
-            // 延迟写入
-            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
-            $step = $this->lazyWrite($guid, $step, $lazyTime);
-            if (false === $step) {
-                // 等待下次写入
-                return true;
-            }
-        }
-        return $this->setField($field, ['exp', $field . '+' . $step]);
-    }
-
-    /**
-     * 字段值延迟减少
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  减少值
-     * @param integer $lazyTime  延时时间(s)
-     * @return boolean
-     */
-    public function setLazyDec($field, $step = 1, $lazyTime = 0)
-    {
-        $condition = $this->options['where'];
-        if (empty($condition)) {
-            // 没有条件不做任何更新
-            return false;
-        }
-        if ($lazyTime > 0) {
-            // 延迟写入
-            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
-            $step = $this->lazyWrite($guid, $step, $lazyTime);
-            if (false === $step) {
-                // 等待下次写入
-                return true;
-            }
-        }
-        return $this->setField($field, ['exp', $field . '-' . $step]);
     }
 
     /**
@@ -212,23 +217,23 @@ trait Adv
      */
     protected function lazyWrite($guid, $step, $lazyTime)
     {
-        if (false !== ($value = F($guid))) {
+        if (false !== ($value = Cache::get($guid))) {
             // 存在缓存写入数据
-            if (time() > S($guid . '_time') + $lazyTime) {
+            if (NOW_TIME > Cache::get($guid . '_time') + $lazyTime) {
                 // 延时更新时间到了，删除缓存数据 并实际写入数据库
-                S($guid, null);
-                S($guid . '_time', null);
+                Cache::rm($guid);
+                Cache::rm($guid . '_time');
                 return $value + $step;
             } else {
                 // 追加数据到缓存
-                S($guid, $value + $step);
+                Cache::set($guid, $value + $step);
                 return false;
             }
         } else {
             // 没有缓存数据
-            S($guid, $step);
+            Cache::set($guid, $step);
             // 计时开始
-            S($guid . '_time', time());
+            Cache::set($guid . '_time', NOW_TIME);
             return false;
         }
     }
