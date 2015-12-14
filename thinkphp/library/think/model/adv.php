@@ -16,6 +16,6 @@ T('model/query');
 
 class Adv extends \think\model
 {
-    use traits\model\adv;
-    use traits\model\query;
+    use \traits\model\adv;
+    use \traits\model\query;
 }
