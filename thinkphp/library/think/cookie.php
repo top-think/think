@@ -104,7 +104,7 @@ class Cookie
             $value = $_COOKIE[$name];
             if (0 === strpos($value, 'think:')) {
                 $value = substr($value, 6);
-                $value = json_decode(MAGIC_QUOTES_GPC ? stripslashes($value) : $value, true);
+                $value = json_decode($value, true);
                 array_walk_recursive($value, $this->jsonFormatProtect, 'decode');
             }
             return $value;
