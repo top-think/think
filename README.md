@@ -100,3 +100,11 @@ ThinkPHP5的命名规范如下：
 `\Think\Route` 或者`\think\Route`都是有效的，并且都是加载`think\route.php`文件，如果实例化一个
 `\Org\UploadFile`类的话会自动加载
 `org\upload_file.php`文件。
+
+## 参与开发
+注册并登录 Github 帐号， fork 本项目并进行改动。
+进行改动时请注意：
+* 本项目代码格式化标准选用 PSR-2；
+* 对于代码的修改，请尽量在自己 fork 的项目中创建新分支后再修改；
+* 提交 Pull requests 之前请先行 rebase 自己的分支以保持 timeline 整洁；
+* 对于 Issues 的处理，请在 pull requests 时使用诸如 `fix #xxx(Issue ID)` 的 title 直接关闭 issue。
