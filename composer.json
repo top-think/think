@@ -14,6 +14,13 @@
     "require": {
         "php": ">=5.4.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8",
+        "johnkary/phpunit-speedtrap": "^1.0",
+        "mikey179/vfsStream": "~1.6",
+        "squizlabs/php_codesniffer": "2.*",
+        "phpmd/phpmd": "@stable"
+    },
     "config": {
         "vendor-dir": "thinkphp/vendor"
     },
