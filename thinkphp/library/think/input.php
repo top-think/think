@@ -263,9 +263,7 @@ class Input
     {
         $result = [];
         foreach ($data as $key => $val) {
-            $result[$key] = is_array($val)
-            ? self::filter($filter, $val)
-            : call_user_func($filter, $val);
+            $result[$key] = is_array($val) ? self::filter($filter, $val) : call_user_func($filter, $val);
         }
         return $result;
     }
