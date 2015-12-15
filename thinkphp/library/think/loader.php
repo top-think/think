@@ -23,7 +23,11 @@ class Loader
     {
         // 检查是否定义classmap
         if (isset(self::$map[$class])) {
-            include self::$map[$class];
+            if (self::$map[$class]) {
+                include self::$map[$class];
+            }
+        } elseif($file = self::findFileInComposer($class)){
+            include $file;
         } else {
             // 命名空间自动加载
             $name = strtolower(strstr($class, '\\', true));
@@ -63,7 +67,105 @@ class Loader
     // 注册自动加载机制
     public static function register($autoload = '')
     {
+        self::registerComposerLoader();
         spl_autoload_register($autoload ? $autoload : ['think\\loader', 'autoload']);
+    }
+
+    // PSR-4
+    private static $prefixLengthsPsr4 = [];
+    private static $prefixDirsPsr4 = [];
+
+    // PSR-0
+    private static $prefixesPsr0 = [];
+
+    // 注册composer自动加载
+    private static function registerComposerLoader()
+    {
+        if(is_file(VENDOR_PATH . 'composer/autoload_namespaces.php')) {
+            $map = require VENDOR_PATH . 'composer/autoload_namespaces.php';
+            foreach ($map as $namespace => $path) {
+                self::$prefixesPsr0[$namespace[0]][$namespace] = (array) $path;
+            }
+        }
+
+        if(is_file(VENDOR_PATH . 'composer/autoload_psr4.php')) {
+            $map = require VENDOR_PATH . 'composer/autoload_psr4.php';
+            foreach ($map as $namespace => $path) {
+                $length = strlen($namespace);
+                if ('\\' !== $namespace[$length - 1]) {
+                    throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
+                }
+                self::$prefixLengthsPsr4[$namespace[0]][$namespace] = $length;
+                self::$prefixDirsPsr4[$namespace] = (array) $path;
+            }
+        }
+
+        if(is_file(VENDOR_PATH . 'composer/autoload_classmap.php')) {
+            $classMap = require VENDOR_PATH . 'composer/autoload_classmap.php';
+            if ($classMap) {
+                self::addMap($classMap);
+            }
+        }
+
+        if(is_file(VENDOR_PATH . 'composer/autoload_files.php')) {
+            $includeFiles = require VENDOR_PATH . 'composer/autoload_files.php';
+            foreach ($includeFiles as $fileIdentifier => $file) {
+                self::composerRequire($fileIdentifier, $file);
+            }
+        }
+    }
+
+    private static function composerRequire($fileIdentifier, $file)
+    {
+        if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
+            require $file;
+
+            $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
+        }
+    }
+
+    private static function findFileInComposer($class, $ext='.php'){
+
+        // PSR-4 lookup
+        $logicalPathPsr4 = strtr($class, '\\', DS) . $ext;
+
+        $first = $class[0];
+        if (isset(self::$prefixLengthsPsr4[$first])) {
+            foreach (self::$prefixLengthsPsr4[$first] as $prefix => $length) {
+                if (0 === strpos($class, $prefix)) {
+                    foreach (self::$prefixDirsPsr4[$prefix] as $dir) {
+                        if (file_exists($file = $dir . DS . substr($logicalPathPsr4, $length))) {
+                            return $file;
+                        }
+                    }
+                }
+            }
+        }
+
+        // PSR-0 lookup
+        if (false !== $pos = strrpos($class, '\\')) {
+            // namespaced class name
+            $logicalPathPsr0 = substr($logicalPathPsr4, 0, $pos + 1)
+                . strtr(substr($logicalPathPsr4, $pos + 1), '_', DS);
+        } else {
+            // PEAR-like class name
+            $logicalPathPsr0 = strtr($class, '_', DS) . $ext;
+        }
+
+        if (isset(self::$prefixesPsr0[$first])) {
+            foreach (self::$prefixesPsr0[$first] as $prefix => $dirs) {
+                if (0 === strpos($class, $prefix)) {
+                    foreach ($dirs as $dir) {
+                        if (file_exists($file = $dir . DS . $logicalPathPsr0)) {
+                            return $file;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Remember that this class does not exist.
+        return self::$map[$class] = false;
     }
 
     /**
