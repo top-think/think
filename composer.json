@@ -1,7 +1,7 @@
 {
     "name": "topthink/think",
     "description": "the new thinkphp framework",
-    "type": "project",
+    "type": "framework",
     "keywords": ["framework","thinkphp","ORM"],
     "homepage": "http://thinkphp.cn/",
     "license": "Apache2",
