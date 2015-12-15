@@ -17,6 +17,11 @@ class Loader
     protected static $map = [];
     // 命名空间
     protected static $namespace = [];
+    // PSR-4
+    private static $prefixLengthsPsr4 = [];
+    private static $prefixDirsPsr4    = [];
+    // PSR-0
+    private static $prefixesPsr0 = [];
 
     // 自动加载
     public static function autoload($class)
@@ -26,7 +31,7 @@ class Loader
             if (self::$map[$class]) {
                 include self::$map[$class];
             }
-        } elseif($file = self::findFileInComposer($class)){
+        } elseif ($file = self::findFileInComposer($class)) {
             include $file;
         } else {
             // 命名空间自动加载
@@ -71,24 +76,17 @@ class Loader
         spl_autoload_register($autoload ? $autoload : ['think\\loader', 'autoload']);
     }
 
-    // PSR-4
-    private static $prefixLengthsPsr4 = [];
-    private static $prefixDirsPsr4 = [];
-
-    // PSR-0
-    private static $prefixesPsr0 = [];
-
     // 注册composer自动加载
     private static function registerComposerLoader()
     {
-        if(is_file(VENDOR_PATH . 'composer/autoload_namespaces.php')) {
+        if (is_file(VENDOR_PATH . 'composer/autoload_namespaces.php')) {
             $map = require VENDOR_PATH . 'composer/autoload_namespaces.php';
             foreach ($map as $namespace => $path) {
                 self::$prefixesPsr0[$namespace[0]][$namespace] = (array) $path;
             }
         }
 
-        if(is_file(VENDOR_PATH . 'composer/autoload_psr4.php')) {
+        if (is_file(VENDOR_PATH . 'composer/autoload_psr4.php')) {
             $map = require VENDOR_PATH . 'composer/autoload_psr4.php';
             foreach ($map as $namespace => $path) {
                 $length = strlen($namespace);
@@ -96,18 +94,18 @@ class Loader
                     throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
                 }
                 self::$prefixLengthsPsr4[$namespace[0]][$namespace] = $length;
-                self::$prefixDirsPsr4[$namespace] = (array) $path;
+                self::$prefixDirsPsr4[$namespace]                   = (array) $path;
             }
         }
 
-        if(is_file(VENDOR_PATH . 'composer/autoload_classmap.php')) {
+        if (is_file(VENDOR_PATH . 'composer/autoload_classmap.php')) {
             $classMap = require VENDOR_PATH . 'composer/autoload_classmap.php';
             if ($classMap) {
                 self::addMap($classMap);
             }
         }
 
-        if(is_file(VENDOR_PATH . 'composer/autoload_files.php')) {
+        if (is_file(VENDOR_PATH . 'composer/autoload_files.php')) {
             $includeFiles = require VENDOR_PATH . 'composer/autoload_files.php';
             foreach ($includeFiles as $fileIdentifier => $file) {
                 self::composerRequire($fileIdentifier, $file);
@@ -124,8 +122,8 @@ class Loader
         }
     }
 
-    private static function findFileInComposer($class, $ext='.php'){
-
+    private static function findFileInComposer($class, $ext = '.php')
+    {
         // PSR-4 lookup
         $logicalPathPsr4 = strtr($class, '\\', DS) . $ext;
 
@@ -146,7 +144,7 @@ class Loader
         if (false !== $pos = strrpos($class, '\\')) {
             // namespaced class name
             $logicalPathPsr0 = substr($logicalPathPsr4, 0, $pos + 1)
-                . strtr(substr($logicalPathPsr4, $pos + 1), '_', DS);
+            . strtr(substr($logicalPathPsr4, $pos + 1), '_', DS);
         } else {
             // PEAR-like class name
             $logicalPathPsr0 = strtr($class, '_', DS) . $ext;
