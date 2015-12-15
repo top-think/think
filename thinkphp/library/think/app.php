@@ -75,15 +75,15 @@ class App
             // 安全检测
             throw new Exception('illegal controller name:' . CONTROLLER_NAME, 10000);
         }
-        if ($config['action_bind_class']) {
-            $class    = self::bindActionClass($config['empty_controller']);
+        if (Config::get('action_bind_class')) {
+            $class    = self::bindActionClass(Config::get('empty_controller'));
             $instance = new $class;
             // 操作绑定到类后 固定执行run入口
             $action = 'run';
         } else {
-            $instance = Loader::controller(CONTROLLER_NAME, '', $config['empty_controller']);
+            $instance = Loader::controller(CONTROLLER_NAME, '', Config::get('empty_controller'));
             // 获取当前操作名
-            $action = ACTION_NAME . $config['action_suffix'];
+            $action = ACTION_NAME . Config::get('action_suffix');
         }
 
         if (!$instance) {
@@ -101,9 +101,9 @@ class App
             $method = new \ReflectionMethod($instance, $action);
             if ($method->isPublic()) {
                 // URL参数绑定检测
-                if ($config['url_params_bind'] && $method->getNumberOfParameters() > 0) {
+                if (Config::get('url_params_bind') && $method->getNumberOfParameters() > 0) {
                     // 获取绑定参数
-                    $args = self::getBindParams($method, $config['url_parmas_bind_type']);
+                    $args = self::getBindParams($method, Config::get('url_parmas_bind_type'));
                     // 全局过滤
                     array_walk_recursive($args, 'think\\Input::filterExp');
                     $data = $method->invokeArgs($instance, $args);
@@ -113,7 +113,7 @@ class App
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
-                Response::returnData($data, $config['default_return_type'], $config['response_exit']);
+                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -124,7 +124,7 @@ class App
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
                 // 返回数据
-                Response::returnData($data, $config['default_return_type'], $config['response_exit']);
+                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
@@ -170,7 +170,7 @@ class App
             $name = $param->getName();
             if (1 == $paramsBindType && !empty($vars)) {
                 $args[] = array_shift($vars);
-            }if (0 == $paramsBindType && isset($vars[$name])) {
+            } elseif (0 == $paramsBindType && isset($vars[$name])) {
                 $args[] = $vars[$name];
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
@@ -182,7 +182,7 @@ class App
     }
 
     // 初始化模块
-    private static function initModule($module, &$config)
+    private static function initModule($module, $config)
     {
         // 定位模块目录
         $module = COMMON_MODULE == $module ? '' : $module . DS;
@@ -193,11 +193,11 @@ class App
         } else {
             $path = APP_PATH . $module;
             // 加载模块配置
-            $config = Config::load($module . 'config');
+            Config::load($module . 'config');
 
             // 加载应用状态配置
             if ($config['app_status']) {
-                $config = Config::load($module . $config['app_status']);
+                Config::load($module . $config['app_status']);
             }
 
             // 加载别名文件
@@ -225,7 +225,7 @@ class App
      *
      * @throws Exception
      */
-    public static function dispatch(&$config)
+    public static function dispatch($config)
     {
         if (isset($_GET[$config['var_pathinfo']])) {
             // 判断URL里面是否有兼容模式参数
@@ -333,11 +333,11 @@ class App
         }
 
         // 获取控制器名
-        $controller = strip_tags(strtolower($result[1] ?: $config['default_controller']));
+        $controller = strip_tags(strtolower($result[1] ?: Config::get('default_controller')));
         define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
 
         // 获取操作名
-        $action = strip_tags(strtolower($result[2] ?: $config['default_action']));
+        $action = strip_tags(strtolower($result[2] ?: Config::get('default_action')));
         define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
     }
 }
