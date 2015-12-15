@@ -82,7 +82,7 @@ class Cookie
         $name = $config['prefix'] . $name;
         // 设置cookie
         if (is_array($value)) {
-            array_walk_recursive($value, $this->jsonFormatProtect, 'encode');
+            array_walk_recursive($value, 'self::jsonFormatProtect', 'encode');
             $value = 'think:' . json_encode($value);
         }
         $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
@@ -105,7 +105,7 @@ class Cookie
             if (0 === strpos($value, 'think:')) {
                 $value = substr($value, 6);
                 $value = json_decode($value, true);
-                array_walk_recursive($value, $this->jsonFormatProtect, 'decode');
+                array_walk_recursive($value, 'self::jsonFormatProtect', 'decode');
             }
             return $value;
         } else {
