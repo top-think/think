@@ -49,7 +49,7 @@ class Response
             case 'jsonp':
                 // 返回JSON数据格式到客户端 包含状态信息
                 $handler = isset($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
-                $data    = $handler . '(' . Transform::jsonEncode($data) . ');';
+                $data    = $handler . '(' . \org\Transform::jsonEncode($data) . ');';
                 break;
         }
         if ($exit) {
