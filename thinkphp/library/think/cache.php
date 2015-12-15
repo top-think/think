@@ -29,7 +29,7 @@ class Cache
     public static function connect($options = [])
     {
         $type          = !empty($options['type']) ? $options['type'] : 'File';
-        $class         = 'think\\cache\\driver\\' . ucwords($type);
+        $class         = '\\think\\cache\\driver\\' . ucwords($type);
         self::$handler = new $class($options);
         return self::$handler;
     }
