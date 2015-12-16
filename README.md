@@ -112,7 +112,8 @@ ThinkPHP5的命名规范如下：
 ## 参与开发
 注册并登录 Github 帐号， fork 本项目并进行改动。
 进行改动时请注意：
-* 本项目代码格式化标准选用 PSR-2；
-* 对于代码的修改，请尽量在自己 fork 的项目中创建新分支后再修改；
-* 提交 Pull requests 之前请先行 rebase 自己的分支以保持 timeline 整洁；
+* 本项目代码格式化标准选用 **PSR-2**；
+* fork 本项目并 clone 后，请添加本项目的地址到你所 clone 的副本中（作为 upstream）；
+* 对于代码的修改，请尽量在自己 fork 的项目中**创建新分支**后再修改，以避免冲突；
+* 提交 Pull requests 之前请**先 rebase 自己的分支到上游 master**以保持 timeline 整洁并避免冲突；
 * 对于 Issues 的处理，请在 pull requests 时使用诸如 `fix #xxx(Issue ID)` 的 title 直接关闭 issue。
