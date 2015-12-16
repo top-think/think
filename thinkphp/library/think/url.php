@@ -73,6 +73,8 @@ class Url
                 }
                 $url .= $suffix;
             }
+        } else {
+            $url .= $suffix;
         }
 
         if (!empty($anchor)) {
