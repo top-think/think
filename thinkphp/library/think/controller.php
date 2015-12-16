@@ -41,7 +41,7 @@ class Controller
             $this->_initialize();
         }
         // 前置操作方法
-        // 支持 ['action1','action2'] 或者 ['action1'=>['only'=>'index'],'action2'=>'except'=>'login']
+        // 支持 ['action1','action2'] 或者 ['action1'=>['only'=>'index'],'action2'=>['except'=>'login']]
         $list = $this->config['before_action_list'];
         if ($list) {
             foreach ($list as $method => $options) {
