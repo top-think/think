@@ -17,7 +17,7 @@ before_script:
 
 script:
   ## LINT
-  - find ./ -type f -name \*.php -exec php -l {} \;
+  - find thinkphp ! -path "thinkphp/vendor/*" -type f -name \*.php -exec php -l {} \;
   ## PHP_CodeSniffer
   - thinkphp/vendor/bin/phpcs --standard=PSR2 --warning-severity=6 --ignore="thinkphp/vendor/*" thinkphp
   ## PHP Copy/Paste Detector
