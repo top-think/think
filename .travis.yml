@@ -15,14 +15,14 @@ script:
   ## PHP Copy/Paste Detector
   - thinkphp/vendor/bin/phpcpd --verbose --exclude vendor thinkphp
   ## PHP Mess Detector
-  - thinkphp/vendor/bin/phpmd thinkphp text cleancode --exclude thinkphp/vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text codesize --exclude thinkphp/vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text controversial --exclude thinkphp/vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text design --exclude thinkphp/vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text naming --exclude thinkphp/vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text unusedcode --exclude thinkphp/vendor
+  - thinkphp/vendor/bin/phpmd thinkphp text cleancode --exclude vendor
+  - thinkphp/vendor/bin/phpmd thinkphp text codesize --exclude vendor
+  - thinkphp/vendor/bin/phpmd thinkphp text controversial --exclude vendor
+  - thinkphp/vendor/bin/phpmd thinkphp text design --exclude vendor
+  - thinkphp/vendor/bin/phpmd thinkphp text naming --exclude vendor
+  - thinkphp/vendor/bin/phpmd thinkphp text unusedcode --exclude vendor
   ## PHPLOC
-  - thinkphp/vendor/bin/phploc --exclude thinkphp/vendor thinkphp
+  - thinkphp/vendor/bin/phploc --exclude vendor thinkphp
   ## PHPUNIT
   - thinkphp/vendor/bin/phpunit --coverage-clover=coverage.xml
   ## LINT
@@ -30,3 +30,4 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
