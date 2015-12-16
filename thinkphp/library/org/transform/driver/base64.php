@@ -13,7 +13,7 @@ namespace org\transform\driver;
 
 /**
  * Base64编码实现
- * 
+ *
  */
 class Base64
 {
@@ -83,5 +83,4 @@ class Base64
         // 原始解码，并返回结果
         return base64_decode($data);
     }
-
 }

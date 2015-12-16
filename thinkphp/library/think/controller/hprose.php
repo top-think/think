@@ -63,5 +63,6 @@ abstract class Hprose
      * @return mixed
      */
     public function __call($method, $args)
-    {}
+    {
+    }
 }

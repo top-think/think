@@ -99,5 +99,4 @@ class Diandian extends Driver
             E("获取点点用户信息失败：{$data}");
         }
     }
-
 }

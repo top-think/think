@@ -72,7 +72,9 @@ class Db
      */
     private static function parseDsn($dsnStr)
     {
-        if (empty($dsnStr)) {return false;}
+        if (empty($dsnStr)) {
+            return false;
+        }
         $info = parse_url($dsnStr);
         if (!$info) {
             return false;

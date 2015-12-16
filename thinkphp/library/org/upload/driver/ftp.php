@@ -171,5 +171,4 @@ class Ftp
     {
         ftp_close($this->link);
     }
-
 }

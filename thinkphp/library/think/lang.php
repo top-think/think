@@ -59,7 +59,7 @@ class Lang
             self::$lang[$range] = [];
         }
         // 批量定义
-        if(!isset(self::$lang[$range])) {
+        if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
         }
         return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));

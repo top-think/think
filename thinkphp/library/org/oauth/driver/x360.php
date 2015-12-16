@@ -99,5 +99,4 @@ class X360 extends Driver
             E("获取360用户信息失败：{$data['error']}");
         }
     }
-
 }

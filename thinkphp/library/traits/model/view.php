@@ -22,7 +22,8 @@ trait View
      * @return void
      */
     protected function _checkTableInfo()
-    {}
+    {
+    }
 
     /**
      * 得到完整的数据表名

@@ -99,5 +99,4 @@ class Kaixin extends Driver
             E("获取开心网用户信息失败：{$data['error']}");
         }
     }
-
 }

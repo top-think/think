@@ -99,5 +99,4 @@ class Sohu extends Driver
             E("获取搜狐用户信息失败：{$data['message']}");
         }
     }
-
 }

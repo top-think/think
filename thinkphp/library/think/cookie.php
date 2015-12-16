@@ -16,17 +16,17 @@ class Cookie
 
     protected static $config = [
         // cookie 名称前缀
-        'prefix'   => '', 
+        'prefix'   => '',
         // cookie 保存时间
-        'expire'   => 0, 
+        'expire'   => 0,
         // cookie 保存路径
-        'path'     => '/', 
+        'path'     => '/',
         // cookie 有效域名
-        'domain'   => '', 
+        'domain'   => '',
         //  cookie 启用安全传输
-        'secure'   => false, 
+        'secure'   => false,
         // httponly设置
-        'httponly' => '', 
+        'httponly' => '',
     ];
 
     /**
@@ -164,5 +164,4 @@ class Cookie
             $val = 'decode' == $type ? urldecode($val) : urlencode($val);
         }
     }
-
 }

@@ -89,7 +89,7 @@ class Lite
      * 连接数据库方法
      * @access public
      */
-    public function connect($config = '', $linkNum = 0,$autoConnection = false)
+    public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
         if (!isset($this->linkID[$linkNum])) {
             if (empty($config)) {
@@ -140,7 +140,9 @@ class Lite
         $this->queryStr = $str;
         if (!empty($this->bind)) {
             $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
+                return $that->quote($val);
+            }, $this->bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -199,7 +201,9 @@ class Lite
         $this->queryStr = $str;
         if (!empty($this->bind)) {
             $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
+                return $that->quote($val);
+            }, $this->bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -485,9 +489,8 @@ class Lite
         // 数据库读写是否分离
         if ($this->config['rw_separate']) {
             // 主从式采用读写分离
-            if ($master)
-            // 主服务器写入
-            {
+            if ($master) {
+                // 主服务器写入
                 $r = $m;
             } else {
                 if (is_numeric($this->config['slave_no'])) {

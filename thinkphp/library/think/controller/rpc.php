@@ -58,5 +58,6 @@ abstract class Rpc
      * @return mixed
      */
     public function __call($method, $args)
-    {}
+    {
+    }
 }

@@ -258,5 +258,4 @@ class View
         }
         return $tmplPath . $theme;
     }
-
 }

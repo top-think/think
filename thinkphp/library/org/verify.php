@@ -301,5 +301,4 @@ class Verify
         $str = substr(md5($str), 8, 10);
         return md5($key . $str);
     }
-
 }

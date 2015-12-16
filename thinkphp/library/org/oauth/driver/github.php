@@ -98,5 +98,4 @@ class Github extends Driver
             E("获取Github用户信息失败：{$data}");
         }
     }
-
 }

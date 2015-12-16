@@ -521,8 +521,15 @@ class Imagick
      * @param  integer $offset 文字相对当前位置的偏移量
      * @param  integer $angle  文字倾斜角度
      */
-    public function text($text, $font, $size, $color = '#00000000',
-        $locate = THINKIMAGE_WATER_SOUTHEAST, $offset = 0, $angle = 0) {
+    public function text(
+        $text,
+        $font,
+        $size,
+        $color = '#00000000',
+        $locate = THINKIMAGE_WATER_SOUTHEAST,
+        $offset = 0,
+        $angle = 0
+    ) {
         //资源检测
         if (empty($this->im)) {
             throw new \Exception('没有可以被写入文字的图像资源');
@@ -659,5 +666,4 @@ class Imagick
     {
         empty($this->im) || $this->im->destroy();
     }
-
 }

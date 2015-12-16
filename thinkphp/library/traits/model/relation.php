@@ -325,12 +325,10 @@ trait Relation
                                             // 插入关联表数据
                                             $sql    = 'INSERT INTO ' . $mappingRelationTable . ' (' . $mappingFk . ',' . $mappingRelationFk . ') SELECT a.' . $this->getPk() . ',b.' . $model->getPk() . ' FROM ' . $this->getTableName() . ' AS a ,' . $model->getTableName() . " AS b where a." . $this->getPk() . ' =' . $pk . ' AND  b.' . $model->getPk() . ' IN (' . $relationId . ") ";
                                             $result = $model->execute($sql);
-                                            if (false !== $result)
+                                            if (false !== $result) {
                                             // 提交事务
-                                            {
                                                 $this->commit();
-                                            } else
-                                            // 事务回滚
+                                            } else // 事务回滚
                                             {
                                                 $this->rollback();
                                             }

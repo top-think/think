@@ -174,5 +174,4 @@ class Sqlsrv extends Driver
         . $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
         return $this->execute($sql, $this->parseBind(!empty($options['bind']) ? $options['bind'] : []));
     }
-
 }
