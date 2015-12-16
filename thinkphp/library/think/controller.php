@@ -11,11 +11,13 @@
 
 namespace think;
 
+use traits\controller\view;
+
 T('controller/view');
 
 class Controller
 {
-    use \traits\controller\view;
+    use view;
 
     /**
      * 控制器参数
@@ -54,9 +56,12 @@ class Controller
 
     /**
      * 设置控制器参数
+     *
      * @access public
+     *
      * @param array $config 视图参数
-     * @return Think\Controller
+     *
+     * @return $this
      */
     public function config($config = [])
     {

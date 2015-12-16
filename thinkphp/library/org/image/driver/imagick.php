@@ -11,6 +11,7 @@
 
 namespace org\image\driver;
 
+use ImagickDraw;
 use think\Lang;
 
 class Imagick
@@ -33,6 +34,8 @@ class Imagick
      * 构造方法，可用于打开一张图像
      *
      * @param string $imgname 图像路径
+     *
+     * @throws \Exception
      */
     public function __construct($imgname = null)
     {
@@ -46,6 +49,8 @@ class Imagick
      * 打开一张图像
      *
      * @param  string $imgname 图像路径
+     *
+     * @throws \Exception
      */
     public function open($imgname)
     {
@@ -75,6 +80,8 @@ class Imagick
      * @param  string  $imgname   图像保存名称
      * @param  string  $type      图像类型
      * @param  boolean $interlace 是否对JPEG类型图像设置隔行扫描
+     *
+     * @throws \Exception
      */
     public function save($imgname, $type = null, $interlace = true)
     {
@@ -110,7 +117,8 @@ class Imagick
     /**
      * 返回图像宽度
      *
-     * @return integer 图像宽度
+     * @return int 图像宽度
+     * @throws \Exception
      */
     public function width()
     {
@@ -124,7 +132,8 @@ class Imagick
     /**
      * 返回图像高度
      *
-     * @return integer 图像高度
+     * @return int 图像高度
+     * @throws \Exception
      */
     public function height()
     {
@@ -139,6 +148,7 @@ class Imagick
      * 返回图像类型
      *
      * @return string 图像类型
+     * @throws \Exception
      */
     public function type()
     {
@@ -153,6 +163,7 @@ class Imagick
      * 返回图像MIME类型
      *
      * @return string 图像MIME类型
+     * @throws \Exception
      */
     public function mime()
     {
@@ -167,6 +178,7 @@ class Imagick
      * 返回图像尺寸数组 0 - 图像宽度，1 - 图像高度
      *
      * @return array 图像尺寸
+     * @throws \Exception
      */
     public function size()
     {
@@ -186,6 +198,8 @@ class Imagick
      * @param  integer $y      裁剪区域y坐标
      * @param  integer $width  图像保存宽度
      * @param  integer $height 图像保存高度
+     *
+     * @throws \Exception
      */
     public function crop($w, $h, $x = 0, $y = 0, $width = null, $height = null)
     {
@@ -246,6 +260,8 @@ class Imagick
      * @param  integer $width  缩略图最大宽度
      * @param  integer $height 缩略图最大高度
      * @param  integer $type   缩略图裁剪类型
+     *
+     * @throws \Exception
      */
     public function thumb($width, $height, $type = THINKIMAGE_THUMB_SCALE)
     {
@@ -400,9 +416,10 @@ class Imagick
     /**
      * 添加水印
      *
-     * @param  string  $source 水印图片路径
-     * @param  integer $locate 水印位置
-     * @param  integer $alpha  水印透明度
+     * @param  string $source 水印图片路径
+     * @param int     $locate 水印位置
+     *
+     * @throws \Exception
      */
     public function water($source, $locate = THINKIMAGE_WATER_SOUTHEAST)
     {
@@ -520,6 +537,8 @@ class Imagick
      * @param  integer $locate 文字写入位置
      * @param  integer $offset 文字相对当前位置的偏移量
      * @param  integer $angle  文字倾斜角度
+     *
+     * @throws \Exception
      */
     public function text($text, $font, $size, $color = '#00000000',
         $locate = THINKIMAGE_WATER_SOUTHEAST, $offset = 0, $angle = 0) {

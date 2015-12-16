@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 namespace think\controller;
 
+use think\Loader;
+
 /**
  * ThinkPHP Hprose控制器类
  */
@@ -34,7 +36,7 @@ abstract class Hprose
         }
 
         //导入类库
-        think\Loader::import('vendor.Hprose.HproseHttpServer');
+        Loader::import('vendor.Hprose.HproseHttpServer');
         //实例化HproseHttpServer
         $server = new \HproseHttpServer();
         if ($this->allowMethodList) {

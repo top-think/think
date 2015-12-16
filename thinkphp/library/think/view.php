@@ -43,9 +43,13 @@ class View
 
     /**
      * 模板变量赋值
+     *
      * @access public
+     *
      * @param mixed $name  变量名
      * @param mixed $value 变量值
+     *
+     * @return $this
      */
     public function assign($name, $value = '')
     {

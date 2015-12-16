@@ -11,6 +11,8 @@
 
 namespace traits\model;
 
+use think\Model;
+
 define('HAS_ONE', 1);
 define('BELONGS_TO', 2);
 define('HAS_MANY', 3);

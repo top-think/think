@@ -47,7 +47,7 @@ class File
     /**
      * 初始化检查
      * @access private
-     * @return boolen
+     * @return boolean
      */
     private function init()
     {
@@ -124,7 +124,7 @@ class File
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param int $expire  有效时间 0为永久
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value, $expire = null)
     {
@@ -170,7 +170,7 @@ class File
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name)
     {
@@ -181,7 +181,7 @@ class File
      * 清除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function clear()
     {

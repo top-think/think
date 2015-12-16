@@ -28,7 +28,10 @@ class Xcache
 
     /**
      * 架构函数
+     *
      * @param array $options 缓存参数
+     *
+     * @throws Exception
      * @access public
      */
     public function __construct($options = [])

@@ -11,7 +11,9 @@
 
 namespace traits\model;
 
+use think\Config;
 use think\Lang;
+use think\Model;
 
 trait Auto
 {

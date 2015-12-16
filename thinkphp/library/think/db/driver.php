@@ -80,7 +80,7 @@ abstract class Driver
      * @access public
      * @param array $config 数据库配置数组
      */
-    public function __construct($config = '')
+    public function __construct(array $config = [])
     {
         if (!empty($config)) {
             $this->config = array_merge($this->config, $config);
@@ -92,7 +92,15 @@ abstract class Driver
 
     /**
      * 连接数据库方法
+     *
      * @access public
+     *
+     * @param string $config
+     * @param int    $linkNum
+     * @param bool   $autoConnection
+     *
+     * @return
+     * @throws Exception
      */
     public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
@@ -281,7 +289,7 @@ abstract class Driver
     /**
      * 用于非自动提交状态下面的查询提交
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function commit()
     {
@@ -299,7 +307,7 @@ abstract class Driver
     /**
      * 事务回滚
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function rollback()
     {
@@ -360,8 +368,10 @@ abstract class Driver
     /**
      * 数据库错误信息
      * 并显示当前的SQL语句
+     *
      * @access public
      * @return string
+     * @throws Exception
      */
     public function error()
     {
@@ -501,8 +511,11 @@ abstract class Driver
 
     /**
      * table分析
-     * @access protected
-     * @param mixed $table
+     *
+     * @access   protected
+     *
+     * @param $tables
+     *
      * @return string
      */
     protected function parseTable($tables)
@@ -707,8 +720,11 @@ abstract class Driver
 
     /**
      * limit分析
-     * @access protected
-     * @param mixed $lmit
+     *
+     * @access   protected
+     *
+     * @param $limit
+     *
      * @return string
      */
     protected function parseLimit($limit)

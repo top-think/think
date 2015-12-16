@@ -31,10 +31,13 @@ class Sae
 
     /**
      * 架构函数
+     *
      * @param array $options 缓存参数
+     *
+     * @throws Exception
      * @access public
      */
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         if (!function_exists('memcache_init')) {
             throw new Exception('请在SAE平台上运行代码。');

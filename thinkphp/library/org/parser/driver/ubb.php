@@ -72,9 +72,11 @@ class Ubb
 
     /**
      * 解析闭合标签，支持嵌套
-     * @param  string $data 要解析的数据
-     * @param  array  $rule 解析规则
-     * @return string       解析后的内容
+     *
+     * @param  string      $data 要解析的数据
+     * @param array|string $rule 解析规则
+     *
+     * @return string 解析后的内容
      */
     private function closeTag($data, $rule = '')
     {
@@ -105,11 +107,13 @@ class Ubb
 
     /**
      * 解析单标签
-     * @param  string $data 要解析的数据
-     * @param  array  $rule 解析规则
-     * @return string       解析后的内容
+     *
+     * @param  string      $data 要解析的数据
+     * @param array $rule 解析规则
+     *
+     * @return string 解析后的内容
      */
-    private function onceTag($data, $rule = '')
+    private function onceTag($data, array $rule = [])
     {
         list($tag, $reg, $func) = $rule;
         return preg_replace_callback("/{$reg}/is", [$this, '_' . $func], $data);

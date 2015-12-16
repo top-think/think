@@ -101,8 +101,11 @@ trait View
 
     /**
      * 检查条件中的视图字段
+     *
      * @access protected
-     * @param mixed $data 条件表达式
+     *
+     * @param mixed $where 条件表达式
+     *
      * @return array
      */
     protected function checkCondition($where)

@@ -11,6 +11,8 @@
 
 namespace org\transform\driver;
 
+use SimpleXMLElement;
+
 class Xml
 {
     /**

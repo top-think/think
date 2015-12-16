@@ -43,7 +43,10 @@ class Ftp
 
     /**
      * 构造函数，用于设置上传根路径
-     * @param array  $config FTP配置
+     *
+     * @param array $config FTP配置
+     *
+     * @throws Exception
      */
     public function __construct($config)
     {

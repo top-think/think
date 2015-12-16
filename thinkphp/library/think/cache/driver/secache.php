@@ -64,7 +64,6 @@ class Secache
      * @access public
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
-     * @param integer $expire  有效时间（秒）
      * @return boolean
      */
     public function set($name, $value)
@@ -98,7 +97,7 @@ class Secache
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name)
     {
@@ -110,7 +109,7 @@ class Secache
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear()
     {
