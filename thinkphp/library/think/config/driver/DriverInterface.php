@@ -19,7 +19,7 @@ namespace think\config\driver;
 interface DriverInterface
 {
     /**
-     * 解析配置文件或内容，并以字符串形式返回
+     * 解析配置文件或内容，并以数组形式返回
      *
      * @param string $config 配置文件路径或字符串
      *
