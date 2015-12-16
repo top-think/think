@@ -18,6 +18,27 @@ class Debug
     protected static $mem  = [];
 
     /**
+     * 操作句柄
+     * @var object
+     * @access protected
+     */
+    protected static $handler = null;
+
+    /**
+     * 初始化调试驱动
+     * @access public
+     * @param array $options  配置数组
+     * @return object
+     */
+    public static function init($options = [])
+    {
+        $type          = !empty($options['type']) ? $options['type'] : 'Local';
+        $class         = 'think\\debug\\driver\\' . ucwords($type);
+        self::$handler = new $class($options);
+        return self::$handler;
+    }
+
+    /**
      * 记录时间（微秒）和内存使用情况
      * @param string $name 标记位置
      * @param mixed $value 标记值 留空则取当前 time 表示仅记录时间 否则同时记录时间和内存
@@ -120,5 +141,11 @@ class Debug
         } else {
             return $output;
         }
+    }
+
+    // 静态调用
+    public static function __callStatic($method, $params)
+    {
+        return call_user_func_array([self::$handler, $method], $params);
     }
 }
