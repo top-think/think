@@ -479,7 +479,7 @@ class Model
             }
 
             // 数据列表读取后的处理
-            $resultSet = $this->_read_datalist($resultSet);
+            $resultSet = $this->_read_datalist($resultSet, $options);
             if (isset($options['index'])) {
                 // 对数据集进行索引
                 $index = explode(',', $options['index']);
@@ -508,10 +508,10 @@ class Model
      * @param array $data 当前数据
      * @return array
      */
-    protected function _read_datalist($resultSet)
+    protected function _read_datalist($resultSet, $options)
     {
         $resultSet = array_map([$this, '_read_data'], $resultSet);
-        $this->_after_select($resultSet);
+        $this->_after_select($resultSet, $options);
         return $resultSet;
     }
     // 查询成功后的回调方法
