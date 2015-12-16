@@ -10,6 +10,8 @@ before_script:
   - composer install -n --dev --prefer-source
 
 script:
+  ## LINT
+  - find ./ -type f -name \*.php -exec php -l {} \;
   ## PHP_CodeSniffer
   - thinkphp/vendor/bin/phpcs --standard=PSR2 --warning-severity=6 --ignore="thinkphp/vendor/*" thinkphp
   ## PHP Copy/Paste Detector
@@ -25,8 +27,6 @@ script:
   - thinkphp/vendor/bin/phploc --exclude vendor thinkphp
   ## PHPUNIT
   - thinkphp/vendor/bin/phpunit --coverage-clover=coverage.xml
-  ## LINT
-  - find ./ -type f -name \*.php -exec php -l {} \;
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
