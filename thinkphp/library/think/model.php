@@ -662,7 +662,7 @@ class Model
             return $resultSet;
         }
         // 数据处理
-        $data = $this->_read_data($resultSet[0]);
+        $data = $this->_read_data($resultSet[0], $options);
         // 数据对象赋值
         $this->data = $data;
         if (isset($cache)) {
@@ -677,7 +677,7 @@ class Model
      * @param array $data 当前数据
      * @return array
      */
-    protected function _read_data($data)
+    protected function _read_data($data, $options)
     {
         // 检查字段映射
         if (!empty($this->map)) {
@@ -688,7 +688,7 @@ class Model
                 }
             }
         }
-        $this->_after_find($data);
+        $this->_after_find($data, $options);
         return $data;
     }
     // 数据读取成功后的回调方法
