@@ -123,5 +123,4 @@ class Redis
     {
         return $this->handler->flushDB();
     }
-
 }

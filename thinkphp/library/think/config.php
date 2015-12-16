@@ -128,5 +128,4 @@ class Config
             return self::$config[$range];
         }
     }
-
 }

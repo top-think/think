@@ -213,7 +213,8 @@ class Markdown
         $less_than_tab = $this->tab_width - 1;
 
         # Link defs are in the form: ^[id]: url "optional title"
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 							^[ ]{0,' . $less_than_tab . '}\[(.+)\][ ]?:	# id = $1
 							  [ ]*
 							  \n?				# maybe *one* newline
@@ -236,7 +237,8 @@ class Markdown
 							(?:\n+|\Z)
 			}xm',
             array(&$this, '_stripLinkDefinitions_callback'),
-            $text);
+            $text
+        );
         return $text;
     }
     protected function _stripLinkDefinitions_callback($matches)
@@ -303,14 +305,16 @@ class Markdown
 					|
 					  >', $nested_tags_level) . # end of opening tag
         '.*?' . # last level nested tag content
-        str_repeat('
+        str_repeat(
+            '
 					  </\2\s*>	# closing nested tag
 					)
 				  |
 					<(?!/\2\s*>	# other tags with a different name
 				  )
 				)*',
-            $nested_tags_level);
+            $nested_tags_level
+        );
         $content2 = str_replace('\2', '\3', $content);
 
         # First, look for nested blocks, e.g.:
@@ -324,7 +328,8 @@ class Markdown
         # the inner nested divs must be indented.
         # We need to do this before the next, more liberal match, because the next
         # match will start at the first `<div>` and stop at the first `</div>`.
-        $text = preg_replace_callback('{(?>
+        $text = preg_replace_callback(
+            '{(?>
 			(?>
 				(?<=\n\n)		# Starting after a blank line
 				|				# or
@@ -386,7 +391,8 @@ class Markdown
 			)
 			)}Sxmi',
             array(&$this, '_hashHTMLBlocks_callback'),
-            $text);
+            $text
+        );
 
         return $text;
     }
@@ -488,7 +494,8 @@ class Markdown
 				$			# End of line.
 			}mx',
             "\n" . $this->hashBlock("<hr$this->empty_element_suffix") . "\n",
-            $text);
+            $text
+        );
     }
 
     protected $span_gamut = array(
@@ -530,8 +537,11 @@ class Markdown
     protected function doHardBreaks($text)
     {
         # Do hard breaks:
-        return preg_replace_callback('/ {2,}\n/',
-            array(&$this, '_doHardBreaks_callback'), $text);
+        return preg_replace_callback(
+            '/ {2,}\n/',
+            array(&$this, '_doHardBreaks_callback'),
+            $text
+        );
     }
     protected function _doHardBreaks_callback($matches)
     {
@@ -552,7 +562,8 @@ class Markdown
         #
         # First, handle reference-style links: [link text] [id]
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 			(					# wrap whole match in $1
 			  \[
 				(' . $this->nested_brackets_re . ')	# link text = $2
@@ -566,12 +577,15 @@ class Markdown
 			  \]
 			)
 			}xs',
-            array(&$this, '_doAnchors_reference_callback'), $text);
+            array(&$this, '_doAnchors_reference_callback'),
+            $text
+        );
 
         #
         # Next, inline-style links: [link text](url "optional title")
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 			(				# wrap whole match in $1
 			  \[
 				(' . $this->nested_brackets_re . ')	# link text = $2
@@ -593,21 +607,26 @@ class Markdown
 			  \)
 			)
 			}xs',
-            array(&$this, '_doAnchors_inline_callback'), $text);
+            array(&$this, '_doAnchors_inline_callback'),
+            $text
+        );
 
         #
         # Last, handle reference-style shortcuts: [link text]
         # These must come last in case you've also got [link text][1]
         # or [link text](/foo)
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 			(					# wrap whole match in $1
 			  \[
 				([^\[\]]+)		# link text = $2; can\'t contain [ or ]
 			  \]
 			)
 			}xs',
-            array(&$this, '_doAnchors_reference_callback'), $text);
+            array(&$this, '_doAnchors_reference_callback'),
+            $text
+        );
 
         $this->in_anchor = false;
         return $text;
@@ -675,7 +694,8 @@ class Markdown
         #
         # First, handle reference-style labeled images: ![alt text][id]
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 			(				# wrap whole match in $1
 			  !\[
 				(' . $this->nested_brackets_re . ')		# alt text = $2
@@ -690,13 +710,16 @@ class Markdown
 
 			)
 			}xs',
-            array(&$this, '_doImages_reference_callback'), $text);
+            array(&$this, '_doImages_reference_callback'),
+            $text
+        );
 
         #
         # Next, handle inline images:  ![alt text](url "optional title")
         # Don't forget: encode * and _
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 			(				# wrap whole match in $1
 			  !\[
 				(' . $this->nested_brackets_re . ')		# alt text = $2
@@ -719,7 +742,9 @@ class Markdown
 			  \)
 			)
 			}xs',
-            array(&$this, '_doImages_inline_callback'), $text);
+            array(&$this, '_doImages_inline_callback'),
+            $text
+        );
 
         return $text;
     }
@@ -779,8 +804,11 @@ class Markdown
         #      Header 2
         #      --------
         #
-        $text = preg_replace_callback('{ ^(.+?)[ ]*\n(=+|-+)[ ]*\n+ }mx',
-            array(&$this, '_doHeaders_callback_setext'), $text);
+        $text = preg_replace_callback(
+            '{ ^(.+?)[ ]*\n(=+|-+)[ ]*\n+ }mx',
+            array(&$this, '_doHeaders_callback_setext'),
+            $text
+        );
 
         # atx-style headers:
         #    # Header 1
@@ -789,7 +817,8 @@ class Markdown
         #    ...
         #    ###### Header 6
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 				^(\#{1,6})	# $1 = string of #\'s
 				[ ]*
 				(.+?)		# $2 = Header text
@@ -797,7 +826,9 @@ class Markdown
 				\#*			# optional closing #\'s (not counted)
 				\n+
 			}xm',
-            array(&$this, '_doHeaders_callback_atx'), $text);
+            array(&$this, '_doHeaders_callback_atx'),
+            $text
+        );
 
         return $text;
     }
@@ -869,17 +900,23 @@ class Markdown
             # See extended comment in _ProcessListItems().
 
             if ($this->list_level) {
-                $text = preg_replace_callback('{
+                $text = preg_replace_callback(
+                    '{
 						^
 						' . $whole_list_re . '
 					}mx',
-                    array(&$this, '_doLists_callback'), $text);
+                    array(&$this, '_doLists_callback'),
+                    $text
+                );
             } else {
-                $text = preg_replace_callback('{
+                $text = preg_replace_callback(
+                    '{
 						(?:(?<=\n)\n|\A\n?) # Must eat the newline
 						' . $whole_list_re . '
 					}mx',
-                    array(&$this, '_doLists_callback'), $text);
+                    array(&$this, '_doLists_callback'),
+                    $text
+                );
             }
         }
 
@@ -938,7 +975,8 @@ class Markdown
         # trim trailing blank lines:
         $list_str = preg_replace("/\n{2,}\\z/", "\n", $list_str);
 
-        $list_str = preg_replace_callback('{
+        $list_str = preg_replace_callback(
+            '{
 			(\n)?							# leading line = $1
 			(^[ ]*)							# leading whitespace = $2
 			(' . $marker_any_re . '				# list marker and space = $3
@@ -948,7 +986,9 @@ class Markdown
 			(?:(\n+(?=\n))|\n)				# tailing blank line = $5
 			(?= \n* (\z | \2 (' . $marker_any_re . ') (?:[ ]+|(?=\n))))
 			}xm',
-            array(&$this, '_processListItems_callback'), $list_str);
+            array(&$this, '_processListItems_callback'),
+            $list_str
+        );
 
         $this->list_level--;
         return $list_str;
@@ -981,7 +1021,8 @@ class Markdown
         #
         #    Process Markdown `<pre><code>` blocks.
         #
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 				(?:\n\n|\A\n?)
 				(	            # $1 = the code block -- one or more lines, starting with a space/tab
 				  (?>
@@ -991,7 +1032,9 @@ class Markdown
 				)
 				((?=^[ ]{0,' . $this->tab_width . '}\S)|\Z)	# Lookahead for non-space at line-start, or end of doc
 			}xm',
-            array(&$this, '_doCodeBlocks_callback'), $text);
+            array(&$this, '_doCodeBlocks_callback'),
+            $text
+        );
 
         return $text;
     }
@@ -1183,7 +1226,8 @@ class Markdown
 
     protected function doBlockQuotes($text)
     {
-        $text = preg_replace_callback('/
+        $text = preg_replace_callback(
+            '/
 			  (								# Wrap whole match in $1
 				(?>
 				  ^[ ]*>[ ]?			# ">" at the start of a line
@@ -1193,7 +1237,9 @@ class Markdown
 				)+
 			  )
 			/xm',
-            array(&$this, '_doBlockQuotes_callback'), $text);
+            array(&$this, '_doBlockQuotes_callback'),
+            $text
+        );
 
         return $text;
     }
@@ -1207,8 +1253,11 @@ class Markdown
         $bq = preg_replace('/^/m', "  ", $bq);
         # These leading spaces cause problem with <pre> content,
         # so we need to fix that:
-        $bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx',
-            array(&$this, '_doBlockQuotes_callback2'), $bq);
+        $bq = preg_replace_callback(
+            '{(\s*<pre>.+?</pre>)}sx',
+            array(&$this, '_doBlockQuotes_callback2'),
+            $bq
+        );
 
         return "\n" . $this->hashBlock("<blockquote>\n$bq\n</blockquote>") . "\n\n";
     }
@@ -1311,8 +1360,11 @@ class Markdown
         } else {
             # Ampersand-encoding based entirely on Nat Irons's Amputator
             # MT plugin: <http://bumppo.net/projects/amputator/>
-            $text = preg_replace('/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/',
-                '&amp;', $text);
+            $text = preg_replace(
+                '/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/',
+                '&amp;',
+                $text
+            );
         }
         # Encode remaining <'s
         $text = str_replace('<', '&lt;', $text);
@@ -1322,11 +1374,15 @@ class Markdown
 
     protected function doAutoLinks($text)
     {
-        $text = preg_replace_callback('{<((https?|ftp|dict):[^\'">\s]+)>}i',
-            array(&$this, '_doAutoLinks_url_callback'), $text);
+        $text = preg_replace_callback(
+            '{<((https?|ftp|dict):[^\'">\s]+)>}i',
+            array(&$this, '_doAutoLinks_url_callback'),
+            $text
+        );
 
         # Email addresses: <address@domain.foo>
-        $text = preg_replace_callback('{
+        $text = preg_replace_callback(
+            '{
 			<
 			(?:mailto:)?
 			(
@@ -1344,7 +1400,9 @@ class Markdown
 			)
 			>
 			}xi',
-            array(&$this, '_doAutoLinks_email_callback'), $text);
+            array(&$this, '_doAutoLinks_email_callback'),
+            $text
+        );
 
         return $text;
     }
@@ -1389,8 +1447,9 @@ class Markdown
                 $r = ($seed * (1 + $key)) % 100; # Pseudo-random function.
                 # roughly 10% raw, 45% hex, 45% dec
                 # '@' *must* be encoded. I insist.
-                if ($r > 90 && '@' != $char) /* do nothing */;
-                elseif ($r < 45) {
+                if ($r > 90 && '@' != $char) {
+                    /* do nothing */;
+                } elseif ($r < 45) {
                     $chars[$key] = '&#x' . dechex($ord) . ';';
                 } else {
                     $chars[$key] = '&#' . $ord . ';';
@@ -1472,19 +1531,22 @@ class Markdown
         # returning the corresponding value that should replace it.
         #
         switch ($token{0}) {
-        case "\\":
-            return $this->hashPart("&#" . ord($token{1}) . ";");
-        case "`":
-            # Search for end marker in remaining text.
-            if (preg_match('/^(.*?[^`])' . preg_quote($token) . '(?!`)(.*)$/sm',
-                $str, $matches)) {
-                $str      = $matches[2];
-                $codespan = $this->makeCodeSpan($matches[1]);
-                return $this->hashPart($codespan);
-            }
-            return $token; // return as text since no ending marker found.
-        default:
-            return $this->hashPart($token);
+            case "\\":
+                return $this->hashPart("&#" . ord($token{1}) . ";");
+            case "`":
+                # Search for end marker in remaining text.
+                if (preg_match(
+                    '/^(.*?[^`])' . preg_quote($token) . '(?!`)(.*)$/sm',
+                    $str,
+                    $matches
+                )) {
+                    $str      = $matches[2];
+                    $codespan = $this->makeCodeSpan($matches[1]);
+                    return $this->hashPart($codespan);
+                }
+                return $token; // return as text since no ending marker found.
+            default:
+                return $this->hashPart($token);
         }
     }
 
@@ -1509,8 +1571,11 @@ class Markdown
         # tab characters. Then we reconstruct every line by adding the
         # appropriate number of space between each blocks.
 
-        $text = preg_replace_callback('/^.*\t.*$/m',
-            array(&$this, '_detab_callback'), $text);
+        $text = preg_replace_callback(
+            '/^.*\t.*$/m',
+            array(&$this, '_detab_callback'),
+            $text
+        );
 
         return $text;
     }
@@ -1554,12 +1619,14 @@ class Markdown
         #
         # Swap back in all the tags hashed by _HashHTMLBlocks.
         #
-        return preg_replace_callback('/(.)\x1A[0-9]+\1/',
-            array(&$this, '_unhash_callback'), $text);
+        return preg_replace_callback(
+            '/(.)\x1A[0-9]+\1/',
+            array(&$this, '_unhash_callback'),
+            $text
+        );
     }
     protected function _unhash_callback($matches)
     {
         return $this->html_hashes[$matches[0]];
     }
-
 }

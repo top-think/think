@@ -122,5 +122,4 @@ class Local
     {
         return $this->error;
     }
-
 }

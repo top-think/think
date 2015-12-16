@@ -126,5 +126,4 @@ trait View
         $jumpUrl = $jumpUrl ?: $_SERVER["HTTP_REFERER"];
         return $this->result('', $message, 1, $jumpUrl, $wait);
     }
-
 }

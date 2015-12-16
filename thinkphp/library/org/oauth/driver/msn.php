@@ -105,5 +105,4 @@ class Msn extends Driver
             E("获取msn用户信息失败：{$data}");
         }
     }
-
 }

@@ -97,5 +97,4 @@ class Douban extends Driver
             E("获取豆瓣用户信息失败：{$data['msg']}");
         }
     }
-
 }

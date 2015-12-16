@@ -378,5 +378,4 @@ class Slog
             return call_user_func_array(['\think\Slog', 'record'], $args);
         }
     }
-
 }

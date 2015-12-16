@@ -226,5 +226,4 @@ class Upyun
         $message                  = is_null($message) ? 'File Not Found' : "[{$status}]:{$message}";
         $this->error              = $message;
     }
-
 }

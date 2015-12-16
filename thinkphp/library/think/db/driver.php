@@ -125,7 +125,8 @@ abstract class Driver
      * @return string
      */
     protected function parseDsn($config)
-    {}
+    {
+    }
 
     /**
      * 释放查询结果
@@ -154,7 +155,9 @@ abstract class Driver
         $this->queryStr = $str;
         if (!empty($this->bind)) {
             $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
+                return $that->quote($val);
+            }, $this->bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -213,7 +216,9 @@ abstract class Driver
         $this->queryStr = $str;
         if (!empty($this->bind)) {
             $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return $that->quote($val);}, $this->bind));
+            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
+                return $that->quote($val);
+            }, $this->bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -1085,7 +1090,9 @@ abstract class Driver
                 $this->parseLock(isset($options['lock']) ? $options['lock'] : false),
                 $this->parseComment(!empty($options['comment']) ? $options['comment'] : ''),
                 $this->parseForce(!empty($options['force']) ? $options['force'] : ''),
-            ], $sql);
+            ],
+            $sql
+        );
         return $sql;
     }
 
@@ -1207,9 +1214,8 @@ abstract class Driver
         // 数据库读写是否分离
         if ($this->config['rw_separate']) {
             // 主从式采用读写分离
-            if ($master)
+            if ($master) {
             // 主服务器写入
-            {
                 $r = $m;
             } else {
                 if (is_numeric($this->config['slave_no'])) {

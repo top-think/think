@@ -82,8 +82,11 @@ class Ubb
         if (is_string($data)) {
             list($tag, $reg[0], $reg[1], $func) = $rule;
             do {
-                $data = preg_replace_callback("/({$reg[0]})(.*?)({$reg[1]})/is",
-                    [$this, 'closeTag'], $data);
+                $data = preg_replace_callback(
+                    "/({$reg[0]})(.*?)({$reg[1]})/is",
+                    [$this, 'closeTag'],
+                    $data
+                );
             } while ($count && $count--); //递归解析，直到嵌套解析完毕
             return $data;
         } elseif (is_array($data)) {
@@ -91,8 +94,11 @@ class Ubb
             if (preg_match("/{$reg[0]}/is", $data[$num - 2])) {
                 //存在嵌套，进一步解析
                 $count          = 1;
-                $data[$num - 2] = preg_replace_callback("/({$reg[0]})(.*?)({$reg[1]})/is",
-                    [$this, 'closeTag'], $data[$num - 2] . $data[$num - 1]);
+                $data[$num - 2] = preg_replace_callback(
+                    "/({$reg[0]})(.*?)({$reg[1]})/is",
+                    [$this, 'closeTag'],
+                    $data[$num - 2] . $data[$num - 1]
+                );
                 return $data[1] . $data[$num - 2];
             } else {
                 //不存在嵌套，直接解析内容
@@ -297,8 +303,9 @@ class Ubb
                 $r = ($seed * (1 + $key)) % 100; # Pseudo-random function.
                 # roughly 10% raw, 45% hex, 45% dec
                 # '@' *must* be encoded. I insist.
-                if ($r > 90 && '@' != $char) /* do nothing */;
-                elseif ($r < 45) {
+                if ($r > 90 && '@' != $char) {
+                    /* do nothing */;
+                } elseif ($r < 45) {
                     $chars[$key] = '&#x' . dechex($ord) . ';';
                 } else {
                     $chars[$key] = '&#' . $ord . ';';

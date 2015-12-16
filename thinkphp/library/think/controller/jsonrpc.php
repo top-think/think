@@ -41,5 +41,6 @@ abstract class Jsonrpc
      * @return mixed
      */
     public function __call($method, $args)
-    {}
+    {
+    }
 }

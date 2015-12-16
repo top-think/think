@@ -21,5 +21,4 @@ class Driver extends SessionHandler
     {
         $this->config = array_merge($this->config, $config);
     }
-
 }

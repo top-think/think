@@ -104,5 +104,4 @@ class Google extends Driver
             E("获取Google用户信息失败：{$data}");
         }
     }
-
 }

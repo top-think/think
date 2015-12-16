@@ -17,7 +17,7 @@ class Gd
 {
     /**
      * 图像资源对象
-     * 
+     *
      * @var resource
      */
     private $im;
@@ -29,14 +29,14 @@ class Gd
 
     /**
      * 图像信息，包括 width, height, type, mime, size
-     * 
+     *
      * @var array
      */
     private $info;
 
     /**
      * 构造方法，可用于打开一张图像
-     * 
+     *
      * @param string $imgname 图像路径
      */
     public function __construct($imgname = null)
@@ -495,8 +495,15 @@ class Gd
      * @return $this
      * @throws Exception
      */
-    public function text($text, $font, $size, $color = '#00000000',
-        $locate = THINKIMAGE_WATER_SOUTHEAST, $offset = 0, $angle = 0) {
+    public function text(
+        $text,
+        $font,
+        $size,
+        $color = '#00000000',
+        $locate = THINKIMAGE_WATER_SOUTHEAST,
+        $offset = 0,
+        $angle = 0
+    ) {
         //资源检测
         if (empty($this->im)) {
             throw new Exception('没有可以被写入文字的图像资源');

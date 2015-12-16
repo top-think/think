@@ -99,5 +99,4 @@ class Sina extends Driver
             E("获取人人网用户信息失败：{$data['error_msg']}");
         }
     }
-
 }

@@ -144,7 +144,8 @@ class Model
 
     // 回调方法 初始化模型
     protected function _initialize()
-    {}
+    {
+    }
 
     /**
      * 对写入到数据库的数据进行处理
@@ -185,7 +186,8 @@ class Model
     }
     // 写入数据前的回调方法 包括新增和更新
     protected function _before_write(&$data)
-    {}
+    {
+    }
 
     /**
      * 新增数据
@@ -239,10 +241,12 @@ class Model
     }
     // 插入数据前的回调方法
     protected function _before_insert(&$data, $options = [])
-    {}
+    {
+    }
     // 插入成功后的回调方法
     protected function _after_insert($data, $options = [])
-    {}
+    {
+    }
 
     public function addAll($dataList, $options = [], $replace = false)
     {
@@ -340,10 +344,12 @@ class Model
     }
     // 更新数据前的回调方法
     protected function _before_update(&$data, $options = [])
-    {}
+    {
+    }
     // 更新成功后的回调方法
     protected function _after_update($data, $options = [])
-    {}
+    {
+    }
 
     /**
      * 删除数据
@@ -413,7 +419,8 @@ class Model
     }
     // 删除成功后的回调方法
     protected function _after_delete($data, $options = [])
-    {}
+    {
+    }
 
     /**
      * 查询数据集
@@ -516,7 +523,8 @@ class Model
     }
     // 查询成功后的回调方法
     protected function _after_select(&$resultSet, $options = [])
-    {}
+    {
+    }
 
     /**
      * 生成查询SQL 可用于子查询
@@ -575,7 +583,8 @@ class Model
     }
     // 表达式过滤回调方法
     protected function _options_filter(&$options)
-    {}
+    {
+    }
 
     /**
      * 数据类型检测
@@ -693,7 +702,8 @@ class Model
     }
     // 数据读取成功后的回调方法
     protected function _after_find(&$result, $options = [])
-    {}
+    {
+    }
 
     /**
      * 创建数据对象 但不保存到数据库
@@ -748,7 +758,8 @@ class Model
     }
     // 数据对象创建后的回调方法
     protected function _create_filter(&$data)
-    {}
+    {
+    }
 
     /**
      * 切换当前的数据库连接
@@ -785,7 +796,8 @@ class Model
     }
     // 数据库切换后回调方法
     protected function _after_db()
-    {}
+    {
+    }
 
     /**
      * 得到当前的数据对象名称
@@ -951,7 +963,9 @@ class Model
         // 分析表达式
         $sql    = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
         $prefix = $this->tablePrefix;
-        $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $sql);
+        $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+            return $prefix . strtolower($match[1]);
+        }, $sql);
         $this->db->setModel($this->name);
         return $sql;
     }
@@ -990,13 +1004,17 @@ class Model
         $prefix = $this->tablePrefix;
         if (is_array($join)) {
             foreach ($join as $key => &$_join) {
-                $_join = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $_join);
+                $_join = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                    return $prefix . strtolower($match[1]);
+                }, $_join);
                 $_join = false !== stripos($_join, 'JOIN') ? $_join : $type . ' JOIN ' . $_join;
             }
             $this->options['join'] = $join;
         } elseif (!empty($join)) {
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $join = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $join);
+            $join = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                return $prefix . strtolower($match[1]);
+            }, $join);
             $this->options['join'][] = false !== stripos($join, 'JOIN') ? $join : $type . ' JOIN ' . $join;
         }
         return $this;
@@ -1093,7 +1111,9 @@ class Model
         if (is_string($union)) {
             $prefix = $this->tablePrefix;
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $options = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $union);
+            $options = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                return $prefix . strtolower($match[1]);
+            }, $union);
         } elseif (is_array($union)) {
             if (isset($union[0])) {
                 $this->options['union'] = array_merge($this->options['union'], $union);
@@ -1272,7 +1292,9 @@ class Model
             $this->options['table'] = $table;
         } elseif (!empty($table)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $table = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $table);
+            $table = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                return $prefix . strtolower($match[1]);
+            }, $table);
             $this->options['table'] = $table;
         }
         return $this;
@@ -1291,7 +1313,9 @@ class Model
             $this->options['using'] = $using;
         } elseif (!empty($using)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $using = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $using);
+            $using = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                return $prefix . strtolower($match[1]);
+            }, $using);
             $this->options['using'] = $using;
         }
         return $this;

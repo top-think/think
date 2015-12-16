@@ -150,5 +150,4 @@ class Db
     {
         return $this->handler->execute('TRUNCATE TABLE `' . $this->options['table'] . '`');
     }
-
 }

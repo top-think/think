@@ -116,7 +116,6 @@ class Secache
     {
         return $this->handler->_format(true);
     }
-
 }
 
 if (!defined('SECACHE_SIZE')) {
@@ -704,8 +703,7 @@ class SecacheClient
 
     public function _create_node($pos, $data)
     {
-        $this->_puts($pos * $this->idx_node_size + $this->idx_node_base
-            , pack('V1V1V1V1V1V1H*', $data['next'], $data['prev'], $data['data'], $data['size'], $data['lru_right'], $data['lru_left'], $data['key']));
+        $this->_puts($pos * $this->idx_node_size + $this->idx_node_base, pack('V1V1V1V1V1V1H*', $data['next'], $data['prev'], $data['data'], $data['size'], $data['lru_right'], $data['lru_left'], $data['key']));
         return $pos;
     }
 
@@ -779,5 +777,4 @@ class SecacheClient
     {
         triggerError($errstr, $errno);
     }
-
 }

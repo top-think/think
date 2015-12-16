@@ -162,5 +162,4 @@ class Response
             header('Status:' . $status . ' ' . $_status[$status]);
         }
     }
-
 }

@@ -99,5 +99,4 @@ class Baidu extends Driver
             throw new \Exception("获取百度用户信息失败：{$data['error_msg']}");
         }
     }
-
 }
