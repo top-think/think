@@ -11,6 +11,9 @@
 
 namespace think;
 
+use think\config\driver\DriverInterface;
+use think\config\driver\Ini;
+
 class Config
 {
     // 配置参数
@@ -27,15 +30,21 @@ class Config
         }
     }
 
-    // 解析其他格式的配置参数
-    public static function parse($config, $type = '', $range = '')
+    /**
+     * 解析配置文件或内容
+     *
+     * @param string               $config 配置文件路径或内容
+     * @param string               $range  作用域
+     * @param DriverInterface|null $driver 配置解析驱动
+     */
+    public static function parse($config, $range = '', DriverInterface $driver = null)
     {
-        if (empty($type)) {
-            $type = substr(strrchr($config, '.'), 1);
+        if ($driver === null) {
+            $driver = new Ini();
         }
+
         $range = $range ? $range : self::$range;
-        $class = '\\think\\config\\driver\\' . strtolower($type);
-        self::set((new $class())->parse($config), '', $range);
+        self::set($driver->parse($config), '', $range);
     }
 
     // 加载配置文件

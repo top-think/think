@@ -6,26 +6,24 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: dongww <dongww@gmail.com>
 // +----------------------------------------------------------------------
 
 namespace think\config\driver;
 
-class Xml implements DriverInterface
+/**
+ * 配置文件解析驱动接口
+ *
+ * @package think\config\driver
+ */
+interface DriverInterface
 {
-    public function parse($config)
-    {
-        if (is_file($config)) {
-            $content = simplexml_load_file($config);
-        } else {
-            $content = simplexml_load_string($config);
-        }
-        $result = (array) $content;
-        foreach ($result as $key => $val) {
-            if (is_object($val)) {
-                $result[$key] = (array) $val;
-            }
-        }
-        return $result;
-    }
+    /**
+     * 解析配置文件或内容，并以数组形式返回
+     *
+     * @param string $config 配置文件路径或字符串
+     *
+     * @return array 以数组形式返回配置
+     */
+    public function parse($config);
 }
