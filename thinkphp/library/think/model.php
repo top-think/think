@@ -677,7 +677,7 @@ class Model
      * @param array $data 当前数据
      * @return array
      */
-    protected function _read_data($data, $options)
+    protected function _read_data($data, $options = [])
     {
         // 检查字段映射
         if (!empty($this->map)) {
