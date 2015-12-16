@@ -22,13 +22,6 @@ script:
   - thinkphp/vendor/bin/phpcs --standard=PSR2 --warning-severity=6 --ignore="thinkphp/vendor/*" thinkphp
   ## PHP Copy/Paste Detector
   - thinkphp/vendor/bin/phpcpd --verbose --exclude vendor thinkphp
-  ## PHP Mess Detector
-  - thinkphp/vendor/bin/phpmd thinkphp text cleancode --exclude vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text codesize --exclude vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text controversial --exclude vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text design --exclude vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text naming --exclude vendor
-  - thinkphp/vendor/bin/phpmd thinkphp text unusedcode --exclude vendor
   ## PHPLOC
   - thinkphp/vendor/bin/phploc --exclude vendor thinkphp
   ## PHPUNIT
