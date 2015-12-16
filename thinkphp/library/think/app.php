@@ -274,13 +274,15 @@ class App
                 if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
                     throw new Exception('url suffix deny');
                 }
-                $depr = $config['pathinfo_depr'];
+                // 去除URL后缀
+                $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
+                $depr                 = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
                     (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
                     (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
                     (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                    __INFO__;
+                    $_SERVER['PATH_INFO'];
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
@@ -301,8 +303,6 @@ class App
                     $result = Route::parseUrl($path_info, $depr);
                 }
             }
-            // 去除URL后缀
-            $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', $_SERVER['PATH_INFO']);
         }
 
         $module = strtolower($result[0] ?: $config['default_module']);
