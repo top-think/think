@@ -69,7 +69,7 @@ function C($name = '', $value = null, $range = '')
 }
 
 // 获取输入数据 支持默认值和过滤
-function I($key, $default = '', $filter = '')
+function I($key, $default = null, $filter = '')
 {
     if (strpos($key, '.')) {
         // 指定参数来源
