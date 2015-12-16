@@ -677,7 +677,7 @@ class Model
      * @param array $data 当前数据
      * @return array
      */
-    protected function _read_data($data, $options)
+    protected function _read_data($data, $options = [])
     {
         // 检查字段映射
         if (!empty($this->map)) {
@@ -1304,16 +1304,14 @@ class Model
      * @param string $order 排序
      * @return Model
      */
-    public function order($field, $order = '')
+    public function order($field, $order = null)
     {
-        if (is_array($field)) {
+        if (is_string($field) && !empty($field) && is_null($order)) {
+            $this->options['order'][] = $field;
+        } elseif (is_string($field) && !empty($field) && is_string($order)) {
+            $this->options['order'][$field] = $order;
+        } elseif (is_array($field) && !empty($field)) {
             $this->options['order'] = $field;
-        } else {
-            if (!empty($order)) {
-                $this->options['order'][$field] = $order;
-            } else {
-                $this->options['order'][] = $field;
-            }
         }
         return $this;
     }
