@@ -43,14 +43,14 @@ class Config
             $driver = new Ini();
         }
 
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         self::set($driver->parse($config), '', $range);
     }
 
     // 加载配置文件
     public static function load($file, $name = '', $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         $file  = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
         if (!isset(self::$config[$range])) {
             self::$config[$range] = [];
@@ -61,7 +61,7 @@ class Config
     // 检测配置是否存在
     public static function has($name, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         $name  = strtolower($name);
 
         if (!strpos($name, '.')) {
@@ -76,7 +76,7 @@ class Config
     // 获取配置参数 为空则获取所有配置
     public static function get($name = null, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         // 无参数时获取所有
         if (empty($name) && isset(self::$config[$range])) {
             return self::$config[$range];
@@ -102,7 +102,7 @@ class Config
     // 设置配置参数 name为数组则为批量设置
     public static function set($name, $value = null, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         if (!isset(self::$config[$range])) {
             self::$config[$range] = [];
         }
