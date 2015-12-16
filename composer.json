@@ -18,7 +18,6 @@
         "johnkary/phpunit-speedtrap": "^1.0",
         "mikey179/vfsStream": "~1.6",
         "phploc/phploc": "*",
-        "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "~4.8",
         "sebastian/phpcpd": "*",
         "squizlabs/php_codesniffer": "2.*"
