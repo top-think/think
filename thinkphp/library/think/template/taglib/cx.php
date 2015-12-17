@@ -33,7 +33,7 @@ class Cx extends Taglib
         'elseif'     => ['attr' => 'condition', 'close' => 0],
         'else'       => ['attr' => '', 'close' => 0],
         'switch'     => ['attr' => 'name', 'level' => 2],
-        'case'       => ['attr' => 'value,break'],
+        'case'       => ['attr' => 'value,break', 'level' => 2],
         'default'    => ['attr' => '', 'close' => 0],
         'compare'    => ['attr' => 'name,value,type', 'level' => 3, 'alias' => 'eq,equal,notequal,neq,gt,lt,egt,elt,heq,nheq'],
         'range'      => ['attr' => 'name,value,type', 'level' => 3, 'alias' => 'in,notin,between,notbetween'],
