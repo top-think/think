@@ -19,9 +19,13 @@ class Lang
     private static $range = '';
 
     // 设定语言参数的作用域（语言）
-    public static function range($range)
+    public static function range($range = '')
     {
-        self::$range = $range;
+        if ('' == $range) {
+            return self::$range;
+        } else {
+            self::$range = $range;
+        }
     }
 
     /**
@@ -59,10 +63,13 @@ class Lang
             self::$lang[$range] = [];
         }
         // 批量定义
-        if(!isset(self::$lang[$range])) {
+        if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
         }
-        return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
+        if (!empty($lang)) {
+            self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
+        }
+        return self::$lang[$range];
     }
 
     /**

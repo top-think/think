@@ -50,14 +50,14 @@ class App
         // 设置系统时区
         date_default_timezone_set($config['default_timezone']);
 
-        // 默认语言
-        $lang = strtolower($config['default_lang']);
-        Lang::range($lang);
-        // 加载默认语言包
-        Lang::load(THINK_PATH . 'Lang/' . $lang . EXT);
-
         // 监听app_init
         APP_HOOK && Hook::listen('app_init');
+
+        // 默认语言
+        defined('LANG_SET') or define('LANG_SET', strtolower($config['default_lang']));
+        Lang::range(LANG_SET);
+        // 加载默认语言包
+        Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
 
         // 启动session API CLI 不开启
         if (!IS_CLI && !IS_API && $config['use_session']) {
@@ -213,6 +213,11 @@ class App
             // 加载公共文件
             if (is_file($path . 'common' . EXT)) {
                 include $path . 'common' . EXT;
+            }
+
+            // 加载当前模块语言包
+            if ($module) {
+                Lang::load($path . 'lang' . DS . LANG_SET . EXT);
             }
         }
     }
