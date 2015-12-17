@@ -92,6 +92,7 @@ trait View
             'url'  => $url,
             'wait' => $wait,
         ];
+        IS_AJAX && Config::set('default_return_type', Config::get('default_ajax_return'));
         if ('html' == Config::get('default_return_type')) {
             return $this->fetch(Config::get('dispatch_jump_tmpl'), $result);
         } else {
@@ -107,10 +108,10 @@ trait View
      * @param integer  $wait  跳转等待时间
      * @return void
      */
-    protected function error($message, $jumpUrl = '', $wait = 5)
+    protected function error($message, $data = '', $jumpUrl = '', $wait = 5)
     {
         $jumpUrl = $jumpUrl ?: 'javascript:history.back(-1);';
-        return $this->result('', $message, 0, $jumpUrl, $wait);
+        return $this->result($data, $message, 0, $jumpUrl, $wait);
     }
 
     /**
@@ -121,10 +122,10 @@ trait View
      * @param integer  $wait  跳转等待时间
      * @return void
      */
-    protected function success($message, $jumpUrl = '', $wait = 3)
+    protected function success($message, $data = '', $jumpUrl = '', $wait = 3)
     {
         $jumpUrl = $jumpUrl ?: $_SERVER["HTTP_REFERER"];
-        return $this->result('', $message, 1, $jumpUrl, $wait);
+        return $this->result($data, $message, 1, $jumpUrl, $wait);
     }
 
 }
