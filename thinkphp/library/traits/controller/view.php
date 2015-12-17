@@ -92,6 +92,7 @@ trait View
             'url'  => $url,
             'wait' => $wait,
         ];
+        IS_AJAX && Config::set('default_return_type', Config::get('default_ajax_return'));
         if ('html' == Config::get('default_return_type')) {
             return $this->fetch(Config::get('dispatch_jump_tmpl'), $result);
         } else {
