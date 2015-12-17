@@ -12,6 +12,9 @@ php:
   - 5.6
 
 before_script:
+  - pecl channel-update pecl.php.net
+  - echo "yes" | pecl install apcu-4.0.10
+  - phpenv config-add tests/myconfig.ini
   - composer self-update
   - composer install
 
