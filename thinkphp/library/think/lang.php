@@ -78,7 +78,7 @@ class Lang
         if (empty($name)) {
             return self::$lang[$range];
         }
-        $name = strtolower($name);
-        return isset(self::$lang[$range][$name]) ? self::$lang[$range][$name] : $name;
+        $key = strtolower($name);
+        return isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
     }
 }
