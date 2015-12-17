@@ -33,7 +33,7 @@ class Response
             'text'   => 'text/plain',
         ];
         $type = strtolower($type);
-        if (isset($headers[$type])) {
+        if (!headers_sent() && isset($headers[$type])) {
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
 
