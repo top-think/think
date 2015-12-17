@@ -27,6 +27,7 @@ trait Ajax
      */
     public function result($data = '', $msg = '', $code = 0, $url = '', $wait = 0)
     {
+        IS_AJAX && Config::set('default_return_type', Config::get('default_ajax_return'));
         return [
             'code' => $code,
             'msg'  => $msg,
