@@ -495,7 +495,7 @@ class Template
         foreach ($tLib->getTags() as $name => $val) {
             $tags = [$name];
             if (isset($val['alias'])) {
-// 别名设置
+                // 别名设置
                 $tags   = explode(',', $val['alias']);
                 $tags[] = $name;
             }
@@ -659,10 +659,10 @@ class Template
             //模板函数过滤
             $fun = strtolower(trim($args[0]));
             switch ($fun) {
-                case 'default':    // 特殊模板函数
+                case 'default': // 特殊模板函数
                     $name = '(' . $name . ')?(' . $name . '):' . $args[1];
                     break;
-                default:    // 通用模板函数
+                default: // 通用模板函数
                     if (!in_array($fun, $template_deny_funs)) {
                         if (isset($args[1])) {
                             if (strstr($args[1], '###')) {
