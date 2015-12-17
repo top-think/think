@@ -123,6 +123,8 @@ class App
             if (method_exists($instance, '_empty')) {
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
+                // 操作方法执行完成监听
+                APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
                 Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
             } else {
