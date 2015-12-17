@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 namespace think\controller;
 
+use think\Loader;
+
 /**
  * ThinkPHP JsonRPC控制器类
  */
@@ -28,7 +30,7 @@ abstract class Jsonrpc
         }
 
         //导入类库
-        think\Loader::import('vendor.jsonrpc.jsonRPCServer');
+        Loader::import('vendor.jsonrpc.jsonRPCServer');
         // 启动server
         \jsonRPCServer::handle($this);
     }

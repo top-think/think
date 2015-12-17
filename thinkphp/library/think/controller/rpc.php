@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 namespace think\controller;
 
+use think\Loader;
+
 /**
  * ThinkPHP RPC控制器类
  */
@@ -31,7 +33,7 @@ abstract class Rpc
         }
 
         //导入类库
-        think\Loader::import('vendor.phprpc.phprpc_server');
+        Loader::import('vendor.phprpc.phprpc_server');
         //实例化phprpc
         $server = new \PHPRPC_Server();
         if ($this->allowMethodList) {

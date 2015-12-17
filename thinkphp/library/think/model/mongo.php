@@ -10,8 +10,10 @@
 // +----------------------------------------------------------------------
 namespace think\model;
 
+use MongoId;
 use think\Lang;
 use think\Loader;
+use think\Model;
 
 T('modle/adv');
 
@@ -19,7 +21,7 @@ T('modle/adv');
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
  */
-class Mongo extends \Think\Model
+class Mongo extends Model
 {
     use \traits\model\adv;
 

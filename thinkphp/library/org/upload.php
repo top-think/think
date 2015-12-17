@@ -136,7 +136,10 @@ class Upload
 
     /**
      * 上传文件
-     * @param 文件信息数组 $files ，通常是 $_FILES数组
+     *
+     * @param string $files 文件信息数组，通常是 $_FILES数组
+     *
+     * @return array|bool
      */
     public function upload($files = '')
     {

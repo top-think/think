@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 namespace think\controller;
 
+use think\Exception;
+
 /**
  * ThinkPHP Yar控制器类
  */

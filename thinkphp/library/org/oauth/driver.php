@@ -123,7 +123,10 @@ abstract class Driver
 
     /**
      * 获取access_token
+     *
      * @param string $code 授权登录成功后得到的code信息
+     *
+     * @return array
      */
     public function getAccessToken($code)
     {
@@ -178,10 +181,15 @@ abstract class Driver
 
     /**
      * 发送HTTP请求方法，目前只支持CURL发送请求
+     *
      * @param  string $url    请求URL
      * @param  array  $params 请求参数
      * @param  string $method 请求方法GET/POST
-     * @return array  $data   响应数据
+     * @param array   $header
+     * @param bool    $multi
+     *
+     * @return array $data   响应数据
+     * @throws \Exception
      */
     protected function http($url, $params, $method = 'GET', $header = [], $multi = false)
     {

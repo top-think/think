@@ -20,8 +20,12 @@ class App
 
     /**
      * 执行应用程序
+     *
      * @access public
-     * @return void
+     *
+     * @param array $config
+     *
+     * @throws Exception
      */
     public static function run(array $config = [])
     {

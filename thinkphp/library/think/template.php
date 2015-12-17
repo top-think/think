@@ -51,7 +51,10 @@ class Template
 
     /**
      * 架构函数
+     *
      * @access public
+     *
+     * @param array $config
      */
     public function __construct(array $config = [])
     {
@@ -70,8 +73,12 @@ class Template
 
     /**
      * 字符串替换 避免正则混淆
+     *
      * @access private
+     *
      * @param string $str
+     *
+     * @return mixed
      */
     private function stripPreg($str)
     {
@@ -179,10 +186,13 @@ class Template
     /**
      * 检查编译缓存是否有效
      * 如果无效则需要重新编译
+     *
      * @access private
+     *
      * @param string $template  模板文件名
      * @param string $cacheFile 缓存文件名
-     * @return boolen
+     *
+     * @return bool
      */
     private function checkCache($template, $cacheFile)
     {
@@ -380,9 +390,13 @@ class Template
 
     /**
      * 分析XML属性
+     *
      * @access private
-     * @param string $attrs  XML属性字符串
+     *
+     * @param string $attrs XML属性字符串
+     *
      * @return array
+     * @throws Exception
      */
     private function parseXmlAttrs($attrs)
     {
@@ -479,11 +493,12 @@ class Template
 
     /**
      * TagLib库解析
+     *
      * @access private
-     * @param string $tagLib 要解析的标签库
+     *
+     * @param string $tagLib  要解析的标签库
      * @param string $content 要解析的模板内容
-     * @param boolen $hide 是否隐藏标签库前缀
-     * @return void
+     * @param bool   $hide    是否隐藏标签库前缀
      */
     protected function parseTagLib($tagLib, &$content, $hide = false)
     {
@@ -785,8 +800,11 @@ class Template
 
     /**
      * 分析加载的模板文件并读取内容 支持多个模板文件读取
+     *
      * @access private
-     * @param string $tmplPublicName  模板文件名
+     *
+     * @param string $templateName 模板文件名
+     *
      * @return string
      */
     private function parseTemplateName($templateName)

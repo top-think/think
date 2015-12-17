@@ -87,7 +87,15 @@ class Lite
 
     /**
      * 连接数据库方法
+     *
      * @access public
+     *
+     * @param string $config
+     * @param int    $linkNum
+     * @param bool   $autoConnection
+     *
+     * @return
+     * @throws Exception
      */
     public function connect($config = '', $linkNum = 0,$autoConnection = false)
     {
@@ -268,7 +276,7 @@ class Lite
     /**
      * 用于非自动提交状态下面的查询提交
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function commit()
     {
@@ -286,7 +294,7 @@ class Lite
     /**
      * 事务回滚
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function rollback()
     {

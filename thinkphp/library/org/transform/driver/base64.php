@@ -31,6 +31,8 @@ class Base64
      *
      * @param string $data   欲编码的数据
      * @param string $target 编码目标
+     *
+     * @return mixed|string
      */
     public function encode($data, $target = '')
     {
@@ -61,6 +63,8 @@ class Base64
      *
      * @param string $data   欲解码的数据
      * @param string $target 解码目标
+     *
+     * @return string
      */
     public function decode($data, $target = '')
     {

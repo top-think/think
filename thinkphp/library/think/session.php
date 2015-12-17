@@ -31,8 +31,10 @@ class Session
 
     /**
      * session初始化
+     *
      * @param array $config
-     * @return void
+     *
+     * @throws Exception
      */
     public static function init($config = [])
     {

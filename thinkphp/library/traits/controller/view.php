@@ -75,13 +75,16 @@ trait View
 
     /**
      * 返回封装后的API数据到客户端
+     *
      * @access protected
-     * @param mixed $data 要返回的数据
-     * @param string $msg 提示信息
+     *
+     * @param mixed   $data 要返回的数据
+     * @param string  $msg  提示信息
      * @param integer $code 返回的code
-     * @param string $url 重定向地址
-     * @param integer  $wait  跳转等待时间
-     * @return void
+     * @param string  $url  重定向地址
+     * @param integer $wait 跳转等待时间
+     *
+     * @return array
      */
     public function result($data = '', $msg = '', $code = 0, $url = '', $wait = 0)
     {
@@ -102,11 +105,14 @@ trait View
 
     /**
      * 操作错误跳转的快捷方法
+     *
      * @access protected
-     * @param string $message 错误信息
-     * @param string $jumpUrl 页面跳转地址
-     * @param integer  $wait  跳转等待时间
-     * @return void
+     *
+     * @param string  $message 错误信息
+     * @param string  $jumpUrl 页面跳转地址
+     * @param integer $wait    跳转等待时间
+     *
+     * @return array
      */
     protected function error($message, $data = '', $jumpUrl = '', $wait = 5)
     {
@@ -116,11 +122,14 @@ trait View
 
     /**
      * 操作成功跳转的快捷方法
+     *
      * @access protected
-     * @param string $message 提示信息
-     * @param string $jumpUrl 页面跳转地址
-     * @param integer  $wait  跳转等待时间
-     * @return void
+     *
+     * @param string  $message 提示信息
+     * @param string  $jumpUrl 页面跳转地址
+     * @param integer $wait    跳转等待时间
+     *
+     * @return array
      */
     protected function success($message, $data = '', $jumpUrl = '', $wait = 3)
     {
