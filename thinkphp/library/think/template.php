@@ -659,10 +659,10 @@ class Template
             //模板函数过滤
             $fun = strtolower(trim($args[0]));
             switch ($fun) {
-                case 'default': // 特殊模板函数
+                case 'default':    // 特殊模板函数
                     $name = '(' . $name . ')?(' . $name . '):' . $args[1];
                     break;
-                default: // 通用模板函数
+                default:    // 通用模板函数
                     if (!in_array($fun, $template_deny_funs)) {
                         if (isset($args[1])) {
                             if (strstr($args[1], '###')) {
@@ -775,7 +775,7 @@ class Template
         $parseStr = $this->parseTemplateName($tmplPublicName);
         // 替换变量
         foreach ($vars as $key => $val) {
-            if (strpos($val, '[' . $key . ']')) {
+            if (strpos($parseStr, '[' . $key . ']')) {
                 $parseStr = str_replace('[' . $key . ']', $val, $parseStr);
             }
         }
