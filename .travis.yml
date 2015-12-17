@@ -13,7 +13,7 @@ php:
 
 before_script:
   - composer self-update
-  - composer install -n --dev --prefer-source
+  - composer install
 
 script:
   ## LINT
