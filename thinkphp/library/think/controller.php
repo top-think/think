@@ -25,11 +25,10 @@ class Controller
     protected $beforeActionList = [];
 
     /**
-     * 架构函数 初始化视图类 并采用内置模板引擎
+     * 架构函数
      * @access public
-     * @param array $config
      */
-    public function __construct($config = [])
+    public function __construct()
     {
         // 控制器初始化
         if (method_exists($this, '_initialize')) {
