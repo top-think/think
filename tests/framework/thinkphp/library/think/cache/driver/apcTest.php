@@ -17,6 +17,7 @@
 namespace think\cache\driver;
 
 use think\app;
+use think\cache;
 use think\config;
 
 class apcTest extends \PHPUnit_Framework_TestCase
@@ -34,12 +35,13 @@ class apcTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        \think\Cache::connect(['type' => 'apc', 'expire' => 1]);
-        $this->assertTrue(\think\Cache::set('key', 'value'));
-        $this->assertEquals('value', \think\Cache::get('key'));
-        $this->assertTrue(\think\Cache::rm('key'));
-        $this->assertFalse(\think\Cache::get('key'));
-        $this->assertTrue(\think\Cache::clear('key'));
+        App::run(Config::get());
+        Cache::connect(['type' => 'apc', 'expire' => 1]);
+        $this->assertTrue(Cache::set('key', 'value'));
+        $this->assertEquals('value', Cache::get('key'));
+        $this->assertTrue(Cache::rm('key'));
+        $this->assertFalse(Cache::get('key'));
+        $this->assertTrue(Cache::clear('key'));
         Config::reset();
     }
 }
