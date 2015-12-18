@@ -254,15 +254,17 @@ class Loader
             $module = MODULE_NAME;
         }
         $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
+        $name = (false !== strpos($name, '/')) ? substr($name, strrpos($name, '/')+1) : $name;
         if (class_exists($class)) {
             $model = new $class($name);
-        } elseif (false === strpos($name, '/')) {
-            // 自动加载公共模块下面的模型
-            $class = COMMON_MODULE . strstr($class, '\\');
-            $model = class_exists($class) ? new $class($name) : new Model($name);
         } else {
-            Log::record('实例化不存在的类：' . $class, 'NOTIC');
-            $model = new Model($name);
+            $class = COMMON_MODULE . strstr($class, '\\');
+            if (class_exists($class)) {
+                $model = new $class($name);
+            } else {
+                Log::record('实例化不存在的类：' . $class, 'NOTIC');
+                $model = new Model($name);
+            }
         }
         $_model[$name . $layer] = $model;
         return $model;
