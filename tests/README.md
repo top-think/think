@@ -68,10 +68,11 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
 1. 在tests/framework文件夹下创建于apc.php目录路径(thinkphp\library\think\cache\driver)相同的apcTest.php文件。
 
 2. 编写测试文件
-   - 引用app和config
+   - 引用app、config和cache
    
   ```php
   use think\app;
+  use think\cache;
   use think\config;
   ```
    - 在setUp函数中设定require条件
@@ -85,13 +86,15 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
    - 编写测试用例
    
   ```php
-  public function testGet(){
-      \think\Cache::connect(['type' => 'apc', 'expire' => 1]);
-      $this->assertTrue(\think\Cache::set('key', 'value'));
-      $this->assertEquals('value', \think\Cache::get('key'));
-      $this->assertTrue(\think\Cache::rm('key'));
-      $this->assertFalse(\think\Cache::get('key'));
-      $this->assertTrue(\think\Cache::clear('key'));
+  public function testGet()
+  {
+      App::run(Config::get());
+      Cache::connect(['type' => 'apc', 'expire' => 1]);
+      $this->assertTrue(Cache::set('key', 'value'));
+      $this->assertEquals('value', Cache::get('key'));
+      $this->assertTrue(Cache::rm('key'));
+      $this->assertFalse(Cache::get('key'));
+      $this->assertTrue(Cache::clear('key'));
       Config::reset();
   }
   ```
