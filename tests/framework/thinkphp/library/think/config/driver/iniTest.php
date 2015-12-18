@@ -6,24 +6,29 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: dongww <dongww@gmail.com>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
+/**
+ * Ini配置测试
+ * @author    7IN0SAN9 <me@7in0.me>
+ */
 
 namespace think\config\driver;
 
-/**
- * 配置文件解析驱动接口
- *
- * @package think\config\driver
- */
-interface DriverInterface
+use think\app;
+use think\config;
+
+class iniTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * 解析配置文件或内容，并以数组形式返回
-     *
-     * @param string $config 配置文件路径或字符串
-     *
-     * @return array 以数组形式返回配置
-     */
-    public function parse($config);
+    public function testParse()
+    {
+        App::run(Config::get());
+        Config::parse('inistring=1');
+        $this->assertEquals(1, Config::get('inistring'));
+        Config::reset();
+        Config::parse('tests/framework/application/test.ini');
+        $this->assertEquals(1, Config::get('inifile'));
+        Config::reset();
+    }
 }
