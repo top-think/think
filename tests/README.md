@@ -65,7 +65,20 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
 ###测试举例###
 例如测试thinkphp里的apc缓存，将分为以下几个过程：
 
-1. 在tests/framework文件夹下创建于apc.php目录路径(thinkphp\library\think\cache\driver)相同的apcTest.php文件。
+1. 在tests/framework文件夹下创建与apc.php目录路径(thinkphp\library\think\cache\driver)相同的apcTest.php文件并引用 PHPUnit_Framework_TestCase。
+
+  ```php
+  <?php
+  namespace think\cache\driver;
+  
+  class apcTest extends \PHPUnit_Framework_TestCase
+  {
+      //设定基境
+      public function setUp()
+      {
+      }
+  }
+  ```
 
 2. 编写测试文件
    - 引用app、config和cache
