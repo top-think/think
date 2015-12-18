@@ -115,14 +115,14 @@ ThinkPHP5的命名规范如下：
 修改流程：
 
 1. fork本项目；
-2. 克隆（clone）你fork的项目到本地；
+2. 克隆（clone）你 fork 的项目到本地；
 3. 新建分支（branch）并检出（checkout）新分支；
-4. 添加本项目到你的本地git仓库作为上游（upstream）；
-5. 进行修改；
-6. 变基（衍合 rebase）你的分支到上游master分支；
-7. push 你的本地仓库到github；
+4. 添加本项目到你的本地 git 仓库作为上游（upstream）；
+5. 进行修改，若你的修改包含方法或函数的增减，请记得修改单元测试文件；
+6. 变基（衍合 rebase）你的分支到上游 master 分支；
+7. push 你的本地仓库到 github；
 8. 提交 pull requests；
-9. 等待 CI 验证（若不通过则重复 5~7，github会自动更新你的pull requests）；
+9. 等待 CI 验证（若不通过则重复 5~7，github 会自动更新你的 pull requests）；
 10. 等待管理员处理。
 
 进行改动时请注意：
