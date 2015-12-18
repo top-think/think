@@ -28,8 +28,8 @@ class xmlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, Config::get('xmlstring'));
         Config::reset();
         Config::parse('tests/framework/application/test.xml', '', new Xml());
-        $this->assertTrue(Config::has('xmlfile'));
-        $this->assertEquals(1, Config::get('xmlfile'));
+        $this->assertTrue(Config::has('xmlfile.isTrue'));
+        $this->assertEquals(1, Config::get('xmlfile.isTrue'));
         Config::reset();
     }
 }

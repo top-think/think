@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <document>
-    <xmlfile>1</xmlfile>
+    <xmlfile>
+        <isTrue>1</isTrue>
+    </xmlfile>
 </document>
