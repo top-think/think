@@ -55,7 +55,8 @@ class Db
         if (empty($config)) {
             $config = Config::get('database');
             if (Config::get('use_db_switch')) {
-                $config = $config[Config::get('app_status')];
+                $status =   Config::get('app_status');
+                $config =   $config[$status?:'default'];
             }
         }
         if (is_string($config)) {
