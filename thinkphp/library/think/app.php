@@ -53,10 +53,9 @@ class App
         // 监听app_init
         APP_HOOK && Hook::listen('app_init');
 
-        // 默认语言
-        defined('LANG_SET') or define('LANG_SET', strtolower($config['default_lang']));
-        Lang::range(LANG_SET);
-        // 加载默认语言包
+        // 当前语言
+        defined('LANG_SET') or define('LANG_SET', Lang::range());
+        // 加载系统语言包
         Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
 
         // 启动session API CLI 不开启
