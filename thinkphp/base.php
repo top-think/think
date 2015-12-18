@@ -9,6 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+// 开始运行时间和内存使用
+define('START_TIME', microtime(true));
+define('START_MEM', memory_get_usage());
 //  版本信息
 define('THINK_VERSION', '5.0.0beta');
 // 系统常量
@@ -36,6 +39,7 @@ defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
 defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
+defined('IN_UNIT_TEST') or define('IN_UNIT_TEST', false); // 是否为单元测试
 
 // 应用模式 默认为普通模式
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');

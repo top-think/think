@@ -48,4 +48,4 @@ if ('sae' != APP_MODE && is_file(APP_PATH . 'build.php')) {
 }
 
 // 执行应用
-(!defined('IN_UNIT_TEST') || !IN_UNIT_TEST) && App::run(Config::get());
+!IN_UNIT_TEST && App::run(Config::get());
