@@ -18,3 +18,6 @@ define('APP_DEBUG', true);
 
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
+
+// 执行应用
+\think\App::run(\think\Config::get());

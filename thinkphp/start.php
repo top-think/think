@@ -46,6 +46,3 @@ if (APP_HOOK && isset($mode['tags'])) {
 if ('sae' != APP_MODE && is_file(APP_PATH . 'build.php')) {
     Create::build(include APP_PATH . 'build.php');
 }
-
-// 执行应用
-App::run(Config::get());
