@@ -10,7 +10,7 @@
      - 其他文件
 
 ###准备工作###
-1. 判断渲染，若果是测试环境则不执行测试，主要在library/think/app.php文件中，修改其中的第116行：
+1. 判断渲染，若果是测试环境则不执行渲染，主要在library/think/app.php文件中，修改其中的第116行：
 
   ```php
   if (defined('IN_UNIT_TEST')) {
