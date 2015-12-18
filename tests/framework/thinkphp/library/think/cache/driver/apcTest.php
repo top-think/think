@@ -31,12 +31,15 @@ class apcTest extends \PHPUnit_Framework_TestCase
         };
     }
     /**
-     * 测试读取缓存
+     * 测试操作缓存
      */
-    public function testGet()
+    public function testApc()
     {
         App::run(Config::get());
-        Cache::connect(['type' => 'apc', 'expire' => 1]);
+        $this->assertInstanceOf(
+            '\think\cache\driver\Apc',
+            Cache::connect(['type' => 'apc', 'expire' => 1])
+        );
         $this->assertTrue(Cache::set('key', 'value'));
         $this->assertEquals('value', Cache::get('key'));
         $this->assertTrue(Cache::rm('key'));
