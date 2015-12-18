@@ -12,76 +12,99 @@
 ###准备工作###
 1. 判断渲染，若果是测试环境则不执行测试，主要在library/think/app.php文件中，修改其中的第116行：
 
-    `if (defined('IN_UNIT_TEST')) {
-        return $data;
-    } else {
-        Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
-    }`
-    和129行
-    
-    `if (defined('IN_UNIT_TEST')) {
-        return $data;
-    } else {
-        Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
-    }`
+  ```php
+  if (defined('IN_UNIT_TEST')) {
+      return $data;
+  } else {
+      Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+  }
+  ```
+  和129行
+  
+  ```php
+  if (defined('IN_UNIT_TEST')) {
+      return $data;
+  } else {
+      Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+  }
+  ```  
     
 2. 修改config.php，添加重置配置函数：
     
-    
-    `// 重置配置参数
-    public static function reset($name, $value = null, $range = ''){
-       self::$config = [];
-    }`
+  ```php
+  // 重置配置参数
+  public static function reset($name, $value = null, $range = ''){
+     self::$config = [];
+  }
+  ```
 
 3. 添加mock文件，在文件中添加单元测试定义，以及请求定义，否则报错。
 
-    `<?php
-    // 测试入口文件
-    define('IN_UNIT_TEST', true);
-    $_SERVER['REQUEST_METHOD'] = 'GET';
-    // 定义项目路径
-    define('APP_PATH', __DIR__ . '/../application/');
-    // 开启调试模式
-    define('APP_DEBUG', true);
-    // 加载框架引导文件
-    require __DIR__ . '/../thinkphp/start.php';`
-    
+  ```php
+  <?php
+  // 测试入口文件
+  define('IN_UNIT_TEST', true);
+  $_SERVER['REQUEST_METHOD'] = 'GET';
+  // 定义项目路径
+  define('APP_PATH', __DIR__ . '/../application/');
+  // 开启调试模式
+  define('APP_DEBUG', true);
+  // 加载框架引导文件
+  require __DIR__ . '/../thinkphp/start.php';
+  ```  
+  
 ###主要测试流程###
 thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体的流程为：
+
 1. 引用bootstrap文件加载mock里的小框架文件，加载所需文件
+
 2. 根据文件目录，添加测试文件
+
 3. 执行单元测试，输出结果
     
 ###测试举例###
 例如测试thinkphp里的apc缓存，将分为以下几个过程：
+
 1. 在tests/framework文件夹下创建于apc.php目录路径(thinkphp\library\think\cache\driver)相同的apcTest.php文件。
+
 2. 编写测试文件
    - 引用app和config
    
-     `use think\app;
-      use think\config;`
+  ```php
+  use think\app;
+  use think\config;
+  ```
    - 在setUp函数中设定require条件
    
-     `if(!extension_loaded('apc')){
-            $this->markTestSkipped('apc扩展不可用！');
-      };`
+  ```php
+  if(!extension_loaded('apc')){
+     $this->markTestSkipped('apc扩展不可用！');
+  };
+  ```
 
    - 编写测试用例
    
-        ` public function testGet()
-        {
-            \think\Cache::connect(['type' => 'apc', 'expire' => 1]);
-            $this->assertTrue(\think\Cache::set('key', 'value'));
-            $this->assertEquals('value', \think\Cache::get('key'));
-            $this->assertTrue(\think\Cache::rm('key'));
-            $this->assertFalse(\think\Cache::get('key'));
-            $this->assertTrue(\think\Cache::clear('key'));
-            Config::reset();
-        }`
+  ```php
+  public function testGet(){
+      \think\Cache::connect(['type' => 'apc', 'expire' => 1]);
+      $this->assertTrue(\think\Cache::set('key', 'value'));
+      $this->assertEquals('value', \think\Cache::get('key'));
+      $this->assertTrue(\think\Cache::rm('key'));
+      $this->assertFalse(\think\Cache::get('key'));
+      $this->assertTrue(\think\Cache::clear('key'));
+      Config::reset();
+  }
+  ```
+  
 3. 回到根目录执行单元测试命令：
-    `phpunit`
+    ```bash
+    phpunit
+    ```
     若想看到所有结果，请添加-v参数
-    `phpunit -v`
+    ```bash
+    phpunit -v
+  ```
+
 4. 输出结果
 
 ###大家一起来###
