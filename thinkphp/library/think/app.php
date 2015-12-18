@@ -113,7 +113,11 @@ class App
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
-                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                if (defined('IN_UNIT_TEST')) {
+                    return $data;
+                } else {
+                    Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                }
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -124,7 +128,11 @@ class App
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
                 // 返回数据
-                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                if (defined('IN_UNIT_TEST')) {
+                    return $data;
+                } else {
+                    Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                }
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }

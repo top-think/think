@@ -12,8 +12,11 @@ php:
   - 5.6
 
 before_script:
+  - pecl channel-update pecl.php.net
+  - echo "yes" | pecl install apcu-4.0.10
+  - phpenv config-add tests/myconfig.ini
   - composer self-update
-  - composer install -n --dev --prefer-source
+  - composer install
 
 script:
   ## LINT
@@ -21,7 +24,7 @@ script:
   ## PHP_CodeSniffer
   - thinkphp/vendor/bin/phpcs --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 --standard=PSR2 --ignore="thinkphp/vendor/*" thinkphp
   ## PHP Copy/Paste Detector
-  - thinkphp/vendor/bin/phpcpd --verbose --exclude vendor thinkphp
+  - thinkphp/vendor/bin/phpcpd --verbose --exclude vendor thinkphp || true
   ## PHPLOC
   - thinkphp/vendor/bin/phploc --exclude vendor thinkphp
   ## PHPUNIT
