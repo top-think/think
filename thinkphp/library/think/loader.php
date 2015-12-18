@@ -28,7 +28,7 @@ class Loader
     {
         // 检查是否定义classmap
         if (isset(self::$map[$class])) {
-            if (self::$map[$class]) {
+            if (is_file(self::$map[$class])) {
                 include self::$map[$class];
             }
         } elseif ($file = self::findFileInComposer($class)) {

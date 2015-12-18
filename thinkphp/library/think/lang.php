@@ -16,7 +16,11 @@ class Lang
     // 语言参数
     private static $lang = [];
     // 语言作用域
-    private static $range = '';
+    private static $range = 'zh-cn';
+    // 语言列表
+    private static $list = [];
+    // 语言变量
+    private static $var = 'l';
 
     // 设定语言参数的作用域（语言）
     public static function range($range = '')
@@ -37,7 +41,7 @@ class Lang
      */
     public static function set($name, $value = null, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         // 批量定义
         if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
@@ -57,7 +61,7 @@ class Lang
      */
     public static function load($file, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         $lang  = is_file($file) ? include $file : [];
         if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
@@ -80,12 +84,37 @@ class Lang
      */
     public static function get($name = null, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         // 空参数返回所有定义
         if (empty($name)) {
             return self::$lang[$range];
         }
         $key = strtolower($name);
         return isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
+    }
+
+    /**
+     * 自动侦测设置获取语言选择
+     * @return void
+     */
+    public static function detect()
+    {
+        // 自动侦测设置获取语言选择
+        if (isset($_GET[self::$var])) {
+            $langSet = $_GET[self::$var]; // url中设置了语言变量
+            \think\Cookie::set('think_language', $langSet, 3600);
+        } elseif (\think\Cookie::get('think_language')) {
+            // 获取上次用户的选择
+            $langSet = \think\Cookie::get('think_language');
+        } elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            // 自动侦测浏览器语言
+            preg_match('/^([a-z\d\-]+)/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches);
+            $langSet = $matches[1];
+            \think\Cookie::set('think_language', $langSet, 3600);
+        }
+        if (false !== stripos(self::$list, $langSet)) {
+            // 合法的语言
+            self::$range = $langSet;
+        }
     }
 }
