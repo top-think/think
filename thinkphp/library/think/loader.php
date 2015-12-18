@@ -254,7 +254,7 @@ class Loader
             $module = MODULE_NAME;
         }
         $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
-        $name = (false !== strpos($name, '/')) ? substr($name, strrpos($name, '/')+1) : $name;
+        $name  = basename($name);
         if (class_exists($class)) {
             $model = new $class($name);
         } else {
