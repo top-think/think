@@ -127,6 +127,8 @@ class App
             if (method_exists($instance, '_empty')) {
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
+                // 操作方法执行完成监听
+                APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
                 if (defined('IN_UNIT_TEST')) {
                     return $data;
