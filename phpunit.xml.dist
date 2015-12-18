@@ -20,6 +20,9 @@
     <filter>
         <whitelist>
             <directory suffix=".php">thinkphp/</directory>
+            <exclude>
+                <directory suffix=".php">thinkphp/vendor</directory>
+            </exclude>
         </whitelist>
     </filter>
     <php>
