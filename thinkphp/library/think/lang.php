@@ -79,18 +79,28 @@ class Lang
     /**
      * 获取语言定义(不区分大小写)
      * @param string|null $name 语言变量
+     * @param array $vars 变量替换
      * @param string $range 作用域
      * @return mixed
      */
-    public static function get($name = null, $range = '')
+    public static function get($name = null, $vars = [], $range = '')
     {
         $range = $range ?: self::$range;
         // 空参数返回所有定义
         if (empty($name)) {
             return self::$lang[$range];
         }
-        $key = strtolower($name);
-        return isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
+        $key   = strtolower($name);
+        $value = isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
+        if (is_array($vars) && !empty($vars)) {
+            // 支持变量
+            $replace = array_keys($vars);
+            foreach ($replace as &$v) {
+                $v = '{$' . $v . '}';
+            }
+            $value = str_replace($replace, $vars, $value);
+        }
+        return $value;
     }
 
     /**

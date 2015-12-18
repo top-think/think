@@ -57,9 +57,9 @@ define('IS_PUT', REQUEST_METHOD == 'PUT' ? true : false);
 define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
 
 // 获取多语言变量
-function L($name)
+function L($name, $vars = [], $lang = '')
 {
-    return think\Lang::get($name);
+    return think\Lang::get($name, $vars, $lang);
 }
 
 // 获取配置参数
