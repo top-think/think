@@ -9,16 +9,27 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\config\driver;
+/**
+ * Config类测试
+ * @author    7IN0SAN9 <me@7in0.me>
+ */
 
-class Ini
+namespace think;
+
+use think\app;
+use think\config;
+
+class configTest extends \PHPUnit_Framework_TestCase
 {
-    public function parse($config)
+    public function testConfig()
     {
-        if (is_file($config)) {
-            return parse_ini_file($config, true);
-        } else {
-            return parse_ini_string($config, true);
-        }
+        App::run(Config::get());
+        Config::parse('isTrue=1', 'test');
+        Config::range('test');
+        $this->assertTrue(Config::has('isTrue'));
+        $this->assertEquals(1, Config::get('isTrue'));
+        Config::set('isTrue', false);
+        $this->assertEquals(0, Config::get('isTrue'));
+        Config::reset();
     }
 }

@@ -9,16 +9,27 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+/**
+ * Xml配置测试
+ * @author    7IN0SAN9 <me@7in0.me>
+ */
+
 namespace think\config\driver;
 
-class Ini
+use think\app;
+use think\config;
+
+class xmlTest extends \PHPUnit_Framework_TestCase
 {
-    public function parse($config)
+    public function testParse()
     {
-        if (is_file($config)) {
-            return parse_ini_file($config, true);
-        } else {
-            return parse_ini_string($config, true);
-        }
+        App::run(Config::get());
+        Config::parse('<?xml version="1.0"?><document><xmlstring>1</xmlstring></document>', '', new Xml());
+        $this->assertEquals(1, Config::get('xmlstring'));
+        Config::reset();
+        Config::parse('tests/framework/application/test.xml', '', new Xml());
+        $this->assertTrue(Config::has('xmlfile.isTrue'));
+        $this->assertEquals(1, Config::get('xmlfile.isTrue'));
+        Config::reset();
     }
 }

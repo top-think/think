@@ -11,7 +11,7 @@
 
 namespace think\config\driver;
 
-class Xml implements DriverInterface
+class Xml
 {
     public function parse($config)
     {
