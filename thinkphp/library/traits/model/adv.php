@@ -32,7 +32,7 @@ trait Adv
             // 获取前N条记录
             $count = substr($method, 3);
             array_unshift($args, $count);
-            return call_user_func_array(array(&$this, 'topN'), $args);
+            return call_user_func_array([ & $this, 'topN'], $args);
         } else {
             return parent::__call($method, $args);
         }
@@ -265,7 +265,7 @@ trait Adv
             // 定义方式  $this->serializeField = ['ser'=>['name','email']];
             foreach ($this->serializeField as $key => $val) {
                 if (empty($data[$key])) {
-                    $serialize = array();
+                    $serialize = [];
                     foreach ($val as $name) {
                         if (isset($data[$name])) {
                             $serialize[$name] = $data[$name];
