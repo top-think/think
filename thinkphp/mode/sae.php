@@ -48,14 +48,17 @@ return [
             // 指定从服务器序号
             'slave_no'    => '',
         ],
-        'log'                   => [
+        'log'              => [
             'type' => 'Sae',
         ],
-        'cache'                 => [
-            'type'   => 'Sae',
+        'cache'            => [
+            'type' => 'Sae',
         ],
         'file_upload_type' => 'Sae',
-        'compile_type'     => 'Sae',
+        'template'         => [
+            'compile_type' => 'Sae',
+        ],
+
     ],
 
     // 别名定义
