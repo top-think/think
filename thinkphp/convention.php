@@ -23,6 +23,8 @@ return [
     'var_jsonp_handler'     => 'callback',
     // 默认时区
     'default_timezone'      => 'PRC',
+    // 是否开启多语言
+    'lang_switch_on'        =>  false,
 
     // +----------------------------------------------------------------------
     // | 模块设置

@@ -53,10 +53,13 @@ class App
         // 监听app_init
         APP_HOOK && Hook::listen('app_init');
 
-        // 当前语言
-        defined('LANG_SET') or define('LANG_SET', Lang::range());
-        // 加载系统语言包
-        Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
+        // 开启多语言机制
+        if ($config['lang_switch_on']) {
+            // 获取当前语言
+            defined('LANG_SET') or define('LANG_SET', Lang::range());
+            // 加载系统语言包
+            Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
+        }
 
         // 启动session API CLI 不开启
         if (!IS_CLI && !IS_API && $config['use_session']) {
@@ -225,7 +228,7 @@ class App
             }
 
             // 加载当前模块语言包
-            if ($module) {
+            if ($config['lang_switch_on'] && $module) {
                 Lang::load($path . 'lang' . DS . LANG_SET . EXT);
             }
         }
