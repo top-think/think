@@ -73,6 +73,7 @@ trait Query
             $this->commit();
         } catch (\think\exception $e) {
             $this->rollback();
+            return false;
         }
         return true;
     }
