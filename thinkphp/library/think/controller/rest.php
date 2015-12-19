@@ -13,7 +13,7 @@ namespace think\controller;
 
 use think\Response;
 
-abstract class rest
+abstract class Rest
 {
 
     protected $_method = ''; // 当前请求类型
