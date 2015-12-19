@@ -24,12 +24,12 @@ class xmlTest extends \PHPUnit_Framework_TestCase
     public function testParse()
     {
         App::run(Config::get());
-        Config::parse('<?xml version="1.0"?><document><xmlstring>1</xmlstring></document>', '', new Xml());
+        Config::parse('<?xml version="1.0"?><document><xmlstring>1</xmlstring></document>', 'xml');
         $this->assertEquals(1, Config::get('xmlstring'));
         Config::reset();
-        Config::parse('tests/framework/application/test.xml', '', new Xml());
-        $this->assertTrue(Config::has('xmlfile.isTrue'));
-        $this->assertEquals(1, Config::get('xmlfile.isTrue'));
+        Config::parse('tests/framework/application/test.xml');
+        $this->assertTrue(Config::has('xmlfile.istrue'));
+        $this->assertEquals(1, Config::get('xmlfile.istrue'));
         Config::reset();
     }
 }
