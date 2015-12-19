@@ -43,11 +43,11 @@ class Redis
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $func          = $options['persistent'] ? 'pconnect' : 'connect';
+        $func          = $this->options['persistent'] ? 'pconnect' : 'connect';
         $this->handler = new \Redis;
-        false === $options['timeout'] ?
-        $this->handler->$func($options['host'], $options['port']) :
-        $this->handler->$func($options['host'], $options['port'], $options['timeout']);
+        false === $this->options['timeout'] ?
+        $this->handler->$func($this->options['host'], $this->options['port']) :
+        $this->handler->$func($this->options['host'], $this->options['port'], $this->options['timeout']);
     }
 
     /**
