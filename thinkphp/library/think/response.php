@@ -52,6 +52,7 @@ class Response
                 $data    = $handler . '(' . \org\Transform::jsonEncode($data) . ');';
                 break;
         }
+        header('Content-Length:' . strlen($data));
         if ($exit) {
             exit($data);
         } else {
@@ -88,15 +89,16 @@ class Response
      * @param mixed $wait 返回数据格式
      * @return void
      */
-    public static function success($msg = '', $data = '', $url = '', $wait = 3){
-        $result     = [
+    public static function success($msg = '', $data = '', $url = '', $wait = 3)
+    {
+        $result = [
             'code' => 1,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => $url ? $url: $_SERVER["HTTP_REFERER"],
+            'url'  => $url ? $url : $_SERVER["HTTP_REFERER"],
             'wait' => $wait,
         ];
-        $type       = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
+        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
         if ('html' == $type) {
             $view   = new \think\View();
             $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
@@ -113,15 +115,16 @@ class Response
      * @param mixed $wait 返回数据格式
      * @return void
      */
-    public static function error($msg = '', $data = '', $url = '', $wait = 3){
-        $result     = [
+    public static function error($msg = '', $data = '', $url = '', $wait = 3)
+    {
+        $result = [
             'code' => 0,
             'msg'  => $msg,
             'data' => $data,
             'url'  => $url ? $url : 'javascript:history.back(-1);',
             'wait' => $wait,
         ];
-        $type       = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
+        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
         if ('html' == $type) {
             $view   = new \think\View();
             $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
