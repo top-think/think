@@ -11,9 +11,6 @@
 
 namespace think;
 
-use think\config\driver\DriverInterface;
-use think\config\driver\Ini;
-
 class Config
 {
     // 配置参数
@@ -33,21 +30,28 @@ class Config
     /**
      * 解析配置文件或内容
      *
-     * @param string               $config 配置文件路径或内容
-     * @param string               $range  作用域
-     * @param DriverInterface|null $driver 配置解析驱动
+     * @param string $config 配置文件路径或内容
+     * @param string $type 配置解析类型
+     * @param string $range  作用域
      */
-    public static function parse($config, $range = '', DriverInterface $driver = null)
+    public static function parse($config, $type = '', $range = '')
     {
-        if ($driver === null) {
-            $driver = new Ini();
-        }
-
         $range = $range ?: self::$range;
-        self::set($driver->parse($config), '', $range);
+        if (empty($type)) {
+            $type = pathinfo($config, PATHINFO_EXTENSION);
+        }
+        $class = '\\think\\config\\driver\\' . ucwords($type);
+        self::set((new $class())->parse($config), '', $range);
     }
 
-    // 加载配置文件
+    /**
+     * 加载配置文件（PHP格式）
+     *
+     * @param string $file 配置文件名
+     * @param string $name 配置名（如设置即表示二级配置）
+     * @param string $range  作用域
+     * @return mixed
+     */
     public static function load($file, $name = '', $range = '')
     {
         $range = $range ?: self::$range;
@@ -58,7 +62,13 @@ class Config
         return is_file($file) ? self::set(include $file, $name, $range) : self::$config[$range];
     }
 
-    // 检测配置是否存在
+    /**
+     * 检测配置是否存在
+     *
+     * @param string $name 配置参数名（支持二级配置 .号分割）
+     * @param string $range  作用域
+     * @return bool
+     */
     public static function has($name, $range = '')
     {
         $range = $range ?: self::$range;
@@ -73,7 +83,13 @@ class Config
         }
     }
 
-    // 获取配置参数 为空则获取所有配置
+    /**
+     * 获取配置参数 为空则获取所有配置
+     *
+     * @param string $name 配置参数名（支持二级配置 .号分割）
+     * @param string $range  作用域
+     * @return mixed
+     */
     public static function get($name = null, $range = '')
     {
         $range = $range ?: self::$range;
@@ -99,7 +115,14 @@ class Config
         }
     }
 
-    // 设置配置参数 name为数组则为批量设置
+    /**
+     * 设置配置参数 name为数组则为批量设置
+     *
+     * @param string $name 配置参数名（支持二级配置 .号分割）
+     * @param mixed $value 配置值
+     * @param string $range  作用域
+     * @return mixed
+     */
     public static function set($name, $value = null, $range = '')
     {
         $range = $range ?: self::$range;
@@ -129,9 +152,12 @@ class Config
         }
     }
 
-    // 重置配置参数
-    public static function reset($name, $value = null, $range = '')
+    /**
+     * 重置配置参数
+     */
+    public static function reset($range = '')
     {
-       self::$config = [];
+        $range                          = $range ?: self::$range;
+        true === $range ? self::$config = [] : self::$config[$range] = [];
     }
 }
