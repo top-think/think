@@ -17,10 +17,8 @@ class Lang
     private static $lang = [];
     // 语言作用域
     private static $range = 'zh-cn';
-    // 语言列表
-    private static $list = [];
     // 语言变量
-    private static $var = 'l';
+    private static $var = 'lang';
 
     // 设定语言参数的作用域（语言）
     public static function range($range = '')
@@ -122,7 +120,7 @@ class Lang
             $langSet = $matches[1];
             \think\Cookie::set('think_language', $langSet, 3600);
         }
-        if (false !== stripos(self::$list, $langSet)) {
+        if (in_array($langSet, \think\Config::get('lang_list'))) {
             // 合法的语言
             self::$range = $langSet;
         }
