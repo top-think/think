@@ -27,8 +27,6 @@ class Error
             'trace'   => $e->getTraceAsString(),
             'code'    => $e->getCode(),
         ];
-        // 记录异常日志
-        Log::record($error['message'], 'error');
         // 发送http状态信息
         Response::sendHttpStatus(Config::get('exception_http_status'));
         // 输出异常页面
@@ -49,7 +47,6 @@ class Error
         $errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
         switch ($errno) {
             case E_USER_ERROR:
-                Log::record($errorStr, 'error');
                 self::halt($errorStr, $errno);
                 break;
             case E_STRICT:
@@ -120,6 +117,8 @@ class Error
         } else {
             $e = ['message' => $message, 'code' => $code];
         }
+        // 记录异常日志
+        Log::write('[' . $e['code'] . '] ' . $e['message'] . '[' . $e['file'] . ' : ' . $e['line'] . ']', 'error');
 
         $type = Config::get('default_return_type');
         if (!IS_API && 'html' == $type) {
