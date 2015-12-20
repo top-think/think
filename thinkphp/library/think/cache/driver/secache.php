@@ -53,6 +53,7 @@ class Secache
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         $name = $this->options['prefix'] . $name;
         $key  = md5($name);
         $this->handler->fetch($key, $return);
@@ -69,6 +70,7 @@ class Secache
      */
     public function set($name, $value)
     {
+        \think\Cache::$writeTimes++;
         $name = $this->options['prefix'] . $name;
         $key  = md5($name);
         if ($result = $this->handler->store($key, $value)) {

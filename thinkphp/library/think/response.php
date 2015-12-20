@@ -52,7 +52,7 @@ class Response
                 $data    = $handler . '(' . \org\Transform::jsonEncode($data) . ');';
                 break;
         }
-        header('Content-Length:' . strlen($data));
+        //header('Content-Length:' . strlen($data));
         if ($exit) {
             exit($data);
         } else {

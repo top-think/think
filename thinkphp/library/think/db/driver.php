@@ -13,6 +13,7 @@ namespace think\db;
 
 use PDO;
 use think\Config;
+use think\Db;
 use think\Debug;
 use think\Exception;
 use think\Log;
@@ -61,10 +62,7 @@ abstract class Driver
     protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=', 'notlike' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'notin' => 'NOT IN', 'not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN', 'notbetween' => 'NOT BETWEEN'];
     // 查询表达式
     protected $selectSql = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%LOCK%%COMMENT%';
-    // 查询次数
-    protected $queryTimes = 0;
-    // 执行次数
-    protected $executeTimes = 0;
+
     // PDO连接参数
     protected $options = [
         PDO::ATTR_CASE              => PDO::CASE_LOWER,
@@ -164,7 +162,7 @@ abstract class Driver
             $this->free();
         }
 
-        $this->queryTimes++;
+        Db::$queryTimes++;
         // 调试开始
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
@@ -223,7 +221,7 @@ abstract class Driver
             $this->free();
         }
 
-        $this->executeTimes++;
+        Db::$executeTimes++;
         // 记录开始执行时间
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
@@ -335,7 +333,7 @@ abstract class Driver
      */
     public function getQueryTimes($execute = false)
     {
-        return $execute ? $this->queryTimes + $this->executeTimes : $this->queryTimes;
+        return $execute ? Db::$queryTimes + Db::$executeTimes : Db::$queryTimes;
     }
 
     /**
@@ -345,7 +343,7 @@ abstract class Driver
      */
     public function getExecuteTimes()
     {
-        return $this->executeTimes;
+        return Db::$executeTimes;
     }
 
     /**

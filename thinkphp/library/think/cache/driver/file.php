@@ -98,6 +98,7 @@ class File
         if (!is_file($filename)) {
             return false;
         }
+        \think\Cache::$readTimes++;
         $content = file_get_contents($filename);
         if (false !== $content) {
             $expire = (int) substr($content, 8, 12);
@@ -128,6 +129,7 @@ class File
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

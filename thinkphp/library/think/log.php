@@ -64,6 +64,9 @@ class Log
      */
     public static function record($msg, $type = 'log')
     {
+        if (!is_string($msg)) {
+            $msg = print_r($msg, true);
+        }
         self::$log[] = ['type' => $type, 'msg' => $msg];
     }
 
@@ -84,6 +87,9 @@ class Log
      */
     public static function write($msg, $type)
     {
+        if (!is_string($msg)) {
+            $msg = print_r($msg, true);
+        }
         if ('error' == $type) {
             // 预留预警通知接口
             self::$alarm && self::$alarm->send($msg);

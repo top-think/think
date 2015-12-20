@@ -130,15 +130,6 @@ class Debug
     }
 
     /**
-     * 获取数据库查询信息
-     * @return void
-     */
-    public static function getDbQuery()
-    {
-        return Db::getInstance()->getQueryTimes() . ' queries ' . Db::getInstance()->getExecuteTimes() . ' writes ';
-    }
-
-    /**
      * 获取文件加载信息
      * @param bool $detail 是否显示详细
      * @return void
