@@ -58,7 +58,7 @@ class Log
 
     /**
      * 记录调试信息
-     * @param string $msg 调试信息
+     * @param mixed $msg 调试信息
      * @param string $type 信息类型
      * @return void
      */
@@ -81,7 +81,7 @@ class Log
 
     /**
      * 实时写入日志信息 并支持异常和错误预警通知
-     * @param string $msg 调试信息
+     * @param mixed $msg 调试信息
      * @param string $type 信息类型
      * @return void
      */
