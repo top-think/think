@@ -36,9 +36,8 @@ class Controller
         }
         // 前置操作方法
         // 支持 ['action1','action2'] 或者 ['action1'=>['only'=>'index'],'action2'=>['except'=>'login']]
-        $list = $this->beforeActionList;
-        if ($list) {
-            foreach ($list as $method => $options) {
+        if ($this->beforeActionList) {
+            foreach ($this->beforeActionList as $method => $options) {
                 is_numeric($method) ?
                 $this->beforeAction($options) :
                 $this->beforeAction($method, $options);
