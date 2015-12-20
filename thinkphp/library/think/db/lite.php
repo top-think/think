@@ -441,7 +441,7 @@ class Lite
                 //$this->model  =   '_think_';
                 // 记录操作结束时间
                 Debug::remark('queryEndTime', 'time');
-                Log::record($this->queryStr . ' [ RunTime:' . Debug::getUseTime('queryStartTime', 'queryEndTime') . 's ]', 'SQL');
+                Log::record($this->queryStr . ' [ RunTime:' . Debug::getRangeTime('queryStartTime', 'queryEndTime') . 's ]', 'sql');
             }
         }
     }

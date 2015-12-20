@@ -96,7 +96,7 @@ function G($start, $end = '', $dec = 6)
     if ('' == $end) {
         think\Debug::remark($start);
     } else {
-        return 'm' == $dec ? think\Debug::getUseMem($start, $end) : think\Debug::getUseTime($start, $end, $dec);
+        return 'm' == $dec ? think\Debug::getRangeMem($start, $end) : think\Debug::getRangeTime($start, $end, $dec);
     }
 }
 
