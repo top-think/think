@@ -64,14 +64,14 @@ class Lang
             self::$lang[$range] = [];
         }
         // 批量定义
-+        if (is_string($file)) {
-+            $file = [$file];
-+        }
-+        $lang = [];
-+        foreach ($file as $_file) {
-+            $_lang = is_file($_file) ? include $_file : [];
-+            $lang = array_merge($lang, array_change_key_case($_lang));
-         }
+        if (is_string($file)) {
+            $file = [$file];
+        }
+        $lang = [];
+        foreach ($file as $_file) {
+            $_lang = is_file($_file) ? include $_file : [];
+            $lang  = array_merge($lang, array_change_key_case($_lang));
+        }
         if (!empty($lang)) {
             self::$lang[$range] = array_merge(self::$lang[$range], $lang);
         }
