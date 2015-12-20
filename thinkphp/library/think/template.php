@@ -339,7 +339,7 @@ class Template
             //解析Layout标签
             $array = $this->parseXmlAttrs($matches[1]);
             // 读取布局模板
-            $layoutFile = $this->config['tpl_path'] . $array['name'] . $this->config['tpl_suffix'];
+            $layoutFile = (defined('THEME_PATH') && substr_count($array['name'], '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $array['name'] . $this->config['tpl_suffix'];
             $replace    = isset($array['replace']) ? $array['replace'] : $this->config['layout_item'];
             // 替换布局的主体内容
             $content = str_replace($replace, $content, file_get_contents($layoutFile));
