@@ -26,6 +26,8 @@ class Log
     protected static $type = ['log', 'error', 'info', 'sql', 'warn', 'alert'];
     // 日志写入驱动
     protected static $driver = null;
+    // 通知发送驱动
+    protected static $alarm = null;
 
     // 日志初始化
     public static function init($config = [])
@@ -34,6 +36,15 @@ class Log
         $class = '\\think\\log\\driver\\' . ucwords($type);
         unset($config['type']);
         self::$driver = new $class($config);
+    }
+
+    // 通知初始化
+    public static function alarm($config = [])
+    {
+        $type  = isset($config['type']) ? $config['type'] : 'Email';
+        $class = '\\think\\log\\alarm\\' . ucwords($config['type']);
+        unset($config['type']);
+        self::$alarm = new $class($config['alarm']);
     }
 
     /**
@@ -66,11 +77,17 @@ class Log
     }
 
     /**
-     * 写入调试信息
+     * 实时写入日志信息 并支持异常和错误预警通知
+     * @param string $msg 调试信息
+     * @param string $type 信息类型
      * @return void
      */
-    public static function write($msg, $type, $destination)
+    public static function write($msg, $type)
     {
+        if ('error' == $type) {
+            // 预留预警通知接口
+            self::$alarm && self::$alarm->send($msg);
+        }
         $log[] = ['type' => $type, 'msg' => $msg];
         self::$driver && self::$driver->save($log);
     }
