@@ -87,11 +87,11 @@ class View
      */
     public function engine($engine, array $config = [])
     {
-        if('php'==$engine){
-            $this->engine   =   'php';
-        }else{
-            $class          =   '\\think\\view\\driver\\' . ucwords($engine);
-            $this->engine   =   new $class($config);
+        if ('php' == $engine) {
+            $this->engine = 'php';
+        } else {
+            $class        = '\\think\\view\\driver\\' . ucwords($engine);
+            $this->engine = new $class($config);
         }
         return $this;
     }
@@ -125,8 +125,8 @@ class View
      *
      * @param string $template 模板文件名或者内容
      * @param array  $vars     模板输出变量
-     * @param array  $cache 模板缓存参数
-     * @param bool   $renderContent
+     * @param array  $cache     模板缓存参数
+     * @param bool   $renderContent 是否渲染内容
      *
      * @return string
      * @throws Exception
@@ -216,6 +216,7 @@ class View
     /**
      * 获取当前的模板主题
      * @access private
+     * @param  string $module 模块名
      * @return string
      */
     private function getTemplateTheme($module)
@@ -263,4 +264,36 @@ class View
         return $tmplPath . $theme;
     }
 
+    /**
+     * 模板变量赋值
+     * @access public
+     * @param string $name  变量名
+     * @param mixed $value 变量值
+     */
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+    /**
+     * 取得模板显示变量的值
+     * @access protected
+     * @param string $name 模板变量
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->data[$name];
+    }
+
+    /**
+     * 检测模板变量是否设置
+     * @access public
+     * @param string $name 模板变量名
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->data[$name]);
+    }
 }
