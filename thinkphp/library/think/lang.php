@@ -60,16 +60,20 @@ class Lang
     public static function load($file, $range = '')
     {
         $range = $range ?: self::$range;
-        $lang  = is_file($file) ? include $file : [];
         if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
         }
         // 批量定义
-        if (!isset(self::$lang[$range])) {
-            self::$lang[$range] = [];
-        }
++        if (is_string($file)) {
++            $file = [$file];
++        }
++        $lang = [];
++        foreach ($file as $_file) {
++            $_lang = is_file($_file) ? include $_file : [];
++            $lang = array_merge($lang, array_change_key_case($_lang));
+         }
         if (!empty($lang)) {
-            self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
+            self::$lang[$range] = array_merge(self::$lang[$range], $lang);
         }
         return self::$lang[$range];
     }
