@@ -38,7 +38,6 @@ defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
 defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
-defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
 defined('IN_UNIT_TEST') or define('IN_UNIT_TEST', false); // 是否为单元测试
 
 // 应用模式 默认为普通模式
@@ -310,14 +309,13 @@ function S($name, $value = '', $options = null)
  * 添加Trace记录到SocketLog
  * @param mixed $log log信息 支持字符串和数组
  * @param string $level 日志级别
- * @param string $css 样式
  * @return void|array
  */
-function trace($log, $level = 'log', $css = '')
+function trace($log='[think]', $level = 'log')
 {
-    if ('trace' == $level) {
-        \think\Slog::trace($log, 2, $css);
-    } else {
-        \think\Slog::record($level, $log, $css);
+    if('[think]'==$log){
+        return \think\Log::getLog();
+    }else{
+        \think\Log::record($log,$level);
     }
 }

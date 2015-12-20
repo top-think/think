@@ -13,10 +13,19 @@ namespace think;
 
 class Log
 {
+    const LOG   = 'log';
+    const ERROR = 'error';
+    const INFO  = 'info';
+    const SQL   = 'sql';
+    const WARN  = 'warn';
+    const ALERT = 'alert';
+
     // 日志信息
-    protected static $log     = [];
-    protected static $level   = ['ERR', 'NOTIC', 'DEBUG', 'SQL', 'INFO'];
-    protected static $storage = null;
+    protected static $log = [];
+    // 日志类型
+    protected static $type = ['log', 'error', 'info', 'sql', 'warn', 'alert'];
+    // 日志写入驱动
+    protected static $driver = null;
 
     // 日志初始化
     public static function init($config = [])
@@ -24,70 +33,55 @@ class Log
         $type  = isset($config['type']) ? $config['type'] : 'File';
         $class = '\\think\\log\\driver\\' . ucwords($type);
         unset($config['type']);
-        self::$storage = new $class($config);
+        self::$driver = new $class($config);
     }
 
     /**
-     * 记录日志 并且会过滤未经设置的级别
-     * @access   public
-     *
-     * @param string $message 日志信息
-     * @param string $level   日志级别
-     *
-     * @internal param bool $record 是否强制记录
-     */
-    public static function record($message, $level = 'INFO')
-    {
-        self::$log[$level][] = "{$level}: {$message}";
-    }
-
-    /**
-     * 获取内存中的日志信息
-     * @access public
-     * @param string $level  日志级别
+     * 获取全部日志信息
      * @return array
      */
-    public static function getLog($level = '')
+    public static function getLog()
     {
-        return $level ? self::$log[$level] : self::$log;
+        return self::$log;
     }
 
     /**
-     * 日志保存
-     * @access public
-     * @param string $destination  写入目标
-     * @param string $level 保存的日志级别
+     * 记录调试信息
+     * @param string $msg 调试信息
+     * @param string $type 信息类型
      * @return void
      */
-    public static function save($destination = '', $level = '')
+    public static function record($msg, $type = 'log')
     {
-        $log = self::getLog($level);
-        if (empty($log)) {
-            return;
-        }
-        $message = '';
-        if ($level) {
-            $message .= implode("\r\n", $log);
-            self::$log[$level] = [];
-        } else {
-            foreach ($log as $info) {
-                $message .= implode("\r\n", $info) . "\r\n";
-            }
-            self::$log = [];
-        }
-        self::$storage && self::$storage->write($message, $destination);
+        self::$log[] = ['type' => $type, 'msg' => $msg];
     }
 
     /**
-     * 日志直接写入
-     * @access public
-     * @param string $log 日志信息
-     * @param string $level  日志级别
-     * @param string $destination  写入目标
+     * 保存调试信息
      * @return void
      */
-    public static function write($log, $level = '', $destination = '')
+    public static function save()
     {
-        self::$storage && self::$storage->write("{$level}: {$log}", $destination);
+        self::$driver && self::$driver->save(self::$log);
     }
+
+    /**
+     * 写入调试信息
+     * @return void
+     */
+    public static function write($msg, $type, $destination)
+    {
+        $log[] = ['type' => $type, 'msg' => $msg];
+        self::$driver && self::$driver->save($log);
+    }
+
+    // 静态调用
+    public static function __callStatic($method, $args)
+    {
+        if (in_array($method, self::$type)) {
+            array_push($args, $method);
+            return call_user_func_array('\think\Log::record', $args);
+        }
+    }
+
 }

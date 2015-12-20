@@ -43,10 +43,6 @@ class App
         // 缓存初始化
         Cache::connect($config['cache']);
 
-        // 如果启动SocketLog调试， 进行SocketLog配置
-        if (SLOG_ON) {
-            Slog::config($config['slog']);
-        }
         // 设置系统时区
         date_default_timezone_set($config['default_timezone']);
 
@@ -61,8 +57,8 @@ class App
             Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
         }
 
-        // 启动session API CLI 不开启
-        if (!IS_CLI && !IS_API && $config['use_session']) {
+        // 启动session CLI 不开启
+        if (!IS_CLI && $config['use_session']) {
             Session::init($config['session']);
         }
 

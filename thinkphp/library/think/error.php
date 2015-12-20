@@ -28,7 +28,7 @@ class Error
             'code'    => $e->getCode(),
         ];
         // 记录异常日志
-        Log::record($error['message'], 'ERR');
+        Log::record($error['message'], 'error');
         // 发送http状态信息
         Response::sendHttpStatus(Config::get('exception_http_status'));
         // 输出异常页面
@@ -49,14 +49,14 @@ class Error
         $errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
         switch ($errno) {
             case E_USER_ERROR:
-                Log::record($errorStr, 'ERROR');
+                Log::record($errorStr, 'error');
                 self::halt($errorStr, $errno);
                 break;
             case E_STRICT:
             case E_USER_WARNING:
             case E_USER_NOTICE:
             default:
-                Log::record($errorStr, 'NOTIC');
+                Log::record($errorStr, 'warn');
                 break;
         }
     }
@@ -69,9 +69,6 @@ class Error
     {
         // 记录日志
         Log::save();
-        if (SLOG_ON) {
-            Slog::sendLog();
-        }
         if ($e = error_get_last()) {
             switch ($e['type']) {
                 case E_ERROR:

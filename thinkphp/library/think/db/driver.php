@@ -1156,15 +1156,10 @@ abstract class Driver
                 Debug::remark('queryStartTime', 'time');
             } else {
                 $this->modelSql[$this->model] = $this->queryStr;
-                //$this->model  =   '_think_';
                 // 记录操作结束时间
                 Debug::remark('queryEndTime', 'time');
-                Log::record($this->queryStr . ' [ RunTime:' . Debug::getUseTime('queryStartTime', 'queryEndTime') . 's ]', 'SQL');
+                Log::record($this->queryStr . ' [ RunTime:' . Debug::getRangeTime('queryStartTime', 'queryEndTime') . 's ]', 'sql');
             }
-        }
-
-        if (SLOG_ON && $start) {
-            \think\Slog::sql($this->queryStr, $this->_linkID);
         }
     }
 
