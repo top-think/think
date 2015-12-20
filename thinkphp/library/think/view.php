@@ -87,8 +87,12 @@ class View
      */
     public function engine($engine, array $config = [])
     {
-        $class        = '\\think\\view\\driver\\' . ucwords($engine);
-        $this->engine = new $class($config);
+        if('php'==$engine){
+            $this->engine   =   'php';
+        }else{
+            $class          =   '\\think\\view\\driver\\' . ucwords($engine);
+            $this->engine   =   new $class($config);
+        }
         return $this;
     }
 
@@ -141,13 +145,13 @@ class View
         // 页面缓存
         ob_start();
         ob_implicit_flush(0);
-        if ($this->engine) {
-            // 指定模板引擎
-            $this->engine->fetch($template, $vars, $cache);
-        } else {
+        if ('php' == $this->engine || empty($this->engine)) {
             // 原生PHP解析
             extract($vars, EXTR_OVERWRITE);
             is_file($template) ? include $template : eval('?>' . $template);
+        } else {
+            // 指定模板引擎
+            $this->engine->fetch($template, $vars, $cache);
         }
         // 获取并清空缓存
         $content = ob_get_clean();
