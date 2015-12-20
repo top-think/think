@@ -808,7 +808,7 @@ class Template
     private function parseTemplateFile($template)
     {
         if (false === strpos($template, '.')) {
-            return $this->config['tpl_path'] . $template . $this->config['tpl_suffix'];
+            return (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $template . $this->config['tpl_suffix'];
         } else {
             return $template;
         }
