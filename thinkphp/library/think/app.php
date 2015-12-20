@@ -115,7 +115,7 @@ class App
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
-                if (defined('IN_UNIT_TEST')) {
+                if (defined('IN_UNIT_TEST') && true===IN_UNIT_TEST) {
                     return $data;
                 } else {
                     Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
@@ -132,7 +132,7 @@ class App
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
-                if (defined('IN_UNIT_TEST')) {
+                if (defined('IN_UNIT_TEST') && true===IN_UNIT_TEST) {
                     return $data;
                 } else {
                     Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
