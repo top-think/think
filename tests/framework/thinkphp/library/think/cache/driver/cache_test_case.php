@@ -11,7 +11,7 @@ use think\cache;
      */
 abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 {
-    
+
     /**
      * 获取缓存句柄，子类必须有
      * @access protected
@@ -27,7 +27,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 设定一组测试值，包括测试字符串、整数、数组和对象
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function prepare()
@@ -44,7 +44,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 测试缓存设置，包括测试字符串、整数、数组和对象
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testSet()
@@ -58,7 +58,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 测试缓存读取，包括测试字符串、整数、数组和对象
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testGet()
@@ -76,7 +76,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 测试缓存存在情况，包括测试字符串、整数、数组和对象
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testExists()
@@ -90,7 +90,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 测试缓存不存在情况，包括测试字符串、整数、数组和对象
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testGetNonExistent()
@@ -102,7 +102,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 测试特殊值缓存，包括测试字符串、整数、数组和对象
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testStoreSpecialValues()
@@ -115,7 +115,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 缓存过期测试
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testExpire()
@@ -131,7 +131,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 删除缓存测试
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testDelete()
@@ -144,7 +144,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * 清空缓存测试
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testClear()

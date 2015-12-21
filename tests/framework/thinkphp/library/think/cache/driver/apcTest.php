@@ -15,7 +15,6 @@
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
 
-
 class apcTest extends CacheTestCase
 {
     private $_cacheInstance = null;
@@ -47,7 +46,7 @@ class apcTest extends CacheTestCase
     }
     /**
      * 缓存过期测试《提出来测试，因为目前看通不过缓存过期测试，所以还需研究》
-     * @return  mixed 
+     * @return  mixed
      * @access public
      */
     public function testExpire()
