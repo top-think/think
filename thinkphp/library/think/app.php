@@ -28,15 +28,15 @@ class App
         // 初始化公共模块
         self::initModule(COMMON_MODULE, $config);
 
+        // 获取配置参数
+        $config = Config::get();
+
         // 读取扩展配置文件
         if ($config['extra_config_list']) {
             foreach ($config['extra_config_list'] as $file) {
                 Config::load($file, $file);
             }
         }
-
-        // 获取配置参数
-        $config = Config::get();
 
         // 日志初始化
         Log::init($config['log']);
@@ -292,10 +292,10 @@ class App
                 $depr                 = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
-                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                    $_SERVER['PATH_INFO'];
+                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                $_SERVER['PATH_INFO'];
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
