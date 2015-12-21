@@ -251,7 +251,10 @@ class App
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['url_domain_deploy'])) {
-            if ($match = Route::checkDomain($config['url_domain_rules'])) {
+            if ($config['url_domain_rules']) {
+                Route::domain($config['url_domain_rules']);
+            }
+            if ($match = Route::checkDomain()) {
                 (!defined('BIND_MODULE') && !empty($match[0])) && define('BIND_MODULE', $match[0]);
                 (!defined('BIND_CONTROLLER') && !empty($match[1])) && define('BIND_CONTROLLER', $match[1]);
                 (!defined('BIND_ACTION') && !empty($match[2])) && define('BIND_ACTION', $match[2]);
@@ -292,10 +295,10 @@ class App
                 $depr                 = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
-                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                $_SERVER['PATH_INFO'];
+                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                    $_SERVER['PATH_INFO'];
 
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
