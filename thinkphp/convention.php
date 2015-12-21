@@ -24,13 +24,13 @@ return [
     // 默认时区
     'default_timezone'      => 'PRC',
     // 是否开启多语言
-    'lang_switch_on'        =>  false,
+    'lang_switch_on'        => false,
     // 支持的多语言列表
-    'lang_list'         =>  ['zh-cn'],
+    'lang_list'             => ['zh-cn'],
     // 语言变量
-    'lang_detect_var'   => 'lang',
+    'lang_detect_var'       => 'lang',
     // 语言cookie变量
-    'lang_cookie_var'   => 'think_lang',
+    'lang_cookie_var'       => 'think_lang',
 
     // +----------------------------------------------------------------------
     // | 模块设置
@@ -144,9 +144,9 @@ return [
     // +----------------------------------------------------------------------
     // | 数据库设置
     // +----------------------------------------------------------------------
-    
+
     // 是否启用多状态数据库配置 如果启用的话 需要跟随app_status配置不同的数据库信息
-    'use_db_switch'        => false,
+    'use_db_switch'         => false,
     'database'              => [
         // 数据库类型
         'type'        => 'mysql',
