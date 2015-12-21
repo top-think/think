@@ -13,6 +13,9 @@ namespace think;
 
 class Cache
 {
+    public static $readTimes    =   0;
+    public static $writeTimes   =   0;
+
     /**
      * 操作句柄
      * @var object

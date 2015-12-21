@@ -18,56 +18,31 @@ class Controller
     use \traits\controller\view;
 
     /**
-     * 控制器参数
-     * @var config
+     * 前置操作方法列表
+     * @var beforeActionList
      * @access protected
      */
-    protected $config = [
-        // 前置操作方法
-        'before_action_list' => [],
-    ];
+    protected $beforeActionList = [];
 
     /**
-     * 架构函数 初始化视图类 并采用内置模板引擎
+     * 架构函数
      * @access public
-     * @param array $config
      */
-    public function __construct($config = [])
+    public function __construct()
     {
-        // 模板引擎参数
-        $this->config(empty($config) ? Config::get() : $config);
         // 控制器初始化
         if (method_exists($this, '_initialize')) {
             $this->_initialize();
         }
         // 前置操作方法
-        // 支持 ['action1','action2'] 或者 ['action1'=>['only'=>'index'],'action2'=>'except'=>'login']
-        $list = $this->config['before_action_list'];
-        if ($list) {
-            foreach ($list as $method => $options) {
+        // 支持 ['action1','action2'] 或者 ['action1'=>['only'=>'index'],'action2'=>['except'=>'login']]
+        if ($this->beforeActionList) {
+            foreach ($this->beforeActionList as $method => $options) {
                 is_numeric($method) ?
                 $this->beforeAction($options) :
                 $this->beforeAction($method, $options);
             }
         }
-    }
-
-    /**
-     * 设置控制器参数
-     * @access public
-     * @param array $config 视图参数
-     * @return Think\Controller
-     */
-    public function config($config = [])
-    {
-        if (is_array($config)) {
-            foreach ($this->config as $key => $val) {
-                if (isset($config[$key])) {
-                    $this->config[$key] = $config[$key];
-                }
-            }
-        }
-        return $this;
     }
 
     /**

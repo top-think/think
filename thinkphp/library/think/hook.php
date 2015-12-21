@@ -98,7 +98,7 @@ class Hook
 
                 if (APP_DEBUG) {
                     Debug::remark('behavior_end', 'time');
-                    Log::record('Run ' . $name . ' [ RunTime:' . Debug::getUseTime('behavior_start', 'behavior_end') . 's ]', 'INFO');
+                    Log::record('Run ' . $name . ' [ RunTime:' . Debug::getRangeTime('behavior_start', 'behavior_end') . 's ]', 'log');
                 }
                 if (false === $result) {
                     // 如果返回false 则中断行为执行

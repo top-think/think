@@ -101,7 +101,11 @@ class Url
     // 根据路由名称和参数生成URL地址
     public static function route($name, $params = [])
     {
-        return Route::getRouteUrl($name, $params);
+        $url = Route::getRouteUrl($name, $params);
+        if (false === $url) {
+            $url = self::build($name, $params);
+        }
+        return $url;
     }
 
     // 解析URL和参数 域名

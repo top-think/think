@@ -57,6 +57,7 @@ class Sqlite
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         $name   = $this->options['prefix'] . sqlite_escape_string($name);
         $sql    = 'SELECT value FROM ' . $this->options['table'] . ' WHERE var=\'' . $name . '\' AND (expire=0 OR expire >' . time() . ') LIMIT 1';
         $result = sqlite_query($this->handler, $sql);
@@ -81,6 +82,7 @@ class Sqlite
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         $name  = $this->options['prefix'] . sqlite_escape_string($name);
         $value = sqlite_escape_string(serialize($value));
         if (is_null($expire)) {

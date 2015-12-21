@@ -59,6 +59,7 @@ class Simple
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         $filename = $this->filename($name);
         if (is_file($filename)) {
             return include $filename;
@@ -79,6 +80,7 @@ class Simple
      */
     public function set($name, $value)
     {
+        \think\Cache::$writeTimes++;
         $filename = $this->filename($name);
         // 缓存数据
         $dir = dirname($filename);

@@ -16,12 +16,18 @@ class Lang
     // 语言参数
     private static $lang = [];
     // 语言作用域
-    private static $range = '';
+    private static $range = 'zh-cn';
+    // 语言变量
+    private static $var = 'lang';
 
     // 设定语言参数的作用域（语言）
-    public static function range($range)
+    public static function range($range = '')
     {
-        self::$range = $range;
+        if ('' == $range) {
+            return self::$range;
+        } else {
+            self::$range = $range;
+        }
     }
 
     /**
@@ -33,7 +39,7 @@ class Lang
      */
     public static function set($name, $value = null, $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         // 批量定义
         if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
@@ -53,32 +59,74 @@ class Lang
      */
     public static function load($file, $range = '')
     {
-        $range = $range ? $range : self::$range;
-        $lang  = is_file($file) ? include $file : [];
+        $range = $range ?: self::$range;
         if (!isset(self::$lang[$range])) {
             self::$lang[$range] = [];
         }
         // 批量定义
-        if(!isset(self::$lang[$range])) {
-            self::$lang[$range] = [];
+        if (is_string($file)) {
+            $file = [$file];
         }
-        return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($lang));
+        $lang = [];
+        foreach ($file as $_file) {
+            $_lang = is_file($_file) ? include $_file : [];
+            $lang  = array_merge($lang, array_change_key_case($_lang));
+        }
+        if (!empty($lang)) {
+            self::$lang[$range] = array_merge(self::$lang[$range], $lang);
+        }
+        return self::$lang[$range];
     }
 
     /**
      * 获取语言定义(不区分大小写)
      * @param string|null $name 语言变量
+     * @param array $vars 变量替换
      * @param string $range 作用域
      * @return mixed
      */
-    public static function get($name = null, $range = '')
+    public static function get($name = null, $vars = [], $range = '')
     {
-        $range = $range ? $range : self::$range;
+        $range = $range ?: self::$range;
         // 空参数返回所有定义
         if (empty($name)) {
             return self::$lang[$range];
         }
-        $name = strtolower($name);
-        return isset(self::$lang[$range][$name]) ? self::$lang[$range][$name] : $name;
+        $key   = strtolower($name);
+        $value = isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
+        if (is_array($vars) && !empty($vars)) {
+            // 支持变量
+            $replace = array_keys($vars);
+            foreach ($replace as &$v) {
+                $v = '{$' . $v . '}';
+            }
+            $value = str_replace($replace, $vars, $value);
+        }
+        return $value;
+    }
+
+    /**
+     * 自动侦测设置获取语言选择
+     * @return void
+     */
+    public static function detect()
+    {
+        // 自动侦测设置获取语言选择
+        if (isset($_GET[self::$var])) {
+            $langSet = $_GET[self::$var]; // url中设置了语言变量
+            \think\Cookie::set('think_language', $langSet, 3600);
+        } elseif (\think\Cookie::get('think_language')) {
+            // 获取上次用户的选择
+            $langSet = \think\Cookie::get('think_language');
+        } elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            // 自动侦测浏览器语言
+            preg_match('/^([a-z\d\-]+)/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches);
+            $langSet = $matches[1];
+            \think\Cookie::set('think_language', $langSet, 3600);
+        }
+        if (in_array($langSet, \think\Config::get('lang_list'))) {
+            // 合法的语言
+            self::$range = $langSet;
+        }
     }
 }

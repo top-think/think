@@ -52,6 +52,7 @@ class Apc
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         return apc_fetch($this->options['prefix'] . $name);
     }
 
@@ -65,6 +66,7 @@ class Apc
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

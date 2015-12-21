@@ -1,6 +1,14 @@
 thinkphp5.0 beta
 ===============
 
+[![Build Status](https://img.shields.io/travis/top-think/think.svg)](https://travis-ci.org/top-think/think)
+[![Coverage Status](https://img.shields.io/codecov/c/github/top-think/think.svg)](https://codecov.io/github/top-think/think)
+[![Downloads](https://img.shields.io/github/downloads/top-think/think/total.svg)](https://github.com/top-think/think/releases)
+[![Releases](https://img.shields.io/github/release/top-think/think.svg)](https://github.com/top-think/think/releases/latest)
+[![Releases Downloads](https://img.shields.io/github/downloads/top-think/think/latest/total.svg)](https://github.com/top-think/think/releases/latest)
+[![Packagist Status](https://img.shields.io/packagist/v/top-think/think.svg)](https://packagist.org/packages/topthink/think)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/top-think/think.svg)](https://packagist.org/packages/topthink/think)
+
 ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PHP版本要求提升到5.4，对已有的CBD模式做了更深的强化，优化核心，减少依赖，基于全新的架构思想和命名空间实现，是ThinkPHP突破原有框架思路的颠覆之作，其主要特性包括：
 
  + 基于命名空间和众多PHP新特性
@@ -22,7 +30,7 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 > ThinkPHP5的运行环境要求PHP5.4以上，目前处于开发测试阶段，不排除正式发布之前有所调整，
 请谨慎用于实际项目 ^_^。
 
-详细开发文档参考 [ThinkPHP5开发手册](http://www.kancloud.cn/thinkphp/thinkphp5-guide) 
+详细开发文档参考 [ThinkPHP5开发手册](http://www.kancloud.cn/thinkphp/thinkphp5-guide)
 
 ## 目录结构
 
@@ -103,8 +111,22 @@ ThinkPHP5的命名规范如下：
 
 ## 参与开发
 注册并登录 Github 帐号， fork 本项目并进行改动。
+
+修改流程：
+
+1. fork本项目；
+2. 克隆（clone）你 fork 的项目到本地；
+3. 新建分支（branch）并检出（checkout）新分支；
+4. 添加本项目到你的本地 git 仓库作为上游（upstream）；
+5. 进行修改，若你的修改包含方法或函数的增减，请记得修改[单元测试文件](tests)；
+6. 变基（衍合 rebase）你的分支到上游 master 分支；
+7. push 你的本地仓库到 github；
+8. 提交 pull requests；
+9. 等待 CI 验证（若不通过则重复 5~7，github 会自动更新你的 pull requests）；
+10. 等待管理员处理。
+
 进行改动时请注意：
-* 本项目代码格式化标准选用 PSR-2；
-* 对于代码的修改，请尽量在自己 fork 的项目中创建新分支后再修改；
-* 提交 Pull requests 之前请先行 rebase 自己的分支以保持 timeline 整洁；
+* 本项目代码格式化标准选用 **PSR-2**；
+* 若对上述修改流程有任何不清楚的地方，请查阅 GIT 教程，如 [这个](http://backlogtool.com/git-guide/cn/)；
+* 对于代码**不同方面**的修改，请在自己 fork 的项目中**创建不同的分支**（原因参见`修改流程`第9条备注部分）；
 * 对于 Issues 的处理，请在 pull requests 时使用诸如 `fix #xxx(Issue ID)` 的 title 直接关闭 issue。

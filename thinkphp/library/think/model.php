@@ -14,12 +14,12 @@ namespace think;
 class Model
 {
     // 操作状态
-    const MODEL_INSERT = 1; //  新增
-    const MODEL_UPDATE = 2; //  更新
-    const MODEL_BOTH   = 3; //  全部
-    const EXISTS_VALIDATE   =   0;  // 存在就验证
-    const MUST_VALIDATE     =   1;  // 必须验证
-    const VALUE_VALIDATE    =   2;  // 有值就验证
+    const MODEL_INSERT    = 1; //  新增
+    const MODEL_UPDATE    = 2; //  更新
+    const MODEL_BOTH      = 3; //  全部
+    const EXISTS_VALIDATE = 0; // 存在就验证
+    const MUST_VALIDATE   = 1; // 必须验证
+    const VALUE_VALIDATE  = 2; // 有值就验证
     // 当前数据库操作对象
     protected $db = null;
     // 数据库对象池
@@ -140,6 +140,37 @@ class Model
     public function __unset($name)
     {
         unset($this->data[$name]);
+    }
+
+    /**
+     * 利用__call方法实现一些特殊的Model方法
+     * @access public
+     * @param string $method 方法名称
+     * @param array $args 调用参数
+     * @return mixed
+     */
+    public function __call($method, $args)
+    {
+        if (in_array(strtolower($method), ['count', 'sum', 'min', 'max', 'avg'], true)) {
+            // 统计查询的实现
+            $field = isset($args[0]) ? $args[0] : '*';
+            return $this->getField(strtoupper($method) . '(' . $field . ') AS tp_' . $method);
+        } elseif (strtolower(substr($method, 0, 5)) == 'getby') {
+            // 根据某个字段获取记录
+            $field         = Loader::parseName(substr($method, 5));
+            $where[$field] = $args[0];
+            return $this->where($where)->find();
+        } elseif (strtolower(substr($method, 0, 10)) == 'getfieldby') {
+            // 根据某个字段获取记录的某个值
+            $name         = Loader::parseName(substr($method, 10));
+            $where[$name] = $args[0];
+            return $this->where($where)->getField($args[1]);
+        } elseif (isset($this->scope[$method])) {
+            // 命名范围的单独调用支持
+            return $this->scope($method, $args[0]);
+        } else {
+            throw new \think\Exception(__CLASS__ . ':' . $method . ' method not exist');
+        }
     }
 
     // 回调方法 初始化模型
@@ -479,7 +510,7 @@ class Model
             }
 
             // 数据列表读取后的处理
-            $resultSet = $this->_read_datalist($resultSet);
+            $resultSet = $this->_read_datalist($resultSet, $options);
             if (isset($options['index'])) {
                 // 对数据集进行索引
                 $index = explode(',', $options['index']);
@@ -508,15 +539,202 @@ class Model
      * @param array $data 当前数据
      * @return array
      */
-    protected function _read_datalist($resultSet)
+    protected function _read_datalist($resultSet, $options)
     {
         $resultSet = array_map([$this, '_read_data'], $resultSet);
-        $this->_after_select($resultSet);
+        $this->_after_select($resultSet, $options);
         return $resultSet;
     }
     // 查询成功后的回调方法
     protected function _after_select(&$resultSet, $options = [])
     {}
+
+    /**
+     * 获取一条记录的某个字段值
+     * @access public
+     * @param string $field  字段名
+     * @param string $spea  字段数据间隔符号 NULL返回数组
+     * @return mixed
+     */
+    public function getField($field, $sepa = null)
+    {
+        $options['field'] = $field;
+        $options          = $this->_parseOptions($options);
+        $field            = trim($field);
+        // 判断查询缓存
+        if (isset($options['cache'])) {
+            $cache = $options['cache'];
+            $key   = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
+            $data  = Cache::get($key);
+            if (false !== $data) {
+                return $data;
+            }
+        }
+        if (strpos($field, ',')) {
+            // 多字段
+            if (!isset($options['limit'])) {
+                $options['limit'] = is_numeric($sepa) ? $sepa : '';
+            }
+            $resultSet = $this->db->select($options);
+            if (!empty($resultSet)) {
+                if (is_string($resultSet)) {
+                    return $resultSet;
+                }
+                $_field = explode(',', $field);
+                $field  = array_keys($resultSet[0]);
+                $key1   = array_shift($field);
+                $key2   = array_shift($field);
+                $cols   = array();
+                $count  = count($_field);
+                foreach ($resultSet as $result) {
+                    $name = $result[$key1];
+                    if (2 == $count) {
+                        $cols[$name] = $result[$key2];
+                    } else {
+                        $cols[$name] = is_string($sepa) ? implode($sepa, array_slice($result, 1)) : $result;
+                    }
+                }
+                if (isset($cache)) {
+                    Cache::set($key, $cols, $cache['expire']);
+                }
+                return $cols;
+            }
+        } else {
+            // 查找一条记录
+            // 返回数据个数
+            if (true !== $sepa) {
+                // 当sepa指定为true的时候 返回所有数据
+                $options['limit'] = is_numeric($sepa) ? $sepa : 1;
+            }
+            $result = $this->db->select($options);
+            if (!empty($result)) {
+                if (is_string($result)) {
+                    return $result;
+                }
+                if (true !== $sepa && 1 == $options['limit']) {
+                    $data = reset($result[0]);
+                    if (isset($cache)) {
+                        Cache::set($key, $data, $cache['expire']);
+                    }
+                    return $data;
+                }
+                foreach ($result as $val) {
+                    $array[] = $val[$field];
+                }
+                if (isset($cache)) {
+                    Cache::set($key, $array, $cache['expire']);
+                }
+                return $array;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设置记录的某个字段值
+     * 支持使用数据库字段和方法
+     * @access public
+     * @param string|array $field  字段名
+     * @param string $value  字段值
+     * @return boolean
+     */
+    public function setField($field, $value = '')
+    {
+        if (is_array($field)) {
+            $data = $field;
+        } else {
+            $data[$field] = $value;
+        }
+        return $this->save($data);
+    }
+
+    /**
+     * 字段值(延迟)增长
+     * @access public
+     * @param string $field  字段名
+     * @param integer $step  增长值
+     * @param integer $lazyTime  延时时间(s)
+     * @return boolean
+     */
+    public function setInc($field, $step = 1, $lazyTime = 0)
+    {
+        $condition = $this->options['where'];
+        if (empty($condition)) {
+            // 没有条件不做任何更新
+            return false;
+        }
+        if ($lazyTime > 0) {
+            // 延迟写入
+            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
+            $step = $this->lazyWrite($guid, $step, $lazyTime);
+            if (empty($step)) {
+                return true; // 等待下次写入
+            } elseif ($step < 0) {
+                $step = '-' . $step;
+            }
+        }
+        return $this->setField($field, ['exp', $field . '+' . $step]);
+    }
+
+    /**
+     * 字段值（延迟）减少
+     * @access public
+     * @param string $field  字段名
+     * @param integer $step  减少值
+     * @param integer $lazyTime  延时时间(s)
+     * @return boolean
+     */
+    public function setDec($field, $step = 1, $lazyTime = 0)
+    {
+        $condition = $this->options['where'];
+        if (empty($condition)) {
+            // 没有条件不做任何更新
+            return false;
+        }
+        if ($lazyTime > 0) {
+            // 延迟写入
+            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
+            $step = $this->lazyWrite($guid, -$step, $lazyTime);
+            if (empty($step)) {
+                return true; // 等待下次写入
+            } elseif ($step > 0) {
+                $step = '-' . $step;
+            }
+        }
+        return $this->setField($field, ['exp', $field . '-' . $step]);
+    }
+
+    /**
+     * 延时更新检查 返回false表示需要延时
+     * 否则返回实际写入的数值
+     * @access public
+     * @param string $guid  写入标识
+     * @param integer $step  写入步进值
+     * @param integer $lazyTime  延时时间(s)
+     * @return false|integer
+     */
+    protected function lazyWrite($guid, $step, $lazyTime)
+    {
+        if (false !== ($value = Cache::get($guid))) {
+            // 存在缓存写入数据
+            if (NOW_TIME > Cache::get($guid . '_time') + $lazyTime) {
+                // 延时更新时间到了，删除缓存数据 并实际写入数据库
+                Cache::rm($guid);
+                Cache::rm($guid . '_time');
+                return $value + $step;
+            } else {
+                // 追加数据到缓存
+                Cache::set($guid, $value + $step);
+                return false;
+            }
+        } else {
+            // 没有缓存数据
+            Cache::set($guid, $step);
+            // 计时开始
+            Cache::set($guid . '_time', NOW_TIME);
+            return false;
+        }
+    }
 
     /**
      * 生成查询SQL 可用于子查询
@@ -662,7 +880,7 @@ class Model
             return $resultSet;
         }
         // 数据处理
-        $data = $this->_read_data($resultSet[0]);
+        $data = $this->_read_data($resultSet[0], $options);
         // 数据对象赋值
         $this->data = $data;
         if (isset($cache)) {
@@ -677,7 +895,7 @@ class Model
      * @param array $data 当前数据
      * @return array
      */
-    protected function _read_data($data)
+    protected function _read_data($data, $options = [])
     {
         // 检查字段映射
         if (!empty($this->map)) {
@@ -688,7 +906,7 @@ class Model
                 }
             }
         }
-        $this->_after_find($data);
+        $this->_after_find($data, $options);
         return $data;
     }
     // 数据读取成功后的回调方法
@@ -1304,16 +1522,14 @@ class Model
      * @param string $order 排序
      * @return Model
      */
-    public function order($field, $order = '')
+    public function order($field, $order = null)
     {
-        if (is_array($field)) {
+        if (is_string($field) && !empty($field) && is_null($order)) {
+            $this->options['order'][] = $field;
+        } elseif (is_string($field) && !empty($field) && is_string($order)) {
+            $this->options['order'][$field] = $order;
+        } elseif (is_array($field) && !empty($field)) {
             $this->options['order'] = $field;
-        } else {
-            if (!empty($order)) {
-                $this->options['order'][$field] = $order;
-            } else {
-                $this->options['order'][] = $field;
-            }
         }
         return $this;
     }

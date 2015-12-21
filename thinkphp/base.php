@@ -9,6 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+// 开始运行时间和内存使用
+define('START_TIME', microtime(true));
+define('START_MEM', memory_get_usage());
 //  版本信息
 define('THINK_VERSION', '5.0.0beta');
 // 系统常量
@@ -35,7 +38,7 @@ defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
 defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
-defined('SLOG_ON') or define('SLOG_ON', false); // 是否开启socketLog
+defined('IN_UNIT_TEST') or define('IN_UNIT_TEST', false); // 是否为单元测试
 
 // 应用模式 默认为普通模式
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');
@@ -53,9 +56,9 @@ define('IS_PUT', REQUEST_METHOD == 'PUT' ? true : false);
 define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
 
 // 获取多语言变量
-function L($name)
+function L($name, $vars = [], $lang = '')
 {
-    return think\Lang::get($name);
+    return think\Lang::get($name, $vars, $lang);
 }
 
 // 获取配置参数
@@ -69,7 +72,7 @@ function C($name = '', $value = null, $range = '')
 }
 
 // 获取输入数据 支持默认值和过滤
-function I($key, $default = '', $filter = '')
+function I($key, $default = null, $filter = '')
 {
     if (strpos($key, '.')) {
         // 指定参数来源
@@ -93,7 +96,7 @@ function G($start, $end = '', $dec = 6)
     if ('' == $end) {
         think\Debug::remark($start);
     } else {
-        return 'm' == $dec ? think\Debug::getUseMem($start, $end) : think\Debug::getUseTime($start, $end, $dec);
+        return 'm' == $dec ? think\Debug::getRangeMem($start, $end) : think\Debug::getRangeTime($start, $end, $dec);
     }
 }
 
@@ -306,14 +309,13 @@ function S($name, $value = '', $options = null)
  * 添加Trace记录到SocketLog
  * @param mixed $log log信息 支持字符串和数组
  * @param string $level 日志级别
- * @param string $css 样式
  * @return void|array
  */
-function trace($log, $level = 'log', $css = '')
+function trace($log='[think]', $level = 'log')
 {
-    if ('trace' == $level) {
-        \think\Slog::trace($log, 2, $css);
-    } else {
-        \think\Slog::record($level, $log, $css);
+    if('[think]'==$log){
+        return \think\Log::getLog();
+    }else{
+        \think\Log::record($log,$level);
     }
 }

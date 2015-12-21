@@ -665,7 +665,7 @@ class Route
             }
             return $url;
         } else {
-            return null;
+            return false;
         }
     }
 }

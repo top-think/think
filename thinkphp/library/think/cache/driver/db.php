@@ -55,6 +55,7 @@ class Db
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         $name   = $this->options['prefix'] . addslashes($name);
         $result = $this->handler->query('SELECT `data`,`datacrc` FROM `' . $this->options['table'] . '` WHERE `cachekey`=\'' . $name . '\' AND (`expire` =0 OR `expire`>' . time() . ') LIMIT 0,1');
         if (false !== $result) {
@@ -81,6 +82,7 @@ class Db
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         $data = serialize($value);
         $name = $this->options['prefix'] . addslashes($name);
         if (function_exists('gzcompress')) {

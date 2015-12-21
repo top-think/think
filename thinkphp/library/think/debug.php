@@ -13,9 +13,10 @@ namespace think;
 
 class Debug
 {
-
+    // 区间时间信息
     protected static $info = [];
-    protected static $mem  = [];
+    // 区间内存信息
+    protected static $mem = [];
 
     /**
      * 记录时间（微秒）和内存使用情况
@@ -38,9 +39,9 @@ class Debug
      * @param string $start 开始标签
      * @param string $end 结束标签
      * @param integer|string $dec 小数位
-     * @return mixed
+     * @return integer
      */
-    public static function getUseTime($start, $end, $dec = 6)
+    public static function getRangeTime($start, $end, $dec = 6)
     {
         if (!isset(self::$info[$end])) {
             self::$info[$end] = microtime(true);
@@ -49,13 +50,32 @@ class Debug
     }
 
     /**
-     * 记录内存使用情况
+     * 统计从开始到统计时的时间（微秒）使用情况
+     * @param integer|string $dec 小数位
+     * @return integer
+     */
+    public static function getUseTime($dec = 6)
+    {
+        return number_format((microtime(true) - START_TIME), $dec);
+    }
+
+    /**
+     * 获取当前访问的吞吐率情况
+     * @return string
+     */
+    public static function getThroughputRate()
+    {
+        return number_format(1 / self::getUseTime(), 2) . 'req/s';
+    }
+
+    /**
+     * 记录区间的内存使用情况
      * @param string $start 开始标签
      * @param string $end 结束标签
      * @param integer|string $dec 小数位
-     * @return mixed
+     * @return string
      */
-    public static function getUseMem($start, $end, $dec = 2)
+    public static function getRangeMem($start, $end, $dec = 2)
     {
         if (!isset(self::$mem['mem'][$end])) {
             self::$mem['mem'][$end] = memory_get_usage();
@@ -71,7 +91,24 @@ class Debug
     }
 
     /**
-     * 统计内存峰值情况
+     * 统计从开始到统计时的内存使用情况
+     * @param integer|string $dec 小数位
+     * @return string
+     */
+    public static function getUseMem($dec = 2)
+    {
+        $size = memory_get_usage() - START_MEM;
+        $a    = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $pos  = 0;
+        while ($size >= 1024) {
+            $size /= 1024;
+            $pos++;
+        }
+        return round($size, $dec) . " " . $a[$pos];
+    }
+
+    /**
+     * 统计区间的内存峰值情况
      * @param string $start 开始标签
      * @param string $end 结束标签
      * @param integer|string $dec 小数位
@@ -90,6 +127,24 @@ class Debug
             $pos++;
         }
         return round($size, $dec) . " " . $a[$pos];
+    }
+
+    /**
+     * 获取文件加载信息
+     * @param bool $detail 是否显示详细
+     * @return void
+     */
+    public static function getFile($detail = false)
+    {
+        if ($detail) {
+            $files = get_included_files();
+            $info  = [];
+            foreach ($files as $key => $file) {
+                $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
+            }
+            return $info;
+        }
+        return count(get_included_files());
     }
 
     /**
@@ -121,4 +176,5 @@ class Debug
             return $output;
         }
     }
+
 }

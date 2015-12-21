@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="thinkphp/bootstrap.php"
+         bootstrap="tests/mock.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -11,7 +11,7 @@
          syntaxCheck="false">
     <testsuites>
         <testsuite name="ThinkPHP Test Suite">
-            <directory>./tests/</directory>
+            <directory>./tests/framework/</directory>
         </testsuite>
     </testsuites>
     <listeners>
@@ -19,7 +19,10 @@
     </listeners>
     <filter>
         <whitelist>
-            <directory suffix=".php">application/</directory>
+            <directory suffix=".php">thinkphp/</directory>
+            <exclude>
+                <directory suffix=".php">thinkphp/vendor</directory>
+            </exclude>
         </whitelist>
     </filter>
     <php>

@@ -63,6 +63,7 @@ class Memcache
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         return $this->handler->get($this->options['prefix'] . $name);
     }
 
@@ -76,6 +77,7 @@ class Memcache
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
