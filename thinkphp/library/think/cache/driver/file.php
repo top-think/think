@@ -40,7 +40,6 @@ class File
         if (substr($this->options['path'], -1) != '/') {
             $this->options['path'] .= '/';
         }
-
         $this->init();
     }
 
@@ -53,10 +52,9 @@ class File
     {
         // 创建项目缓存目录
         if (!is_dir($this->options['path'])) {
-            if (!mkdir($this->options['path'], 0755)) {
+            if (!mkdir($this->options['path'], 0755, true)) {
                 return false;
             }
-
         }
     }
 
