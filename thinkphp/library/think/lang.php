@@ -17,8 +17,6 @@ class Lang
     private static $lang = [];
     // 语言作用域
     private static $range = 'zh-cn';
-    // 语言变量
-    private static $var = 'lang';
 
     // 设定语言参数的作用域（语言）
     public static function range($range = '')
@@ -112,17 +110,18 @@ class Lang
     public static function detect()
     {
         // 自动侦测设置获取语言选择
-        if (isset($_GET[self::$var])) {
-            $langSet = $_GET[self::$var]; // url中设置了语言变量
+        if (isset($_GET[Config::get('lang_detect_var')])) {
+            // url中设置了语言变量
+            $langSet = $_GET[Config::get('lang_detect_var')]; 
             \think\Cookie::set('think_language', $langSet, 3600);
-        } elseif (\think\Cookie::get('think_language')) {
+        } elseif (\think\Cookie::get(Config::get('lang_cookie_var'))) {
             // 获取上次用户的选择
-            $langSet = \think\Cookie::get('think_language');
+            $langSet = \think\Cookie::get(Config::get('lang_cookie_var'));
         } elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             // 自动侦测浏览器语言
             preg_match('/^([a-z\d\-]+)/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches);
             $langSet = $matches[1];
-            \think\Cookie::set('think_language', $langSet, 3600);
+            \think\Cookie::set(Config::get('lang_cookie_var'), $langSet, 3600);
         }
         if (in_array($langSet, \think\Config::get('lang_list'))) {
             // 合法的语言
