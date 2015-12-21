@@ -615,10 +615,14 @@ class Template
                 $vars = explode('.', $var);
                 $var  = array_shift($vars);
                 $name = '$' . $var;
-                foreach ($vars as $key => $val) {
-                    $name .= '["' . $val . '"]';
+                if (count($vars) > 1) {
+                    foreach ($vars as $key => $val) {
+                        $name .= '["' . $val . '"]';
+                    }
+                } else {
+                    // 一维自动识别对象和数组
+                    $name = 'is_array($' . $var . ')?$' . $var . '["' . $vars[0] . '"]:$' . $var . '->' . $vars[0];
                 }
-
             } elseif (false !== strpos($var, '[')) {
                 //支持 {$var['key']} 方式输出数组
                 $name = "$" . $var;
