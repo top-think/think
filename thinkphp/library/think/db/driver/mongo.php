@@ -195,7 +195,7 @@ class Mongo extends Driver
     public function error()
     {
         $this->error = $this->_mongo->lastError();
-        Log::record($this->error, 'ERR');
+        Log::record($this->error, 'error');
         return $this->error;
     }
 

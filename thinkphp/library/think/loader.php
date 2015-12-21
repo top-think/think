@@ -262,7 +262,7 @@ class Loader
             if (class_exists($class)) {
                 $model = new $class($name);
             } else {
-                Log::record('实例化不存在的类：' . $class, 'NOTIC');
+                Log::record('实例化不存在的类：' . $class, 'warn');
                 $model = new Model($name);
             }
         }

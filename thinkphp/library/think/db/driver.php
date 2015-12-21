@@ -106,7 +106,7 @@ abstract class Driver
                 $this->linkID[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $this->options);
             } catch (\PDOException $e) {
                 if ($autoConnection) {
-                    Log::record($e->getMessage(), 'ERR');
+                    Log::record($e->getMessage(), 'error');
                     return $this->connect($autoConnection, $linkNum);
                 } elseif ($config['debug']) {
                     throw new Exception($e->getMessage());
@@ -373,7 +373,7 @@ abstract class Driver
             $this->error .= "\n [ SQL语句 ] : " . $this->queryStr;
         }
         // 记录错误日志
-        Log::record($this->error, 'ERR');
+        Log::record($this->error, 'error');
         if ($this->config['debug']) {
             // 开启数据库调试模式
             throw new Exception($this->error);
