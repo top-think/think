@@ -8,17 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 /**
  * Apc缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
-
 class apcTest extends CacheTestCase
 {
     private $_cacheInstance = null;
-
     /**
      * 基境缓存类型
      */
@@ -26,7 +23,6 @@ class apcTest extends CacheTestCase
     {
         S(array('type'=>'apc','expire'=>2));
     }
-
     /**
      * @return ApcCache
      */
@@ -37,11 +33,9 @@ class apcTest extends CacheTestCase
         } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
             $this->markTestSkipped("APC模块没有开启，已跳过测试！");
         }
-
         if ($this->_cacheInstance === null) {
             $this->_cacheInstance = new \think\cache\driver\Apc();
         }
-
         return $this->_cacheInstance;
     }
     /**
