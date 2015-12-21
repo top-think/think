@@ -13,38 +13,27 @@
  * Apc缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
+namespace tests\framework\thinkphp\library\think\cache\driver;
 
-namespace thinkunit\cache\driver;
 
-use think\app;
-use think\cache;
-use think\config;
-
-class apcTest extends \PHPUnit_Framework_TestCase
+class apcTest extends CacheTestCase
 {
-    //设定基境
-    public function setUp()
-    {
-        //验证模块是否加载
-        if (!extension_loaded('apc')) {
-            $this->markTestSkipped('apc扩展不可用！');
-        };
-    }
+    private $_cacheInstance = null;
     /**
-     * 测试操作缓存
+     * @return ApcCache
      */
-    public function testApc()
+    protected function getCacheInstance()
     {
-        App::run(Config::get());
-        $this->assertInstanceOf(
-            '\think\cache\driver\Apc',
-            Cache::connect(['type' => 'apc', 'expire' => 1])
-        );
-        $this->assertTrue(Cache::set('key', 'value'));
-        $this->assertEquals('value', Cache::get('key'));
-        $this->assertTrue(Cache::rm('key'));
-        $this->assertFalse(Cache::get('key'));
-        $this->assertTrue(Cache::clear('key'));
-        Config::reset();
+        if (!extension_loaded("apc")) {
+            $this->markTestSkipped("APC没有安装，已跳过测试！");
+        } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
+            $this->markTestSkipped("APC模块没有开启，已跳过测试！");
+        }
+
+        if ($this->_cacheInstance === null) {
+            $this->_cacheInstance = new \think\cache\driver\Apc();
+        }
+
+        return $this->_cacheInstance;
     }
 }
