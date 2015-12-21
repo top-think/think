@@ -14,7 +14,7 @@
  * @author    mahuan <mahuan@d1web.top>
  */
 
-namespace think\cache\driver;
+namespace thinkunit\cache\driver;
 
 use think\app;
 use think\cache;
