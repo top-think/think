@@ -35,7 +35,7 @@ class Trace
      */
     public function save($log = [])
     {
-
+        if(IS_AJAX) return;
         // 获取基本信息
         $current_uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $runtime     = number_format(microtime(true) - START_TIME, 6);
