@@ -134,7 +134,7 @@ class Url
             $domain = $host . (strpos($host, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
         } elseif (true === $domain) {
             $domain = $_SERVER['HTTP_HOST'];
-            if (Config::get('url_domain_deplay')) {
+            if (Config::get('url_domain_deploy')) {
                 // 开启子域名部署
                 $domain = 'localhost' == $domain ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
                 // '子域名'=>array('项目[/分组]');
