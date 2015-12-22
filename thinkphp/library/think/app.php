@@ -37,6 +37,8 @@ class App
                 Config::load($file, $file);
             }
         }
+        // 合并扩展配置文件配置项
+        $config = Config::get();
 
         // 日志初始化
         Log::init($config['log']);
