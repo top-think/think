@@ -483,9 +483,9 @@ class Mongo extends Driver
         }
         $this->model = $options['model'];
         $this->queryTimes++;
-        $query  = $this->parseWhere($options['where']);
-        $fields = $this->parseField($options['field']);
-        if ($this->config['debug']) {
+        $query  = $this->parseWhere(!empty($options['where'])?$options['where']:'');
+        $fields = $this->parseField(!empty($options['field'])?$options['field']:'');
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.findOne(';
             $this->queryStr .= $query ? json_encode($query) : '{}';
             $this->queryStr .= $fields ? ',' . json_encode($fields) : '';
