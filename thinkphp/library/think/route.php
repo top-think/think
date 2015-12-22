@@ -311,7 +311,7 @@ class Route
                         $rule = array_shift($val);
                     }
                     // 单项路由
-                    $route = $val['route'];
+                    $route = !empty($val['route'])?$val['route']:'';
                     if (0 === strpos($rule, '/') && preg_match($rule, $url, $matches)) {
                         return self::checkRegex($route, $url, $matches);
                     } else {
