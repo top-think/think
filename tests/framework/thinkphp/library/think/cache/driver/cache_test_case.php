@@ -6,7 +6,7 @@ use think\app;
 use think\cache;
 
     /**
-     * 缓存首相类，提供一些测试
+     * 缓存抽象类，提供一些测试
      * @author simon <mahuan@d1web.top>
      */
 abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
@@ -17,14 +17,6 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
      * @access protected
      */
     abstract protected function getCacheInstance();
-
-    /**
-     * 基境设定
-     */
-    protected function setUp()
-    {
-        S(array('type'=>'apc','expire'=>2));
-    }
 
     /**
      * tearDown函数
@@ -43,9 +35,9 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
         $cache = $this->getCacheInstance();
 
         $cache->clear();
-        S('string_test', 'string_test');
-        S('number_test', 11);
-        S('array_test', ['array_test' => 'array_test']);
+        $cache->set('string_test', 'string_test');
+        $cache->set('number_test', 11);
+        $cache->set('array_test', ['array_test' => 'array_test']);
 
         return $cache;
     }
@@ -59,9 +51,9 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->getCacheInstance();
 
-        $this->assertTrue(S('string_test', 'string_test'));
-        $this->assertTrue(S('number_test', 11));
-        $this->assertTrue(S('array_test', ['array_test' => 'array_test']));
+        $this->assertTrue($cache->set('string_test', 'string_test'));
+        $this->assertTrue($cache->set('number_test', 11));
+        $this->assertTrue($cache->set('array_test', ['array_test' => 'array_test']));
     }
 
     /**
@@ -73,11 +65,11 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->prepare();
 
-        $this->assertEquals('string_test', S('string_test'));
+        $this->assertEquals('string_test', $cache->get('string_test'));
 
-        $this->assertEquals(11, S('number_test'));
+        $this->assertEquals(11, $cache->get('number_test'));
 
-        $array = S('array_test');
+        $array = $cache->get('array_test');
         $this->assertArrayHasKey('array_test', $array);
         $this->assertEquals('array_test', $array['array_test']);
     }
@@ -91,9 +83,9 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->prepare();
 
-        $this->assertTrue(!empty(S('string_test')));
-        $this->assertTrue(!empty(S('number_test')));
-        $this->assertFalse(S('not_exists'));
+        $this->assertTrue(!empty($cache->get('string_test')));
+        $this->assertTrue(!empty($cache->get('number_test')));
+        $this->assertFalse($cache->get('not_exists'));
     }
 
     /**
@@ -105,7 +97,7 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->getCacheInstance();
 
-        $this->assertFalse(S('non_existent_key'));
+        $this->assertFalse($cache->get('non_existent_key'));
     }
 
     /**
@@ -116,12 +108,9 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     public function testStoreSpecialValues()
     {
         $cache = $this->getCacheInstance();
-        S('null_value', null);
-        //清空缓存后，竟然返回false！！！
-        $this->assertFalse(S('null_value'));
-
-        $this->assertTrue(S('bool_value', true));
-        $this->assertTrue(S('bool_value'));
+        $cache->set('null_value', null);
+        //清空缓存后，返回null而不是false
+        $this->assertTrue(is_null($cache->get('null_value')));
     }
 
     /**
@@ -133,11 +122,11 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->getCacheInstance();
 
-        $this->assertTrue(S('expire_test', 'expire_test', 2));
+        $this->assertTrue($cache->set('expire_test', 'expire_test', 2));
         usleep(500000);
-        $this->assertEquals('expire_test', S('expire_test'));
+        $this->assertEquals('expire_test', $cache->get('expire_test'));
         usleep(2500000);
-        $this->assertFalse(S('expire_test'));
+        $this->assertFalse($cache->get('expire_test'));
     }
 
     /**
@@ -149,9 +138,8 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->prepare();
 
-        $this->assertNotNull(S('number_test'));
-        $this->assertTrue(S('number_test',null));
-        $this->assertFalse(S('number_test'));
+        $this->assertNotNull($cache->rm('number_test'));
+        $this->assertFalse($cache->get('number_test'));
     }
 
     /**
@@ -163,6 +151,6 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->prepare();
         $this->assertTrue($cache->clear());
-        $this->assertFalse(S('number_test'));
+        $this->assertFalse($cache->get('number_test'));
     }
 }
