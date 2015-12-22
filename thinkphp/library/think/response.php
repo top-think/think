@@ -52,6 +52,8 @@ class Response
                     $handler = !empty($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
                     $data    = $handler . '(' . json_encode($data, JSON_UNESCAPED_UNICODE) . ');';
                     break;
+                case '':
+                    break
                 default:
                     // 用于扩展其他返回格式数据
                     Hook::listen('return_data', $data);
