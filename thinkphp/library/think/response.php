@@ -16,7 +16,7 @@ class Response
     // 输出数据的转换方法
     protected static $tramsform = null;
     // 输出数据的类型
-    protected static $type = 'json';
+    protected static $type = 'html';
     // 输出数据
     protected static $data = '';
     // 是否exit
