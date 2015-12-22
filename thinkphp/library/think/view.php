@@ -46,7 +46,7 @@ class View
      * @param array $config  配置参数
      */
     static public function getInstance(array $config = []){
-        return self($config);
+        return new self($config);
     }
 
     /**
