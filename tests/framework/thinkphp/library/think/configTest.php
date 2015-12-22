@@ -23,7 +23,7 @@ class configTest extends \PHPUnit_Framework_TestCase
 {
     public function testConfig()
     {
-        App::run(Config::get());
+        App::run();
         $this->assertTrue(Config::has('url_route_on'));
         $this->assertEquals(1, Config::get('url_route_on'));
         Config::set('url_route_on', false);

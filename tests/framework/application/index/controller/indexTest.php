@@ -24,7 +24,7 @@ class indexTest extends \PHPUnit_Framework_TestCase
     public function testIndex()
     {
         //因为初始化会调用缓存，会导致一个错误，错误待处理！
-        // $this->assertContains('ThinkPHP5', App::run(Config::get()));
+        // $this->assertContains('ThinkPHP5', App::run());
         // Config::reset();
     }
 }
