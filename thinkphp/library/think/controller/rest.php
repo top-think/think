@@ -93,7 +93,10 @@ abstract class Rest
     protected function response($data, $type = '', $code = 200)
     {
         Response::sendHttpStatus($code);
-        return Response::returnData($data, $type, 1);
+        Response::data($data);
+        if ($type) {
+            Response::type($type);
+        }
     }
 
     /**

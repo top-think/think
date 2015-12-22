@@ -15,17 +15,25 @@ class Response
 {
     // 输出数据的转换方法
     protected static $tramsform = null;
+    // 输出数据的类型
+    protected static $type = 'json';
+    // 输出数据
+    protected static $data = '';
+    // 是否exit
+    protected static $isExit = false;
 
     /**
-     * 返回数据到客户端
+     * 发送数据到客户端
      * @access protected
      * @param mixed $data 要返回的数据
      * @param String $type 返回数据格式
-     * @param integer $return 是否返回数据 0 echo 1 return 2 exit
+     * @param bool $return 是否返回数据
      * @return void
      */
-    public static function returnData($data, $type = '', $return = 0)
+    public static function send($data = '', $type = '', $return = false)
     {
+        $type = strtolower($type ?: self::$type);
+
         $headers = [
             'json'   => 'application/json',
             'xml'    => 'text/xml',
@@ -34,11 +42,12 @@ class Response
             'script' => 'application/javascript',
             'text'   => 'text/plain',
         ];
-        $type = strtolower($type);
+
         if (!headers_sent() && isset($headers[$type])) {
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
 
+        $data = $data ?: self::$data;
         if (is_callable(self::$tramsform)) {
             $data = call_user_func_array(self::$tramsform, [$data]);
         } else {
@@ -53,21 +62,21 @@ class Response
                     $data    = $handler . '(' . json_encode($data, JSON_UNESCAPED_UNICODE) . ');';
                     break;
                 case '':
-                    break
+                    // 类型为空不做处理
+                    break;
                 default:
                     // 用于扩展其他返回格式数据
                     Hook::listen('return_data', $data);
             }
         }
 
-        switch ($return) {
-            case 1:
-                return $data;
-            case 2:
-                exit($data);
-            case 0:
-            default:
-                echo $data;
+        if ($return) {
+            return $data;
+        } else {
+            echo $data;
+        }
+        if (self::$isExit) {
+            exit;
         }
     }
 
@@ -80,6 +89,39 @@ class Response
     public static function tramsform($callback)
     {
         self::$tramsform = $callback;
+    }
+
+    /**
+     * 输出类型设置
+     * @access public
+     * @param string $type 输出内容的格式类型
+     * @return void
+     */
+    public static function type($type)
+    {
+        self::$type = $type;
+    }
+
+    /**
+     * 输出数据设置
+     * @access public
+     * @param mixed $data 输出数据
+     * @return void
+     */
+    public static function data($data)
+    {
+        self::$data = $data;
+    }
+
+    /**
+     * 输出是否exit设置
+     * @access public
+     * @param bool $exit 是否退出
+     * @return void
+     */
+    public static function isExit($exit = false)
+    {
+        self::$isExit = $exit;
     }
 
     /**
@@ -99,7 +141,11 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
-        return self::returnData($result, $type, true);
+
+        self::$data = $result;
+        if ($type) {
+            self::$type = $type;
+        }
     }
 
     /**
@@ -125,7 +171,10 @@ class Response
             $view   = new \think\View();
             $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
-        return self::returnData($result, $type, true);
+        self::$data = $result;
+        if ($type) {
+            self::$type = $type;
+        }
     }
 
     /**
@@ -151,7 +200,10 @@ class Response
             $view   = new \think\View();
             $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
-        return self::returnData($result, $type, true);
+        self::$data = $result;
+        if ($type) {
+            self::$type = $type;
+        }
     }
 
     /**
