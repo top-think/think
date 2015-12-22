@@ -303,7 +303,7 @@ class App
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
                     // 开启路由 则检测路由配置
-                    Route::register($config['route']);
+                    Route::register(!empty($config['route'])?$config['route']:null);
                     $result = Route::check($path_info, $depr);
                     if (false === $result) {
                         // 路由无效

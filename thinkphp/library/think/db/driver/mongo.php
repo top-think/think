@@ -70,7 +70,7 @@ class Mongo extends Driver
 
             $host = 'mongodb://' . ($config['username'] ? "{$config['username']}" : '') . ($config['password'] ? ":{$config['password']}@" : '') . $config['hostname'] . ($config['hostport'] ? ":{$config['hostport']}" : '') . '/' . ($config['database'] ? "{$config['database']}" : '');
             try {
-                $this->linkID[$linkNum] = new \mongoClient($host, $this->config['params']);
+                $this->linkID[$linkNum] = new \mongoClient($host, !empty($this->config['params'])?$this->config['params']:array());
             } catch (\MongoConnectionException $e) {
                 throw new Exception($e->getmessage());
             }
@@ -105,7 +105,7 @@ class Mongo extends Driver
                 $this->_mongo  = $this->_linkID->selectDb($db);
             }
             // 当前MongoCollection对象
-            if ($this->config['debug']) {
+            if (!empty($this->config['debug'])) {
                 $this->queryStr = $this->_dbName . '.getCollection(' . $collection . ')';
             }
             if ($this->_collectionName != $collection) {
@@ -519,7 +519,7 @@ class Mongo extends Driver
         $this->model = $options['model'];
         $this->queryTimes++;
         $query = $this->parseWhere($options['where']);
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName;
             $this->queryStr .= $query ? '.find(' . json_encode($query) . ')' : '';
             $this->queryStr .= '.count()';
