@@ -93,7 +93,7 @@ abstract class Rest
     protected function response($data, $type = '', $code = 200)
     {
         Response::sendHttpStatus($code);
-        Response::returnData($data, strtolower($type));
+        return Response::returnData($data, $type, 1);
     }
 
     /**
@@ -131,7 +131,7 @@ abstract class Rest
                 }
             }
         }
-        
+
         return false;
     }
 }
