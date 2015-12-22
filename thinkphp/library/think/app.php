@@ -23,10 +23,10 @@ class App
      * @access public
      * @return void
      */
-    public static function run(array $config = [])
+    public static function run()
     {
         // 初始化公共模块
-        self::initModule(COMMON_MODULE, $config);
+        self::initModule(COMMON_MODULE, Config::get());
 
         // 获取配置参数
         $config = Config::get();
