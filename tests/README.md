@@ -103,7 +103,7 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
   ```php
   public function testGet()
   {
-      App::run(Config::get());
+      App::run();
       $this->assertInstanceOf(
           '\think\cache\driver\Apc',
           Cache::connect(['type' => 'apc', 'expire' => 1])

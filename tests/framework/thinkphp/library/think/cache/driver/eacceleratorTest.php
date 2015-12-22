@@ -8,42 +8,40 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
 /**
- * Apc缓存驱动测试
+ * eaccelerator缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
-class apcTest extends CacheTestCase
+
+
+class eacceleratorTest extends CacheTestCase
 {
     private $_cacheInstance = null;
+
     /**
      * 基境缓存类型
      */
     protected function setUp()
     {
-        S(array('type'=>'apc','expire'=>2));
+        S(array('type'=>'eaccelerator','expire'=>2));
     }
+
     /**
-     * @return ApcCache
+     * @return eacceleratorCache
      */
     protected function getCacheInstance()
     {
-        if (!extension_loaded("apc")) {
-            $this->markTestSkipped("APC没有安装，已跳过测试！");
-        } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
-            $this->markTestSkipped("APC模块没有开启，已跳过测试！");
+        if(PHP_VERSION > 5.4){
+            $this->markTestSkipped("eaccelerator暂且不能使用在5.5版本以上");
+        }
+        if (!extension_loaded("eaccelerator")) {
+            $this->markTestSkipped("eacceleratorTest没有安装，已跳过测试！");
         }
         if ($this->_cacheInstance === null) {
-            $this->_cacheInstance = new \think\cache\driver\Apc();
+            $this->_cacheInstance = new \think\cache\driver\Eaccelerator();
         }
         return $this->_cacheInstance;
-    }
-    /**
-     * 缓存过期测试《提出来测试，因为目前看通不过缓存过期测试，所以还需研究》
-     * @return  mixed
-     * @access public
-     */
-    public function testExpire()
-    {
     }
 }
