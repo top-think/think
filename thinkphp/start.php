@@ -44,7 +44,7 @@ if (APP_HOOK && isset($mode['tags'])) {
 
 // 自动生成
 if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
-    Create::build(include APP_PATH . 'build.php');
+    Build::run(include APP_PATH . 'build.php');
 }
 Loader::addNamespace('tests', TEST_PATH);
 // 执行应用
