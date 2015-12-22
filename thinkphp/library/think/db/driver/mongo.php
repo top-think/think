@@ -61,7 +61,7 @@ class Mongo extends Driver
      * @return
      * @throws Exception
      */
-    public function connect($config = '', $linkNum = 0)
+    public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
         if (!isset($this->linkID[$linkNum])) {
             if (empty($config)) {
@@ -249,7 +249,7 @@ class Mongo extends Driver
      * @return bool
      * @throws Exception
      */
-    public function insertAll($dataList, $options = [])
+    public function insertAll($dataList, $options = [], $replace = false)
     {
         if (isset($options['table'])) {
             $this->switchCollection($options['table']);

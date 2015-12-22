@@ -101,7 +101,7 @@ class Mongo extends \Think\Model
     }
 
     // 插入数据前的回调方法
-    protected function _before_insert(&$data, $options)
+    protected function _before_insert(&$data, $options = [])
     {
         // 写入数据到数据库
         if ($this->_autoInc && self::TYPE_INT == $this->_idType) {
@@ -119,7 +119,7 @@ class Mongo extends \Think\Model
     }
 
     // 查询成功后的回调方法
-    protected function _after_select(&$resultSet, $options)
+    protected function _after_select(&$resultSet, $options = [])
     {
         array_walk($resultSet, [$this, 'checkMongoId']);
     }
@@ -185,7 +185,7 @@ class Mongo extends \Think\Model
      * @param integer $step  增长值
      * @return boolean
      */
-    public function setInc($field, $step = 1)
+    public function setInc($field, $step = 1, $lazyTime = 0)
     {
         return $this->setField($field, ['inc', $step]);
     }
@@ -197,7 +197,7 @@ class Mongo extends \Think\Model
      * @param integer $step  减少值
      * @return boolean
      */
-    public function setDec($field, $step = 1)
+    public function setDec($field, $step = 1, $lazyTime = 0)
     {
         return $this->setField($field, ['inc', '-' . $step]);
     }
