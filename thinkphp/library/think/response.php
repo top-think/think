@@ -97,7 +97,7 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
-        self::returnData($result, $type, true);
+        return self::returnData($result, $type, true);
     }
 
     /**
@@ -123,7 +123,7 @@ class Response
             $view   = new \think\View();
             $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
-        self::returnData($result, $type, true);
+        return self::returnData($result, $type, true);
     }
 
     /**
@@ -149,7 +149,7 @@ class Response
             $view   = new \think\View();
             $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
-        self::returnData($result, $type, true);
+        return self::returnData($result, $type, true);
     }
 
     /**
