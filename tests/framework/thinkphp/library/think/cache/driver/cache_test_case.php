@@ -68,8 +68,8 @@ abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
     public function testExists()
     {
         $cache = $this->prepare();
-        $this->assertTrue(!empty($cache->get('string_test')));
-        $this->assertTrue(!empty($cache->get('number_test')));
+        $this->assertNotEmpty($cache->get('string_test'));
+        $this->assertNotEmpty($cache->get('number_test'));
         $this->assertFalse($cache->get('not_exists'));
     }
     /**
