@@ -28,15 +28,15 @@ class App
         // 初始化公共模块
         self::initModule(COMMON_MODULE, Config::get());
 
-        // 获取配置参数
-        $config = Config::get();
-
         // 读取扩展配置文件
-        if ($config['extra_config_list']) {
-            foreach ($config['extra_config_list'] as $file) {
+        if (Config::get('extra_config_list')) {
+            foreach (Config::get('extra_config_list') as $file) {
                 Config::load($file, $file);
             }
         }
+        
+        // 获取配置参数
+        $config = Config::get();
 
         // 日志初始化
         Log::init($config['log']);
@@ -193,7 +193,7 @@ class App
         } else {
             $path = APP_PATH . $module;
             // 加载模块配置
-            Config::load($module . 'config');
+            Config::load($module . 'config' . EXT);
 
             // 加载应用状态配置
             if ($config['app_status']) {
