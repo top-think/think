@@ -163,6 +163,8 @@ class Route
                 // 完整域名或者IP配置
                 $rule = $rules[$_SERVER['HTTP_HOST']];
             } else {
+                // 增加配置,可支持多层域名 com.cn/xxx.com.cn 的后缀 <小陈叔叔>
+                $suffixPos = substr_count(Config::get('url_domain_suffix'), '.');
                 // 子域名配置
                 $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);
                 if (!empty($domain)) {

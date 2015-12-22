@@ -85,6 +85,8 @@ return [
     'url_domain_deploy'     => false,
     // 域名部署规则
     'url_domain_rules'      => [],
+    // 域名后缀 支持多级后缀设置 com.cn/xxx.com.cn/aaa.bbb.com.cn
+    'url_domain_suffix'    => '',
 
     // +----------------------------------------------------------------------
     // | 视图及模板设置
