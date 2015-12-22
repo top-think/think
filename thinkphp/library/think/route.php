@@ -166,7 +166,7 @@ class Route
                 // 增加配置,可支持多层域名 com.cn/xxx.com.cn 的后缀 <小陈叔叔>
                 $suffixPos = substr_count(Config::get('url_domain_suffix'), '.');
                 // 子域名配置
-                $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);
+                $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2 - $suffixPos);
                 if (!empty($domain)) {
                     $subDomain = implode('.', $domain);
                     $domain2   = array_pop($domain); // 二级域名
