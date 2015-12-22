@@ -13,6 +13,8 @@ namespace think;
 
 class Response
 {
+    // 输出数据的转换方法
+    protected static $tramsform = null;
 
     /**
      * 返回数据到客户端
@@ -37,20 +39,23 @@ class Response
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
 
-        switch ($type) {
-            case 'json':
-                // 返回JSON数据格式到客户端 包含状态信息
-                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
-                break;
-            case 'xml':
-                // 返回xml格式数据
-                $data = \org\Transform::xmlEncode($data);
-                break;
-            case 'jsonp':
-                // 返回JSON数据格式到客户端 包含状态信息
-                $handler = !empty($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
-                $data    = $handler . '(' . \org\Transform::jsonEncode($data) . ');';
-                break;
+        if (is_callable(self::$tramsform)) {
+            $data = call_user_func_array(self::$tramsform, [$data]);
+        } else {
+            switch ($type) {
+                case 'json':
+                    // 返回JSON数据格式到客户端 包含状态信息
+                    $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+                    break;
+                case 'jsonp':
+                    // 返回JSON数据格式到客户端 包含状态信息
+                    $handler = !empty($_GET[Config::get('var_jsonp_handler')]) ? $_GET[Config::get('var_jsonp_handler')] : Config::get('default_jsonp_handler');
+                    $data    = $handler . '(' . json_encode($data, JSON_UNESCAPED_UNICODE) . ');';
+                    break;
+                default:
+                    // 用于扩展其他返回格式数据
+                    Hook::listen('return_data', $data);
+            }
         }
 
         switch ($return) {
@@ -62,7 +67,17 @@ class Response
             default:
                 echo $data;
         }
+    }
 
+    /**
+     * 转换控制器输出的数据
+     * @access public
+     * @param mixed $callback 调用的转换方法
+     * @return void
+     */
+    public static function tramsform($callback)
+    {
+        self::$tramsform = $callback;
     }
 
     /**
