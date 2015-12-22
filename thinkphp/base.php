@@ -59,16 +59,16 @@ define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
 // 获取多语言变量
 function L($name, $vars = [], $lang = '')
 {
-    return think\Lang::get($name, $vars, $lang);
+    return \think\Lang::get($name, $vars, $lang);
 }
 
 // 获取配置参数
 function C($name = '', $value = null, $range = '')
 {
     if (is_null($value) && is_string($name)) {
-        return think\Config::get($name, $range);
+        return \think\Config::get($name, $range);
     } else {
-        return think\Config::set($name, $value, $range);
+        return \think\Config::set($name, $value, $range);
     }
 }
 
@@ -82,7 +82,7 @@ function I($key, $default = null, $filter = '')
         // 默认为自动判断
         $method = 'param';
     }
-    return think\Input::$method($key, $default, $filter);
+    return \think\Input::$method($key, $default, $filter);
 }
 
 /**
@@ -95,9 +95,9 @@ function I($key, $default = null, $filter = '')
 function G($start, $end = '', $dec = 6)
 {
     if ('' == $end) {
-        think\Debug::remark($start);
+        \think\Debug::remark($start);
     } else {
-        return 'm' == $dec ? think\Debug::getRangeMem($start, $end) : think\Debug::getRangeTime($start, $end, $dec);
+        return 'm' == $dec ? \think\Debug::getRangeMem($start, $end) : \think\Debug::getRangeTime($start, $end, $dec);
     }
 }
 
@@ -110,7 +110,7 @@ function G($start, $end = '', $dec = 6)
  */
 function M($name = '', $tablePrefix = '', $connection = '')
 {
-    return think\Loader::table($name, ['prefix' => $tablePrefix, 'connection' => $connection]);
+    return \think\Loader::table($name, ['prefix' => $tablePrefix, 'connection' => $connection]);
 }
 
 /**
@@ -121,7 +121,7 @@ function M($name = '', $tablePrefix = '', $connection = '')
  */
 function D($name = '', $layer = MODEL_LAYER)
 {
-    return think\Loader::model($name, $layer);
+    return \think\Loader::model($name, $layer);
 }
 
 /**
@@ -132,7 +132,7 @@ function D($name = '', $layer = MODEL_LAYER)
  */
 function db($config = [], $lite = false)
 {
-    return think\Db::instance($config, $lite);
+    return \think\Db::instance($config, $lite);
 }
 
 /**
@@ -143,7 +143,7 @@ function db($config = [], $lite = false)
  */
 function A($name, $layer = CONTROLLER_LAYER)
 {
-    return think\Loader::controller($name, $layer);
+    return \think\Loader::controller($name, $layer);
 }
 
 /**
@@ -155,7 +155,7 @@ function A($name, $layer = CONTROLLER_LAYER)
  */
 function R($url, $vars = [], $layer = CONTROLLER_LAYER)
 {
-    return think\Loader::action($url, $vars, $layer);
+    return \think\Loader::action($url, $vars, $layer);
 }
 
 /**
@@ -167,7 +167,7 @@ function R($url, $vars = [], $layer = CONTROLLER_LAYER)
  */
 function import($class, $baseUrl = '', $ext = EXT)
 {
-    return think\Loader::import($class, $baseUrl, $ext);
+    return \think\Loader::import($class, $baseUrl, $ext);
 }
 
 /**
@@ -178,7 +178,7 @@ function import($class, $baseUrl = '', $ext = EXT)
  */
 function vendor($class, $ext = EXT)
 {
-    return think\Loader::import($class, VENDOR_PATH, $ext);
+    return \think\Loader::import($class, VENDOR_PATH, $ext);
 }
 
 /**
@@ -189,7 +189,7 @@ function vendor($class, $ext = EXT)
  */
 function T($class, $ext = EXT)
 {
-    return think\Loader::import($class, TRAIT_PATH, $ext);
+    return \think\Loader::import($class, TRAIT_PATH, $ext);
 }
 
 /**
@@ -202,7 +202,7 @@ function T($class, $ext = EXT)
  */
 function E($msg, $code = 0)
 {
-    throw new think\Exception($msg, $code);
+    throw new \think\Exception($msg, $code);
 }
 
 /**
@@ -214,7 +214,7 @@ function E($msg, $code = 0)
  */
 function dump($var, $echo = true, $label = null)
 {
-    return think\Debug::dump($var, $echo, $label);
+    return \think\Debug::dump($var, $echo, $label);
 }
 
 /**
@@ -225,31 +225,31 @@ function dump($var, $echo = true, $label = null)
  */
 function W($name, $data = [])
 {
-    return think\Loader::action($name, $data, 'Widget');
+    return \think\Loader::action($name, $data, 'Widget');
 }
 
 function U($url, $vars = '', $suffix = true, $domain = false)
 {
-    return think\Url::build($url, $vars, $suffix, $domain);
+    return \think\Url::build($url, $vars, $suffix, $domain);
 }
 
 function session($name, $value = '')
 {
     if (is_array($name)) {
         // 初始化
-        think\Session::init($name);
+        \think\Session::init($name);
     } elseif (is_null($name)) {
         // 清除
-        think\Session::clear($value);
+        \think\Session::clear($value);
     } elseif ('' === $value) {
         // 获取
-        return think\Session::get($name);
+        return \think\Session::get($name);
     } elseif (is_null($value)) {
         // 删除session
-        return think\Session::delete($name);
+        return \think\Session::delete($name);
     } else {
         // 设置session
-        return think\Session::set($name, $value);
+        return \think\Session::set($name, $value);
     }
 }
 
@@ -257,19 +257,19 @@ function cookie($name, $value = '')
 {
     if (is_array($name)) {
         // 初始化
-        think\Cookie::init($name);
+        \think\Cookie::init($name);
     } elseif (is_null($name)) {
         // 清除
-        think\Cookie::clear($value);
+        \think\Cookie::clear($value);
     } elseif ('' === $value) {
         // 获取
-        return think\Cookie::get($name);
+        return \think\Cookie::get($name);
     } elseif (is_null($value)) {
         // 删除session
-        return think\Cookie::delete($name);
+        return \think\Cookie::delete($name);
     } else {
         // 设置session
-        return think\Cookie::set($name, $value);
+        return \think\Cookie::set($name, $value);
     }
 }
 
@@ -284,17 +284,17 @@ function S($name, $value = '', $options = null)
 {
     if (is_array($options)) {
         // 缓存操作的同时初始化
-        think\Cache::connect($options);
+        \think\Cache::connect($options);
     } elseif (is_array($name)) {
         // 缓存初始化
-        return think\Cache::connect($name);
+        return \think\Cache::connect($name);
     }
     if ('' === $value) {
         // 获取缓存
-        return think\Cache::get($name);
+        return \think\Cache::get($name);
     } elseif (is_null($value)) {
         // 删除缓存
-        return think\Cache::rm($name);
+        return \think\Cache::rm($name);
     } else {
         // 缓存数据
         if (is_array($options)) {
@@ -302,7 +302,7 @@ function S($name, $value = '', $options = null)
         } else {
             $expire = is_numeric($options) ? $options : null; //默认快捷缓存设置过期时间
         }
-        return think\Cache::set($name, $value, $expire);
+        return \think\Cache::set($name, $value, $expire);
     }
 }
 
