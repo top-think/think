@@ -34,32 +34,34 @@ class Route
     // 添加URL映射规则
     public static function map($map, $route = '')
     {
-        self::setting('map', $map, $route);
+        return self::setting('map', $map, $route);
     }
 
     // 添加变量规则
     public static function pattern($name, $rule = '')
     {
-        self::setting('pattern', $name, $rule);
+        return self::setting('pattern', $name, $rule);
     }
 
     // 添加路由别名
     public static function alias($name, $rule = '')
     {
-        self::setting('alias', $name, $rule);
+        return self::setting('alias', $name, $rule);
     }
 
     // 添加子域名部署规则
     public static function domain($domain, $rule = '')
     {
-        self::setting('domain', $domain, $rule);
+        return self::setting('domain', $domain, $rule);
     }
 
     // 属性设置
-    private static function setting($var, $name, $value = '')
+    private static function setting($var, $name = '', $value = '')
     {
         if (is_array($name)) {
             self::${$var} = array_merge(self::${$var}, $name);
+        } elseif (empty($name)) {
+            return self::${$var};
         } else {
             self::${$var}[$name] = $value;
         }
@@ -665,7 +667,7 @@ class Route
             }
             return $url;
         } else {
-            return null;
+            return false;
         }
     }
 }

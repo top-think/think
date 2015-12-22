@@ -23,6 +23,14 @@ return [
     'var_jsonp_handler'     => 'callback',
     // 默认时区
     'default_timezone'      => 'PRC',
+    // 是否开启多语言
+    'lang_switch_on'        => false,
+    // 支持的多语言列表
+    'lang_list'             => ['zh-cn'],
+    // 语言变量
+    'lang_detect_var'       => 'lang',
+    // 语言cookie变量
+    'lang_cookie_var'       => 'think_lang',
 
     // +----------------------------------------------------------------------
     // | 模块设置
@@ -137,7 +145,8 @@ return [
     // | 数据库设置
     // +----------------------------------------------------------------------
 
-    'db_like_fields'        => '',
+    // 是否启用多状态数据库配置 如果启用的话 需要跟随app_status配置不同的数据库信息
+    'use_db_switch'         => false,
     'database'              => [
         // 数据库类型
         'type'        => 'mysql',
@@ -171,19 +180,4 @@ return [
         'slave_no'    => '',
     ],
 
-    // +----------------------------------------------------------------------
-    // | SocketLog设置
-    // +----------------------------------------------------------------------
-
-    'slog'                  => [
-        'host'                => 'localhost',
-        //是否显示利于优化的参数，如果允许时间，消耗内存等
-        'optimize'            => true,
-        'show_included_files' => true,
-        'error_handler'       => true,
-        //日志强制记录到配置的client_id
-        'force_client_id'     => '',
-        //限制允许读取日志的client_id
-        'allow_client_ids'    => [],
-    ],
 ];

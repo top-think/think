@@ -54,7 +54,7 @@ class Image
     public static function init($type = 'Gd', $imgname = null)
     {
         /* 引入处理库，实例化图片处理对象 */
-        $class    = '\\think\\image\\driver\\' . strtolower($type);
+        $class    = '\\org\\image\\driver\\' . strtolower($type);
         self::$im = new $class($imgname);
         return self::$im;
     }

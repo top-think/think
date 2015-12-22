@@ -47,28 +47,6 @@ trait Query
     }
 
     /**
-     * 解析SQL语句
-     * @access public
-     * @param string $sql  SQL指令
-     * @param boolean $parse  是否需要解析SQL
-     * @return string
-     */
-    public function parseSql($sql, $parse)
-    {
-        // 分析表达式
-        if (true === $parse) {
-            $options = $this->_parseOptions();
-            $sql     = $this->db->parseSql($sql, $options);
-        } elseif (is_array($parse)) {
-            // SQL预处理
-            $sql = vsprintf($sql, $parse);
-        } else {
-            $sql = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
-        }
-        return $sql;
-    }
-
-    /**
      * 批处理执行SQL语句
      * 批处理的指令都认为是execute操作
      * @access public
@@ -95,6 +73,7 @@ trait Query
             $this->commit();
         } catch (\think\exception $e) {
             $this->rollback();
+            return false;
         }
         return true;
     }

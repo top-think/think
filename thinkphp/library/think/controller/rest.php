@@ -13,7 +13,7 @@ namespace think\controller;
 
 use think\Response;
 
-abstract class rest
+abstract class Rest
 {
 
     protected $_method = ''; // 当前请求类型
@@ -102,6 +102,10 @@ abstract class rest
      */
     public static function getAcceptType()
     {
+        if (!isset($_SERVER['HTTP_ACCEPT'])) {
+            return false;
+        }
+
         $type = [
             'html' => 'text/html,application/xhtml+xml,*/*',
             'xml'  => 'application/xml,text/xml,application/x-xml',
@@ -127,6 +131,7 @@ abstract class rest
                 }
             }
         }
+        
         return false;
     }
 }

@@ -44,6 +44,7 @@ class Eaccelerator
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         return eaccelerator_get($this->options['prefix'] . $name);
     }
 
@@ -57,6 +58,7 @@ class Eaccelerator
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

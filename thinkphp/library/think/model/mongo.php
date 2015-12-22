@@ -13,12 +13,16 @@ namespace think\model;
 use think\Lang;
 use think\Loader;
 
+T('modle/adv');
+
 /**
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
  */
 class Mongo extends \Think\Model
 {
+    use \traits\model\adv;
+
     // 主键类型
     const TYPE_OBJECT = 1;
     const TYPE_INT    = 2;
@@ -164,7 +168,7 @@ class Mongo extends \Think\Model
             return false;
         }
         if (empty($result)) {
-// 查询结果为空
+            // 查询结果为空
             return null;
         } else {
             $this->checkMongoId($result);
@@ -237,9 +241,10 @@ class Mongo extends \Think\Model
         } else {
             // 返回数据个数
             if (true !== $sepa) {
-// 当sepa指定为true的时候 返回所有数据
+                // 当sepa指定为true的时候 返回所有数据
                 $options['limit'] = is_numeric($sepa) ? $sepa : 1;
-            } // 查找一条记录
+            } 
+            // 查找一条记录
             $result = $this->db->find($options);
             if (!empty($result)) {
                 if (1 == $options['limit']) {

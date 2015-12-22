@@ -52,6 +52,7 @@ class Wincache
      */
     public function get($name)
     {
+        \think\Cache::$readTimes++;
         $name = $this->options['prefix'] . $name;
         return wincache_ucache_exists($name) ? wincache_ucache_get($name) : false;
     }
@@ -66,6 +67,7 @@ class Wincache
      */
     public function set($name, $value, $expire = null)
     {
+        \think\Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

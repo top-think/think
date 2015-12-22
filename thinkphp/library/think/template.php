@@ -339,7 +339,7 @@ class Template
             //解析Layout标签
             $array = $this->parseXmlAttrs($matches[1]);
             // 读取布局模板
-            $layoutFile = $this->config['tpl_path'] . $array['name'] . $this->config['tpl_suffix'];
+            $layoutFile = (defined('THEME_PATH') && substr_count($array['name'], '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $array['name'] . $this->config['tpl_suffix'];
             $replace    = isset($array['replace']) ? $array['replace'] : $this->config['layout_item'];
             // 替换布局的主体内容
             $content = str_replace($replace, $content, file_get_contents($layoutFile));
@@ -495,7 +495,7 @@ class Template
         foreach ($tLib->getTags() as $name => $val) {
             $tags = [$name];
             if (isset($val['alias'])) {
-// 别名设置
+                // 别名设置
                 $tags   = explode(',', $val['alias']);
                 $tags[] = $name;
             }
@@ -615,10 +615,14 @@ class Template
                 $vars = explode('.', $var);
                 $var  = array_shift($vars);
                 $name = '$' . $var;
-                foreach ($vars as $key => $val) {
-                    $name .= '["' . $val . '"]';
+                if (count($vars) > 1) {
+                    foreach ($vars as $key => $val) {
+                        $name .= '["' . $val . '"]';
+                    }
+                } else {
+                    // 一维自动识别对象和数组
+                    $name = 'is_array($' . $var . ')?$' . $var . '["' . $vars[0] . '"]:$' . $var . '->' . $vars[0];
                 }
-
             } elseif (false !== strpos($var, '[')) {
                 //支持 {$var['key']} 方式输出数组
                 $name = "$" . $var;
@@ -775,7 +779,7 @@ class Template
         $parseStr = $this->parseTemplateName($tmplPublicName);
         // 替换变量
         foreach ($vars as $key => $val) {
-            if (strpos($val, '[' . $key . ']')) {
+            if (strpos($parseStr, '[' . $key . ']')) {
                 $parseStr = str_replace('[' . $key . ']', $val, $parseStr);
             }
         }
@@ -808,7 +812,7 @@ class Template
     private function parseTemplateFile($template)
     {
         if (false === strpos($template, '.')) {
-            return $this->config['tpl_path'] . $template . $this->config['tpl_suffix'];
+            return (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $template . $this->config['tpl_suffix'];
         } else {
             return $template;
         }

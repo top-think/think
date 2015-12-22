@@ -101,7 +101,11 @@ class Url
     // 根据路由名称和参数生成URL地址
     public static function route($name, $params = [])
     {
-        return Route::getRouteUrl($name, $params);
+        $url = Route::getRouteUrl($name, $params);
+        if (false === $url) {
+            $url = self::build($name, $params);
+        }
+        return $url;
     }
 
     // 解析URL和参数 域名
@@ -130,14 +134,15 @@ class Url
             $domain = $host . (strpos($host, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
         } elseif (true === $domain) {
             $domain = $_SERVER['HTTP_HOST'];
-            if (Config::get('url_domain_deplay')) {
+            if (Config::get('url_domain_deploy')) {
                 // 开启子域名部署
                 $domain = 'localhost' == $domain ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
-                // '子域名'=>array('项目[/分组]');
-                foreach (Config::get('url_domain_rules') as $key => $rule) {
-                    if (false === strpos($key, '*') && 0 === strpos($url, $rule[0])) {
+                // '子域名'=>['模块[/控制器/操作]'];
+                foreach (Route::domain() as $key => $rule) {
+                    $rule = is_array($rule) ? $rule[0] : $rule;
+                    if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
                         $domain = $key . strstr($domain, '.'); // 生成对应子域名
-                        $url    = substr_replace($url, '', 0, strlen($rule[0]));
+                        $url    = substr_replace($url, '', 0, strlen($rule));
                         break;
                     }
                 }

@@ -33,7 +33,7 @@ class Response
             'text'   => 'text/plain',
         ];
         $type = strtolower($type);
-        if (isset($headers[$type])) {
+        if (!headers_sent() && isset($headers[$type])) {
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
 
@@ -52,6 +52,7 @@ class Response
                 $data    = $handler . '(' . \org\Transform::jsonEncode($data) . ');';
                 break;
         }
+        //header('Content-Length:' . strlen($data));
         if ($exit) {
             exit($data);
         } else {
@@ -61,7 +62,7 @@ class Response
 
     /**
      * 返回封装后的API数据到客户端
-     * @access protected
+     * @access public
      * @param mixed $data 要返回的数据
      * @param integer $code 返回的code
      * @param mixed $msg 提示信息
@@ -76,6 +77,58 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
+        self::returnData($result, $type, true);
+    }
+
+    /**
+     * 返回封装后的API数据到客户端
+     * @access public
+     * @param mixed $msg 要返回的数据
+     * @param mixed $data 返回的code
+     * @param mixed $url 提示信息
+     * @param mixed $wait 返回数据格式
+     * @return void
+     */
+    public static function success($msg = '', $data = '', $url = '', $wait = 3)
+    {
+        $result = [
+            'code' => 1,
+            'msg'  => $msg,
+            'data' => $data,
+            'url'  => $url ? $url : $_SERVER["HTTP_REFERER"],
+            'wait' => $wait,
+        ];
+        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
+        if ('html' == $type) {
+            $view   = new \think\View();
+            $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
+        }
+        self::returnData($result, $type, true);
+    }
+
+    /**
+     * 返回封装后的API数据到客户端
+     * @access public
+     * @param mixed $msg 要返回的数据
+     * @param mixed $data 返回的code
+     * @param mixed $url 提示信息
+     * @param mixed $wait 返回数据格式
+     * @return void
+     */
+    public static function error($msg = '', $data = '', $url = '', $wait = 3)
+    {
+        $result = [
+            'code' => 0,
+            'msg'  => $msg,
+            'data' => $data,
+            'url'  => $url ? $url : 'javascript:history.back(-1);',
+            'wait' => $wait,
+        ];
+        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
+        if ('html' == $type) {
+            $view   = new \think\View();
+            $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
+        }
         self::returnData($result, $type, true);
     }
 

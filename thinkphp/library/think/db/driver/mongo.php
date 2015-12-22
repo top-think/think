@@ -65,7 +65,7 @@ class Mongo extends Driver
     {
         if (!isset($this->linkID[$linkNum])) {
             if (empty($config)) {
-                $config = $this->config['connection'];
+                $config = $this->config;
             }
 
             $host = 'mongodb://' . ($config['username'] ? "{$config['username']}" : '') . ($config['password'] ? ":{$config['password']}@" : '') . $config['hostname'] . ($config['hostport'] ? ":{$config['hostport']}" : '') . '/' . ($config['database'] ? "{$config['database']}" : '');
@@ -94,6 +94,8 @@ class Mongo extends Driver
         if (!$this->_linkID) {
             $this->initConnect($master);
         }
+
+        $db = $db?$db:$this->config['database'];
 
         try {
             if (!empty($db)) {
@@ -193,7 +195,7 @@ class Mongo extends Driver
     public function error()
     {
         $this->error = $this->_mongo->lastError();
-        Log::record($this->error, 'ERR');
+        Log::record($this->error, 'error');
         return $this->error;
     }
 

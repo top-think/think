@@ -13,6 +13,7 @@ namespace think\db;
 
 use PDO;
 use think\Config;
+use think\Db;
 use think\Debug;
 use think\Exception;
 use think\Log;
@@ -61,10 +62,7 @@ abstract class Driver
     protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=', 'notlike' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'notin' => 'NOT IN', 'not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN', 'notbetween' => 'NOT BETWEEN'];
     // 查询表达式
     protected $selectSql = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%LOCK%%COMMENT%';
-    // 查询次数
-    protected $queryTimes = 0;
-    // 执行次数
-    protected $executeTimes = 0;
+
     // PDO连接参数
     protected $options = [
         PDO::ATTR_CASE              => PDO::CASE_LOWER,
@@ -108,7 +106,7 @@ abstract class Driver
                 $this->linkID[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $this->options);
             } catch (\PDOException $e) {
                 if ($autoConnection) {
-                    Log::record($e->getMessage(), 'ERR');
+                    Log::record($e->getMessage(), 'error');
                     return $this->connect($autoConnection, $linkNum);
                 } elseif ($config['debug']) {
                     throw new Exception($e->getMessage());
@@ -164,7 +162,7 @@ abstract class Driver
             $this->free();
         }
 
-        $this->queryTimes++;
+        Db::$queryTimes++;
         // 调试开始
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
@@ -223,7 +221,7 @@ abstract class Driver
             $this->free();
         }
 
-        $this->executeTimes++;
+        Db::$executeTimes++;
         // 记录开始执行时间
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
@@ -335,7 +333,7 @@ abstract class Driver
      */
     public function getQueryTimes($execute = false)
     {
-        return $execute ? $this->queryTimes + $this->executeTimes : $this->queryTimes;
+        return $execute ? Db::$queryTimes + Db::$executeTimes : Db::$queryTimes;
     }
 
     /**
@@ -345,7 +343,7 @@ abstract class Driver
      */
     public function getExecuteTimes()
     {
-        return $this->executeTimes;
+        return Db::$executeTimes;
     }
 
     /**
@@ -375,7 +373,7 @@ abstract class Driver
             $this->error .= "\n [ SQL语句 ] : " . $this->queryStr;
         }
         // 记录错误日志
-        Log::record($this->error, 'ERR');
+        Log::record($this->error, 'error');
         if ($this->config['debug']) {
             // 开启数据库调试模式
             throw new Exception($this->error);
@@ -1156,15 +1154,10 @@ abstract class Driver
                 Debug::remark('queryStartTime', 'time');
             } else {
                 $this->modelSql[$this->model] = $this->queryStr;
-                //$this->model  =   '_think_';
                 // 记录操作结束时间
                 Debug::remark('queryEndTime', 'time');
-                Log::record($this->queryStr . ' [ RunTime:' . Debug::getUseTime('queryStartTime', 'queryEndTime') . 's ]', 'SQL');
+                Log::record($this->queryStr . ' [ RunTime:' . Debug::getRangeTime('queryStartTime', 'queryEndTime') . 's ]', 'sql');
             }
-        }
-
-        if (SLOG_ON && $start) {
-            \think\Slog::sql($this->queryStr, $this->_linkID);
         }
     }
 

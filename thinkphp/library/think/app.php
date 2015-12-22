@@ -28,6 +28,9 @@ class App
         // 初始化公共模块
         self::initModule(COMMON_MODULE, $config);
 
+        // 获取配置参数
+        $config = Config::get();
+
         // 读取扩展配置文件
         if ($config['extra_config_list']) {
             foreach ($config['extra_config_list'] as $file) {
@@ -35,32 +38,27 @@ class App
             }
         }
 
-        // 获取配置参数
-        $config = Config::get();
-
         // 日志初始化
         Log::init($config['log']);
         // 缓存初始化
         Cache::connect($config['cache']);
 
-        // 如果启动SocketLog调试， 进行SocketLog配置
-        if (SLOG_ON) {
-            Slog::config($config['slog']);
-        }
         // 设置系统时区
         date_default_timezone_set($config['default_timezone']);
-
-        // 默认语言
-        $lang = strtolower($config['default_lang']);
-        Lang::range($lang);
-        // 加载默认语言包
-        Lang::load(THINK_PATH . 'Lang/' . $lang . EXT);
 
         // 监听app_init
         APP_HOOK && Hook::listen('app_init');
 
-        // 启动session API CLI 不开启
-        if (!IS_CLI && !IS_API && $config['use_session']) {
+        // 开启多语言机制
+        if ($config['lang_switch_on']) {
+            // 获取当前语言
+            defined('LANG_SET') or define('LANG_SET', Lang::range());
+            // 加载系统语言包
+            Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
+        }
+
+        // 启动session CLI 不开启
+        if (!IS_CLI && $config['use_session']) {
             Session::init($config['session']);
         }
 
@@ -113,7 +111,11 @@ class App
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
-                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                if (IN_UNIT_TEST) {
+                    return $data;
+                } else {
+                    Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                }
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -123,8 +125,14 @@ class App
             if (method_exists($instance, '_empty')) {
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
+                // 操作方法执行完成监听
+                APP_HOOK && Hook::listen('action_end', $data);
                 // 返回数据
-                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                if (IN_UNIT_TEST) {
+                    return $data;
+                } else {
+                    Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                }
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
@@ -214,6 +222,11 @@ class App
             if (is_file($path . 'common' . EXT)) {
                 include $path . 'common' . EXT;
             }
+
+            // 加载当前模块语言包
+            if ($config['lang_switch_on'] && $module) {
+                Lang::load($path . 'lang' . DS . LANG_SET . EXT);
+            }
         }
     }
 
@@ -238,7 +251,10 @@ class App
 
         // 检测域名部署
         if (!IS_CLI && !empty($config['url_domain_deploy'])) {
-            if ($match = Route::checkDomain($config['url_domain_rules'])) {
+            if ($config['url_domain_rules']) {
+                Route::domain($config['url_domain_rules']);
+            }
+            if ($match = Route::checkDomain()) {
                 (!defined('BIND_MODULE') && !empty($match[0])) && define('BIND_MODULE', $match[0]);
                 (!defined('BIND_CONTROLLER') && !empty($match[1])) && define('BIND_CONTROLLER', $match[1]);
                 (!defined('BIND_ACTION') && !empty($match[2])) && define('BIND_ACTION', $match[2]);

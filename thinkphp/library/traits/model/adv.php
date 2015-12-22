@@ -11,231 +11,333 @@
 
 namespace traits\model;
 
-use think\Cache;
-use think\Lang;
-use think\Loader;
-
 trait Adv
 {
-    protected $partition = [];
+    protected $optimLock      = 'lock_version';
+    protected $returnType     = 'array';
+    protected $serializeField = [];
+    protected $readonlyField  = [];
+    protected $partition      = [];
 
     /**
-     * 利用__call方法实现一些特殊的Model方法
+     * 利用__call方法重载 实现一些特殊的Model方法 （魔术方法）
      * @access public
      * @param string $method 方法名称
-     * @param array $args 调用参数
+     * @param mixed $args 调用参数
      * @return mixed
      */
     public function __call($method, $args)
     {
-        if (in_array(strtolower($method), ['count', 'sum', 'min', 'max', 'avg'], true)) {
-            // 统计查询的实现
-            $field = isset($args[0]) ? $args[0] : '*';
-            return $this->getField(strtoupper($method) . '(' . $field . ') AS tp_' . $method);
-        } elseif (strtolower(substr($method, 0, 5)) == 'getby') {
-            // 根据某个字段获取记录
-            $field         = Loader::parseName(substr($method, 5));
-            $where[$field] = $args[0];
-            return $this->where($where)->find();
-        } elseif (strtolower(substr($method, 0, 10)) == 'getfieldby') {
-            // 根据某个字段获取记录的某个值
-            $name         = Loader::parseName(substr($method, 10));
-            $where[$name] = $args[0];
-            return $this->where($where)->getField($args[1]);
-        } elseif (isset($this->scope[$method])) {
-            // 命名范围的单独调用支持
-            return $this->scope($method, $args[0]);
+        if (strtolower(substr($method, 0, 3)) == 'top') {
+            // 获取前N条记录
+            $count = substr($method, 3);
+            array_unshift($args, $count);
+            return call_user_func_array([ & $this, 'topN'], $args);
         } else {
-            throw new \think\Exception(__CLASS__ . ':' . $method . Lang::get('_METHOD_NOT_EXIST_'));
-            return;
+            return parent::__call($method, $args);
         }
     }
 
     /**
-     * 设置记录的某个字段值
-     * 支持使用数据库字段和方法
-     * @access public
-     * @param string|array $field  字段名
-     * @param string $value  字段值
+     * 对保存到数据库的数据进行处理
+     * @access protected
+     * @param mixed $data 要操作的数据
      * @return boolean
      */
-    public function setField($field, $value = '')
+    protected function _before_write($data)
     {
-        if (is_array($field)) {
-            $data = $field;
-        } else {
-            $data[$field] = $value;
-        }
-        return $this->save($data);
+        // 检查序列化字段
+        $data = $this->serializeField($data);
     }
 
-    /**
-     * 字段值(延迟)增长
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  增长值
-     * @param integer $lazyTime  延时时间(s)
-     * @return boolean
-     */
-    public function setInc($field, $step = 1, $lazyTime = 0)
+    // 查询成功后的回调方法
+    protected function _after_find(&$result, $options = [])
     {
-        $condition = $this->options['where'];
-        if (empty($condition)) {
-            // 没有条件不做任何更新
-            return false;
-        }
-        if ($lazyTime > 0) {
-            // 延迟写入
-            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
-            $step = $this->lazyWrite($guid, $step, $lazyTime);
-            if (empty($step)) {
-                return true; // 等待下次写入
-            } elseif ($step < 0) {
-                $step = '-' . $step;
-            }
-        }
-        return $this->setField($field, ['exp', $field . '+' . $step]);
+        // 检查序列化字段
+        $this->checkSerializeField($result);
+        // 缓存乐观锁
+        $this->cacheLockVersion($result);
     }
 
-    /**
-     * 字段值（延迟）减少
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  减少值
-     * @param integer $lazyTime  延时时间(s)
-     * @return boolean
-     */
-    public function setDec($field, $step = 1, $lazyTime = 0)
+    // 查询数据集成功后的回调方法
+    protected function _after_select(&$resultSet, $options = [])
     {
-        $condition = $this->options['where'];
-        if (empty($condition)) {
-            // 没有条件不做任何更新
-            return false;
-        }
-        if ($lazyTime > 0) {
-            // 延迟写入
-            $guid = md5($this->name . '_' . $field . '_' . serialize($condition));
-            $step = $this->lazyWrite($guid, -$step, $lazyTime);
-            if (empty($step)) {
-                return true; // 等待下次写入
-            } elseif ($step > 0) {
-                $step = '-' . $step;
-            }
-        }
-        return $this->setField($field, ['exp', $field . '-' . $step]);
+        // 检查序列化字段
+        $resultSet = $this->checkListSerializeField($resultSet);
     }
 
-    /**
-     * 获取一条记录的某个字段值
-     * @access public
-     * @param string $field  字段名
-     * @param string $spea  字段数据间隔符号 NULL返回数组
-     * @return mixed
-     */
-    public function getField($field, $sepa = null)
+    // 写入前的回调方法
+    protected function _before_insert(&$data, $options = [])
     {
-        $options['field'] = $field;
-        $options          = $this->_parseOptions($options);
-        $field            = trim($field);
-        // 判断查询缓存
-        if (isset($options['cache'])) {
-            $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
-            $data  = Cache::get($key);
-            if (false !== $data) {
-                return $data;
-            }
-        }
-        if (strpos($field, ',')) {
-            // 多字段
-            if (!isset($options['limit'])) {
-                $options['limit'] = is_numeric($sepa) ? $sepa : '';
-            }
-            $resultSet = $this->db->select($options);
-            if (!empty($resultSet)) {
-                if (is_string($resultSet)) {
-                    return $resultSet;
-                }
-                $_field = explode(',', $field);
-                $field  = array_keys($resultSet[0]);
-                $key1   = array_shift($field);
-                $key2   = array_shift($field);
-                $cols   = array();
-                $count  = count($_field);
-                foreach ($resultSet as $result) {
-                    $name = $result[$key1];
-                    if (2 == $count) {
-                        $cols[$name] = $result[$key2];
-                    } else {
-                        $cols[$name] = is_string($sepa) ? implode($sepa, array_slice($result, 1)) : $result;
-                    }
-                }
-                if (isset($cache)) {
-                    Cache::set($key, $cols, $cache['expire']);
-                }
-                return $cols;
-            }
-        } else {
-            // 查找一条记录
-            // 返回数据个数
-            if (true !== $sepa) {
-                // 当sepa指定为true的时候 返回所有数据
-                $options['limit'] = is_numeric($sepa) ? $sepa : 1;
-            }
-            $result = $this->db->select($options);
-            if (!empty($result)) {
-                if (is_string($result)) {
-                    return $result;
-                }
-                if (true !== $sepa && 1 == $options['limit']) {
-                    $data = reset($result[0]);
-                    if (isset($cache)) {
-                        Cache::set($key, $data, $cache['expire']);
-                    }
-                    return $data;
-                }
-                foreach ($result as $val) {
-                    $array[] = $val[$field];
-                }
-                if (isset($cache)) {
-                    Cache::set($key, $array, $cache['expire']);
-                }
-                return $array;
-            }
-        }
-        return null;
+        // 记录乐观锁
+        $data = $this->recordLockVersion($data);
     }
 
-    /**
-     * 延时更新检查 返回false表示需要延时
-     * 否则返回实际写入的数值
-     * @access public
-     * @param string $guid  写入标识
-     * @param integer $step  写入步进值
-     * @param integer $lazyTime  延时时间(s)
-     * @return false|integer
-     */
-    protected function lazyWrite($guid, $step, $lazyTime)
+    // 更新前的回调方法
+    protected function _before_update(&$data, $options = [])
     {
-        if (false !== ($value = Cache::get($guid))) {
-            // 存在缓存写入数据
-            if (NOW_TIME > Cache::get($guid . '_time') + $lazyTime) {
-                // 延时更新时间到了，删除缓存数据 并实际写入数据库
-                Cache::rm($guid);
-                Cache::rm($guid . '_time');
-                return $value + $step;
-            } else {
-                // 追加数据到缓存
-                Cache::set($guid, $value + $step);
+        // 检查乐观锁
+        $pk = $this->getPK();
+        if (isset($options['where'][$pk])) {
+            $id = $options['where'][$pk];
+            if (!$this->checkLockVersion($id, $data)) {
                 return false;
             }
-        } else {
-            // 没有缓存数据
-            Cache::set($guid, $step);
-            // 计时开始
-            Cache::set($guid . '_time', NOW_TIME);
-            return false;
         }
+        // 检查只读字段
+        $data = $this->checkReadonlyField($data);
+    }
+
+    /**
+     * 记录乐观锁
+     * @access protected
+     * @param array $data 数据对象
+     * @return array
+     */
+    protected function recordLockVersion($data)
+    {
+        // 记录乐观锁
+        if ($this->optimLock && !isset($data[$this->optimLock])) {
+            if (in_array($this->optimLock, $this->fields, true)) {
+                $data[$this->optimLock] = 0;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * 缓存乐观锁
+     * @access protected
+     * @param array $data 数据对象
+     * @return void
+     */
+    protected function cacheLockVersion($data)
+    {
+        if ($this->optimLock) {
+            if (isset($data[$this->optimLock]) && isset($data[$this->getPk()])) {
+                // 只有当存在乐观锁字段和主键有值的时候才记录乐观锁
+                $_SESSION[$this->name . '_' . $data[$this->getPk()] . '_lock_version'] = $data[$this->optimLock];
+            }
+        }
+    }
+
+    /**
+     * 检查乐观锁
+     * @access protected
+     * @param inteter $id  当前主键
+     * @param array $data  当前数据
+     * @return mixed
+     */
+    protected function checkLockVersion($id, &$data)
+    {
+        // 检查乐观锁
+        $identify = $this->name . '_' . $id . '_lock_version';
+        if ($this->optimLock && isset($_SESSION[$identify])) {
+            $lock_version        = $_SESSION[$identify];
+            $vo                  = $this->field($this->optimLock)->find($id);
+            $_SESSION[$identify] = $lock_version;
+            $curr_version        = $vo[$this->optimLock];
+            if (isset($curr_version)) {
+                if ($curr_version > 0 && $lock_version != $curr_version) {
+                    // 记录已经更新
+                    $this->error = 'record has update';
+                    return false;
+                } else {
+                    // 更新乐观锁
+                    $save_version = $data[$this->optimLock];
+                    if ($save_version != $lock_version + 1) {
+                        $data[$this->optimLock] = $lock_version + 1;
+                    }
+                    $_SESSION[$identify] = $lock_version + 1;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 查找前N个记录
+     * @access public
+     * @param integer $count 记录个数
+     * @param array $options 查询表达式
+     * @return array
+     */
+    public function topN($count, $options = [])
+    {
+        $options['limit'] = $count;
+        return $this->select($options);
+    }
+
+    /**
+     * 查询符合条件的第N条记录
+     * 0 表示第一条记录 -1 表示最后一条记录
+     * @access public
+     * @param integer $position 记录位置
+     * @param array $options 查询表达式
+     * @return mixed
+     */
+    public function getN($position = 0, $options = [])
+    {
+        if ($position >= 0) {
+            // 正向查找
+            $options['limit'] = $position . ',1';
+            $list             = $this->select($options);
+            return $list ? $list[0] : false;
+        } else {
+            // 逆序查找
+            $list = $this->select($options);
+            return $list ? $list[count($list) - abs($position)] : false;
+        }
+    }
+
+    /**
+     * 获取满足条件的第一条记录
+     * @access public
+     * @param array $options 查询表达式
+     * @return mixed
+     */
+    public function first($options = [])
+    {
+        return $this->getN(0, $options);
+    }
+
+    /**
+     * 获取满足条件的最后一条记录
+     * @access public
+     * @param array $options 查询表达式
+     * @return mixed
+     */
+    public function last($options = [])
+    {
+        return $this->getN(-1, $options);
+    }
+
+    /**
+     * 返回数据
+     * @access public
+     * @param array $data 数据
+     * @param string $type 返回类型 默认为数组
+     * @return mixed
+     */
+    public function returnResult($data, $type = '')
+    {
+        $type = $type ?: $this->returnType;
+
+        switch ($type) {
+            case 'array':
+                return $data;
+            case 'object':
+                return (object) $data;
+            default: // 允许用户自定义返回类型
+                if (class_exists($type)) {
+                    return new $type($data);
+                } else {
+                    throw new \think\Exception(' class not exist :' . $type);
+                }
+        }
+    }
+
+    /**
+     * 返回数据列表
+     * @access protected
+     * @param array $resultSet 数据
+     * @param string $type 返回类型 默认为数组
+     * @return void
+     */
+    protected function returnResultSet(&$resultSet, $type = '')
+    {
+        foreach ($resultSet as $key => $data) {
+            $resultSet[$key] = $this->returnResult($data, $type);
+        }
+        return $resultSet;
+    }
+
+    /**
+     * 检查序列化数据字段
+     * @access protected
+     * @param array $data 数据
+     * @return array
+     */
+    protected function serializeField(&$data)
+    {
+        // 检查序列化字段
+        if (!empty($this->serializeField)) {
+            // 定义方式  $this->serializeField = ['ser'=>['name','email']];
+            foreach ($this->serializeField as $key => $val) {
+                if (empty($data[$key])) {
+                    $serialize = [];
+                    foreach ($val as $name) {
+                        if (isset($data[$name])) {
+                            $serialize[$name] = $data[$name];
+                            unset($data[$name]);
+                        }
+                    }
+                    if (!empty($serialize)) {
+                        $data[$key] = serialize($serialize);
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    // 检查返回数据的序列化字段
+    protected function checkSerializeField(&$result)
+    {
+        // 检查序列化字段
+        if (!empty($this->serializeField)) {
+            foreach ($this->serializeField as $key => $val) {
+                if (isset($result[$key])) {
+                    $serialize = unserialize($result[$key]);
+                    foreach ($serialize as $name => $value) {
+                        $result[$name] = $value;
+                    }
+
+                    unset($serialize, $result[$key]);
+                }
+            }
+        }
+        return $result;
+    }
+
+    // 检查数据集的序列化字段
+    protected function checkListSerializeField(&$resultSet)
+    {
+        // 检查序列化字段
+        if (!empty($this->serializeField)) {
+            foreach ($this->serializeField as $key => $val) {
+                foreach ($resultSet as $k => $result) {
+                    if (isset($result[$key])) {
+                        $serialize = unserialize($result[$key]);
+                        foreach ($serialize as $name => $value) {
+                            $result[$name] = $value;
+                        }
+
+                        unset($serialize, $result[$key]);
+                        $resultSet[$k] = $result;
+                    }
+                }
+            }
+        }
+        return $resultSet;
+    }
+
+    /**
+     * 检查只读字段
+     * @access protected
+     * @param array $data 数据
+     * @return array
+     */
+    protected function checkReadonlyField(&$data)
+    {
+        if (!empty($this->readonlyField)) {
+            foreach ($this->readonlyField as $key => $field) {
+                if (isset($data[$field])) {
+                    unset($data[$field]);
+                }
+            }
+        }
+        return $data;
     }
 
     /**

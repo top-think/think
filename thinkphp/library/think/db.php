@@ -20,6 +20,10 @@ class Db
     private static $instance = [];
     //  当前数据库连接实例
     private static $_instance = null;
+    // 查询次数
+    public static $queryTimes = 0;
+    // 执行次数
+    public static $executeTimes = 0;
 
     /**
      * 取得数据库类实例
@@ -54,6 +58,10 @@ class Db
     {
         if (empty($config)) {
             $config = Config::get('database');
+            if (Config::get('use_db_switch')) {
+                $status = Config::get('app_status');
+                $config = $config[$status ?: 'default'];
+            }
         }
         if (is_string($config)) {
             return self::parseDsn($config);
