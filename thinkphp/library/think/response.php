@@ -19,10 +19,10 @@ class Response
      * @access protected
      * @param mixed $data 要返回的数据
      * @param String $type 返回数据格式
-     * @param bool $exit 是否终止执行
+     * @param integer $return 是否返回数据 0 echo 1 return 2 exit
      * @return void
      */
-    public static function returnData($data, $type = '', $exit = true)
+    public static function returnData($data, $type = '', $return = 0)
     {
         $headers = [
             'json'   => 'application/json',
@@ -52,12 +52,17 @@ class Response
                 $data    = $handler . '(' . \org\Transform::jsonEncode($data) . ');';
                 break;
         }
-        //header('Content-Length:' . strlen($data));
-        if ($exit) {
-            exit($data);
-        } else {
-            echo $data;
+
+        switch ($return) {
+            case 1:
+                return $data;
+            case 2:
+                exit($data);
+            case 0:
+            default:
+                echo $data;
         }
+
     }
 
     /**

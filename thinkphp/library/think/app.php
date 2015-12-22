@@ -110,10 +110,8 @@ class App
                 }
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
-                // 单元测试模式下返回数据
-                if (IN_UNIT_TEST) { return $data; }
                 // 输出数据
-                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                return Response::returnData($data, Config::get('default_return_type'), Config::get('response_type'));
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -125,10 +123,8 @@ class App
                 $data   = $method->invokeArgs($instance, [$action, '']);
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
-                // 单元测试模式下返回数据
-                if (IN_UNIT_TEST) { return $data; }
                 // 输出数据
-                Response::returnData($data, Config::get('default_return_type'), Config::get('response_exit'));
+                return Response::returnData($data, Config::get('default_return_type'), Config::get('response_type'));
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
@@ -299,7 +295,7 @@ class App
                 // 路由检测
                 if (!empty($config['url_route_on'])) {
                     // 开启路由 则检测路由配置
-                    Route::register(!empty($config['route'])?$config['route']:null);
+                    Route::register(!empty($config['route']) ? $config['route'] : null);
                     $result = Route::check($path_info, $depr);
                     if (false === $result) {
                         // 路由无效

@@ -39,6 +39,7 @@ defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
 defined('IN_UNIT_TEST') or define('IN_UNIT_TEST', false); // 是否为单元测试
+defined('APP_AUTO_BUILD') or define('APP_AUTO_BUILD', false); // 是否自动生成应用模块
 
 // 应用模式 默认为普通模式
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');
@@ -311,11 +312,11 @@ function S($name, $value = '', $options = null)
  * @param string $level 日志级别
  * @return void|array
  */
-function trace($log='[think]', $level = 'log')
+function trace($log = '[think]', $level = 'log')
 {
-    if('[think]'==$log){
+    if ('[think]' == $log) {
         return \think\Log::getLog();
-    }else{
-        \think\Log::record($log,$level);
+    } else {
+        \think\Log::record($log, $level);
     }
 }
