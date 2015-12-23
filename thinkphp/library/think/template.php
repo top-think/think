@@ -663,10 +663,10 @@ class Template
             //模板函数过滤
             $fun = strtolower(trim($args[0]));
             switch ($fun) {
-                case 'default': // 特殊模板函数
+                case 'default':    // 特殊模板函数
                     $name = '(' . $name . ')?(' . $name . '):' . $args[1];
                     break;
-                default: // 通用模板函数
+                default:    // 通用模板函数
                     if (!in_array($fun, $template_deny_funs)) {
                         if (isset($args[1])) {
                             if (strstr($args[1], '###')) {
@@ -749,7 +749,7 @@ class Template
                     $parseStr = "date('Y-m-d g:i a',time())";
                     break;
                 case 'VERSION':
-                    $parseStr = 'THINK_TEMPLATE_VERSION';
+                    $parseStr = 'THINK_VERSION';
                     break;
                 case 'LDELIM':
                     $parseStr = $this->config['tpl_begin'];

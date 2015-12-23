@@ -20,11 +20,11 @@ return [
     // 别名定义
     'alias'  => [
         'think\App'                  => CORE_PATH . 'app' . EXT,
+        'think\Build'                => CORE_PATH . 'build' . EXT,
         'think\Cache'                => CORE_PATH . 'cache' . EXT,
         'think\Config'               => CORE_PATH . 'config' . EXT,
         'think\Controller'           => CORE_PATH . 'controller' . EXT,
         'think\Cookie'               => CORE_PATH . 'cookie' . EXT,
-        'think\Create'               => CORE_PATH . 'create' . EXT,
         'think\Db'                   => CORE_PATH . 'db' . EXT,
         'think\Debug'                => CORE_PATH . 'debug' . EXT,
         'think\Error'                => CORE_PATH . 'error' . EXT,
