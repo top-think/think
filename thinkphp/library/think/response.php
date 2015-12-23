@@ -70,9 +70,9 @@ class Response
             }
         }
 
-        if ($return) return $data; 
+        if (!is_bool($return)) return $data;  // $return = null;
         echo $data;
-        self::isExit() && exit();
+        $return && exit;
     }
 
     /**
