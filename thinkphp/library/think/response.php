@@ -204,13 +204,18 @@ class Response
      * URL重定向
      * @access protected
      * @param string $url 跳转的URL表达式
-     * @param array $params 其它URL参数
+     * @param array|int $params 其它URL参数或http code
      * @return void
      */
     public static function redirect($url, $params = [])
     {
-        $url = Url::build($url, $params);
-        header('Location: ' . $url);
+        $http_response_code     = 302;
+        if(in_array($params, [301, 302])){
+            $http_response_code = $params;
+            $params             = [];
+        }
+        $url                    = preg_match('/^(https?:|\/)/', $s) ? $url : Url::build($url, $params);
+        header('Location: ' . $url, true, $http_response_code);
     }
 
     /**
