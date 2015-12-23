@@ -124,7 +124,7 @@ class App
                 // 操作方法执行完成监听
                 APP_HOOK && Hook::listen('action_end', $data);
                 // 输出数据
-                return Response::send($data, '', Config::get('response_return'));
+                return Response::send($data, Config::get('default_return_type'), Config::get('response_return'));
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
