@@ -171,8 +171,7 @@ class Response
         if ($type) {
             self::$type = $type;
         }
-        self::$isExit = true;
-        self::send();
+        self::isExit(true);
     }
 
     /**
@@ -202,8 +201,7 @@ class Response
         if ($type) {
             self::$type = $type;
         }
-        self::$isExit = true;
-        self::send();
+        self::isExit(true);
     }
 
     /**
