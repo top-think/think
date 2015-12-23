@@ -28,7 +28,7 @@ abstract class Jsonrpc
         }
 
         //导入类库
-        think\Loader::import('vendor.jsonrpc.jsonRPCServer');
+        \think\Loader::import('vendor.jsonrpc.jsonRPCServer');
         // 启动server
         \jsonRPCServer::handle($this);
     }

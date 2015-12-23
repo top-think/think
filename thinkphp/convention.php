@@ -13,8 +13,8 @@ return [
     'default_return_type'   => 'html',
     // 默认语言
     'default_lang'          => 'zh-cn',
-    // response输出终止执行
-    'response_exit'         => true,
+    // response是否返回方式
+    'response_return'       => false,
     // 默认AJAX 数据返回格式,可选JSON XML ...
     'default_ajax_return'   => 'JSON',
     // 默认JSONP格式返回的处理方法

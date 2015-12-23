@@ -1148,7 +1148,7 @@ abstract class Driver
      */
     protected function debug($start)
     {
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             // 开启数据库调试模式
             if ($start) {
                 Debug::remark('queryStartTime', 'time');

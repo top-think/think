@@ -23,7 +23,7 @@ class iniTest extends \PHPUnit_Framework_TestCase
 {
     public function testParse()
     {
-        App::run(Config::get());
+        App::run();
         Config::parse('inistring=1', 'ini');
         $this->assertEquals(1, Config::get('inistring'));
         Config::reset();

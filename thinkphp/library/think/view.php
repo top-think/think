@@ -40,6 +40,14 @@ class View
         $this->config($config);
         $this->engine($this->config['engine_type']);
     }
+    /**
+     * 初始化视图
+     * @access public
+     * @param array $config  配置参数
+     */
+    static public function getInstance(array $config = []){
+        return new self($config);
+    }
 
     /**
      * 模板变量赋值
@@ -55,6 +63,7 @@ class View
         } else {
             $this->data[$name] = $value;
         }
+        return $this;
     }
 
     /**

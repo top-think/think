@@ -61,7 +61,7 @@ class Mongo extends Driver
      * @return
      * @throws Exception
      */
-    public function connect($config = '', $linkNum = 0)
+    public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
         if (!isset($this->linkID[$linkNum])) {
             if (empty($config)) {
@@ -70,7 +70,7 @@ class Mongo extends Driver
 
             $host = 'mongodb://' . ($config['username'] ? "{$config['username']}" : '') . ($config['password'] ? ":{$config['password']}@" : '') . $config['hostname'] . ($config['hostport'] ? ":{$config['hostport']}" : '') . '/' . ($config['database'] ? "{$config['database']}" : '');
             try {
-                $this->linkID[$linkNum] = new \mongoClient($host, $this->config['params']);
+                $this->linkID[$linkNum] = new \mongoClient($host, !empty($this->config['params'])?$this->config['params']:array());
             } catch (\MongoConnectionException $e) {
                 throw new Exception($e->getmessage());
             }
@@ -105,7 +105,7 @@ class Mongo extends Driver
                 $this->_mongo  = $this->_linkID->selectDb($db);
             }
             // 当前MongoCollection对象
-            if ($this->config['debug']) {
+            if (!empty($this->config['debug'])) {
                 $this->queryStr = $this->_dbName . '.getCollection(' . $collection . ')';
             }
             if ($this->_collectionName != $collection) {
@@ -249,7 +249,7 @@ class Mongo extends Driver
      * @return bool
      * @throws Exception
      */
-    public function insertAll($dataList, $options = [])
+    public function insertAll($dataList, $options = [], $replace = false)
     {
         if (isset($options['table'])) {
             $this->switchCollection($options['table']);
@@ -483,9 +483,9 @@ class Mongo extends Driver
         }
         $this->model = $options['model'];
         $this->queryTimes++;
-        $query  = $this->parseWhere($options['where']);
-        $fields = $this->parseField($options['field']);
-        if ($this->config['debug']) {
+        $query  = $this->parseWhere(!empty($options['where'])?$options['where']:'');
+        $fields = $this->parseField(!empty($options['field'])?$options['field']:'');
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.findOne(';
             $this->queryStr .= $query ? json_encode($query) : '{}';
             $this->queryStr .= $fields ? ',' . json_encode($fields) : '';
@@ -519,7 +519,7 @@ class Mongo extends Driver
         $this->model = $options['model'];
         $this->queryTimes++;
         $query = $this->parseWhere($options['where']);
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName;
             $this->queryStr .= $query ? '.find(' . json_encode($query) . ')' : '';
             $this->queryStr .= '.count()';

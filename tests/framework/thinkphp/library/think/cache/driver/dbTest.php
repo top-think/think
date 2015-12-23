@@ -8,42 +8,36 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
 /**
- * Apc缓存驱动测试
+ * 数据库缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
-class apcTest extends CacheTestCase
+
+
+class dbTest extends CacheTestCase
 {
     private $_cacheInstance = null;
+
     /**
      * 基境缓存类型
      */
     protected function setUp()
     {
-        S(array('type'=>'apc','expire'=>2));
+        //数据库缓存测试因为缺少数据库单元测试所以暂时跳过
+        $this->markTestSkipped("暂时跳过测试。");
+        S(array('type'=>'db','expire'=>2));
     }
+
     /**
-     * @return ApcCache
+     * @return DbCache
      */
     protected function getCacheInstance()
     {
-        if (!extension_loaded("apc")) {
-            $this->markTestSkipped("APC没有安装，已跳过测试！");
-        } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
-            $this->markTestSkipped("APC模块没有开启，已跳过测试！");
-        }
         if ($this->_cacheInstance === null) {
-            $this->_cacheInstance = new \think\cache\driver\Apc();
+            $this->_cacheInstance = new \think\cache\driver\Db();
         }
         return $this->_cacheInstance;
-    }
-    /**
-     * 缓存过期测试《提出来测试，因为目前看通不过缓存过期测试，所以还需研究》
-     * @return  mixed
-     * @access public
-     */
-    public function testExpire()
-    {
     }
 }

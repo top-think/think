@@ -47,7 +47,7 @@ class Tencent extends Driver
             'oauth_consumer_key' => $this->AppKey,
             'access_token'       => $this->token['access_token'],
             'openid'             => $this->openid(),
-            'clientip'           => get_client_ip(),
+            'clientip'           => $_SERVER['REMOTE_ADDR'],
             'oauth_version'      => '2.a',
             'scope'              => 'all',
             'format'             => 'json',
