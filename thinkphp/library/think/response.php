@@ -137,11 +137,7 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
-
-        self::$data = $result;
-        if ($type) {
-            self::$type = $type;
-        }
+        return $result;
     }
 
     /**
@@ -159,20 +155,16 @@ class Response
             'code' => 1,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => $url ? $url : $_SERVER["HTTP_REFERER"],
+            'url'  => $url ?: $_SERVER["HTTP_REFERER"],
             'wait' => $wait,
         ];
-        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
-        if ('html' == $type) {
-            $view   = new \think\View();
-            $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
+        if(IS_AJAX){
+            Config::set('default_return_type', Config::get('default_ajax_return'));
         }
-        self::$data = $result;
-        if ($type) {
-            self::$type = $type;
+        if ('html' == Config::get('default_return_type')) {
+            $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
-        self::$isExit = true;
-        self::send();
+        return $result;
     }
 
     /**
@@ -190,20 +182,16 @@ class Response
             'code' => 0,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => $url ? $url : 'javascript:history.back(-1);',
+            'url'  => $url ?: 'javascript:history.back(-1);',
             'wait' => $wait,
         ];
-        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
-        if ('html' == $type) {
-            $view   = new \think\View();
-            $result = $view->fetch(Config::get('dispatch_jump_tmpl'), $result);
+        if(IS_AJAX){
+            Config::set('default_return_type', Config::get('default_ajax_return'));
         }
-        self::$data = $result;
-        if ($type) {
-            self::$type = $type;
+        if ('html' == Config::get('default_return_type')) {
+            $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
-        self::$isExit = true;
-        self::send();
+        return $result;
     }
 
     /**
