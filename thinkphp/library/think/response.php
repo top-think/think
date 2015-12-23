@@ -70,14 +70,9 @@ class Response
             }
         }
 
-        if ($return) {
-            return $data;
-        } else {
-            echo $data;
-        }
-        if (self::$isExit) {
-            exit;
-        }
+        if ($return) return $data; 
+        echo $data;
+        self::isExit() && exit();
     }
 
     /**
@@ -119,9 +114,10 @@ class Response
      * @param bool $exit 是否退出
      * @return void
      */
-    public static function isExit($exit = false)
+    public static function isExit($exit = null)
     {
-        self::$isExit = $exit;
+        if(is_null($exit)) return self::$isExit;
+        self::$isExit = (boolean) $exit;
     }
 
     /**
@@ -175,6 +171,8 @@ class Response
         if ($type) {
             self::$type = $type;
         }
+        self::$isExit = true;
+        self::send();
     }
 
     /**
@@ -204,6 +202,8 @@ class Response
         if ($type) {
             self::$type = $type;
         }
+        self::$isExit = true;
+        self::send();
     }
 
     /**
