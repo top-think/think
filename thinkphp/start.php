@@ -46,6 +46,6 @@ if (APP_HOOK && isset($mode['tags'])) {
 if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
     Build::run(include APP_PATH . 'build.php');
 }
-Loader::addNamespace('tests', TEST_PATH);
+
 // 执行应用
 !IN_UNIT_TEST && App::run();

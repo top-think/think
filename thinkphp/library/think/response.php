@@ -92,8 +92,9 @@ class Response
      * @param string $type 输出内容的格式类型
      * @return void
      */
-    public static function type($type)
+    public static function type($type = null)
     {
+        if(is_null($type)) return self::$type;
         self::$type = $type;
     }
 
@@ -137,6 +138,7 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
+        if($type) self::type($type);
         return $result;
     }
 
@@ -158,12 +160,14 @@ class Response
             'url'  => $url ?: $_SERVER["HTTP_REFERER"],
             'wait' => $wait,
         ];
+        $type       = Config::get('default_return_type');
         if(IS_AJAX){
-            Config::set('default_return_type', Config::get('default_ajax_return'));
+            $type   = Config::get('default_ajax_return');
         }
-        if ('html' == Config::get('default_return_type')) {
+        if ('html' == $type) {
             $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
+        self::type($type);
         return $result;
     }
 
@@ -185,12 +189,14 @@ class Response
             'url'  => $url ?: 'javascript:history.back(-1);',
             'wait' => $wait,
         ];
+        $type       = Config::get('default_return_type');
         if(IS_AJAX){
-            Config::set('default_return_type', Config::get('default_ajax_return'));
+            $type   = Config::get('default_ajax_return');
         }
-        if ('html' == Config::get('default_return_type')) {
+        if ('html' == $type) {
             $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
+        self::type($type);
         return $result;
     }
 
