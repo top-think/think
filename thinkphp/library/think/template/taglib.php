@@ -97,7 +97,10 @@ class TagLib
         }
         $xml   = (array) ($xml->tag->attributes());
         $array = array_change_key_case($xml['@attributes']);
-        if (!is_array($array)) return [];
+        if (!is_array($array)) {
+            return [];
+        }
+
         $tag = strtolower($tag);
         if (isset($this->tags[$tag]['attr'])) {
             $attrs = explode(',', $this->tags[$tag]['attr']);
@@ -193,14 +196,14 @@ class TagLib
                     if (isset($vars[3])) {
                         $parseStr = '$_COOKIE[\'' . $vars[2] . '\'][\'' . $vars[3] . '\']';
                     } else {
-                        $parseStr = '$_COOKIE[\'' . $vars[2] . '\']';
+                        $parseStr = '\\think\\cookie::get(\'' . $vars[2] . '\')';
                     }
                     break;
                 case 'SESSION':
                     if (isset($vars[3])) {
                         $parseStr = '$_SESSION[\'' . $vars[2] . '\'][\'' . $vars[3] . '\']';
                     } else {
-                        $parseStr = '$_SESSION[\'' . $vars[2] . '\']';
+                        $parseStr = '\\think\\session::get(\'' . $vars[2] . '\')';
                     }
                     break;
                 case 'ENV':$parseStr = '$_ENV[\'' . $vars[2] . '\']';
@@ -210,13 +213,13 @@ class TagLib
                 case 'CONST':$parseStr = strtoupper($vars[2]);
                     break;
                 case 'LANG':
-                    $parseStr = '\think\Lang::get("' . $vars[2] . '")';
+                    $parseStr = '\\think\\Lang::get("' . $vars[2] . '")';
                     break;
                 case 'CONFIG':
                     if (isset($vars[3])) {
                         $vars[2] .= '.' . $vars[3];
                     }
-                    $parseStr = 'C("' . $vars[2] . '")';
+                    $parseStr = '\\think\\config::get("' . $vars[2] . '")';
                     break;
             }
         } else if (count($vars) == 2) {
@@ -251,10 +254,10 @@ class TagLib
             //模板函数过滤
             $fun = strtolower(trim($args[0]));
             switch ($fun) {
-                case 'default': // 特殊模板函数
+                case 'default':    // 特殊模板函数
                     $name = '(' . $name . ')?(' . $name . '):' . $args[1];
                     break;
-                default: // 通用模板函数
+                default:    // 通用模板函数
                     if (isset($args[1])) {
                         if (strstr($args[1], '###')) {
                             $args[1] = str_replace('###', $name, $args[1]);
