@@ -261,10 +261,13 @@ class Route
                     continue;
                 }
                 // 自定义检测
-                if (!empty($option['callback']) && is_callable($option['callback'])) {
-                    if (false === call_user_func($option['callback'])) {
-                        continue;
-                    }
+                if (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) {
+                    continue;
+                }
+
+                // 行为检测
+                if (!empty($option['behavior']) && false === \think\hook::exec($option['behavior'])) {
+                    continue;
                 }
 
                 if (!empty($val['routes'])) {
@@ -311,7 +314,7 @@ class Route
                         $rule = array_shift($val);
                     }
                     // 单项路由
-                    $route = !empty($val['route'])?$val['route']:'';
+                    $route = !empty($val['route']) ? $val['route'] : '';
                     if (0 === strpos($rule, '/') && preg_match($rule, $url, $matches)) {
                         return self::checkRegex($route, $url, $matches);
                     } else {
