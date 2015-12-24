@@ -17,9 +17,9 @@ namespace think;
 class Db
 {
     //  数据库连接实例
-    private static $instance = [];
+    private static $instances = [];
     //  当前数据库连接实例
-    private static $_instance = null;
+    private static $instance = null;
     // 查询次数
     public static $queryTimes = 0;
     // 执行次数
@@ -36,15 +36,15 @@ class Db
     public static function instance($config = [], $lite = false)
     {
         $md5 = md5(serialize($config));
-        if (!isset(self::$instance[$md5])) {
+        if (!isset(self::$instances[$md5])) {
             // 解析连接参数 支持数组和字符串
             $options = self::parseConfig($config);
             // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
-            $class                = $lite ? '\\think\\db\\Lite' : '\\think\\db\\driver\\' . ucwords($options['type']);
-            self::$instance[$md5] = new $class($options);
+            $class                 = $lite ? '\\think\\db\\Lite' : '\\think\\db\\driver\\' . ucwords($options['type']);
+            self::$instances[$md5] = new $class($options);
         }
-        self::$_instance = self::$instance[$md5];
-        return self::$_instance;
+        self::$instance = self::$instances[$md5];
+        return self::$instance;
     }
 
     /**
@@ -106,6 +106,6 @@ class Db
     // 调用驱动类的方法
     public static function __callStatic($method, $params)
     {
-        return call_user_func_array([self::$_instance, $method], $params);
+        return call_user_func_array([self::$instance, $method], $params);
     }
 }
