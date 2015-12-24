@@ -123,7 +123,7 @@ ThinkPHP5的命名规范如下：
 7. push 你的本地仓库到 github；
 8. 提交 pull requests；
 9. 等待 CI 验证（若不通过则重复 5~7，github 会自动更新你的 pull requests）；
-10. 等待管理员处理，并及时 rebase 你的分支到上游 master 分支（若上游 master 分支有修改），若有必要，可以 git push -f 强行推送 rebase 后的分支到自己的 github fork。
+10. 等待管理员处理，并及时 rebase 你的分支到上游 master 分支（若上游 master 分支有修改），若有必要，可以 `git push -f` 强行推送 rebase 后的分支到自己的 github fork。
 
 进行改动时请注意：
 * 本项目代码格式化标准选用 **PSR-2**；
