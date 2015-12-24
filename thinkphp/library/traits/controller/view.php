@@ -29,7 +29,7 @@ trait View
     {
         // 模板引擎参数
         if (is_null($this->view)) {
-            $this->view = new \think\View(Config::get()); // 只能这样写，不然view会冲突
+            $this->view = \think\View::instance(Config::get()); // 只能这样写，不然view会冲突
         }
     }
 

@@ -13,6 +13,8 @@ namespace think;
 
 class View
 {
+    // 视图实例
+    protected static $instance = null;
     // 模板引擎实例
     protected $engine = null;
     // 模板主题名称
@@ -40,13 +42,18 @@ class View
         $this->config($config);
         $this->engine($this->config['engine_type']);
     }
+
     /**
      * 初始化视图
      * @access public
      * @param array $config  配置参数
      */
-    static public function getInstance(array $config = []){
-        return new self($config);
+    public static function instance(array $config = [])
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self($config);
+        }
+        return self::$instance;
     }
 
     /**
