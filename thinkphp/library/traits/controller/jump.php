@@ -18,9 +18,6 @@ use think\Response;
 
 trait Jump
 {
-    // 视图类实例
-    protected $view = null;
-
     /**
      * 操作错误跳转的快捷方法
      * @access public
