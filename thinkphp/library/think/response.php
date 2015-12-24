@@ -214,7 +214,7 @@ class Response
             $http_response_code = $params;
             $params             = [];
         }
-        $url                    = preg_match('/^(https?:|\/)/', $s) ? $url : Url::build($url, $params);
+        $url                    = preg_match('/^(https?:|\/)/', $url) ? $url : Url::build($url, $params);
         header('Location: ' . $url, true, $http_response_code);
     }
 

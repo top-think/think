@@ -310,7 +310,7 @@ class Mongo extends Driver
         $this->model = $options['model'];
         $query       = $this->parseWhere($options['where']);
         $set         = $this->parseSet($data);
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.update(';
             $this->queryStr .= $query ? json_encode($query) : '{}';
             $this->queryStr .= ',' . json_encode($set) . ')';
