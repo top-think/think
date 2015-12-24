@@ -108,7 +108,7 @@ class TagLib
             if (preg_match_all($regex, $content, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
                 $right = [];
                 foreach ($matches as $match) {
-                    if ($match[1][0] == '') {
+                    if ('' == $match[1][0]) {
                         $name = $match[2][0];
                         // 如果有没闭合的标签头则取出最后一个
                         if (!empty($right[$name])) {
@@ -116,7 +116,7 @@ class TagLib
                             $nodes[$match[0][1]] = [
                                 'name'  => $name,
                                 'begin' => array_pop($right[$name]), // 标签开始符
-                                'end'   => $match[0] // 标签结束符
+                                'end'   => $match[0], // 标签结束符
                             ];
                         } else {
                             continue;
@@ -176,7 +176,7 @@ class TagLib
             $content = preg_replace_callback($regex, function ($matches) use (&$tags, &$self) {
                 $name = $tags[0][$matches[1]];
                 // 解析标签属性
-                $attrs  = $self->parseAttr($matches[0], $name);
+                $attrs = $self->parseAttr($matches[0], $name);
                 $method = '_' . $name;
                 return $self->$method($attrs, '', $matches[1]);
             }, $content);
@@ -193,8 +193,8 @@ class TagLib
      */
     private function getRegex($tags, $close)
     {
-        $begin  = $this->tpl->config['taglib_begin'];
-        $end    = $this->tpl->config['taglib_end'];
+        $begin  = $this->tpl->config('taglib_begin');
+        $end    = $this->tpl->config('taglib_end');
         $single = strlen(ltrim($begin, '\\')) == 1 && strlen(ltrim($end, '\\')) == 1 ? true : false;
         if (is_array($tags)) {
             $tagName = implode('|', $tags);
@@ -244,7 +244,7 @@ class TagLib
         if (!$xml) {
             throw new Exception('_XML_TAG_ERROR_ : ' . $attr);
         }
-        $xml = (array)($xml->tag->attributes());
+        $xml = (array) ($xml->tag->attributes());
         if (isset($xml['@attributes']) && $result = array_change_key_case($xml['@attributes'])) {
             $tag = strtolower($tag);
             if (!isset($this->tags[$tag])) {
@@ -322,8 +322,8 @@ class TagLib
             if (!empty($this->tags[$tag]['expression'])) {
                 static $_taglibs;
                 if (!isset($_taglibs[$tag])) {
-                    $_taglibs[$tag][0] = strlen($this->tpl->config['taglib_begin'] . $tag);
-                    $_taglibs[$tag][1] = strlen($this->tpl->config['taglib_end']);
+                    $_taglibs[$tag][0] = strlen($this->tpl->config('taglib_begin') . $tag);
+                    $_taglibs[$tag][1] = strlen($this->tpl->config('taglib_end'));
                 }
                 $str                  = substr($str, $_taglibs[$tag][0], -$_taglibs[$tag][1]);
                 $result['expression'] = trim($str);
@@ -360,7 +360,8 @@ class TagLib
         if (':' == $flag) {
             // 以:开头为函数调用，解析前去掉:
             $name = substr($name, 1);
-        } elseif ('$' != $flag && preg_match('/[a-zA-Z_]/', $flag)) { // XXX: 这句的写法可能还需要改进
+        } elseif ('$' != $flag && preg_match('/[a-zA-Z_]/', $flag)) {
+            // XXX: 这句的写法可能还需要改进
             // 常量不需要解析
             if (defined($name)) {
                 return $name;

@@ -70,7 +70,10 @@ class Response
             }
         }
 
-        if ($return) return $data; 
+        if ($return) {
+            return $data;
+        }
+
         echo $data;
         self::isExit() && exit();
     }
@@ -94,7 +97,10 @@ class Response
      */
     public static function type($type = null)
     {
-        if(is_null($type)) return self::$type;
+        if (is_null($type)) {
+            return self::$type;
+        }
+
         self::$type = $type;
     }
 
@@ -117,7 +123,10 @@ class Response
      */
     public static function isExit($exit = null)
     {
-        if(is_null($exit)) return self::$isExit;
+        if (is_null($exit)) {
+            return self::$isExit;
+        }
+
         self::$isExit = (boolean) $exit;
     }
 
@@ -138,17 +147,20 @@ class Response
             'time' => NOW_TIME,
             'data' => $data,
         ];
-        if($type) self::type($type);
+        if ($type) {
+            self::type($type);
+        }
+
         return $result;
     }
 
     /**
-     * 返回封装后的API数据到客户端
+     * 操作成功跳转的快捷方法
      * @access public
-     * @param mixed $msg 要返回的数据
-     * @param mixed $data 返回的code
-     * @param mixed $url 提示信息
-     * @param mixed $wait 返回数据格式
+     * @param mixed $msg 提示信息
+     * @param mixed $data 返回的数据
+     * @param mixed $url 跳转的URL地址
+     * @param mixed $wait 跳转等待时间
      * @return void
      */
     public static function success($msg = '', $data = '', $url = '', $wait = 3)
@@ -160,9 +172,9 @@ class Response
             'url'  => $url ?: $_SERVER["HTTP_REFERER"],
             'wait' => $wait,
         ];
-        $type       = Config::get('default_return_type');
-        if(IS_AJAX){
-            $type   = Config::get('default_ajax_return');
+        $type = Config::get('default_return_type');
+        if (IS_AJAX) {
+            $type = Config::get('default_ajax_return');
         }
         if ('html' == $type) {
             $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
@@ -172,12 +184,12 @@ class Response
     }
 
     /**
-     * 返回封装后的API数据到客户端
+     * 操作错误跳转的快捷方法
      * @access public
-     * @param mixed $msg 要返回的数据
-     * @param mixed $data 返回的code
-     * @param mixed $url 提示信息
-     * @param mixed $wait 返回数据格式
+     * @param mixed $msg 提示信息
+     * @param mixed $data 返回的数据
+     * @param mixed $url 跳转的URL地址
+     * @param mixed $wait 跳转等待时间
      * @return void
      */
     public static function error($msg = '', $data = '', $url = '', $wait = 3)
@@ -189,9 +201,9 @@ class Response
             'url'  => $url ?: 'javascript:history.back(-1);',
             'wait' => $wait,
         ];
-        $type       = Config::get('default_return_type');
-        if(IS_AJAX){
-            $type   = Config::get('default_ajax_return');
+        $type = Config::get('default_return_type');
+        if (IS_AJAX) {
+            $type = Config::get('default_ajax_return');
         }
         if ('html' == $type) {
             $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
@@ -209,12 +221,12 @@ class Response
      */
     public static function redirect($url, $params = [])
     {
-        $http_response_code     = 301;
-        if(in_array($params, [301, 302])){
+        $http_response_code = 301;
+        if (in_array($params, [301, 302])) {
             $http_response_code = $params;
             $params             = [];
         }
-        $url                    = preg_match('/^(https?:|\/)/', $url) ? $url : Url::build($url, $params);
+        $url = preg_match('/^(https?:|\/)/', $url) ? $url : Url::build($url, $params);
         header('Location: ' . $url, true, $http_response_code);
     }
 

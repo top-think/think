@@ -118,6 +118,8 @@ class Template
     {
         if (is_array($config)) {
             $this->config = array_merge($this->config, $config);
+        } elseif (isset($this->config[$config])) {
+            return $this->config[$config];
         }
     }
 
@@ -401,7 +403,7 @@ class Template
     private function parseExtend(&$content)
     {
         $regex  = $this->getRegex('extend');
-        $array  = $blocks = $extBlocks = [];
+        $array  = $blocks  = $extBlocks  = [];
         $extend = '';
         $fun    = function ($template) use (&$fun, &$regex, &$array, &$extend, &$blocks, &$extBlocks) {
             if (preg_match($regex, $template, $matches)) {
@@ -497,9 +499,9 @@ class Template
                     }
                 } else {
                     $right[] = [
-                        'name' => $match[2][0],
+                        'name'   => $match[2][0],
                         'offset' => $match[0][1],
-                        'tag' => $match[0][0],
+                        'tag'    => $match[0][0],
                     ];
                 }
             }
@@ -588,7 +590,7 @@ class Template
                 $str  = stripslashes($match[1]);
                 $flag = substr($str, 0, 1);
                 switch ($flag) {
-                    case '$': // 解析模板变量 格式 {$varName}
+                    case '$':    // 解析模板变量 格式 {$varName}
                         $this->parseVar($str);
                         // 是否带有?号
                         if (false !== $pos = strpos($str, '?')) {
@@ -601,8 +603,8 @@ class Template
                             if (isset($array[1])) {
                                 // XXX: 加入这句原本是为解决变量末声明的问题，但$name中是多个条件时会解析错误，故注释掉
                                 /*if (strpos($name, '[')) {
-                                    $name = 'isset(' . $name . ') && ' . $name;
-                                }*/
+                            $name = 'isset(' . $name . ') && ' . $name;
+                            }*/
                                 $name .= $array[1] . trim($array[2]);
                                 if ('=' == $first) {
                                     // {$varname?='xxx'} $varname为真时才输出xxx
@@ -612,19 +614,19 @@ class Template
                                 }
                             } else {
                                 switch ($first) {
-                                    case '?':
+                                case '?':
                                         // {$varname??'xxx'} $varname有定义则输出$varname,否则输出xxx
                                         $str = '<?php echo isset(' . $name . ') ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
-                                    case '=':
+                                case '=':
                                         // {$varname?='xxx'} $varname为真时才输出xxx
                                         $str = '<?php if(!empty(' . $name . ')) echo ' . substr($str, 1) . '; ?>';
                                         break;
-                                    case ':':
+                                case ':':
                                         // {$varname?:'xxx'} $varname为真时输出$varname,否则输出xxx
                                         $str = '<?php echo !empty(' . $name . ') ? ' . $name . $str . '; ?>';
                                         break;
-                                    default:
+                                default:
                                         if (strpos($str, ':')) {
                                             // {$varname ? 'a' : 'b'} $varname为真时输出a,否则输出b
                                             $str = '<?php echo !empty(' . $name . ') ? ' . $str . '; ?>';
@@ -638,22 +640,22 @@ class Template
                             $str = '<?php echo ' . $str . '; ?>';
                         }
                         break;
-                    case ':': // 输出某个函数的结果
+                    case ':':    // 输出某个函数的结果
                         $str = substr($str, 1);
                         $this->parseVar($str);
                         $str = '<?php echo ' . $str . '; ?>';
                         break;
-                    case '~': // 执行某个函数
+                    case '~':    // 执行某个函数
                         $str = substr($str, 1);
                         $str = '<?php ' . $str . '; ?>';
                         break;
                     case '-':
-                    case '+': // 输出计算
+                    case '+':    // 输出计算
                         $str = '<?php echo ' . $str . '; ?>';
                         break;
-                    case '/': // 注释标签
+                    case '/':    // 注释标签
                         $flag2 = substr($str, 1, 1);
-                        if ($flag2 == '/' || ($flag2 == '*' && substr(rtrim($str), -2) == '*/')) {
+                        if ('/' == $flag2 || ('*' == $flag2 && substr(rtrim($str), -2) == '*/')) {
                             $str = '';
                         }
                         break;
@@ -690,7 +692,7 @@ class Template
                     if (strpos($match[0], '.')) {
                         $vars  = explode('.', $match[0]);
                         $first = array_shift($vars);
-                        if ($first == '$Think') {
+                        if ('$Think' == $first) {
                             // 所有以Think.打头的以特殊变量对待 无需模板赋值就可以输出
                             $parseStr = $this->parseThinkVar($vars);
                         } else {
@@ -738,10 +740,10 @@ class Template
                 // 模板函数过滤
                 $fun = trim($args[0]);
                 switch ($fun) {
-                    case 'default':  // 特殊模板函数
+                    case 'default':    // 特殊模板函数
                         $varStr = '(isset(' . $name . ') && (' . $name . ' !== \'\'))?(' . $name . '):' . $args[1];
                         break;
-                    default:  // 通用模板函数
+                    default:    // 通用模板函数
                         if (!in_array($fun, $template_deny_funs)) {
                             if (isset($args[1])) {
                                 if (strstr($args[1], '###')) {
