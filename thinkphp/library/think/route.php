@@ -648,7 +648,7 @@ class Route
     {
         if (strpos($name, '?')) {
             // [路由别名?]参数1=值1&参数2=值2...
-            list($name, $parsms) = explode('?', $name);
+            list($name, $params) = explode('?', $name);
         }
 
         if (!empty(self::$alias[$name])) {
