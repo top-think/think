@@ -34,6 +34,8 @@ class Loader
         } elseif ($file = self::findFileInComposer($class)) {
             include $file;
         } else {
+            // 项目命名空间
+            $path = APP_PATH;
             // 命名空间自动加载
             $name = strtolower(strstr($class, '\\', true));
             if (isset(self::$namespace[$name])) {
@@ -43,8 +45,13 @@ class Loader
                 // Library目录下面的命名空间自动定位
                 $path = LIB_PATH;
             } else {
-                // 项目命名空间
-                $path = APP_PATH;
+                $extend = Config::get('extend_library') ?: [];
+                foreach ($extend as $_extend) {
+                    if (is_dir($_extend . $name)) {
+                        $path = $_extend;
+                        break;
+                    }
+                }
             }
             $filename = $path . str_replace('\\', DS, str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
             if (is_file($filename)) {
