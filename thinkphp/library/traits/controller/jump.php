@@ -2,10 +2,10 @@
 
 /**
  * 用法：
- * T('controller/response');
+ * T('controller/jump');
  * class index
  * {
- *     use \traits\controller\response;
+ *     use \traits\controller\jump;
  *     public function index(){
  *         $this->error();
  *         $this->redirect();
@@ -14,7 +14,9 @@
  */
 namespace traits\controller;
 
-trait Response
+use think\Response;
+
+trait Jump
 {
     // 视图类实例
     protected $view = null;

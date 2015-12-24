@@ -12,9 +12,11 @@
 namespace think;
 
 T('controller/view');
+T('controller/jump');
 
 class Controller
 {
+    use \traits\controller\jump;
     use \traits\controller\view;
 
     /**
