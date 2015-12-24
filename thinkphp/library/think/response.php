@@ -165,16 +165,21 @@ class Response
      */
     public static function success($msg = '', $data = '', $url = '', $wait = 3)
     {
-        $result = [
-            'code' => 1,
+        $code       = 1;
+        if(is_numeric($msg)){
+            $code   = $msg;
+            $msg    = '';
+        }
+        $result     = [
+            'code' => $code,
             'msg'  => $msg,
             'data' => $data,
             'url'  => $url ?: $_SERVER["HTTP_REFERER"],
             'wait' => $wait,
         ];
-        $type = Config::get('default_return_type');
+        $type       = Config::get('default_return_type');
         if (IS_AJAX) {
-            $type = Config::get('default_ajax_return');
+            $type   = Config::get('default_ajax_return');
         }
         if ('html' == $type) {
             $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
@@ -194,16 +199,21 @@ class Response
      */
     public static function error($msg = '', $data = '', $url = '', $wait = 3)
     {
-        $result = [
-            'code' => 0,
+        $code       = 0;
+        if(is_numeric($msg)){
+            $code   = $msg;
+            $msg    = '';
+        }
+        $result     = [
+            'code' => $code,
             'msg'  => $msg,
             'data' => $data,
             'url'  => $url ?: 'javascript:history.back(-1);',
             'wait' => $wait,
         ];
-        $type = Config::get('default_return_type');
+        $type       = Config::get('default_return_type');
         if (IS_AJAX) {
-            $type = Config::get('default_ajax_return');
+            $type   = Config::get('default_ajax_return');
         }
         if ('html' == $type) {
             $result = \think\View::getInstance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
