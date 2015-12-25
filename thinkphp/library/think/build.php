@@ -8,15 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace think;
 
-class Create
+class Build
 {
-    public static function build($build)
+    public static function run($build)
     {
         // 锁定
-        $lockfile = APP_PATH . 'create.lock';
+        $lockfile = APP_PATH . 'build.lock';
         if (is_writable($lockfile)) {
             return;
         } else {

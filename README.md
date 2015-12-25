@@ -123,10 +123,10 @@ ThinkPHP5的命名规范如下：
 7. push 你的本地仓库到 github；
 8. 提交 pull requests；
 9. 等待 CI 验证（若不通过则重复 5~7，github 会自动更新你的 pull requests）；
-10. 等待管理员处理。
+10. 等待管理员处理，并及时 rebase 你的分支到上游 master 分支（若上游 master 分支有修改），若有必要，可以 `git push -f` 强行推送 rebase 后的分支到自己的 github fork。
 
 进行改动时请注意：
 * 本项目代码格式化标准选用 **PSR-2**；
 * 若对上述修改流程有任何不清楚的地方，请查阅 GIT 教程，如 [这个](http://backlogtool.com/git-guide/cn/)；
 * 对于代码**不同方面**的修改，请在自己 fork 的项目中**创建不同的分支**（原因参见`修改流程`第9条备注部分）；
-* 对于 Issues 的处理，请在 pull requests 时使用诸如 `fix #xxx(Issue ID)` 的 title 直接关闭 issue。
+* 对于 Issues 的处理，请在 pull requests 时使用诸如 `修复 #xxx(Issue ID)` 的 title 直接关闭 issue。

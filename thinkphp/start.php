@@ -43,9 +43,13 @@ if (APP_HOOK && isset($mode['tags'])) {
 }
 
 // 自动生成
-if ('sae' != APP_MODE && is_file(APP_PATH . 'build.php')) {
-    Create::build(include APP_PATH . 'build.php');
+if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
+    Build::run(include APP_PATH . 'build.php');
 }
 
-// 执行应用
-!IN_UNIT_TEST && App::run(Config::get());
+if (IN_UNIT_TEST) {
+    Loader::addNamespace('tests', TEST_PATH);
+} else {
+    // 执行应用
+    App::run();
+}

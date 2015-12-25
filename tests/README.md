@@ -103,7 +103,7 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
   ```php
   public function testGet()
   {
-      App::run(Config::get());
+      App::run();
       $this->assertInstanceOf(
           '\think\cache\driver\Apc',
           Cache::connect(['type' => 'apc', 'expire' => 1])
@@ -127,6 +127,9 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
   ```
 
 4. 输出结果
+
+###相关文档###
+[各个部分单元测试说明](http://www.kancloud.cn/brother_simon/tp5_test/96971 "各部分单元测试说明")
 
 ###大家一起来###
 单元测试的内容会跟框架同步，测试内容方方面面，是一个相对复杂的模块，同时也是一个值得重视的部分。希望大家能够多多提出意见，多多参与。如果你有任何问题或想法，可以随时提issue，我们期待着收到听大家的质疑和讨论。

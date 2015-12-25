@@ -361,9 +361,9 @@ trait Auto
                 }
                 return NOW_TIME >= $start && NOW_TIME <= $end;
             case 'ip_allow': // IP 操作许可验证
-                return in_array(get_client_ip(), explode(',', $rule));
+                return in_array($_SERVER['REMOTE_ADDR'], explode(',', $rule));
             case 'ip_deny': // IP 操作禁止验证
-                return !in_array(get_client_ip(), explode(',', $rule));
+                return !in_array($_SERVER['REMOTE_ADDR'], explode(',', $rule));
             case 'filter': // 使用filter_var验证
                 $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule));
                 return false === $result ? false : true;

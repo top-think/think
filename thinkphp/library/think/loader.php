@@ -39,9 +39,12 @@ class Loader
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $path = dirname(self::$namespace[$name]) . DS;
-            } elseif (in_array($name, ['think', 'org', 'behavior', 'com', 'traits']) || is_dir(LIB_PATH . $name)) {
+            } elseif (in_array($name, ['think', 'behavior', 'traits']) || is_dir(LIB_PATH . $name)) {
                 // Library目录下面的命名空间自动定位
                 $path = LIB_PATH;
+            } elseif (is_dir(EXTEND_PATH . $name)) {
+                // 扩展类库命名空间
+                $path = EXTEND_PATH;
             } else {
                 // 项目命名空间
                 $path = APP_PATH;
@@ -262,7 +265,7 @@ class Loader
             if (class_exists($class)) {
                 $model = new $class($name);
             } else {
-                Log::record('实例化不存在的类：' . $class, 'NOTIC');
+                Log::record('实例化不存在的类：' . $class, 'warn');
                 $model = new Model($name);
             }
         }

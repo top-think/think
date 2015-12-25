@@ -13,6 +13,8 @@ namespace think;
 
 class View
 {
+    // 视图实例
+    protected static $instance = null;
     // 模板引擎实例
     protected $engine = null;
     // 模板主题名称
@@ -42,6 +44,19 @@ class View
     }
 
     /**
+     * 初始化视图
+     * @access public
+     * @param array $config  配置参数
+     */
+    public static function instance(array $config = [])
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self($config);
+        }
+        return self::$instance;
+    }
+
+    /**
      * 模板变量赋值
      * @access public
      * @param mixed $name  变量名
@@ -55,6 +70,7 @@ class View
         } else {
             $this->data[$name] = $value;
         }
+        return $this;
     }
 
     /**

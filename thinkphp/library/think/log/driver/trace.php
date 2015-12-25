@@ -35,7 +35,10 @@ class Trace
      */
     public function save($log = [])
     {
-
+        if (IS_AJAX || IS_CLI || IS_API) {
+            // ajax cli api方式下不输出
+            return;
+        }
         // 获取基本信息
         $current_uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $runtime     = number_format(microtime(true) - START_TIME, 6);
@@ -66,13 +69,13 @@ class Trace
         foreach ($this->tabs as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
-                case 'base': // 基本信息
+                case 'base':    // 基本信息
                     $trace[$title] = $base;
                     break;
-                case 'file': // 文件信息
+                case 'file':    // 文件信息
                     $trace[$title] = $info;
                     break;
-                default: // 调试信息
+                default:    // 调试信息
                     if (strpos($name, '|')) {
                         // 多组信息
                         $names  = explode('|', $name);

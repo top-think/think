@@ -15,6 +15,9 @@ define('IN_UNIT_TEST', true);
 
 $_SERVER['REQUEST_METHOD'] = 'GET';
 
+// 定义项目测试基础路径
+define('TEST_PATH', __DIR__);
+
 // 定义项目路径
 define('APP_PATH', __DIR__ . '/../application/');
 // 开启调试模式

@@ -34,32 +34,34 @@ class Route
     // 添加URL映射规则
     public static function map($map, $route = '')
     {
-        self::setting('map', $map, $route);
+        return self::setting('map', $map, $route);
     }
 
     // 添加变量规则
     public static function pattern($name, $rule = '')
     {
-        self::setting('pattern', $name, $rule);
+        return self::setting('pattern', $name, $rule);
     }
 
     // 添加路由别名
     public static function alias($name, $rule = '')
     {
-        self::setting('alias', $name, $rule);
+        return self::setting('alias', $name, $rule);
     }
 
     // 添加子域名部署规则
     public static function domain($domain, $rule = '')
     {
-        self::setting('domain', $domain, $rule);
+        return self::setting('domain', $domain, $rule);
     }
 
     // 属性设置
-    private static function setting($var, $name, $value = '')
+    private static function setting($var, $name = '', $value = '')
     {
         if (is_array($name)) {
             self::${$var} = array_merge(self::${$var}, $name);
+        } elseif (empty($name)) {
+            return self::${$var};
         } else {
             self::${$var}[$name] = $value;
         }
@@ -259,10 +261,13 @@ class Route
                     continue;
                 }
                 // 自定义检测
-                if (!empty($option['callback']) && is_callable($option['callback'])) {
-                    if (false === call_user_func($option['callback'])) {
-                        continue;
-                    }
+                if (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) {
+                    continue;
+                }
+
+                // 行为检测
+                if (!empty($option['behavior']) && false === \think\hook::exec($option['behavior'])) {
+                    continue;
                 }
 
                 if (!empty($val['routes'])) {
@@ -309,7 +314,7 @@ class Route
                         $rule = array_shift($val);
                     }
                     // 单项路由
-                    $route = $val['route'];
+                    $route = !empty($val['route']) ? $val['route'] : '';
                     if (0 === strpos($rule, '/') && preg_match($rule, $url, $matches)) {
                         return self::checkRegex($route, $url, $matches);
                     } else {
@@ -646,7 +651,7 @@ class Route
     {
         if (strpos($name, '?')) {
             // [路由别名?]参数1=值1&参数2=值2...
-            list($name, $parsms) = explode('?', $name);
+            list($name, $params) = explode('?', $name);
         }
 
         if (!empty(self::$alias[$name])) {
