@@ -60,7 +60,10 @@ class Sae
 
         $logstr = "[{$now}] {$_SERVER['SERVER_ADDR']} {$_SERVER['REMOTE_ADDR']} {$_SERVER['REQUEST_URI']}\r\n{$info}\r\n";
         if (is_null($is_debug)) {
-            preg_replace('@(\w+)\=([^;]*)@e', '$appSettings[\'\\1\']="\\2";', $_SERVER['HTTP_APPCOOKIE']);
+            $appSettings=[];
+            preg_replace_callback('@(\w+)\=([^;]*)@', function($match)use(&$appSettings){
+                $appSettings[$match['1']]=$match['2'];
+            }, $_SERVER['HTTP_APPCOOKIE']);
             $is_debug = in_array($_SERVER['HTTP_APPVERSION'], explode(',', $appSettings['debug'])) ? true : false;
         }
         if ($is_debug) {
