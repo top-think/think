@@ -303,11 +303,17 @@ trait Auto
                 } else {
                     $map[$val[0]] = $data[$val[0]];
                 }
-                if (!empty($data[$this->getPk()])) {
+                $pk = $this->getPk();
+                if (!empty($data[$pk]) && is_string($pk)) {
                     // 完善编辑的时候验证唯一
-                    $map[$this->getPk()] = ['neq', $data[$this->getPk()]];
+                    $map[$pk] = ['neq', $data[$pk]];
                 }
-                return $this->where($map)->find() ? false : true;
+                $options = $this->options;
+                if ($this->where($map)->find()) {
+                    return false;
+                }
+                $this->options = $options;
+                return true;
             default: // 检查附加规则
                 return $this->check($data[$val[0]], $val[1], $val[4]);
         }
