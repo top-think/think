@@ -18,6 +18,7 @@ define('THINK_VERSION', '5.0.0beta');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . DS);
 defined('LIB_PATH') or define('LIB_PATH', THINK_PATH . 'library' . DS);
+defined('EXTEND_PATH') or define('EXTEND_PATH', THINK_PATH . 'extend' . DS);
 defined('MODE_PATH') or define('MODE_PATH', THINK_PATH . 'mode' . DS); // 系统应用模式目录
 defined('CORE_PATH') or define('CORE_PATH', LIB_PATH . 'think' . DS);
 defined('ORG_PATH') or define('ORG_PATH', LIB_PATH . 'org' . DS);
