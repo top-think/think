@@ -24,9 +24,5 @@
     },
     "config": {
       "vendor-dir": "thinkphp/vendor"
-    },
-    "repositories": [
-        {"type": "composer", "url": "http://packagist.phpcomposer.com"},
-        {"packagist": false}
-    ]
+    }
 }
