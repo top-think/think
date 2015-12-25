@@ -1552,7 +1552,7 @@ class Model
      * @param string $having having
      * @return Model
      */
-    public function having($table)
+    public function having($having)
     {
         $this->options['having'] = $having;
         return $this;
