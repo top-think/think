@@ -153,9 +153,9 @@ class Template
         $template  = $this->parseTemplateFile($template);
         $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($template) . $this->config['cache_suffix'];
         if (!$this->checkCache($template, $cacheFile)) {
-            // 缓存无效
-            // 模板编译
-            $this->compiler(file_get_contents($template), $cacheFile);
+            // 缓存无效 重新模板编译
+            $content = file_get_contents($template);
+            $this->compiler($content, $cacheFile);
         }
         // 页面缓存
         ob_start();
@@ -185,8 +185,7 @@ class Template
         }
         $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($content) . $this->config['cache_suffix'];
         if (!$this->checkCache($content, $cacheFile)) {
-            // 缓存无效
-            // 模板编译
+            // 缓存无效 模板编译
             $this->compiler($content, $cacheFile);
         }
         // 读取编译存储
@@ -590,7 +589,7 @@ class Template
                 $str  = stripslashes($match[1]);
                 $flag = substr($str, 0, 1);
                 switch ($flag) {
-                    case '$':    // 解析模板变量 格式 {$varName}
+                    case '$': // 解析模板变量 格式 {$varName}
                         $this->parseVar($str);
                         // 是否带有?号
                         if (false !== $pos = strpos($str, '?')) {
@@ -603,8 +602,8 @@ class Template
                             if (isset($array[1])) {
                                 // XXX: 加入这句原本是为解决变量末声明的问题，但$name中是多个条件时会解析错误，故注释掉
                                 /*if (strpos($name, '[')) {
-                            $name = 'isset(' . $name . ') && ' . $name;
-                            }*/
+                                $name = 'isset(' . $name . ') && ' . $name;
+                                }*/
                                 $name .= $array[1] . trim($array[2]);
                                 if ('=' == $first) {
                                     // {$varname?='xxx'} $varname为真时才输出xxx
@@ -614,19 +613,19 @@ class Template
                                 }
                             } else {
                                 switch ($first) {
-                                case '?':
+                                    case '?':
                                         // {$varname??'xxx'} $varname有定义则输出$varname,否则输出xxx
                                         $str = '<?php echo isset(' . $name . ') ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
-                                case '=':
+                                    case '=':
                                         // {$varname?='xxx'} $varname为真时才输出xxx
                                         $str = '<?php if(!empty(' . $name . ')) echo ' . substr($str, 1) . '; ?>';
                                         break;
-                                case ':':
+                                    case ':':
                                         // {$varname?:'xxx'} $varname为真时输出$varname,否则输出xxx
                                         $str = '<?php echo !empty(' . $name . ') ? ' . $name . $str . '; ?>';
                                         break;
-                                default:
+                                    default:
                                         if (strpos($str, ':')) {
                                             // {$varname ? 'a' : 'b'} $varname为真时输出a,否则输出b
                                             $str = '<?php echo !empty(' . $name . ') ? ' . $str . '; ?>';
@@ -640,20 +639,20 @@ class Template
                             $str = '<?php echo ' . $str . '; ?>';
                         }
                         break;
-                    case ':':    // 输出某个函数的结果
+                    case ':': // 输出某个函数的结果
                         $str = substr($str, 1);
                         $this->parseVar($str);
                         $str = '<?php echo ' . $str . '; ?>';
                         break;
-                    case '~':    // 执行某个函数
+                    case '~': // 执行某个函数
                         $str = substr($str, 1);
                         $str = '<?php ' . $str . '; ?>';
                         break;
                     case '-':
-                    case '+':    // 输出计算
+                    case '+': // 输出计算
                         $str = '<?php echo ' . $str . '; ?>';
                         break;
-                    case '/':    // 注释标签
+                    case '/': // 注释标签
                         $flag2 = substr($str, 1, 1);
                         if ('/' == $flag2 || ('*' == $flag2 && substr(rtrim($str), -2) == '*/')) {
                             $str = '';
@@ -740,10 +739,10 @@ class Template
                 // 模板函数过滤
                 $fun = trim($args[0]);
                 switch ($fun) {
-                    case 'default':    // 特殊模板函数
+                    case 'default': // 特殊模板函数
                         $varStr = '(isset(' . $name . ') && (' . $name . ' !== \'\'))?(' . $name . '):' . $args[1];
                         break;
-                    default:    // 通用模板函数
+                    default: // 通用模板函数
                         if (!in_array($fun, $template_deny_funs)) {
                             if (isset($args[1])) {
                                 if (strstr($args[1], '###')) {
