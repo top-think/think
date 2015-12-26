@@ -194,7 +194,7 @@ class Route
                 // '子域名'=>['模块[/控制器/操作]','var1=a&var2=b&var3=*'];
                 if ($rule instanceof \Closure) {
                     // 执行闭包并中止
-                    $result = self::invokeRule($route);
+                    $result = self::invokeRule($rule);
                     // 返回 [模块,控制器,操作]
                     return is_array($result) ? $result : exit($result);
                 }
