@@ -40,7 +40,7 @@ class Config
         if (empty($type)) {
             $type = pathinfo($config, PATHINFO_EXTENSION);
         }
-        $class = '\\think\\config\\driver\\' . ucwords($type);
+        $class = (false === strpos($type, '\\')) ? '\\think\\config\\driver\\' . ucwords($type) : $type;
         self::set((new $class())->parse($config), '', $range);
     }
 

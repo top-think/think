@@ -35,6 +35,7 @@ class View
         'parse_str'         => [],
         'engine_type'       => 'think',
         'parse_var'         => false,
+        'namespace'         => '\\think\\view\\driver\\',
     ];
 
     public function __construct(array $config = [])
@@ -106,7 +107,7 @@ class View
         if ('php' == $engine) {
             $this->engine = 'php';
         } else {
-            $class        = '\\think\\view\\driver\\' . ucwords($engine);
+            $class        = $this->config['namespace'] . ucwords($engine);
             $this->engine = new $class($config);
         }
         return $this;

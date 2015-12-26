@@ -69,7 +69,7 @@ class Session
         }
         if (!empty($config['type'])) {
             // 读取session驱动
-            $class = '\\think\\session\\driver\\' . strtolower($config['type']);
+            $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . strtolower($config['type']);
             // 检查驱动类
             if (!session_set_save_handler(new $class())) {
                 throw new Exception('error session handler', 11700);

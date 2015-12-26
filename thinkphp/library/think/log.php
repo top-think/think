@@ -33,7 +33,7 @@ class Log
     public static function init($config = [])
     {
         $type  = isset($config['type']) ? $config['type'] : 'File';
-        $class = '\\think\\log\\driver\\' . ucwords($type);
+        $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\log\\driver\\') . ucwords($type);
         unset($config['type']);
         self::$driver = new $class($config);
     }
@@ -42,7 +42,7 @@ class Log
     public static function alarm($config = [])
     {
         $type  = isset($config['type']) ? $config['type'] : 'Email';
-        $class = '\\think\\log\\alarm\\' . ucwords($config['type']);
+        $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\log\\alarm\\') . ucwords($type);
         unset($config['type']);
         self::$alarm = new $class($config['alarm']);
     }

@@ -43,6 +43,7 @@ class Template
         'display_cache'      => false, // 模板渲染缓存
         'cache_id'           => '', // 模板缓存ID
         'tpl_replace_string' => [],
+        'namespace'          => '\\think\\template\\driver\\',
     ];
 
     private $literal   = [];
@@ -63,7 +64,7 @@ class Template
 
         // 初始化模板编译存储器
         $type          = $this->config['compile_type'] ? $this->config['compile_type'] : 'File';
-        $class         = '\\think\\template\\driver\\' . ucwords($type);
+        $class         = $this->config['namespace'] . ucwords($type);
         $this->storage = new $class();
     }
 
@@ -696,6 +697,11 @@ class Template
                             $parseStr = $this->parseThinkVar($vars);
                         } else {
                             // 一维自动识别对象和数组
+                            if (is_array($first)) {
+                                $parseStr = $first . '[\'' . implode('\'][\'', $vars) . '\']';
+                            } else {
+                                $parseStr = $first . '->' . implode('->', $vars);
+                            }
                             $parseStr = 'is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars);
                         }
                     } else {

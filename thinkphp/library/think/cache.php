@@ -13,8 +13,8 @@ namespace think;
 
 class Cache
 {
-    public static $readTimes    =   0;
-    public static $writeTimes   =   0;
+    public static $readTimes  = 0;
+    public static $writeTimes = 0;
 
     /**
      * 操作句柄
@@ -31,8 +31,9 @@ class Cache
      */
     public static function connect($options = [])
     {
-        $type          = !empty($options['type']) ? $options['type'] : 'File';
-        $class         = '\\think\\cache\\driver\\' . ucwords($type);
+        $type  = !empty($options['type']) ? $options['type'] : 'File';
+        $class = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\cache\\driver\\') . ucwords($type);
+        unset($options['type']);
         self::$handler = new $class($options);
         return self::$handler;
     }
