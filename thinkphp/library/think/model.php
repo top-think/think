@@ -1013,7 +1013,7 @@ class Model
     public function getModelName()
     {
         if (empty($this->name)) {
-            $this->name = substr(get_class($this), 0, -5);
+            $this->name = basename(get_class($this));
         }
         return $this->name;
     }
@@ -1414,24 +1414,13 @@ class Model
     }
 
     /**
-     * 指定查询条件 支持安全过滤
+     * 指定查询条件
      * @access public
      * @param mixed $where 条件表达式
-     * @param mixed $parse 预处理参数
      * @return Model
      */
-    public function where($where, $parse = null)
+    public function where($where)
     {
-        if (!is_null($parse) && is_string($where)) {
-            if (!is_array($parse)) {
-                $parse = func_get_args();
-                array_shift($parse);
-            }
-            $parse = array_map([$this->db, 'quote'], $parse);
-            $where = vsprintf($where, $parse);
-        } elseif (is_object($where)) {
-            $where = get_object_vars($where);
-        }
         if (is_string($where) && '' != $where) {
             $map            = [];
             $map['_string'] = $where;
