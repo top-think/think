@@ -591,9 +591,9 @@ class Template
                 $flag = substr($str, 0, 1);
                 switch ($flag) {
                     case '$': // 解析模板变量 格式 {$varName}
-                        $this->parseVar($str);
                         // 是否带有?号
                         if (false !== $pos = strpos($str, '?')) {
+                            $this->parseVar($str);
                             $array = preg_split('/([!=]={1,2}|(?<!-)[><]={0,1})/', substr($str, 0, $pos), 2, PREG_SPLIT_DELIM_CAPTURE);
                             $name  = trim($array[0]);
                             $this->parseVarFunction($name);
@@ -636,6 +636,7 @@ class Template
                                 }
                             }
                         } else {
+                            $this->parseVar($str);
                             $this->parseVarFunction($str);
                             $str = '<?php echo ' . $str . '; ?>';
                         }
