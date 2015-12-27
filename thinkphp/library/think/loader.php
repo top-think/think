@@ -75,8 +75,10 @@ class Loader
     // 注册自动加载机制
     public static function register($autoload = '')
     {
+        // 注册系统自动加载
+        spl_autoload_register($autoload ? $autoload : 'think\\loader::autoload');
+        // 注册composer自动加载
         self::registerComposerLoader();
-        spl_autoload_register($autoload ? $autoload : ['think\\loader', 'autoload']);
     }
 
     // 注册composer自动加载
