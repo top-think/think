@@ -742,7 +742,7 @@ class Template
                 $fun = trim($args[0]);
                 switch ($fun) {
                     case 'default': // 特殊模板函数
-                        $varStr = '(isset(' . $name . ') && (' . $name . ' !== \'\'))?(' . $name . '):' . $args[1];
+                        $name = '(isset(' . $name . ') && (' . $name . ' !== \'\'))?(' . $name . '):' . $args[1];
                         break;
                     default: // 通用模板函数
                         if (!in_array($fun, $template_deny_funs)) {
@@ -751,7 +751,7 @@ class Template
                                     $args[1] = str_replace('###', $name, $args[1]);
                                     $name    = "$fun($args[1])";
                                 } else {
-                                    $varStr = "$fun($name,$args[1])";
+                                    $name = "$fun($name,$args[1])";
                                 }
                             } else {
                                 if (!empty($args[0])) {
