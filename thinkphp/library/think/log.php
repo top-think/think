@@ -17,13 +17,13 @@ class Log
     const ERROR = 'error';
     const INFO  = 'info';
     const SQL   = 'sql';
-    const WARN  = 'warn';
+    const NOTIC = 'notic';
     const ALERT = 'alert';
 
     // 日志信息
     protected static $log = [];
     // 日志类型
-    protected static $type = ['log', 'error', 'info', 'sql', 'warn', 'alert'];
+    protected static $type = ['log', 'error', 'info', 'sql', 'notic', 'alert'];
     // 日志写入驱动
     protected static $driver = null;
     // 通知发送驱动

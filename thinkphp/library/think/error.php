@@ -53,7 +53,7 @@ class Error
             case E_USER_WARNING:
             case E_USER_NOTICE:
             default:
-                Log::record($errorStr, 'warn');
+                Log::record($errorStr, 'notic');
                 break;
         }
     }

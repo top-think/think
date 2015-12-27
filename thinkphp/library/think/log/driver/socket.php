@@ -88,7 +88,7 @@ class Socket
         ];
 
         foreach ($logs as &$log) {
-            if (in_array($log['type'], ['sql', 'debug', 'info'])) {
+            if (in_array($log['type'], ['sql', 'notic', 'debug', 'info'])) {
                 $log['type'] = 'log';
             }
         }
