@@ -697,12 +697,7 @@ class Template
                             // 所有以Think.打头的以特殊变量对待 无需模板赋值就可以输出
                             $parseStr = $this->parseThinkVar($vars);
                         } else {
-                            // 一维自动识别对象和数组
-                            if (is_array($first)) {
-                                $parseStr = $first . '[\'' . implode('\'][\'', $vars) . '\']';
-                            } else {
-                                $parseStr = $first . '->' . implode('->', $vars);
-                            }
+                            // 自动识别对象和数组
                             $parseStr = 'is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars);
                         }
                     } else {
