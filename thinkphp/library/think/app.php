@@ -283,7 +283,7 @@ class App
                     throw new Exception('url suffix deny');
                 }
                 // 去除URL后缀
-                $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
+                $_SERVER['PATH_INFO'] = preg_replace('/\.' . __EXT__ . '$/i', '', __INFO__);
                 $depr                 = $config['pathinfo_depr'];
                 // 还原劫持后真实pathinfo
                 $path_info =
