@@ -12,11 +12,9 @@
 /**
  * ThinkPHP SAE应用模式定义文件
  */
-
-$convention_config = include THINK_PATH . 'convention' . EXT;
 return [
     // 配置文件
-    'config' => array_merge($convention_config,[
+    'config' => array_merge(include THINK_PATH . 'convention' . EXT, [
         /* 数据库设置 */
         'database'         => [
             // 数据库类型
@@ -49,26 +47,24 @@ return [
             // 指定从服务器序号
             'slave_no'    => '',
         ],
-        'log'                   => [
+        'log'              => [
             'type' => 'Sae',
         ],
-        'cache'                 => [
+        'cache'            => [
             'type'   => 'Sae',
             'path'   => CACHE_PATH,
             'prefix' => '',
             'expire' => 0,
         ],
         'file_upload_type' => 'Sae',
-        'template' => [
-            'compile_type'     => 'Sae',
+        'template'         => [
+            'compile_type' => 'Sae',
         ],
         'compile_type'     => 'Sae',
     ]),
 
     // 别名定义
     'alias'  => [
-
-
         'think\App'                  => CORE_PATH . 'app' . EXT,
         'think\Cache'                => CORE_PATH . 'cache' . EXT,
         'think\Config'               => CORE_PATH . 'config' . EXT,
@@ -95,11 +91,9 @@ return [
         'think\template\driver\File' => CORE_PATH . 'template' . DS . 'driver' . DS . 'file' . EXT,
         'think\log\driver\File'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'file' . EXT,
         'think\cache\driver\File'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'file' . EXT,
-        'think\Slog'                 => CORE_PATH . 'slog'.EXT,
-
-        'think\log\driver\Sae'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'sae' . EXT,
-        'think\cache\driver\Sae'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'sae' . EXT,
-        'think\template\driver\Sae' => CORE_PATH . 'template' . DS . 'driver' . DS . 'sae' . EXT,
+        'think\log\driver\Sae'       => CORE_PATH . 'log' . DS . 'driver' . DS . 'sae' . EXT,
+        'think\cache\driver\Sae'     => CORE_PATH . 'cache' . DS . 'driver' . DS . 'sae' . EXT,
+        'think\template\driver\Sae'  => CORE_PATH . 'template' . DS . 'driver' . DS . 'sae' . EXT,
     ],
 
 ];
