@@ -66,7 +66,7 @@ class Response
                     break;
                 default:
                     // 用于扩展其他返回格式数据
-                    Hook::listen('return_data', $data);
+                    APP_HOOK && Hook::listen('return_data', $data);
             }
         }
 
