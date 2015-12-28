@@ -237,11 +237,11 @@ class Route
         }
 
         // 获取当前请求类型的路由规则
-        $rules = isset(self::$rules[REQUEST_METHOD]) ? self::$rules[REQUEST_METHOD] : [];
+        $rules = self::$rules[REQUEST_METHOD];
 
         if (!empty(self::$rules['*'])) {
             // 合并任意请求的路由规则
-            $rules = array_merge(self::$rules['*'], (array) $rules);
+            $rules = array_merge(self::$rules['*'], $rules);
         }
         // 路由规则检测
         if (!empty($rules)) {
