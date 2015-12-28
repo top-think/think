@@ -112,6 +112,7 @@ class Lang
         // 自动侦测设置获取语言选择
         $langCookieVar = Config::get('lang_cookie_var');
         $langDetectVar = Config::get('lang_detect_var');
+        $langSet       = '';
         if (isset($_GET[$langDetectVar])) {
             // url中设置了语言变量
             $langSet = strtolower($_GET[$langDetectVar]);
