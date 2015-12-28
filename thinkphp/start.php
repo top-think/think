@@ -46,10 +46,13 @@ if (APP_HOOK && isset($mode['tags'])) {
 if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
     Build::run(include APP_PATH . 'build.php');
 }
-
-if (IN_UNIT_TEST) {
-    Loader::addNamespace('tests', TEST_PATH);
+if (isset($mode['run'])) {
+    call_user_func($mode['run']);
 } else {
-    // 执行应用
-    App::run();
+    if (IN_UNIT_TEST) {
+        Loader::addNamespace('tests', TEST_PATH);
+    } else {
+        // 执行应用
+        App::run();
+    }
 }
