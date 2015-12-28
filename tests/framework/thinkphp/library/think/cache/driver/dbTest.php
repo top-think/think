@@ -15,7 +15,6 @@
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
 
-
 class dbTest extends CacheTestCase
 {
     private $_cacheInstance = null;
@@ -27,7 +26,7 @@ class dbTest extends CacheTestCase
     {
         //数据库缓存测试因为缺少数据库单元测试所以暂时跳过
         $this->markTestSkipped("暂时跳过测试。");
-        S(array('type'=>'db','expire'=>2));
+        \think\Cache::connect(array('type' => 'db', 'expire' => 2));
     }
 
     /**
@@ -35,7 +34,7 @@ class dbTest extends CacheTestCase
      */
     protected function getCacheInstance()
     {
-        if ($this->_cacheInstance === null) {
+        if (null === $this->_cacheInstance) {
             $this->_cacheInstance = new \think\cache\driver\Db();
         }
         return $this->_cacheInstance;

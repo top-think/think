@@ -22,7 +22,7 @@ class apcTest extends CacheTestCase
      */
     protected function setUp()
     {
-        \think\cache::connect(array('type' => 'apc', 'expire' => 2));
+        \think\Cache::connect(array('type' => 'apc', 'expire' => 2));
     }
     /**
      * @return ApcCache

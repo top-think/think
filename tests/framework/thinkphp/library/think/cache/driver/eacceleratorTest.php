@@ -15,7 +15,6 @@
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
 
-
 class eacceleratorTest extends CacheTestCase
 {
     private $_cacheInstance = null;
@@ -25,7 +24,7 @@ class eacceleratorTest extends CacheTestCase
      */
     protected function setUp()
     {
-        S(array('type'=>'eaccelerator','expire'=>2));
+        \think\Cache::connect(array('type' => 'eaccelerator', 'expire' => 2));
     }
 
     /**
@@ -33,13 +32,13 @@ class eacceleratorTest extends CacheTestCase
      */
     protected function getCacheInstance()
     {
-        if(PHP_VERSION > 5.4){
+        if (PHP_VERSION > 5.4) {
             $this->markTestSkipped("eaccelerator暂且不能使用在5.5版本以上");
         }
         if (!extension_loaded("eaccelerator")) {
             $this->markTestSkipped("eacceleratorTest没有安装，已跳过测试！");
         }
-        if ($this->_cacheInstance === null) {
+        if (null === $this->_cacheInstance) {
             $this->_cacheInstance = new \think\cache\driver\Eaccelerator();
         }
         return $this->_cacheInstance;
