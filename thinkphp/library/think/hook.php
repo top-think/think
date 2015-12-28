@@ -20,15 +20,18 @@ class Hook
      * 动态添加行为扩展到某个标签
      * @param string $tag 标签名称
      * @param mixed $behavior 行为名称
+     * @param bool $first 是否放到开头执行
      * @return void
      */
-    public static function add($tag, $behavior)
+    public static function add($tag, $behavior,$first=false)
     {
         if (!isset(self::$tags[$tag])) {
             self::$tags[$tag] = [];
         }
         if (is_array($behavior)) {
             self::$tags[$tag] = array_merge(self::$tags[$tag], $behavior);
+        } elseif($first){
+            array_unshift(self::$tags[$tag],$behavior);
         } else {
             self::$tags[$tag][] = $behavior;
         }

@@ -41,7 +41,6 @@ abstract class Driver
     protected $_linkID = null;
     // 数据库连接参数配置
     protected $config = [
-        'db_like_fields' => '', //like字段自动替换为%%包裹
         'type'           => '', // 数据库类型
         'hostname'       => '127.0.0.1', // 服务器地址
         'database'       => '', // 数据库名
@@ -57,6 +56,7 @@ abstract class Driver
         'rw_separate'    => false, // 数据库读写是否分离 主从式有效
         'master_num'     => 1, // 读写分离后 主服务器数量
         'slave_no'       => '', // 指定从服务器序号
+        'db_like_fields' => '', //like字段自动替换为%%包裹
     ];
     // 数据库表达式
     protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=', 'notlike' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'notin' => 'NOT IN', 'not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN', 'notbetween' => 'NOT BETWEEN'];
