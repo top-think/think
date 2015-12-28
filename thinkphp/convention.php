@@ -9,6 +9,8 @@ return [
     'app_status'            => '',
     // 扩展配置文件
     'extra_config_list'     => ['database', 'route'],
+    // 扩展函数文件
+    'extra_file_list'       => [THINK_PATH . 'help' . EXT],
     // 默认输出类型
     'default_return_type'   => 'html',
     // 默认语言

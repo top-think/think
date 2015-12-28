@@ -38,6 +38,16 @@ class App
         // 获取配置参数
         $config = Config::get();
 
+        // 加载额外文件
+        if (!empty($config['extra_file_list'])) {
+            foreach ($config['extra_file_list'] as $file) {
+                $file = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
+                if (is_file($file)) {
+                    include $file;
+                }
+            }
+        }
+
         // 日志初始化
         Log::init($config['log']);
         // 缓存初始化
