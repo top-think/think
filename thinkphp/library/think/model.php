@@ -72,11 +72,7 @@ class Model
             list($this->dbName, $this->name) = explode('.', $this->name);
         }
 
-        if (!empty($config['prefix'])) {
-            $this->tablePrefix = $config['prefix'];
-        } else {
-            $this->tablePrefix = Config::get('database.prefix');
-        }
+        $this->tablePrefix = !empty($config['prefix']) ? $config['prefix'] : Config::get('database.prefix');
         if (!empty($config['connection'])) {
             $this->connection = $config['connection'];
         }
