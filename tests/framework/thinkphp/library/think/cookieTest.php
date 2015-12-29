@@ -29,7 +29,7 @@ class cookieTest extends \PHPUnit_Framework_TestCase
         //  cookie 启用安全传输
         'secure'   => false,
         // httponly设置
-        'httponly' => '1',
+        'httponly' => '',
     ];
 
     protected function setUp()
@@ -55,7 +55,7 @@ class cookieTest extends \PHPUnit_Framework_TestCase
             //  cookie 启用安全传输
             'secure'   => true,
             // httponly设置
-            'httponly' => '',
+            'httponly' => '1',
         ];
         \think\Cookie::init($config);
 
