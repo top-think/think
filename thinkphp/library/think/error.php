@@ -89,7 +89,7 @@ class Error
     public static function halt($error, $code = 1)
     {
         $message = is_array($error) ? $error['message'] : $error;
-        $code    = is_array($error) ? $error['code'] : $code;
+        $code    = isset($error['code']) ? $error['code'] : $code;
 
         if (APP_DEBUG) {
             //调试模式下输出错误信息
