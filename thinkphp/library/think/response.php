@@ -16,7 +16,7 @@ class Response
     // 输出数据的转换方法
     protected static $tramsform = null;
     // 输出数据的类型
-    protected static $type = 'html';
+    protected static $type = '';
     // 输出数据
     protected static $data = '';
     // 是否exit
@@ -98,9 +98,8 @@ class Response
     public static function type($type = null)
     {
         if (is_null($type)) {
-            return self::$type;
+            return self::$type ?: Config::get('default_return_type');
         }
-
         self::$type = $type;
     }
 
@@ -126,7 +125,6 @@ class Response
         if (is_null($exit)) {
             return self::$isExit;
         }
-
         self::$isExit = (boolean) $exit;
     }
 
