@@ -80,22 +80,32 @@ class Log
     }
 
     /**
-     * 实时写入日志信息 并支持异常和错误预警通知
+     * 实时写入日志信息 并支持行为
      * @param mixed $msg 调试信息
      * @param string $type 信息类型
      * @return void
      */
-    public static function write($msg, $type)
+    public static function write($msg, $type = 'log')
     {
         if (!is_string($msg)) {
             $msg = print_r($msg, true);
         }
-        if ('error' == $type) {
-            // 预留预警通知接口
-            self::$alarm && self::$alarm->send($msg);
-        }
+        // 封装日志信息
         $log[] = ['type' => $type, 'msg' => $msg];
+
+        // 监听log_write
+        APP_HOOK && Hook::listen('log_write', $log);
+        // 写入日志
         self::$driver && self::$driver->save($log);
+    }
+
+    /**
+     * 发送预警通知
+     * @return void
+     */
+    public static function send($msg)
+    {
+        self::$alarm && self::$alarm->send($msg);
     }
 
     // 静态调用
