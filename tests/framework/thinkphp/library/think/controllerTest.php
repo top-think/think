@@ -13,8 +13,6 @@ namespace think;
 
 require_once CORE_PATH . '../../help.php';
 
-// use ReflectionClass;
-
 class Foo extends \think\Controller
 {
     public $test = 'test';
