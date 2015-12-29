@@ -113,7 +113,7 @@ class Log
     {
         if (in_array($method, self::$type)) {
             array_push($args, $method);
-            return call_user_func_array('\think\Log::record', $args);
+            return call_user_func_array('\\think\\Log::record', $args);
         }
     }
 
