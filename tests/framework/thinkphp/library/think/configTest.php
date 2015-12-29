@@ -44,6 +44,12 @@ class configTest extends \PHPUnit_Framework_TestCase
         $config = array_change_key_case(include APP_PATH . $file . EXT);
         $name   = '_name_';
         $range  = '_test_';
+
+        $reflectedClass          = new ReflectionClass('\think\config');
+        $reflectedPropertyConfig = $reflectedClass->getProperty('config');
+        $reflectedPropertyConfig->setAccessible(true);
+        $reflectedPropertyConfig->setValue([]);
+
         $this->assertEquals($config, \think\config::load($file, $name, $range));
         $this->assertNotEquals(null, \think\config::load($file, $name, $range));
     }
@@ -52,7 +58,7 @@ class configTest extends \PHPUnit_Framework_TestCase
     {
         $range = '_test_';
         $this->assertFalse(\think\config::has('abcd', $range));
-        $reflectedClass = new ReflectionClass('\think\config');
+        $reflectedClass          = new ReflectionClass('\think\config');
         $reflectedPropertyConfig = $reflectedClass->getProperty('config');
         $reflectedPropertyConfig->setAccessible(true);
 
@@ -109,7 +115,7 @@ class configTest extends \PHPUnit_Framework_TestCase
         $reflectedClass          = new ReflectionClass('\think\config');
         $reflectedPropertyConfig = $reflectedClass->getProperty('config');
         $reflectedPropertyConfig->setAccessible(true);
-        $reflectedPropertyConfig->setValue([$range => []]);
+        $reflectedPropertyConfig->setValue([]);
         // if (is_string($name)):
         // without dot syntax
         $name  = 'name';
