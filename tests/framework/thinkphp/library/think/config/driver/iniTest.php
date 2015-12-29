@@ -11,19 +11,18 @@
 
 /**
  * Ini配置测试
+ * 
  * @author    7IN0SAN9 <me@7in0.me>
  */
 
 namespace think\config\driver;
 
-use think\app;
 use think\config;
 
 class iniTest extends \PHPUnit_Framework_TestCase
 {
     public function testParse()
     {
-        App::run();
         Config::parse('inistring=1', 'ini');
         $this->assertEquals(1, Config::get('inistring'));
         Config::reset();
