@@ -94,7 +94,10 @@ class Config
     {
         $range = $range ?: self::$range;
         // 无参数时获取所有
-        if (empty($name) && isset(self::$config[$range])) {
+        if (empty($name)) {
+            if (!isset(self::$config[$range])) {
+                return null;
+            }
             return self::$config[$range];
         }
         $name = strtolower($name);
