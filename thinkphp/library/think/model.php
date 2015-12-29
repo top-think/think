@@ -720,14 +720,14 @@ class Model
                 return $value + $step;
             } else {
                 // 追加数据到缓存
-                Cache::set($guid, $value + $step);
+                Cache::set($guid, $value + $step, 0);
                 return false;
             }
         } else {
             // 没有缓存数据
-            Cache::set($guid, $step);
+            Cache::set($guid, $step, 0);
             // 计时开始
-            Cache::set($guid . '_time', NOW_TIME);
+            Cache::set($guid . '_time', NOW_TIME, 0);
             return false;
         }
     }
