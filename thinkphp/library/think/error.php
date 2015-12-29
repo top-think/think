@@ -127,7 +127,7 @@ class Error
             // 异常信息输出监听
             APP_HOOK && Hook::listen('error_output', $e);
             // 输出异常内容
-            Response::send($e, $type);
+            Response::send($e, $type, Config::get('response_return'));
         }
         exit;
     }
