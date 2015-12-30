@@ -43,7 +43,7 @@ class App
             foreach ($config['extra_file_list'] as $file) {
                 $file = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
                 if (is_file($file)) {
-                    include $file;
+                    include_once $file;
                 }
             }
         }
