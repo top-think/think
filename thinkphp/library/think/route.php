@@ -249,7 +249,7 @@ class Route
                 $option  = $val['option'];
                 $pattern = $val['pattern'];
                 // 请求类型检测
-                if (isset($option['method']) && REQUEST_METHOD != strtoupper($option['method'])) {
+                if (isset($option['method']) && false == stristr($option['method'],REQUEST_METHOD)) {
                     continue;
                 }
                 // 伪静态后缀检测
@@ -289,7 +289,7 @@ class Route
                             if (is_array($route)) {
                                 $option1 = $route[1];
                                 // 请求类型检测
-                                if (isset($option1['method']) && REQUEST_METHOD != strtoupper($option1['method'])) {
+                                if (isset($option1['method']) && false == stristr($option1['method'],REQUEST_METHOD)) {
                                     continue;
                                 }
                                 // 伪静态后缀检测
