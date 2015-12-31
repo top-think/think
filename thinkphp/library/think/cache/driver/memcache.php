@@ -24,7 +24,7 @@ class Memcache
         'host'       => '127.0.0.1',
         'port'       => 11211,
         'expire'     => 0,
-        'timeout'    => false,
+        'timeout'    => 1,
         'persistent' => false,
         'length'     => 0,
     ];
