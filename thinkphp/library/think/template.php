@@ -727,10 +727,10 @@ class Template
                                 case 'array': // 识别为数组
                                     $parseStr = $first . '[\'' . implode('\'][\'', $vars) . '\']';
                                     break;
-                                case 'obj':  // 识别为对象
+                                case 'obj': // 识别为对象
                                     $parseStr = $first . '->' . implode('->', $vars);
                                     break;
-                                default:  // 自动判断数组或对象 只支持二维
+                                default: // 自动判断数组或对象 只支持二维
                                     $parseStr = 'is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars);
                             }
                         }
@@ -917,10 +917,12 @@ class Template
     private function parseTemplateFile($template)
     {
         if (false === strpos($template, '.')) {
-            return (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $template . $this->config['tpl_suffix'];
-        } else {
-            return $template;
+            // 跨模块支持
+            $template = strpos($template, '@') ?
+            APP_PATH . str_replace('@', '/' . basename($this->config['tpl_path']) . '/', $template) . $this->config['tpl_suffix'] :
+            (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $template . $this->config['tpl_suffix'];
         }
+        return $template;
     }
 
     /**
