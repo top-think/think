@@ -600,7 +600,11 @@ class Route
             }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
-                parse_str($route[1], $params);
+                if (is_string($route[1])) {
+                    parse_str($route[1], $params);
+                } else {
+                    $params = $route[1];
+                }
                 $var = array_merge($var, $params);
             }
             $_GET = array_merge($var, $_GET);
@@ -638,7 +642,11 @@ class Route
             }
             // 解析路由自动传人参数
             if (is_array($route) && isset($route[1])) {
-                parse_str($route[1], $params);
+                if (is_string($route[1])) {
+                    parse_str($route[1], $params);
+                } else {
+                    $params = $route[1];
+                }
                 $var = array_merge($var, $params);
             }
             $_GET = array_merge($var, $_GET);
