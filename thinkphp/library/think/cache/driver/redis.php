@@ -24,6 +24,7 @@ class Redis
     protected $options = [
         'host'       => '127.0.0.1',
         'port'       => 6379,
+        'password'   => '',
         'timeout'    => false,
         'expire'     => 0,
         'persistent' => false,
@@ -48,6 +49,9 @@ class Redis
         false === $this->options['timeout'] ?
         $this->handler->$func($this->options['host'], $this->options['port']) :
         $this->handler->$func($this->options['host'], $this->options['port'], $this->options['timeout']);
+        if ('' != $this->options['password']) {
+            $this->handler->auth($this->options['password']);
+        }
     }
 
     /**
