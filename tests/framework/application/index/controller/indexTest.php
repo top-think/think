@@ -14,10 +14,9 @@
  * @author    7IN0SAN9 <me@7in0.me>
  */
 
-namespace index\controller;
+namespace app\index\controller;
 
 use think\app;
-use think\config;
 
 class indexTest extends \PHPUnit_Framework_TestCase
 {
