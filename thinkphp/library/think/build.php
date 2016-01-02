@@ -18,10 +18,8 @@ class Build
         $lockfile = APP_PATH . 'build.lock';
         if (is_writable($lockfile)) {
             return;
-        } else {
-            if (!touch($lockfile)) {
-                throw new Exception('应用目录[' . APP_PATH . ']不可写，目录无法自动生成！<BR>请手动生成项目目录~', 10006);
-            }
+        } elseif (!touch($lockfile)) {
+            throw new Exception('应用目录[' . APP_PATH . ']不可写，目录无法自动生成！<BR>请手动生成项目目录~', 10006);
         }
         foreach ($build as $module => $list) {
             if ('__dir__' == $module) {
@@ -71,13 +69,12 @@ class Build
             // 创建模块目录
             mkdir(APP_PATH . $module);
         }
-        if ('runtime' != $module) {
+        if (basename(RUNTIME_PATH) != $module) {
             // 创建配置文件和公共文件
             self::buildCommon($module);
             // 创建模块的默认页面
             self::buildHello($module);
         }
-
         // 创建子目录和文件
         foreach ($list as $path => $file) {
             $modulePath = APP_PATH . $module . DS;
@@ -99,13 +96,14 @@ class Build
             } else {
                 // 生成相关MVC文件
                 foreach ($file as $val) {
-                    $filename = $modulePath . $path . DS . Loader::parseName($val) . EXT;
+                    $filename  = $modulePath . $path . DS . Loader::parseName($val) . EXT;
+                    $namespace = APP_NAMESPACE . '\\' . ($module ? $module . '\\' : '') . $path;
                     switch ($path) {
                         case CONTROLLER_LAYER: // 控制器
-                            $content = "<?php\nnamespace {$module}\\{$path};\n\nclass {$val} {\n\n}";
+                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val} {\n\n}";
                             break;
                         case MODEL_LAYER: // 模型
-                            $content = "<?php\nnamespace {$module}\\{$path};\n\nclass {$val} extends \Think\Model{\n\n}";
+                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val} extends \Think\Model{\n\n}";
                             break;
                         case VIEW_LAYER: // 视图
                             $filename = $modulePath . $path . DS . Loader::parseName($val) . '.html';
@@ -117,7 +115,7 @@ class Build
                             break;
                         default:
                             // 其他文件
-                            $content = "<?php\nnamespace {$module}\\{$path};\n\nclass {$val} {\n\n}";
+                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val} {\n\n}";
                     }
 
                     if (!is_file($filename)) {
@@ -131,12 +129,12 @@ class Build
     // 创建欢迎页面
     protected static function buildHello($module)
     {
-        $filename = APP_PATH . $module . DS . CONTROLLER_LAYER . DS . Config::get('default_module') . EXT;
+        $filename = APP_PATH . ($module ? $module . DS : '') . CONTROLLER_LAYER . DS . Config::get('default_controller') . EXT;
         if (!is_file($filename)) {
             $content = file_get_contents(THINK_PATH . 'tpl' . DS . 'default_index.tpl');
-            $content = str_replace('{$module}', $module, $content);
-            if (!is_dir(APP_PATH . $module . DS . CONTROLLER_LAYER)) {
-                mkdir(APP_PATH . $module . DS . CONTROLLER_LAYER);
+            $content = str_replace(['{$app}', '{$module}'], [APP_NAMESPACE, $module ? $module . '\\' : ''], $content);
+            if (!is_dir(dirname($filename))) {
+                mkdir(dirname($filename), 0777, true);
             }
             file_put_contents($filename, $content);
         }
@@ -145,8 +143,9 @@ class Build
     // 创建模块公共文件
     protected static function buildCommon($module)
     {
-        if (!is_file(APP_PATH . $module . DS . 'config.php')) {
-            file_put_contents(APP_PATH . $module . DS . 'config.php', "<?php\nreturn [\n\n];");
+        $filename = APP_PATH . ($module ? $module . DS : '') . 'config.php';
+        if (!is_file($filename)) {
+            file_put_contents($filename, "<?php\nreturn [\n\n];");
         }
     }
 }

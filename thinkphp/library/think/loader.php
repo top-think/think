@@ -26,30 +26,33 @@ class Loader
     // 自动加载
     public static function autoload($class)
     {
-        // 检查是否定义classmap
+        // 检查是否定义类库映射
         if (isset(self::$map[$class])) {
             if (is_file(self::$map[$class])) {
                 include self::$map[$class];
             }
         } elseif ($file = self::findFileInComposer($class)) {
+            // Composer自动加载
             include $file;
         } else {
             // 命名空间自动加载
             $name = strtolower(strstr($class, '\\', true));
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
-                $path = dirname(self::$namespace[$name]) . DS;
+                $path = self::$namespace[$name];
             } elseif (in_array($name, ['think', 'behavior', 'traits']) || is_dir(LIB_PATH . $name)) {
-                // Library目录下面的命名空间自动定位
-                $path = LIB_PATH;
-            } elseif (is_dir(EXTEND_PATH . $name)) {
-                // 扩展类库命名空间
-                $path = EXTEND_PATH;
-            } else {
+                // 核心类库命名空间
+                $path = LIB_PATH . $name;
+            } elseif (APP_NAMESPACE == $name) {
                 // 项目命名空间
                 $path = APP_PATH;
+            } elseif (is_dir(EXTEND_PATH . $name)) {
+                // 扩展类库命名空间
+                $path = EXTEND_PATH . $name;
+            } else {
+                return;
             }
-            $filename = $path . str_replace('\\', DS, str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
+            $filename = $path . str_replace('\\', DS, str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", strstr($class, '\\')), "_")))) . EXT;
             if (is_file($filename)) {
                 include $filename;
             }
@@ -258,12 +261,12 @@ class Loader
         } else {
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
+        $class = self::parseClass($module, $layer, $name);
         $name  = basename($name);
         if (class_exists($class)) {
             $model = new $class($name);
         } else {
-            $class = COMMON_MODULE . strstr($class, '\\');
+            $class = str_replace('\\' . $module . '\\', '\\' . COMMON_MODULE . '\\', $class);
             if (class_exists($class)) {
                 $model = new $class($name);
             } else {
@@ -294,13 +297,12 @@ class Loader
         } else {
             $module = MODULE_NAME;
         }
-        $class = $module . '\\' . $layer . '\\' . self::parseName(str_replace('.', '\\', $name), 1);
+        $class = self::parseClass($module, $layer, $name);
         if (class_exists($class)) {
             $action                    = new $class;
             $_instance[$name . $layer] = $action;
             return $action;
-        } elseif ($empty && class_exists($module . '\\' . $layer . '\\' . $empty)) {
-            $class = $module . '\\' . $layer . '\\' . $empty;
+        } elseif ($empty && class_exists($class = self::parseClass($module, $layer, $empty))) {
             return new $class;
         } else {
             return false;
@@ -384,5 +386,17 @@ class Loader
         } else {
             return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
         }
+    }
+
+    /**
+     * 解析应用类的类名
+     * @param string $module 模块名
+     * @param string $layer 层名 controller model ...
+     * @param string $name 类名
+     * @return string
+     */
+    public static function parseClass($module, $layer, $name)
+    {
+        return APP_NAMESPACE . '\\' . ($module ? $module . '\\' : '') . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
     }
 }

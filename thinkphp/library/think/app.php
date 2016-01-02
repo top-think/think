@@ -95,7 +95,7 @@ class App
         }
 
         if (!$instance) {
-            throw new Exception('class [ ' . MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . Loader::parseName(str_replace('.', '\\', CONTROLLER_NAME), 1) . ' ] not exists', 10001);
+            throw new Exception('class [ ' . Loader::parseClass(MODULE_NAME, CONTROLLER_LAYER, CONTROLLER_NAME) . ' ] not exists', 10001);
         }
         try {
             // 操作方法开始监听
@@ -266,7 +266,7 @@ class App
         // 监听path_info
         APP_HOOK && Hook::listen('path_info');
         // 分析PATHINFO信息
-        if (!isset($_SERVER['PATH_INFO']) && $_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
+        if (!isset($_SERVER['PATH_INFO'])) {
             foreach ($config['pathinfo_fetch'] as $type) {
                 if (!empty($_SERVER[$type])) {
                     $_SERVER['PATH_INFO'] = (0 === strpos($_SERVER[$type], $_SERVER['SCRIPT_NAME'])) ?
@@ -324,30 +324,36 @@ class App
         }
 
         $module = strtolower($result[0] ?: $config['default_module']);
-        if ($maps = $config['url_module_map']) {
-            if (isset($maps[$module])) {
-                // 记录当前别名
-                define('MODULE_ALIAS', $module);
-                // 获取实际的项目名
-                $module = $maps[MODULE_ALIAS];
-            } elseif (array_search($module, $maps)) {
-                // 禁止访问原始项目
-                $module = '';
+        if ($module) {
+            if ($maps = $config['url_module_map']) {
+                if (isset($maps[$module])) {
+                    // 记录当前别名
+                    define('MODULE_ALIAS', $module);
+                    // 获取实际的项目名
+                    $module = $maps[MODULE_ALIAS];
+                } elseif (array_search($module, $maps)) {
+                    // 禁止访问原始项目
+                    $module = '';
+                }
             }
-        }
-        // 获取模块名称
-        define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
+            // 获取模块名称
+            define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
 
-        // 模块初始化
-        if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
-            APP_HOOK && Hook::listen('app_begin');
-            define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
-            define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
+            // 模块初始化
+            if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
+                APP_HOOK && Hook::listen('app_begin');
+                define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
+                define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
 
-            // 初始化模块
-            self::initModule(MODULE_NAME, $config);
+                // 初始化模块
+                self::initModule(MODULE_NAME, $config);
+            } else {
+                throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ', 10005);
+            }
         } else {
-            throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ', 10005);
+            define('MODULE_NAME', '');
+            define('MODULE_PATH', APP_PATH);
+            define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
         }
 
         // 获取控制器名

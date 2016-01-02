@@ -43,15 +43,21 @@ class Url
                     $url = str_replace('/', $depr, $url);
                 }
                 // 解析模块、控制器和操作
-                $url           = trim($url, $depr);
-                $path          = explode($depr, $url);
-                $var           = [];
-                $var['action'] = !empty($path) ? array_pop($path) : ACTION_NAME;
+                $url  = trim($url, $depr);
+                $path = explode($depr, $url);
+                $var  = [];
+                if (!defined('BIND_ACTION')) {
+                    $var['action'] = !empty($path) ? array_pop($path) : ACTION_NAME;
+                }
                 if (!defined('BIND_CONTROLLER')) {
                     $var['controller'] = !empty($path) ? array_pop($path) : CONTROLLER_NAME;
                 }
                 if (!defined('BIND_MODULE')) {
-                    $var['module'] = !empty($path) ? array_pop($path) : MODULE_NAME;
+                    if (!empty($path)) {
+                        $var['module'] = array_pop($path);
+                    } elseif (MODULE_NAME) {
+                        $var['module'] = MODULE_NAME;
+                    }
                 }
             }
         }
