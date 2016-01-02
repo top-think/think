@@ -250,7 +250,7 @@ class View
                 } elseif (Cookie::get('think_theme')) {
                     $theme = Cookie::get('think_theme');
                 }
-                if (!is_dir(APP_PATH . $module . '/' . $this->config['view_layer'] . '/' . $theme)) {
+                if (!is_dir(APP_PATH . ($module ? $module . DS : '') . $this->config['view_layer'] . DS . $theme)) {
                     $theme = $this->config['default_theme'];
                 }
                 Cookie::set('think_theme', $theme, 864000);
@@ -276,7 +276,7 @@ class View
         $tmplPath = $this->config['view_path']; // 模块设置独立的视图目录
         if (!$tmplPath) {
             // 定义TMPL_PATH 则改变全局的视图目录到模块之外
-            $tmplPath = defined('TMPL_PATH') ? TMPL_PATH . $module . '/' : APP_PATH . ($module ? $module . '/' : '') . $this->config['view_layer'] . '/';
+            $tmplPath = defined('TMPL_PATH') ? TMPL_PATH . $module . DS : APP_PATH . ($module ? $module . DS : '') . $this->config['view_layer'] . DS;
         }
         return $tmplPath . $theme;
     }
