@@ -52,7 +52,7 @@ class Url
                 if (!defined('BIND_CONTROLLER')) {
                     $var['controller'] = !empty($path) ? array_pop($path) : CONTROLLER_NAME;
                 }
-                if (!defined('BIND_MODULE')) {
+                if (APP_MULTI_MODULE && !defined('BIND_MODULE')) {
                     if (!empty($path)) {
                         $var['module'] = array_pop($path);
                     } elseif (MODULE_NAME) {

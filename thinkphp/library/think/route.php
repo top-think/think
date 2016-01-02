@@ -467,13 +467,13 @@ class Route
             }
             // 解析[模块/控制器/操作]
             if ($reverse) {
-                $module     = array_shift($path);
+                $module     = APP_MULTI_MODULE ? array_shift($path) : null;
                 $controller = !empty($path) ? array_shift($path) : null;
                 $action     = !empty($path) ? array_shift($path) : null;
             } else {
                 $action     = array_pop($path);
                 $controller = !empty($path) ? array_pop($path) : null;
-                $module     = !empty($path) ? array_pop($path) : null;
+                $module     = APP_MULTI_MODULE && !empty($path) ? array_pop($path) : null;
             }
             $action = '[rest]' == $action ? REQUEST_METHOD : $action;
             $route  = [$module, $controller, $action];

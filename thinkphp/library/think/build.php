@@ -65,6 +65,7 @@ class Build
     // 创建模块
     protected static function buildModule($module, $list)
     {
+        $module = APP_MULTI_MODULE ? $module : '';
         if (!is_dir(APP_PATH . $module)) {
             // 创建模块目录
             mkdir(APP_PATH . $module);

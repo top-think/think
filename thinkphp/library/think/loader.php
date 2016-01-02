@@ -398,6 +398,6 @@ class Loader
      */
     public static function parseClass($module, $layer, $name)
     {
-        return APP_NAMESPACE . '\\' . ($module ? $module . '\\' : '') . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
+        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
     }
 }

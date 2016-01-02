@@ -195,7 +195,7 @@ class App
     private static function initModule($module, $config)
     {
         // 定位模块目录
-        $module = COMMON_MODULE == $module ? '' : $module . DS;
+        $module = (COMMON_MODULE == $module || !APP_MULTI_MODULE) ? '' : $module . DS;
 
         // 加载初始化文件
         if (is_file(APP_PATH . $module . 'init' . EXT)) {
@@ -323,8 +323,8 @@ class App
             }
         }
 
-        $module = strtolower($result[0] ?: $config['default_module']);
-        if ($module) {
+        if (APP_MULTI_MODULE) {
+            $module = strtolower($result[0] ?: $config['default_module']);
             if ($maps = $config['url_module_map']) {
                 if (isset($maps[$module])) {
                     // 记录当前别名
