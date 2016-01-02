@@ -35,8 +35,8 @@ class Template
         'cache_prefix'       => '', // 模板缓存前缀标识，可以动态改变
         'cache_time'         => 0, // 模板缓存有效期 0 为永久，(以数字为值，单位:秒)
         'layout_item'        => '{__CONTENT__}', // 布局模板的内容替换标识
-        'taglib_begin'       => '<', // 标签库标签开始标记
-        'taglib_end'         => '>', // 标签库标签结束标记
+        'taglib_begin'       => '{', // 标签库标签开始标记
+        'taglib_end'         => '}', // 标签库标签结束标记
         'taglib_load'        => true, // 是否使用内置标签库之外的其它标签库，默认自动检测
         'taglib_build_in'    => 'cx', // 内置标签库名称(标签使用不必指定标签库名称),以逗号分隔 注意解析顺序
         'taglib_pre_load'    => '', // 需要额外加载的标签库(须指定标签库名称)，多个以逗号分隔
