@@ -13,11 +13,10 @@ namespace traits\model;
 
 trait Adv
 {
-    protected $optimLock      = 'lock_version';
-    protected $returnType     = 'array';
-    protected $serializeField = [];
-    protected $readonlyField  = [];
-    protected $partition      = [];
+    protected $optimLock = 'lock_version';
+    //protected $serializeField = [];
+    //protected $readonlyField  = [];
+    //protected $partition      = [];
 
     /**
      * 利用__call方法重载 实现一些特殊的Model方法 （魔术方法）
@@ -219,9 +218,8 @@ trait Adv
      * @param string $type 返回类型 默认为数组
      * @return mixed
      */
-    public function returnResult($data, $type = '')
+    public function returnResult($data, $type = 'array')
     {
-        $type = $type ?: $this->returnType;
 
         switch ($type) {
             case 'array':

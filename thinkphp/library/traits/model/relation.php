@@ -19,7 +19,7 @@ define('MANY_TO_MANY', 4);
 trait Relation
 {
     // 关联定义
-    protected $link = [];
+    //protected $link = [];
 
     /**
      * 得到关联的数据表名

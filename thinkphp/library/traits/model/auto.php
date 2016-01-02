@@ -15,8 +15,8 @@ use think\Lang;
 
 trait Auto
 {
-    protected $validate = []; // 自动验证定义
-    protected $auto     = []; // 自动完成定义
+    //protected $validate = []; // 自动验证定义
+    //protected $auto     = []; // 自动完成定义
 
     /**
      * 创建数据对象 但不保存到数据库
