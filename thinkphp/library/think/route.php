@@ -92,6 +92,7 @@ class Route
                     self::alias($rule['__alias__']);
                     unset($rule['__alias__']);
                 }
+
                 foreach ($rule as $key => $val) {
                     if (is_numeric($key)) {
                         $key = array_shift($val);
@@ -233,7 +234,7 @@ class Route
         }
         if (isset(self::$map[$url])) {
             // URL映射
-            return self::parseUrl(self::$map[$url]);
+            return self::parseUrl(self::$map[$url], $depr);
         }
 
         // 获取当前请求类型的路由规则
@@ -582,6 +583,10 @@ class Route
             }
             header("Location: $url", true, (is_array($route) && isset($route[1])) ? $route[1] : 301);
             exit;
+        } elseif (0 === strpos($url, '\\')) {
+            // 路由到行为类
+            \think\hook::exec($url, isset($route[1]) ? $route[1] : '', $matches);
+            exit;
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
@@ -628,6 +633,10 @@ class Route
         if (0 === strpos($url, '/') || 0 === strpos($url, 'http')) {
             // 路由重定向跳转
             header("Location: $url", true, (is_array($route) && isset($route[1])) ? $route[1] : 301);
+            exit;
+        } elseif (0 === strpos($url, '\\')) {
+            // 路由到行为类
+            \think\hook::exec($url, isset($route[1]) ? $route[1] : '', $matches);
             exit;
         } else {
             // 解析路由地址
