@@ -25,7 +25,7 @@ class App
      */
     public static function run()
     {
-        // 初始化公共模块
+        // 初始化应用（公共模块）
         self::initModule(COMMON_MODULE, Config::get());
 
         // 读取扩展配置文件
@@ -72,11 +72,125 @@ class App
             Session::init($config['session']);
         }
 
-        // 应用URL调度
-        self::dispatch($config);
+        // URL路由检测
+        $dispatch = self::route($config);
 
-        // 监听app_run
-        APP_HOOK && Hook::listen('app_run');
+        // 监听app_begin
+        APP_HOOK && Hook::listen('app_begin', $dispatch);
+
+        // 根据类型调度
+        switch ($dispatch['type']) {
+            case 'redirect':
+                // 执行重定向跳转
+                header('Location: ' . $dispatch['url'], true, $dispatch['status']);
+                break;
+            case 'module':
+                // 模块/控制器/操作
+                $data = self::module($dispatch['data'], $config);
+                break;
+            case 'action':
+                // 执行操作
+                $data = Loader::action($dispatch['action'], $dispatch['params']);
+                break;
+            case 'behavior':
+                // 执行行为
+                $data = \think\hook::exec($dispatch['class'], $dispatch['method'], $dispatch['params']);
+                break;
+            case 'regex_closure':
+                // 正则闭包
+                $data = self::invokeRegex($dispatch['closure'], $dispatch['params']);
+                break;
+            case 'rule_closure':
+                // 规则闭包
+                $data = self::invokeRule($dispatch['closure'], $dispatch['params']);
+                break;
+            default:
+                throw new Exception('dispatch type not support', 10008);
+        }
+        // 监听app_end
+        APP_HOOK && Hook::listen('app_end', $data);
+        // 输出数据到客户端
+        return Response::send($data, Response::type(), Config::get('response_return'));
+    }
+
+    // 执行正则匹配下的闭包方法 支持参数调用
+    private static function invokeRegex($closure, $var = [])
+    {
+        $reflect = new \ReflectionFunction($closure);
+        $params  = $reflect->getParameters();
+        $args    = [];
+        array_shift($var);
+        foreach ($params as $param) {
+            $name = $param->getName();
+            if (!empty($var)) {
+                $args[] = array_shift($var);
+            } elseif ($param->isDefaultValueAvailable()) {
+                $args[] = $param->getDefaultValue();
+            }
+        }
+        return $reflect->invokeArgs($args);
+    }
+
+    // 执行规则匹配下的闭包方法 支持参数调用
+    private static function invokeRule($closure, $var = [])
+    {
+        $reflect = new \ReflectionFunction($closure);
+        $params  = $reflect->getParameters();
+        $args    = [];
+        foreach ($params as $param) {
+            $name = $param->getName();
+            if (isset($var[$name])) {
+                $args[] = $var[$name];
+            } elseif ($param->isDefaultValueAvailable()) {
+                $args[] = $param->getDefaultValue();
+            }
+        }
+        return $reflect->invokeArgs($args);
+    }
+
+    // 执行 模块/控制器/操作
+    private static function module($result, $config)
+    {
+        if (APP_MULTI_MODULE) {
+            $module = strtolower($result[0] ?: $config['default_module']);
+            if ($maps = $config['url_module_map']) {
+                if (isset($maps[$module])) {
+                    // 记录当前别名
+                    define('MODULE_ALIAS', $module);
+                    // 获取实际的项目名
+                    $module = $maps[MODULE_ALIAS];
+                } elseif (array_search($module, $maps)) {
+                    // 禁止访问原始项目
+                    $module = '';
+                }
+            }
+            // 获取模块名称
+            define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
+
+            // 模块初始化
+            if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
+                APP_HOOK && Hook::listen('app_begin');
+                define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
+                define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
+
+                // 初始化模块
+                self::initModule(MODULE_NAME, $config);
+            } else {
+                throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ', 10005);
+            }
+        } else {
+            define('MODULE_NAME', '');
+            define('MODULE_PATH', APP_PATH);
+            define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
+        }
+
+        // 获取控制器名
+        $controller = strip_tags(strtolower($result[1] ?: Config::get('default_controller')));
+        define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
+
+        // 获取操作名
+        $action = strip_tags(strtolower($result[2] ?: Config::get('default_action')));
+        define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
 
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
@@ -118,10 +232,6 @@ class App
                 } else {
                     $data = $method->invoke($instance);
                 }
-                // 操作方法执行完成监听
-                APP_HOOK && Hook::listen('action_end', $data);
-                // 输出数据
-                return Response::send($data, Response::type(), Config::get('response_return'));
             } else {
                 // 操作方法不是Public 抛出异常
                 throw new \ReflectionException();
@@ -131,14 +241,11 @@ class App
             if (method_exists($instance, '_empty')) {
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
-                // 操作方法执行完成监听
-                APP_HOOK && Hook::listen('action_end', $data);
-                // 输出数据
-                return Response::send($data, Response::type(), Config::get('response_return'));
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }
         }
+        return $data;
     }
 
     // 操作绑定到类：模块\controller\控制器\操作类
@@ -232,15 +339,8 @@ class App
         }
     }
 
-    /**
-     * URL调度
-     * @access public
-     *
-     * @param $config
-     *
-     * @throws Exception
-     */
-    public static function dispatch($config)
+    // 分析 PATH_INFO
+    private static function parsePathinfo($config)
     {
         if (isset($_GET[$config['var_pathinfo']])) {
             // 判断URL里面是否有兼容模式参数
@@ -275,93 +375,63 @@ class App
                 }
             }
         }
+    }
 
-        // [模块,控制器,操作]
-        $result = [null, null, null];
+    /**
+     * URL路由检测
+     * @access public
+     * @param $config
+     * @throws Exception
+     */
+    public static function route($config)
+    {
+        // 解析PATH_INFO
+        self::parsePathinfo($config);
 
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
             define('__EXT__', '');
+            $result = ['type' => 'module', 'data' => [null, null, null]];
         } else {
             $_SERVER['PATH_INFO'] = trim($_SERVER['PATH_INFO'], '/');
             define('__INFO__', $_SERVER['PATH_INFO']);
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'], PATHINFO_EXTENSION)));
-            if (__INFO__) {
-                if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
-                    throw new Exception('url suffix deny');
-                }
-                // 去除URL后缀
-                $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
-                $depr                 = $config['pathinfo_depr'];
-                // 还原劫持后真实pathinfo
-                $path_info =
-                    (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                    (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                    (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                    $_SERVER['PATH_INFO'];
 
-                // 路由检测
-                if (!empty($config['url_route_on'])) {
-                    // 开启路由 则检测路由配置
-                    Route::register(!empty($config['route']) ? $config['route'] : null);
-                    $result = Route::check($path_info, $depr);
-                    if (false === $result) {
-                        // 路由无效
-                        if ($config['url_route_must']) {
-                            throw new Exception('route not define ');
-                        } else {
-                            // 继续分析URL
-                            $result = Route::parseUrl($path_info, $depr);
-                        }
+            if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
+                throw new Exception('url suffix deny');
+            }
+            // 去除URL后缀
+            $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
+            $depr                 = $config['pathinfo_depr'];
+            // 还原劫持后真实pathinfo
+            $path_info =
+                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                $_SERVER['PATH_INFO'];
+
+            // 路由检测
+            if (!empty($config['url_route_on'])) {
+                // 开启路由 则检测路由配置
+                Route::register(!empty($config['route']) ? $config['route'] : null);
+                $result = Route::check($path_info, $depr);
+                if (false === $result) {
+                    // 路由无效
+                    if ($config['url_route_must']) {
+                        throw new Exception('route not define ');
+                    } else {
+                        // 继续分析URL
+                        $result = Route::parseUrl($path_info, $depr);
                     }
-                } else {
-                    // 分析URL地址
-                    $result = Route::parseUrl($path_info, $depr);
                 }
-            }
-        }
-
-        if (APP_MULTI_MODULE) {
-            $module = strtolower($result[0] ?: $config['default_module']);
-            if ($maps = $config['url_module_map']) {
-                if (isset($maps[$module])) {
-                    // 记录当前别名
-                    define('MODULE_ALIAS', $module);
-                    // 获取实际的项目名
-                    $module = $maps[MODULE_ALIAS];
-                } elseif (array_search($module, $maps)) {
-                    // 禁止访问原始项目
-                    $module = '';
-                }
-            }
-            // 获取模块名称
-            define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
-
-            // 模块初始化
-            if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
-                APP_HOOK && Hook::listen('app_begin');
-                define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
-                define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
-
-                // 初始化模块
-                self::initModule(MODULE_NAME, $config);
             } else {
-                throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ', 10005);
+                // 分析URL地址
+                $result = Route::parseUrl($path_info, $depr);
             }
-        } else {
-            define('MODULE_NAME', '');
-            define('MODULE_PATH', APP_PATH);
-            define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
         }
-
-        // 获取控制器名
-        $controller = strip_tags(strtolower($result[1] ?: Config::get('default_controller')));
-        define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
-
-        // 获取操作名
-        $action = strip_tags(strtolower($result[2] ?: Config::get('default_action')));
-        define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
+        return $result;
     }
+
 }

@@ -326,7 +326,6 @@ class Route
                         }
                     }
                 }
-
             }
         }
         return false;
@@ -340,8 +339,7 @@ class Route
         // 正则路由
         if ($route instanceof \Closure) {
             // 执行闭包
-            $result = self::invokeRegex($route, $matches);
-            return is_array($result) ? $result : exit($result);
+            return ['type' => 'regex_closure', 'closure' => $route, 'params' => $matches];
         }
         return self::parseRegex($matches, $route, $url);
     }
@@ -351,6 +349,7 @@ class Route
      */
     private static function checkRule($rule, $route, $url, $pattern)
     {
+
         $len1 = substr_count($url, '/');
         $len2 = substr_count($rule, '/');
         if ($len1 >= $len2 || strpos($rule, '[')) {
@@ -364,10 +363,10 @@ class Route
             }
             $pattern = array_merge(self::$pattern, $pattern);
             if (false !== $match = self::match($url, $rule, $pattern)) {
+
                 if ($route instanceof \Closure) {
                     // 执行闭包
-                    $result = self::invokeRule($route, $match);
-                    return is_array($result) ? $result : exit($result);
+                    return ['type' => 'rule_closure', 'closure' => $route, 'params' => $match];
                 }
                 return self::parseRule($rule, $route, $url);
             }
@@ -390,41 +389,6 @@ class Route
         }
     }
 
-    // 执行正则匹配下的闭包方法 支持参数调用
-    private static function invokeRegex($closure, $var = [])
-    {
-        $reflect = new \ReflectionFunction($closure);
-        $params  = $reflect->getParameters();
-        $args    = [];
-        array_shift($var);
-        foreach ($params as $param) {
-            $name = $param->getName();
-            if (!empty($var)) {
-                $args[] = array_shift($var);
-            } elseif ($param->isDefaultValueAvailable()) {
-                $args[] = $param->getDefaultValue();
-            }
-        }
-        return $reflect->invokeArgs($args);
-    }
-
-    // 执行规则匹配下的闭包方法 支持参数调用
-    private static function invokeRule($closure, $var = [])
-    {
-        $reflect = new \ReflectionFunction($closure);
-        $params  = $reflect->getParameters();
-        $args    = [];
-        foreach ($params as $param) {
-            $name = $param->getName();
-            if (isset($var[$name])) {
-                $args[] = $var[$name];
-            } elseif ($param->isDefaultValueAvailable()) {
-                $args[] = $param->getDefaultValue();
-            }
-        }
-        return $reflect->invokeArgs($args);
-    }
-
     // 解析模块的URL地址 [模块/控制器/操作?]参数1=值1&参数2=值2...
     public static function parseUrl($url, $depr = '/')
     {
@@ -436,7 +400,8 @@ class Route
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
         }
-        return $result['route'];
+
+        return ['type' => 'module', 'data' => $result['route']];
     }
 
     // 解析规范的路由地址
@@ -581,12 +546,13 @@ class Route
                 $values = array_values($matches);
                 $url    = preg_replace('/:(\d+)/e', '$values[\\1-1]', $url);
             }
-            header("Location: $url", true, (is_array($route) && isset($route[1])) ? $route[1] : 301);
-            exit;
+            $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
-            // 路由到行为类
-            \think\hook::exec($url, isset($route[1]) ? $route[1] : '', $matches);
-            exit;
+            // 路由到行为
+            $result = ['type' => 'behavior', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
+        } elseif (0 === strpos($url, '@')) {
+            // 路由到控制器
+            $result = ['type' => 'action', 'action' => substr($url, 1), 'params' => $matches];
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
@@ -612,9 +578,10 @@ class Route
                 }
                 $var = array_merge($var, $params);
             }
-            $_GET = array_merge($var, $_GET);
-            return $result['route'];
+            $_GET   = array_merge($var, $_GET);
+            $result = ['type' => 'module', 'data' => $result['route']];
         }
+        return $result;
     }
 
     // 解析正则路由
@@ -632,12 +599,13 @@ class Route
         $url = preg_replace('/:(\d+)/e', '$matches[\\1]', $url);
         if (0 === strpos($url, '/') || 0 === strpos($url, 'http')) {
             // 路由重定向跳转
-            header("Location: $url", true, (is_array($route) && isset($route[1])) ? $route[1] : 301);
-            exit;
+            $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
-            // 路由到行为类
-            \think\hook::exec($url, isset($route[1]) ? $route[1] : '', $matches);
-            exit;
+            // 路由到行为
+            $result = ['type' => 'behavior', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
+        } elseif (0 === strpos($url, '@')) {
+            // 路由到控制器
+            $result = ['type' => 'action', 'action' => substr($url, 1), 'params' => $matches];
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
@@ -658,9 +626,10 @@ class Route
                 }
                 $var = array_merge($var, $params);
             }
-            $_GET = array_merge($var, $_GET);
-            return $result['route'];
+            $_GET   = array_merge($var, $_GET);
+            $result = ['type' => 'module', 'data' => $result['route']];
         }
+        return $result;
     }
 
     // 根据路由别名和参数获取URL地址
