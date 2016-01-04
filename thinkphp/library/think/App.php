@@ -18,6 +18,11 @@ namespace think;
 class App
 {
 
+    // 应用调度机制
+    private static $dispatch = [];
+    // 应用调度类型
+    private static $type = '';
+
     /**
      * 执行应用程序
      * @access public
@@ -72,37 +77,39 @@ class App
             Session::init($config['session']);
         }
 
-        // URL路由检测
-        $dispatch = self::route($config);
+        if (empty(self::$type)) {
+            // 未指定调度类型 则进行URL路由检测
+            self::route($config);
+        }
 
         // 监听app_begin
         APP_HOOK && Hook::listen('app_begin', $dispatch);
 
         // 根据类型调度
-        switch ($dispatch['type']) {
+        switch (self::$type) {
             case 'redirect':
                 // 执行重定向跳转
-                header('Location: ' . $dispatch['url'], true, $dispatch['status']);
+                header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
                 break;
             case 'module':
                 // 模块/控制器/操作
-                $data = self::module($dispatch['data'], $config);
+                $data = self::module(self::$dispatch['data'], $config);
                 break;
             case 'action':
                 // 执行操作
-                $data = Loader::action($dispatch['action'], $dispatch['params']);
+                $data = Loader::action(self::$dispatch['action'], self::$dispatch['params']);
                 break;
             case 'behavior':
                 // 执行行为
-                $data = Hook::exec($dispatch['class'], $dispatch['method'], $dispatch['params']);
+                $data = Hook::exec(self::$dispatch['class'], self::$dispatch['method'], self::$dispatch['params']);
                 break;
             case 'regex_closure':
                 // 正则闭包
-                $data = self::invokeRegex($dispatch['closure'], $dispatch['params']);
+                $data = self::invokeRegex(self::$dispatch['closure'], self::$dispatch['params']);
                 break;
             case 'rule_closure':
                 // 规则闭包
-                $data = self::invokeRule($dispatch['closure'], $dispatch['params']);
+                $data = self::invokeRule(self::$dispatch['closure'], self::$dispatch['params']);
                 break;
             default:
                 throw new Exception('dispatch type not support', 10008);
@@ -411,10 +418,10 @@ class App
             $depr                 = $config['pathinfo_depr'];
             // 还原劫持后真实pathinfo
             $path_info =
-                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                $_SERVER['PATH_INFO'];
+            (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+            (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+            (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+            $_SERVER['PATH_INFO'];
 
             // 路由检测
             if (!empty($config['url_route_on'])) {
@@ -436,7 +443,14 @@ class App
                 $result = Route::parseUrl($path_info, $depr);
             }
         }
-        return $result;
+        // 注册调度机制
+        self::dispatch($result);
     }
 
+    // 指定应用调度类型和参数
+    public static function dispatch($dispatch)
+    {
+        self::$dispatch = $dispatch;
+        self::$type     = $dispatch['type'];
+    }
 }
