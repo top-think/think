@@ -638,6 +638,9 @@ class Mongo extends Driver
      */
     protected function parseOrder($order)
     {
+        if(is_array($order)) {
+            $order = join(',', $order);
+        }
         if (is_string($order)) {
             $array = explode(',', $order);
             $order = [];
