@@ -20,8 +20,6 @@ class App
 
     // 应用调度机制
     private static $dispatch = [];
-    // 应用调度类型
-    private static $type = '';
 
     /**
      * 执行应用程序
@@ -77,7 +75,7 @@ class App
             Session::init($config['session']);
         }
 
-        if (empty(self::$type)) {
+        if (empty(self::$dispatch['type'])) {
             // 未指定调度类型 则进行URL路由检测
             self::route($config);
         }
@@ -86,7 +84,7 @@ class App
         APP_HOOK && Hook::listen('app_begin', $dispatch);
 
         // 根据类型调度
-        switch (self::$type) {
+        switch (self::$dispatch['type']) {
             case 'redirect':
                 // 执行重定向跳转
                 header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
@@ -447,10 +445,9 @@ class App
         self::dispatch($result);
     }
 
-    // 指定应用调度类型和参数
+    // 指定应用调度
     public static function dispatch($dispatch)
     {
         self::$dispatch = $dispatch;
-        self::$type     = $dispatch['type'];
     }
 }
