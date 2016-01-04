@@ -14,7 +14,7 @@ namespace think;
 // ThinkPHP 引导文件
 // 加载基础文件
 require __DIR__ . '/base.php';
-require CORE_PATH . 'loader.php';
+require CORE_PATH . 'Loader.php';
 
 // 注册自动加载
 Loader::register();
