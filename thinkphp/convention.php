@@ -43,7 +43,7 @@ return [
     // 禁止访问模块
     'deny_module_list'      => [COMMON_MODULE, 'runtime'],
     // 默认控制器名
-    'default_controller'    => 'index',
+    'default_controller'    => 'Index',
     // 默认操作名
     'default_action'        => 'index',
     // 默认的空控制器名
