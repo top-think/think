@@ -97,17 +97,17 @@ class Build
             } else {
                 // 生成相关MVC文件
                 foreach ($file as $val) {
-                    $filename  = $modulePath . $path . DS . Loader::parseName($val) . EXT;
+                    $filename  = $modulePath . $path . DS . $val . EXT;
                     $namespace = APP_NAMESPACE . '\\' . ($module ? $module . '\\' : '') . $path;
                     switch ($path) {
-                        case CONTROLLER_LAYER: // 控制器
+                        case CONTROLLER_LAYER:    // 控制器
                             $content = "<?php\nnamespace {$namespace};\n\nclass {$val} {\n\n}";
                             break;
-                        case MODEL_LAYER: // 模型
+                        case MODEL_LAYER:    // 模型
                             $content = "<?php\nnamespace {$namespace};\n\nclass {$val} extends \Think\Model{\n\n}";
                             break;
-                        case VIEW_LAYER: // 视图
-                            $filename = $modulePath . $path . DS . Loader::parseName($val) . '.html';
+                        case VIEW_LAYER:    // 视图
+                            $filename = $modulePath . $path . DS . $val . '.html';
                             if (!is_dir(dirname($filename))) {
                                 // 创建目录
                                 mkdir(dirname($filename), 0777, true);
