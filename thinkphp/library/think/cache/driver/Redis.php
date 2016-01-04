@@ -11,6 +11,7 @@
 
 namespace think\cache\driver;
 
+use think\Cache;
 use think\Exception;
 
 /**
@@ -62,7 +63,7 @@ class Redis
      */
     public function get($name)
     {
-        \think\Cache::$readTimes++;
+        Cache::$readTimes++;
         return $this->handler->get($this->options['prefix'] . $name);
     }
 
@@ -76,7 +77,7 @@ class Redis
      */
     public function set($name, $value, $expire = null)
     {
-        \think\Cache::$writeTimes++;
+        Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

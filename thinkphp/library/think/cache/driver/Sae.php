@@ -11,6 +11,7 @@
 
 namespace think\cache\driver;
 
+use think\Cache;
 use think\Exception;
 
 /**
@@ -56,7 +57,7 @@ class Sae
      */
     public function get($name)
     {
-        \think\Cache::$readTimes++;
+        Cache::$readTimes++;
         return $this->handler->get($_SERVER['HTTP_APPVERSION'] . '/' . $this->options['prefix'] . $name);
     }
 
@@ -70,7 +71,7 @@ class Sae
      */
     public function set($name, $value, $expire = null)
     {
-        \think\Cache::$writeTimes++;
+        Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

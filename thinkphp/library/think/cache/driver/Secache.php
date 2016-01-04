@@ -11,6 +11,8 @@
 
 namespace think\cache\driver;
 
+use think\Cache;
+
 /**
  * Secache缓存驱动
  * @author    liu21st <liu21st@gmail.com>
@@ -53,7 +55,7 @@ class Secache
      */
     public function get($name)
     {
-        \think\Cache::$readTimes++;
+        Cache::$readTimes++;
         $name = $this->options['prefix'] . $name;
         $key  = md5($name);
         $this->handler->fetch($key, $return);
@@ -70,7 +72,7 @@ class Secache
      */
     public function set($name, $value)
     {
-        \think\Cache::$writeTimes++;
+        Cache::$writeTimes++;
         $name = $this->options['prefix'] . $name;
         $key  = md5($name);
         if ($result = $this->handler->store($key, $value)) {

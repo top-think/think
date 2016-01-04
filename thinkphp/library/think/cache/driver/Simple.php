@@ -11,6 +11,8 @@
 
 namespace think\cache\driver;
 
+use think\Cache;
+
 /**
  * 文件类型缓存类
  * @author    liu21st <liu21st@gmail.com>
@@ -59,7 +61,7 @@ class Simple
      */
     public function get($name)
     {
-        \think\Cache::$readTimes++;
+        Cache::$readTimes++;
         $filename = $this->filename($name);
         if (is_file($filename)) {
             return include $filename;
@@ -80,7 +82,7 @@ class Simple
      */
     public function set($name, $value)
     {
-        \think\Cache::$writeTimes++;
+        Cache::$writeTimes++;
         $filename = $this->filename($name);
         // 缓存数据
         $dir = dirname($filename);

@@ -11,6 +11,7 @@
 
 namespace think\cache\driver;
 
+use think\Cache;
 use think\Exception;
 
 /**
@@ -27,7 +28,7 @@ class Apc
     ];
     /*****************************
     需要支持apc_cli模式
-    ******************************/
+     ******************************/
     /**
      * 架构函数
      *
@@ -54,7 +55,7 @@ class Apc
      */
     public function get($name)
     {
-        \think\Cache::$readTimes++;
+        Cache::$readTimes++;
         return apc_fetch($this->options['prefix'] . $name);
     }
 
@@ -68,7 +69,7 @@ class Apc
      */
     public function set($name, $value, $expire = null)
     {
-        \think\Cache::$writeTimes++;
+        Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }

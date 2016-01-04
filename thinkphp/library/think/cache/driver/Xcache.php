@@ -11,6 +11,7 @@
 
 namespace think\cache\driver;
 
+use think\Cache;
 use think\Exception;
 
 /**
@@ -49,7 +50,7 @@ class Xcache
      */
     public function get($name)
     {
-        \think\Cache::$readTimes++;
+        Cache::$readTimes++;
         $name = $this->options['prefix'] . $name;
         if (xcache_isset($name)) {
             return xcache_get($name);
@@ -67,7 +68,7 @@ class Xcache
      */
     public function set($name, $value, $expire = null)
     {
-        \think\Cache::$writeTimes++;
+        Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
