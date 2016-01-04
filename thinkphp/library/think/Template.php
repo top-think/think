@@ -544,7 +544,7 @@ class Template
             $className = $tagLib;
             $tagLib    = substr($tagLib, strrpos($tagLib, '\\') + 1);
         } else {
-            $className = '\\think\\template\\taglib\\' . strtolower($tagLib);
+            $className = '\\think\\template\\taglib\\' . ucwords($tagLib);
         }
         $tLib = new $className($this);
         $tLib->parseTag($content, $hide ? '' : $tagLib);
@@ -590,17 +590,17 @@ class Template
                 $str  = stripslashes($match[1]);
                 $flag = substr($str, 0, 1);
                 switch ($flag) {
-                    case '$': // 解析模板变量 格式 {$varName}
+                    case '$':    // 解析模板变量 格式 {$varName}
                         $this->parseVar($str);
                         $identify = isset($this->config['tpl_var_identify']) ? strtolower($this->config['tpl_var_identify']) : '';
                         switch ($identify) {
-                            case 'array':
+                        case 'array':
                                 $begin = 0;
                                 break;
-                            case 'obj':
+                        case 'obj':
                                 $begin = 1;
                                 break;
-                            default:
+                        default:
                                 // 如果是自动识别.语法，则要查找:之后的?号
                                 $begin = strpos($str, ':');
                         }
@@ -616,8 +616,8 @@ class Template
                                 // 设置了判断条件
                                 // XXX: 加入这句原本是为解决变量末声明的问题，但$name中是多个条件时会解析错误，故注释掉
                                 /*if (strpos($name, '[')) {
-                                $name = 'isset(' . $name . ') && ' . $name;
-                                }*/
+                            $name = 'isset(' . $name . ') && ' . $name;
+                            }*/
                                 $name .= $array[1] . trim($array[2]);
                                 if ('=' == $first) {
                                     // {$varname?='xxx'} $varname为真时才输出xxx
@@ -628,31 +628,31 @@ class Template
                             } elseif ($begin || ')' == substr($name, -1, 1)) {
                                 // $name为对象或是自动识别，或者含有函数
                                 switch ($first) {
-                                    case '?':
+                                case '?':
                                         $str = '<?php echo ' . $name . ' ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
-                                    case '=':
+                                case '=':
                                         $str = '<?php if(' . $name . ') echo ' . substr($str, 1) . '; ?>';
                                         break;
-                                    default:
+                                default:
                                         $str = '<?php echo ' . $name . '?' . $str . '; ?>';
                                 }
                             } else {
                                 // $name为数组
                                 switch ($first) {
-                                    case '?':
+                                case '?':
                                         // {$varname??'xxx'} $varname有定义则输出$varname,否则输出xxx
                                         $str = '<?php echo isset(' . $name . ') ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
-                                    case '=':
+                                case '=':
                                         // {$varname?='xxx'} $varname为真时才输出xxx
                                         $str = '<?php if(!empty(' . $name . ')) echo ' . substr($str, 1) . '; ?>';
                                         break;
-                                    case ':':
+                                case ':':
                                         // {$varname?:'xxx'} $varname为真时输出$varname,否则输出xxx
                                         $str = '<?php echo !empty(' . $name . ') ? ' . $name . $str . '; ?>';
                                         break;
-                                    default:
+                                default:
                                         if (strpos($str, ':')) {
                                             // {$varname ? 'a' : 'b'} $varname为真时输出a,否则输出b
                                             $str = '<?php echo !empty(' . $name . ') ? ' . $str . '; ?>';
@@ -666,20 +666,20 @@ class Template
                             $str = '<?php echo ' . $str . '; ?>';
                         }
                         break;
-                    case ':': // 输出某个函数的结果
+                    case ':':    // 输出某个函数的结果
                         $str = substr($str, 1);
                         $this->parseVar($str);
                         $str = '<?php echo ' . $str . '; ?>';
                         break;
-                    case '~': // 执行某个函数
+                    case '~':    // 执行某个函数
                         $str = substr($str, 1);
                         $str = '<?php ' . $str . '; ?>';
                         break;
                     case '-':
-                    case '+': // 输出计算
+                    case '+':    // 输出计算
                         $str = '<?php echo ' . $str . '; ?>';
                         break;
-                    case '/': // 注释标签
+                    case '/':    // 注释标签
                         $flag2 = substr($str, 1, 1);
                         if ('/' == $flag2 || ('*' == $flag2 && substr(rtrim($str), -2) == '*/')) {
                             $str = '';
@@ -724,13 +724,13 @@ class Template
                         } else {
                             $identify = isset($this->config['tpl_var_identify']) ? strtolower($this->config['tpl_var_identify']) : '';
                             switch ($identify) {
-                                case 'array': // 识别为数组
+                                case 'array':    // 识别为数组
                                     $parseStr = $first . '[\'' . implode('\'][\'', $vars) . '\']';
                                     break;
-                                case 'obj': // 识别为对象
+                                case 'obj':    // 识别为对象
                                     $parseStr = $first . '->' . implode('->', $vars);
                                     break;
-                                default: // 自动判断数组或对象 只支持二维
+                                default:    // 自动判断数组或对象 只支持二维
                                     $parseStr = 'is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars);
                             }
                         }
@@ -775,10 +775,10 @@ class Template
                 // 模板函数过滤
                 $fun = trim($args[0]);
                 switch ($fun) {
-                    case 'default': // 特殊模板函数
+                    case 'default':    // 特殊模板函数
                         $name = '(isset(' . $name . ') && (' . $name . ' !== \'\'))?(' . $name . '):' . $args[1];
                         break;
-                    default: // 通用模板函数
+                    default:    // 通用模板函数
                         if (!in_array($fun, $template_deny_funs)) {
                             if (isset($args[1])) {
                                 if (strstr($args[1], '###')) {

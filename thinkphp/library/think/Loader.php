@@ -53,7 +53,7 @@ class Loader
             } else {
                 return;
             }
-            $filename = $path . str_replace('\\', DS, str_replace('\\_', '\\', strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $class), "_")))) . EXT;
+            $filename = $path . str_replace('\\', DS, $class) . EXT;
             if (is_file($filename)) {
                 include $filename;
             }
