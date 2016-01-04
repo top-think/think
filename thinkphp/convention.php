@@ -47,7 +47,7 @@ return [
     // 默认操作名
     'default_action'        => 'index',
     // 默认的空控制器名
-    'empty_controller'      => 'error',
+    'empty_controller'      => 'Error',
     // 操作方法后缀
     'action_suffix'         => '',
     // 操作绑定到类
@@ -95,7 +95,7 @@ return [
     // 默认跳转页面对应的模板文件
     'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
     // 默认的模板引擎
-    'template_engine'       => 'think',
+    'template_engine'       => 'Think',
 
     // +----------------------------------------------------------------------
     // | 异常及错误设置
