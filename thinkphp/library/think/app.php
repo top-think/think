@@ -94,7 +94,7 @@ class App
                 break;
             case 'behavior':
                 // 执行行为
-                $data = \think\hook::exec($dispatch['class'], $dispatch['method'], $dispatch['params']);
+                $data = Hook::exec($dispatch['class'], $dispatch['method'], $dispatch['params']);
                 break;
             case 'regex_closure':
                 // 正则闭包
@@ -152,6 +152,7 @@ class App
     private static function module($result, $config)
     {
         if (APP_MULTI_MODULE) {
+            // 多模块部署
             $module = strtolower($result[0] ?: $config['default_module']);
             if ($maps = $config['url_module_map']) {
                 if (isset($maps[$module])) {
@@ -179,6 +180,7 @@ class App
                 throw new Exception('module [ ' . MODULE_NAME . ' ] not exists ', 10005);
             }
         } else {
+            // 单一模块部署
             define('MODULE_NAME', '');
             define('MODULE_PATH', APP_PATH);
             define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
@@ -351,18 +353,6 @@ class App
             $_SERVER['PATH_INFO'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
         }
 
-        // 检测域名部署
-        if (!IS_CLI && !empty($config['url_domain_deploy'])) {
-            if ($config['url_domain_rules']) {
-                Route::domain($config['url_domain_rules']);
-            }
-            if ($match = Route::checkDomain()) {
-                (!defined('BIND_MODULE') && !empty($match[0])) && define('BIND_MODULE', $match[0]);
-                (!defined('BIND_CONTROLLER') && !empty($match[1])) && define('BIND_CONTROLLER', $match[1]);
-                (!defined('BIND_ACTION') && !empty($match[2])) && define('BIND_ACTION', $match[2]);
-            }
-        }
-
         // 监听path_info
         APP_HOOK && Hook::listen('path_info');
         // 分析PATHINFO信息
@@ -378,7 +368,7 @@ class App
     }
 
     /**
-     * URL路由检测
+     * URL路由检测（根据PATH_INFO)
      * @access public
      * @param $config
      * @throws Exception
@@ -387,6 +377,20 @@ class App
     {
         // 解析PATH_INFO
         self::parsePathinfo($config);
+
+        // 检测域名部署
+        if (!IS_CLI && !empty($config['url_domain_deploy'])) {
+            if ($config['url_domain_rules']) {
+                // 注册域名路由规则
+                Route::domain($config['url_domain_rules']);
+            }
+            // 检测域名路由
+            if ($match = Route::checkDomain()) {
+                (!defined('BIND_MODULE') && !empty($match[0])) && define('BIND_MODULE', $match[0]);
+                (!defined('BIND_CONTROLLER') && !empty($match[1])) && define('BIND_CONTROLLER', $match[1]);
+                (!defined('BIND_ACTION') && !empty($match[2])) && define('BIND_ACTION', $match[2]);
+            }
+        }
 
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
@@ -398,11 +402,11 @@ class App
             define('__INFO__', $_SERVER['PATH_INFO']);
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'], PATHINFO_EXTENSION)));
-
+            // 检测URL禁用后缀
             if ($config['url_deny_suffix'] && preg_match('/\.(' . $config['url_deny_suffix'] . ')$/i', __INFO__)) {
                 throw new Exception('url suffix deny');
             }
-            // 去除URL后缀
+            // 去除正常的URL后缀
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
             $depr                 = $config['pathinfo_depr'];
             // 还原劫持后真实pathinfo
@@ -414,20 +418,21 @@ class App
 
             // 路由检测
             if (!empty($config['url_route_on'])) {
-                // 开启路由 则检测路由配置
+                // 开启路由 注册路由定义文件
                 Route::register(!empty($config['route']) ? $config['route'] : null);
+                // 路由检测（根据路由定义返回不同的URL调度）
                 $result = Route::check($path_info, $depr);
                 if (false === $result) {
                     // 路由无效
                     if ($config['url_route_must']) {
                         throw new Exception('route not define ');
                     } else {
-                        // 继续分析URL
+                        // 继续分析为模块/控制器/操作/参数...方式URL
                         $result = Route::parseUrl($path_info, $depr);
                     }
                 }
             } else {
-                // 分析URL地址
+                // 分析URL地址 采用 模块/控制器/操作/参数...
                 $result = Route::parseUrl($path_info, $depr);
             }
         }

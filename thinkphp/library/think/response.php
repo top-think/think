@@ -176,11 +176,8 @@ class Response
             'wait' => $wait,
         ];
 
-        if (IS_AJAX) {
-            $type = Config::get('default_ajax_return');
-        } else {
-            $type = Config::get('default_return_type');
-        }
+        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
+
         if ('html' == $type) {
             $result = \think\View::instance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
@@ -212,11 +209,8 @@ class Response
             'wait' => $wait,
         ];
 
-        if (IS_AJAX) {
-            $type = Config::get('default_ajax_return');
-        } else {
-            $type = Config::get('default_return_type');
-        }
+        $type = IS_AJAX ? Config::get('default_ajax_return') : Config::get('default_return_type');
+
         if ('html' == $type) {
             $result = \think\View::instance()->fetch(Config::get('dispatch_jump_tmpl'), $result);
         }
