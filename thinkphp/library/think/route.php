@@ -267,7 +267,7 @@ class Route
                 }
 
                 // 行为检测
-                if (!empty($option['behavior']) && false === \think\hook::exec($option['behavior'])) {
+                if (!empty($option['behavior']) && false === Hook::exec($option['behavior'])) {
                     continue;
                 }
 
@@ -349,7 +349,6 @@ class Route
      */
     private static function checkRule($rule, $route, $url, $pattern)
     {
-
         $len1 = substr_count($url, '/');
         $len2 = substr_count($rule, '/');
         if ($len1 >= $len2 || strpos($rule, '[')) {
@@ -363,7 +362,6 @@ class Route
             }
             $pattern = array_merge(self::$pattern, $pattern);
             if (false !== $match = self::match($url, $rule, $pattern)) {
-
                 if ($route instanceof \Closure) {
                     // 执行闭包
                     return ['type' => 'rule_closure', 'closure' => $route, 'params' => $match];
@@ -400,7 +398,6 @@ class Route
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
         }
-
         return ['type' => 'module', 'data' => $result['route']];
     }
 
@@ -456,6 +453,7 @@ class Route
 
         foreach ($m2 as $key => $val) {
             if (0 === strpos($val, '[:')) {
+                // 可选参数
                 $val = substr($val, 1, -1);
             }
             if (0 === strpos($val, ':')) {
@@ -470,12 +468,6 @@ class Route
                         return false;
                     }
                     $name = substr($val, 1, -2);
-                } elseif ($pos = strpos($val, '^')) {
-                    $array = explode('-', substr(strstr($val, '^'), 1));
-                    if (in_array($m1[$key], $array)) {
-                        return false;
-                    }
-                    $name = substr($val, 1, $pos - 1);
                 } else {
                     $name = substr($val, 1);
                 }
@@ -522,9 +514,7 @@ class Route
                     $fun  = substr($item, $pos + 1);
                     $item = substr($item, 0, $pos);
                 }
-                if ($pos = strpos($item, '^')) {
-                    $var = substr($item, 1, $pos - 1);
-                } elseif (strpos($item, '\\')) {
+                if (strpos($item, '\\')) {
                     $var = substr($item, 1, -2);
                 } else {
                     $var = substr($item, 1);
@@ -533,7 +523,6 @@ class Route
                 if (!empty($fun)) {
                     $matches[$var] = $fun($matches[$var]);
                 }
-
             } else {
                 // 过滤URL中的静态变量
                 array_shift($paths);
@@ -566,19 +555,7 @@ class Route
             }
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
-            if (!empty($paths)) {
-                preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {$var[strtolower($match[1])] = strip_tags($match[2]);}, implode('/', $paths));
-            }
-            // 解析路由自动传人参数
-            if (is_array($route) && isset($route[1])) {
-                if (is_string($route[1])) {
-                    parse_str($route[1], $params);
-                } else {
-                    $params = $route[1];
-                }
-                $var = array_merge($var, $params);
-            }
-            $_GET   = array_merge($var, $_GET);
+            self::parseUrlParams(implode('/', $paths), $var, $route);
             $result = ['type' => 'module', 'data' => $result['route']];
         }
         return $result;
@@ -612,24 +589,30 @@ class Route
             $var    = $result['var'];
             // 解析剩余的URL参数
             $regx = substr_replace($pathinfo, '', 0, strlen($matches[0]));
-            if ($regx) {
-                preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
-                    $var[strtolower($match[1])] = strip_tags($match[2]);
-                }, $regx);
-            }
-            // 解析路由自动传人参数
-            if (is_array($route) && isset($route[1])) {
-                if (is_string($route[1])) {
-                    parse_str($route[1], $params);
-                } else {
-                    $params = $route[1];
-                }
-                $var = array_merge($var, $params);
-            }
-            $_GET   = array_merge($var, $_GET);
+            self::parseUrlParams($regx, $var, $route);
             $result = ['type' => 'module', 'data' => $result['route']];
         }
         return $result;
+    }
+
+    // 解析URL地址中的参数到$_GET
+    private static function parseUrlParams($url, $var, $route)
+    {
+        if ($url) {
+            preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
+                $var[strtolower($match[1])] = strip_tags($match[2]);
+            }, $url);
+        }
+        // 解析路由自动传人参数
+        if (is_array($route) && isset($route[1])) {
+            if (is_string($route[1])) {
+                parse_str($route[1], $params);
+            } else {
+                $params = $route[1];
+            }
+            $var = array_merge($var, $params);
+        }
+        $_GET = array_merge($var, $_GET);
     }
 
     // 根据路由别名和参数获取URL地址
