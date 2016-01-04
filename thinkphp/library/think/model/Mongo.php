@@ -13,15 +13,15 @@ namespace think\model;
 use think\Lang;
 use think\Loader;
 
-T('modle/adv');
+T('modle/Adv');
 
 /**
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
  */
-class Mongo extends \Think\Model
+class Mongo extends \think\Model
 {
-    use \traits\model\adv;
+    use \traits\model\Adv;
 
     // 主键类型
     const TYPE_OBJECT = 1;
@@ -243,7 +243,7 @@ class Mongo extends \Think\Model
             if (true !== $sepa) {
                 // 当sepa指定为true的时候 返回所有数据
                 $options['limit'] = is_numeric($sepa) ? $sepa : 1;
-            } 
+            }
             // 查找一条记录
             $result = $this->db->find($options);
             if (!empty($result)) {

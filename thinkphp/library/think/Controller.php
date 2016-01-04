@@ -11,13 +11,13 @@
 
 namespace think;
 
-T('controller/view');
-T('controller/jump');
+T('controller/View');
+T('controller/Jump');
 
 class Controller
 {
-    use \traits\controller\jump;
-    use \traits\controller\view;
+    use \traits\controller\Jump;
+    use \traits\controller\View;
 
     /**
      * 前置操作方法列表
