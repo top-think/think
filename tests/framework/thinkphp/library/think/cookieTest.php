@@ -34,7 +34,7 @@ class cookieTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $reflectedClass          = new ReflectionClass('\think\cookie');
+        $reflectedClass          = new ReflectionClass('\think\Cookie');
         $reflectedPropertyConfig = $reflectedClass->getProperty('config');
         $reflectedPropertyConfig->setAccessible(true);
         $reflectedPropertyConfig->setValue($this->default);
