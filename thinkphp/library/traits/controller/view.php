@@ -32,6 +32,30 @@ trait View
             $this->view = \think\View::instance(Config::get()); // 只能这样写，不然view会冲突
         }
     }
+    
+    /**
+     * 模板变量赋值
+     * @access public
+     * @param string $name  变量名
+     * @param mixed  $value 变量值
+     */
+    public function __set($name, $value)
+    {
+        $this->initView();
+        $this->view->$name = $value;
+    }
+
+    /**
+     * 取得模板显示变量的值
+     * @access protected
+     * @param string $name 模板变量
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        $this->initView();
+        return $this->view->$name;
+    }
 
     /**
      * 加载模板和页面输出 可以返回输出内容
