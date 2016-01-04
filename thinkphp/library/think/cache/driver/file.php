@@ -24,7 +24,7 @@ class File
         'path_level'    => 1,
         'prefix'        => '',
         'length'        => 0,
-        'path'          => '',
+        'path'          => LOG_PATH,
         'data_compress' => false,
     ];
 

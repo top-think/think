@@ -115,7 +115,7 @@ return [
     // +----------------------------------------------------------------------
 
     'log'                   => [
-        'type' => 'File',
+        'type' => 'File', // 支持 file socket trace sae
         'path' => LOG_PATH,
     ],
 
