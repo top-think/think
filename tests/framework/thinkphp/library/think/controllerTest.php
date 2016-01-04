@@ -11,7 +11,7 @@
 
 namespace think;
 
-require_once CORE_PATH . '../../help.php';
+require_once CORE_PATH . '../../helper.php';
 
 class Foo extends \think\Controller
 {
