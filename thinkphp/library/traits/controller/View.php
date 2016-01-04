@@ -2,10 +2,10 @@
 
 /**
  * 用法：
- * T('controller/view');
+ * T('controller/View');
  * class index
  * {
- *     use \traits\controller\view;
+ *     use \traits\controller\View;
  *     public function index(){
  *         $this->assign();
  *         $this->show();
