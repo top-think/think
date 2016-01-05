@@ -163,6 +163,11 @@ class Route
     // 检测子域名部署
     public static function checkDomain()
     {
+        // 检测是否开启子域名支持
+        if(!Config::get('url_domain_deploy')) return;
+        $root = Config::get('url_domain_root');
+        // 检测是否配置域名根
+        if(empty($root)) return;
         $rules = self::$domain;
         // 开启子域名部署 支持二级和三级域名
         if (!empty($rules)) {
@@ -171,7 +176,8 @@ class Route
                 $rule = $rules[$_SERVER['HTTP_HOST']];
             } else {
                 // 子域名配置
-                $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);
+                $domain = rtrim(rtrim($_SERVER['HTTP_HOST'], $root), '.');
+                $domain = explode('.', $domain);
                 if (!empty($domain)) {
                     $subDomain = implode('.', $domain);
                     $domain2   = array_pop($domain); // 二级域名
