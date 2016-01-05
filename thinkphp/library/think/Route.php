@@ -30,6 +30,8 @@ class Route
     private static $pattern = [];
     // 路由别名 用于自动生成
     private static $alias = [];
+    // 域名绑定
+    private static $bind = [];
 
     // 添加URL映射规则
     public static function map($map, $route = '')
@@ -76,7 +78,11 @@ class Route
             }
         } else {
             if (is_array($rule)) {
-
+                // 检查域名部署
+                if (isset($rule['[__domain__'])) {
+                    self::domain($rule['__domain__']);
+                    unset($rule['__domain__']);
+                }
                 // 检查变量规则
                 if (isset($rule['__pattern__'])) {
                     self::pattern($rule['__pattern__']);
@@ -155,9 +161,9 @@ class Route
     }
 
     // 检测子域名部署
-    public static function checkDomain($rules = '')
+    public static function checkDomain()
     {
-        $rules = $rules ?: self::$domain;
+        $rules = self::$domain;
         // 开启子域名部署 支持二级和三级域名
         if (!empty($rules)) {
             if (isset($rules[$_SERVER['HTTP_HOST']])) {
@@ -194,10 +200,9 @@ class Route
                 // '子域名'=>'模块[/控制器/操作]'
                 // '子域名'=>['模块[/控制器/操作]','var1=a&var2=b&var3=*'];
                 if ($rule instanceof \Closure) {
-                    // 执行闭包并中止
-                    $result = self::invokeRule($rule);
-                    // 返回 [模块,控制器,操作]
-                    return is_array($result) ? $result : exit($result);
+                    // 执行闭包
+                    self::$bind = self::invokeRule($rule);
+                    return;
                 }
                 if (is_array($rule)) {
                     $result = $rule[0];
@@ -216,9 +221,18 @@ class Route
                 } else {
                     $result = $rule;
                 }
+                if (0 === strpos($result, '\\')) {
+                    // 绑定到行为
+                    self::$bind = [];
+                } elseif (0 === strpos($result, '@')) {
+                    // 绑定到控制器
+                    self::$bind = [];
+                } else {
+                    // 绑定到模块/控制器
+                    self::$bind = explode('/', $result);
+                }
             }
         }
-        return isset($result) ? explode('/', $result) : null;
     }
 
     // 检测URL路由
@@ -232,6 +246,9 @@ class Route
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
         }
+        // 检测域名部署
+        self::checkDomain();
+
         if (isset(self::$map[$url])) {
             // URL映射
             return self::parseUrl(self::$map[$url], $depr);
@@ -255,6 +272,10 @@ class Route
                 }
                 // 伪静态后缀检测
                 if (isset($option['ext']) && __EXT__ != $option['ext']) {
+                    continue;
+                }
+                // 域名检测
+                if (isset($option['domain']) && $_SERVER['HTTP_HOST'] != $option['domain']) {
                     continue;
                 }
                 // https检测
@@ -398,7 +419,7 @@ class Route
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
         }
-        return ['type' => 'module', 'data' => $result['route']];
+        return ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
     }
 
     // 解析规范的路由地址
@@ -556,7 +577,7 @@ class Route
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var, $route);
-            $result = ['type' => 'module', 'data' => $result['route']];
+            $result = ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
         }
         return $result;
     }
@@ -590,7 +611,7 @@ class Route
             // 解析剩余的URL参数
             $regx = substr_replace($pathinfo, '', 0, strlen($matches[0]));
             self::parseUrlParams($regx, $var, $route);
-            $result = ['type' => 'module', 'data' => $result['route']];
+            $result = ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
         }
         return $result;
     }
