@@ -91,7 +91,7 @@ class App
                 break;
             case 'module':
                 // 模块/控制器/操作
-                $data = self::module(self::$dispatch['data'], $config);
+                $data = self::module(self::$dispatch['data'], self::$dispatch['bind'], $config);
                 break;
             case 'action':
                 // 执行操作
@@ -154,9 +154,14 @@ class App
     }
 
     // 执行 模块/控制器/操作
-    private static function module($result, $config)
+    private static function module($result, $bind, $config)
     {
         if (APP_MULTI_MODULE) {
+            if (!empty($bind)) {
+                (!defined('BIND_MODULE') && !empty($bind[0])) && define('BIND_MODULE', $bind[0]);
+                (!defined('BIND_CONTROLLER') && !empty($bind[1])) && define('BIND_CONTROLLER', $bind[1]);
+                (!defined('BIND_ACTION') && !empty($bind[2])) && define('BIND_ACTION', $bind[2]);
+            }
             // 多模块部署
             $module = strtolower($result[0] ?: $config['default_module']);
             if ($maps = $config['url_module_map']) {
@@ -383,25 +388,11 @@ class App
         // 解析PATH_INFO
         self::parsePathinfo($config);
 
-        // 检测域名部署
-        if (!IS_CLI && !empty($config['url_domain_deploy'])) {
-            if ($config['url_domain_rules']) {
-                // 注册域名路由规则
-                Route::domain($config['url_domain_rules']);
-            }
-            // 检测域名路由
-            if ($match = Route::checkDomain()) {
-                (!defined('BIND_MODULE') && !empty($match[0])) && define('BIND_MODULE', $match[0]);
-                (!defined('BIND_CONTROLLER') && !empty($match[1])) && define('BIND_CONTROLLER', $match[1]);
-                (!defined('BIND_ACTION') && !empty($match[2])) && define('BIND_ACTION', $match[2]);
-            }
-        }
-
         if (empty($_SERVER['PATH_INFO'])) {
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
             define('__EXT__', '');
-            $result = ['type' => 'module', 'data' => [null, null, null]];
+            $result = ['type' => 'module', 'data' => [null, null, null], 'bind' => []];
         } else {
             $_SERVER['PATH_INFO'] = trim($_SERVER['PATH_INFO'], '/');
             define('__INFO__', $_SERVER['PATH_INFO']);
@@ -416,10 +407,10 @@ class App
             $depr                 = $config['pathinfo_depr'];
             // 还原劫持后真实pathinfo
             $path_info =
-            (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-            (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-            (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-            $_SERVER['PATH_INFO'];
+                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
+                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
+                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
+                $_SERVER['PATH_INFO'];
 
             // 路由检测
             if (!empty($config['url_route_on'])) {
