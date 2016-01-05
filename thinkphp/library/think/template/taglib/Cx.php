@@ -11,7 +11,7 @@
 
 namespace think\template\taglib;
 
-use think\template\Taglib;
+use think\template\TagLib;
 
 /**
  * CX标签库解析类
@@ -149,7 +149,7 @@ class Cx extends Taglib
         }
         $parseStr .= 'if(is_array(' . $name . ')): ';
         // 设置了输出数组长度
-        if ($offset != 0 || $length != 'null') {
+        if (0 != $offset || 'null' != $length) {
             if (!isset($var)) {
                 $var = '$_' . uniqid();
             }
@@ -167,7 +167,7 @@ class Cx extends Taglib
         if (isset($tag['index'])) {
             $index = $tag['index'];
             if (isset($tag['mod'])) {
-                $mod = (int)$tag['mod'];
+                $mod = (int) $tag['mod'];
                 $parseStr .= '$mod = ($' . $index . ' % ' . $mod . '); ';
             }
             $parseStr .= '++$' . $index . '; ';
