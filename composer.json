@@ -18,15 +18,11 @@
         "johnkary/phpunit-speedtrap": "^1.0",
         "mikey179/vfsStream": "~1.6",
         "phploc/phploc": "*",
-        "phpunit/phpunit": "~4.8",
+        "phpunit/phpunit": "4.8.*",
         "sebastian/phpcpd": "*",
         "squizlabs/php_codesniffer": "2.*"
     },
     "config": {
       "vendor-dir": "thinkphp/vendor"
-    },
-    "repositories": [
-        {"type": "composer", "url": "http://packagist.phpcomposer.com"},
-        {"packagist": false}
-    ]
+    }
 }

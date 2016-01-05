@@ -9,6 +9,8 @@ return [
     'app_status'            => '',
     // 扩展配置文件
     'extra_config_list'     => ['database', 'route'],
+    // 扩展函数文件
+    'extra_file_list'       => [THINK_PATH . 'helper' . EXT],
     // 默认输出类型
     'default_return_type'   => 'html',
     // 默认语言
@@ -41,11 +43,11 @@ return [
     // 禁止访问模块
     'deny_module_list'      => [COMMON_MODULE, 'runtime'],
     // 默认控制器名
-    'default_controller'    => 'index',
+    'default_controller'    => 'Index',
     // 默认操作名
     'default_action'        => 'index',
     // 默认的空控制器名
-    'empty_controller'      => 'error',
+    'empty_controller'      => 'Error',
     // 操作方法后缀
     'action_suffix'         => '',
     // 操作绑定到类
@@ -93,7 +95,7 @@ return [
     // 默认跳转页面对应的模板文件
     'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
     // 默认的模板引擎
-    'template_engine'       => 'think',
+    'template_engine'       => 'Think',
 
     // +----------------------------------------------------------------------
     // | 异常及错误设置
@@ -113,7 +115,7 @@ return [
     // +----------------------------------------------------------------------
 
     'log'                   => [
-        'type' => 'File',
+        'type' => 'File', // 支持 file socket trace sae
         'path' => LOG_PATH,
     ],
 

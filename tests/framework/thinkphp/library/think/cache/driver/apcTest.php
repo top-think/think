@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,6 +13,7 @@
  * @author    mahuan <mahuan@d1web.top>
  */
 namespace tests\framework\thinkphp\library\think\cache\driver;
+
 class apcTest extends CacheTestCase
 {
     private $_cacheInstance = null;
@@ -21,7 +22,7 @@ class apcTest extends CacheTestCase
      */
     protected function setUp()
     {
-        S(array('type'=>'apc','expire'=>2));
+        \think\Cache::connect(array('type' => 'apc', 'expire' => 2));
     }
     /**
      * @return ApcCache
@@ -33,7 +34,7 @@ class apcTest extends CacheTestCase
         } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
             $this->markTestSkipped("APC模块没有开启，已跳过测试！");
         }
-        if ($this->_cacheInstance === null) {
+        if (null === $this->_cacheInstance) {
             $this->_cacheInstance = new \think\cache\driver\Apc();
         }
         return $this->_cacheInstance;

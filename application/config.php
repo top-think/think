@@ -13,7 +13,8 @@
 return [
     'url_route_on' => true,
     'log'          => [
-        'type'             => 'socket',
+        'type'             => 'trace', // 支持 socket trace file
+        // 以下为socket类型配置
         'host'             => '111.202.76.133',
         //日志强制记录到配置的client_id
         'force_client_id'  => '',

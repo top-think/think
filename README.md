@@ -18,7 +18,7 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
  + 配置文件可分离
  + 简化扩展机制
  + API支持完善
- + 整合SocketLog用于支持远程调试
+ + 改进的Log类
  + 命令行访问支持
  + REST支持
  + 引导文件支持
@@ -50,33 +50,38 @@ www  WEB部署目录（或者子目录）
 │  │  ├─controller      控制器目录
 │  │  ├─model           模型目录
 │  │  ├─view            视图目录
-│  │  ├─ ...            更多类库目录
+│  │  └─ ...            更多类库目录
+│  │
 │  ├─common.php         公共函数文件
+│  ├─config.php         公共配置文件
 │  ├─route.php          路由配置文件
-│  ├─database.php       数据库配置文件
-│  └─config.php         公共配置文件
+│  └─database.php       数据库配置文件
+│
 ├─public                WEB目录（对外访问目录）
 │  ├─index.php          入口文件
 │  ├─.htaccess          用于apache的重写
-│  └─router.php         快速测试文件
+│  └─router.php         快速测试文件（用于PHP内置webserver）
+│
 ├─thinkphp              框架系统目录
 │  ├─library            框架类库目录
 │  │  ├─behavior        行为类库目录
-│  │  ├─com             Com类库包目录
 │  │  ├─think           Think类库包目录
 │  │  ├─org             Org类库包目录
-│  │  ├─ ...            更多类库目录
-│  ├─traits             系统Traits目录
+│  │  ├─traits          系统Trait目录
+│  │  └─ ...            更多类库目录
+│  │
+│  ├─extend             扩展类库目录（可选）
 │  ├─vendor             第三方类库目录
 │  ├─mode               应用模式目录
 │  ├─tpl                系统模板目录
-│  ├─base.php           基础文件
+│  ├─base.php           基础定义文件
+│  ├─help.php           助手函数文件
 │  ├─convention.php     框架惯例配置文件
 │  └─start.php          框架入口文件
 ~~~
 
 > router.php用于php自带webserver支持，可用于快速测试
-> 启动命令：php -S localhost:8888 -t . router.php
+> 切换到public目录后，启动命令：php -S localhost:8888  router.php
 > 上面的目录结构和名称是可以改变的，这取决于你的入口文件和配置参数。
 
 ## 命名规范
@@ -88,6 +93,7 @@ ThinkPHP5的命名规范如下：
 *   目录和文件名采用小写+下划线，并且以小写字母开头；
 *   类库、函数文件统一以`.php`为后缀；
 *   类的文件名均以命名空间定义，并且命名空间的路径和类库文件所在路径一致；
+*   类名和类文件名保持一致，统一采用驼峰法命名（首字母大写）；
 
 ### 函数和类、属性命名
 *   类的命名采用驼峰法，并且首字母大写，例如 `User`、`UserType`，不需要添加后缀，例如UserController应该直接命名为User；
@@ -103,12 +109,6 @@ ThinkPHP5的命名规范如下：
 ### 数据表和字段
 *   数据表和字段采用小写加下划线方式命名，并注意字段名不要以下划线开头，例如 think_user 表和 user_name字段，类似 _username 这样的数据表字段可能会被过滤。
 
-### 实例化规范
-在ThinkPHP5.0中实例化一个类，可以采用：
-`\Think\Route` 或者`\think\Route`都是有效的，并且都是加载`think\route.php`文件，如果实例化一个
-`\Org\UploadFile`类的话会自动加载
-`org\upload_file.php`文件。
-
 ## 参与开发
 注册并登录 Github 帐号， fork 本项目并进行改动。
 
@@ -123,10 +123,25 @@ ThinkPHP5的命名规范如下：
 7. push 你的本地仓库到 github；
 8. 提交 pull requests；
 9. 等待 CI 验证（若不通过则重复 5~7，github 会自动更新你的 pull requests）；
-10. 等待管理员处理。
+10. 等待管理员处理，并及时 rebase 你的分支到上游 master 分支（若上游 master 分支有修改），若有必要，可以 `git push -f` 强行推送 rebase 后的分支到自己的 github fork。
 
 进行改动时请注意：
 * 本项目代码格式化标准选用 **PSR-2**；
+* 类名和类文件名遵循 **PSR-4**；
 * 若对上述修改流程有任何不清楚的地方，请查阅 GIT 教程，如 [这个](http://backlogtool.com/git-guide/cn/)；
 * 对于代码**不同方面**的修改，请在自己 fork 的项目中**创建不同的分支**（原因参见`修改流程`第9条备注部分）；
-* 对于 Issues 的处理，请在 pull requests 时使用诸如 `fix #xxx(Issue ID)` 的 title 直接关闭 issue。
+* 对于 Issues 的处理，请在 pull requests 时使用诸如 `修复 #xxx(Issue ID)` 的 title 直接关闭 issue。
+
+## 版权信息
+
+ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
+
+本项目包含的第三方源码和二进制文件之版权信息另行标注。
+
+版权所有Copyright © 2006-2016 by ThinkPHP (http://thinkphp.cn)
+
+All rights reserved。
+
+ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
+
+更多细节参阅 [LICENSE.txt](LICENSE.txt)

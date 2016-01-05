@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,19 +11,18 @@
 
 /**
  * Xml配置测试
+ * 
  * @author    7IN0SAN9 <me@7in0.me>
  */
 
 namespace think\config\driver;
 
-use think\app;
 use think\config;
 
 class xmlTest extends \PHPUnit_Framework_TestCase
 {
     public function testParse()
     {
-        App::run();
         Config::parse('<?xml version="1.0"?><document><xmlstring>1</xmlstring></document>', 'xml');
         $this->assertEquals(1, Config::get('xmlstring'));
         Config::reset();

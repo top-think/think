@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -14,15 +14,15 @@ namespace think;
 // ThinkPHP 引导文件
 // 加载基础文件
 require __DIR__ . '/base.php';
-require CORE_PATH . 'loader.php';
+require CORE_PATH . 'Loader.php';
 
 // 注册自动加载
 Loader::register();
 
 // 注册错误和异常处理机制
-register_shutdown_function(['think\Error', 'appShutdown']);
-set_error_handler(['think\Error', 'appError']);
-set_exception_handler(['think\Error', 'appException']);
+register_shutdown_function('think\Error::appShutdown');
+set_error_handler('think\Error::appError');
+set_exception_handler('think\Error::appException');
 
 // 加载模式定义文件
 $mode = require MODE_PATH . APP_MODE . EXT;
@@ -46,6 +46,13 @@ if (APP_HOOK && isset($mode['tags'])) {
 if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
     Build::run(include APP_PATH . 'build.php');
 }
-Loader::addNamespace('tests', TEST_PATH);
-// 执行应用
-!IN_UNIT_TEST && App::run();
+if (isset($mode['run'])) {
+    call_user_func($mode['run']);
+} else {
+    if (IN_UNIT_TEST) {
+        Loader::addNamespace('tests', TEST_PATH);
+    } else {
+        // 执行应用
+        App::run();
+    }
+}

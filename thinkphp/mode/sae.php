@@ -12,10 +12,9 @@
 /**
  * ThinkPHP SAE应用模式定义文件
  */
-$st = new SaeStorage();
 return [
     // 配置文件
-    'config' => [
+    'config' => array_merge(include THINK_PATH . 'convention' . EXT, [
         /* 数据库设置 */
         'database'         => [
             // 数据库类型
@@ -52,26 +51,49 @@ return [
             'type' => 'Sae',
         ],
         'cache'            => [
-            'type' => 'Sae',
+            'type'   => 'Sae',
+            'path'   => CACHE_PATH,
+            'prefix' => '',
+            'expire' => 0,
         ],
         'file_upload_type' => 'Sae',
         'template'         => [
             'compile_type' => 'Sae',
         ],
-
-    ],
+        'compile_type'     => 'Sae',
+    ]),
 
     // 别名定义
     'alias'  => [
-        'think\Log'                 => CORE_PATH . 'log' . EXT,
-        'think\log\driver\Sae'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'sae' . EXT,
-        'think\Exception'           => CORE_PATH . 'exception' . EXT,
-        'think\Model'               => CORE_PATH . 'model' . EXT,
-        'think\Db'                  => CORE_PATH . 'db' . EXT,
-        'think\Template'            => CORE_PATH . 'template' . EXT,
-        'think\Cache'               => CORE_PATH . 'cache' . EXT,
-        'think\cache\driver\Sae'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'sae' . EXT,
-        'think\template\driver\Sae' => CORE_PATH . 'template' . DS . 'driver' . DS . 'sae' . EXT,
+        'think\App'                  => CORE_PATH . 'App' . EXT,
+        'think\Build'                => CORE_PATH . 'Build' . EXT,
+        'think\Cache'                => CORE_PATH . 'Cache' . EXT,
+        'think\Config'               => CORE_PATH . 'Config' . EXT,
+        'think\Controller'           => CORE_PATH . 'Controller' . EXT,
+        'think\Cookie'               => CORE_PATH . 'Cookie' . EXT,
+        'think\Db'                   => CORE_PATH . 'Db' . EXT,
+        'think\Debug'                => CORE_PATH . 'Debug' . EXT,
+        'think\Error'                => CORE_PATH . 'Error' . EXT,
+        'think\Exception'            => CORE_PATH . 'Exception' . EXT,
+        'think\Hook'                 => CORE_PATH . 'Hook' . EXT,
+        'think\Input'                => CORE_PATH . 'Input' . EXT,
+        'think\Lang'                 => CORE_PATH . 'Lang' . EXT,
+        'think\Log'                  => CORE_PATH . 'Log' . EXT,
+        'think\Model'                => CORE_PATH . 'Model' . EXT,
+        'think\Response'             => CORE_PATH . 'Response' . EXT,
+        'think\Route'                => CORE_PATH . 'Route' . EXT,
+        'think\Session'              => CORE_PATH . 'Session' . EXT,
+        'think\Template'             => CORE_PATH . 'Template' . EXT,
+        'think\Url'                  => CORE_PATH . 'Url' . EXT,
+        'think\View'                 => CORE_PATH . 'View' . EXT,
+        'think\db\Driver'            => CORE_PATH . 'db' . DS . 'Driver' . EXT,
+        'think\view\driver\Think'    => CORE_PATH . 'view' . DS . 'driver' . DS . 'Think' . EXT,
+        'think\template\driver\File' => CORE_PATH . 'template' . DS . 'driver' . DS . 'File' . EXT,
+        'think\log\driver\File'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'File' . EXT,
+        'think\cache\driver\File'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'File' . EXT,
+        'think\log\driver\Sae'       => CORE_PATH . 'log' . DS . 'driver' . DS . 'Sae' . EXT,
+        'think\cache\driver\Sae'     => CORE_PATH . 'cache' . DS . 'driver' . DS . 'Sae' . EXT,
+        'think\template\driver\Sae'  => CORE_PATH . 'template' . DS . 'driver' . DS . 'Sae' . EXT,
     ],
 
 ];
