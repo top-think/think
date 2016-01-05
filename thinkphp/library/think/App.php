@@ -392,7 +392,6 @@ class App
             $_SERVER['PATH_INFO'] = '';
             define('__INFO__', '');
             define('__EXT__', '');
-            $result = ['type' => 'module', 'data' => [null, null, null], 'bind' => []];
         } else {
             $_SERVER['PATH_INFO'] = trim($_SERVER['PATH_INFO'], '/');
             define('__INFO__', $_SERVER['PATH_INFO']);
@@ -404,29 +403,27 @@ class App
             }
             // 去除正常的URL后缀
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
-            $depr                 = $config['pathinfo_depr'];
-            // 还原劫持后真实pathinfo
-            $path_info = $_SERVER['PATH_INFO'];
+        }
 
-            // 路由检测
-            if (!empty($config['url_route_on'])) {
-                // 开启路由 注册路由定义文件
-                Route::register(!empty($config['route']) ? $config['route'] : null);
-                // 路由检测（根据路由定义返回不同的URL调度）
-                $result = Route::check($path_info, $depr);
-                if (false === $result) {
-                    // 路由无效
-                    if ($config['url_route_must']) {
-                        throw new Exception('route not define ');
-                    } else {
-                        // 继续分析为模块/控制器/操作/参数...方式URL
-                        $result = Route::parseUrl($path_info, $depr);
-                    }
+        $depr = $config['pathinfo_depr'];
+        // 路由检测
+        if (!empty($config['url_route_on'])) {
+            // 开启路由 注册路由定义文件
+            Route::register(!empty($config['route']) ? $config['route'] : null);
+            // 路由检测（根据路由定义返回不同的URL调度）
+            $result = Route::check($_SERVER['PATH_INFO'], $depr);
+            if (false === $result) {
+                // 路由无效
+                if ($config['url_route_must']) {
+                    throw new Exception('route not define ');
+                } else {
+                    // 继续分析为模块/控制器/操作/参数...方式URL
+                    $result = Route::parseUrl($_SERVER['PATH_INFO'], $depr);
                 }
-            } else {
-                // 分析URL地址 采用 模块/控制器/操作/参数...
-                $result = Route::parseUrl($path_info, $depr);
             }
+        } else {
+            // 分析URL地址 采用 模块/控制器/操作/参数...
+            $result = Route::parseUrl($_SERVER['PATH_INFO'], $depr);
         }
         // 注册调度机制
         self::dispatch($result);

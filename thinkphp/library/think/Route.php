@@ -241,13 +241,14 @@ class Route
         // 检测域名部署
         self::checkDomain();
 
+        if (isset(self::$bind['module'])) {
+            // 如果有模块/控制器绑定
+            $url = implode('/', self::$bind['module']) . '/' . $url;
+        }
+
         // 优先检测是否存在PATH_INFO
         if (empty($url)) {
             $url = '/';
-        }
-
-        if (isset(self::$bind['module'])) {
-            $url = implode('/', self::$bind['module']) . '/' . $url;
         }
 
         // 分隔符替换 确保路由定义使用统一的分隔符
