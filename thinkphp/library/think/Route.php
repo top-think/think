@@ -165,9 +165,7 @@ class Route
     {
         // 检测是否开启子域名支持
         if(!Config::get('url_domain_deploy')) return;
-        $root = Config::get('url_domain_root');
-        // 检测是否配置域名根
-        if(empty($root)) return;
+        // 域名规则
         $rules = self::$domain;
         // 开启子域名部署 支持二级和三级域名
         if (!empty($rules)) {
@@ -175,6 +173,9 @@ class Route
                 // 完整域名或者IP配置
                 $rule = $rules[$_SERVER['HTTP_HOST']];
             } else {
+                // 检测是否配置域名根
+                $root = Config::get('url_domain_root');
+                if(empty($root)) return;
                 // 子域名配置
                 $domain = rtrim(rtrim($_SERVER['HTTP_HOST'], $root), '.');
                 $domain = explode('.', $domain);
