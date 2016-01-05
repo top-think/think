@@ -1103,7 +1103,7 @@ class Model
                 foreach ($fields as $key => $val) {
                     // 记录字段类型
                     $type[$key] = $val['type'];
-                    if ($val['primary']) {
+                    if (!empty($val['primary'])) {
                         // 增加复合主键支持
                         if (!empty($this->fields['_pk'])) {
                             if (is_string($this->fields['_pk'])) {

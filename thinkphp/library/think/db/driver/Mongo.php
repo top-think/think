@@ -217,7 +217,7 @@ class Mongo extends Driver
         }
         $this->model = $options['model'];
         $this->executeTimes++;
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.insert(';
             $this->queryStr .= $data ? json_encode($data) : '{}';
             $this->queryStr .= ')';
@@ -277,7 +277,7 @@ class Mongo extends Driver
      */
     public function getMongoNextId($pk)
     {
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.find({},{' . $pk . ':1}).sort({' . $pk . ':-1}).limit(1)';
         }
         try {
@@ -344,7 +344,7 @@ class Mongo extends Driver
         $query       = $this->parseWhere($options['where']);
         $this->model = $options['model'];
         $this->executeTimes++;
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.remove(' . json_encode($query) . ')';
         }
         try {
@@ -370,7 +370,7 @@ class Mongo extends Driver
         }
         $this->model = $options['model'];
         $this->executeTimes++;
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.remove({})';
         }
         try {
@@ -405,10 +405,10 @@ class Mongo extends Driver
         }
         $this->model = $options['model'];
         $this->queryTimes++;
-        $query = $this->parseWhere($options['where']);
-        $field = $this->parseField($options['field']);
+        $query = $this->parseWhere(!empty($options['where']) ? $options['where'] : '');
+        $field = $this->parseField(!empty($options['field']) ? $options['field'] : '');
         try {
-            if ($this->config['debug']) {
+            if (!empty($this->config['debug'])) {
                 $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.find(';
                 $this->queryStr .= $query ? json_encode($query) : '{}';
                 $this->queryStr .= $field ? ',' . json_encode($field) : '';
@@ -418,7 +418,7 @@ class Mongo extends Driver
             $_cursor = $this->_collection->find($query, $field);
             if ($options['order']) {
                 $order = $this->parseOrder($options['order']);
-                if ($this->config['debug']) {
+                if (!empty($this->config['debug'])) {
                     $this->queryStr .= '.sort(' . json_encode($order) . ')';
                 }
                 $_cursor = $_cursor->sort($order);
@@ -438,12 +438,12 @@ class Mongo extends Driver
             if (isset($options['limit'])) {
                 list($offset, $length) = $this->parseLimit($options['limit']);
                 if (!empty($offset)) {
-                    if ($this->config['debug']) {
+                    if (!empty($this->config['debug'])) {
                         $this->queryStr .= '.skip(' . intval($offset) . ')';
                     }
                     $_cursor = $_cursor->skip(intval($offset));
                 }
-                if ($this->config['debug']) {
+                if (!empty($this->config['debug'])) {
                     $this->queryStr .= '.limit(' . intval($length) . ')';
                 }
                 $_cursor = $_cursor->limit(intval($length));
@@ -550,7 +550,7 @@ class Mongo extends Driver
             $this->switchCollection($collection, '', false);
         }
         $this->queryTimes++;
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.findOne()';
         }
         try {
@@ -581,7 +581,7 @@ class Mongo extends Driver
      */
     public function getTables()
     {
-        if ($this->config['debug']) {
+        if (!empty($this->config['debug'])) {
             $this->queryStr = $this->_dbName . '.getCollenctionNames()';
         }
         $this->queryTimes++;
@@ -699,7 +699,7 @@ class Mongo extends Driver
     public function parseWhere($where)
     {
         $query = [];
-        foreach ($where as $key => $val) {
+        foreach ((array) $where as $key => $val) {
             if ('_id' != $key && 0 === strpos($key, '_')) {
                 // 解析特殊条件表达式
                 $query = $this->parseThinkWhere($key, $val);
