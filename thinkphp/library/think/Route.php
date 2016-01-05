@@ -79,7 +79,7 @@ class Route
         } else {
             if (is_array($rule)) {
                 // 检查域名部署
-                if (isset($rule['[__domain__'])) {
+                if (isset($rule['__domain__'])) {
                     self::domain($rule['__domain__']);
                     unset($rule['__domain__']);
                 }
@@ -222,14 +222,14 @@ class Route
                     $result = $rule;
                 }
                 if (0 === strpos($result, '\\')) {
-                    // 绑定到行为
-                    self::$bind = [];
-                } elseif (0 === strpos($result, '@')) {
-                    // 绑定到控制器
-                    self::$bind = [];
+                    // 绑定到类
+                    self::$bind = ['class' => $result];
+                } elseif (0 === strpos($result, '[')) {
+                    // 绑定到分组
+                    self::$bind = ['group' => substr($result, 1, -1)];
                 } else {
                     // 绑定到模块/控制器
-                    self::$bind = explode('/', $result);
+                    self::$bind = ['module' => explode('/', $result)];
                 }
             }
         }
@@ -241,13 +241,15 @@ class Route
         // 检测域名部署
         self::checkDomain();
 
-        if (!empty(self::$bind)) {
-            $url = implode('/', self::$bind) . '/' . $url;
-        }
         // 优先检测是否存在PATH_INFO
         if (empty($url)) {
             $url = '/';
         }
+
+        if (isset(self::$bind['module'])) {
+            $url = implode('/', self::$bind['module']) . '/' . $url;
+        }
+
         // 分隔符替换 确保路由定义使用统一的分隔符
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
@@ -265,8 +267,13 @@ class Route
             // 合并任意请求的路由规则
             $rules = array_merge(self::$rules['*'], $rules);
         }
+
         // 路由规则检测
         if (!empty($rules)) {
+            if (isset(self::$bind['group'])) {
+                // 绑定到分组
+                $rules = $rules[self::$bind['group']];
+            }
             foreach ($rules as $rule => $val) {
                 $option  = $val['option'];
                 $pattern = $val['pattern'];

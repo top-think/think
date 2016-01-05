@@ -406,11 +406,7 @@ class App
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
             $depr                 = $config['pathinfo_depr'];
             // 还原劫持后真实pathinfo
-            $path_info =
-                (defined('BIND_MODULE') ? BIND_MODULE . $depr : '') .
-                (defined('BIND_CONTROLLER') ? BIND_CONTROLLER . $depr : '') .
-                (defined('BIND_ACTION') ? BIND_ACTION . $depr : '') .
-                $_SERVER['PATH_INFO'];
+            $path_info = $_SERVER['PATH_INFO'];
 
             // 路由检测
             if (!empty($config['url_route_on'])) {
