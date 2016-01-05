@@ -182,7 +182,7 @@ class Route
                     // 配置域名根 com.cn net.cn 之类的域名需要配置
                     $domain = explode('.', rtrim(stristr($_SERVER['HTTP_HOST'], $rootDomain, true), '.'));
                 } else {
-                    $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);
+                    $domain = explode('.', $_SERVER['HTTP_HOST'], -2);
                 }
                 // 子域名配置
                 if (!empty($domain)) {
