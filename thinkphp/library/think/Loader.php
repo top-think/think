@@ -233,7 +233,7 @@ class Loader
         if (strpos($name, ':')) {
             list($class, $name) = explode(':', $name);
         } else {
-            $class = 'think\\model';
+            $class = 'think\\Model';
         }
         $guid = $name . '_' . $class;
         if (!isset($_model[$guid])) {
