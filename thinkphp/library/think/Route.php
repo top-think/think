@@ -238,6 +238,12 @@ class Route
     // 检测URL路由
     public static function check($url, $depr = '/')
     {
+        // 检测域名部署
+        self::checkDomain();
+
+        if (!empty(self::$bind)) {
+            $url = implode('/', self::$bind) . '/' . $url;
+        }
         // 优先检测是否存在PATH_INFO
         if (empty($url)) {
             $url = '/';
@@ -246,8 +252,6 @@ class Route
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
         }
-        // 检测域名部署
-        self::checkDomain();
 
         if (isset(self::$map[$url])) {
             // URL映射
