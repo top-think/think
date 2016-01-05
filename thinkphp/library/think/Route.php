@@ -177,7 +177,7 @@ class Route
                 $root = Config::get('url_domain_root');
                 if(empty($root)) return;
                 // 子域名配置
-                $domain = rtrim(rtrim($_SERVER['HTTP_HOST'], $root), '.');
+                $domain = rtrim(preg_replace('/'.preg_quote($root).'$/', '', $_SERVER['HTTP_HOST']), '.');
                 $domain = explode('.', $domain);
                 if (!empty($domain)) {
                     $subDomain = implode('.', $domain);
