@@ -87,8 +87,6 @@ return [
     'url_domain_deploy'     => false,
     // 域名根，如.thinkphp.cn
     'url_domain_root'       => '',
-    // 域名部署规则
-    'url_domain_rules'      => [],
 
     // +----------------------------------------------------------------------
     // | 视图及模板设置

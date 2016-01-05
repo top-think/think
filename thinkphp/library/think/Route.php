@@ -124,6 +124,12 @@ class Route
         }
     }
 
+    // 对路由进行绑定
+    public static function bind($type, $bind)
+    {
+        self::$bind[$type] = $bind;
+    }
+
     // 路由分组
     public static function group($name, $routes = [], $type = '*', $option = [], $pattern = [])
     {
@@ -163,8 +169,6 @@ class Route
     // 检测子域名部署
     public static function checkDomain()
     {
-        // 检测是否开启子域名支持
-        if(!Config::get('url_domain_deploy')) return;
         // 域名规则
         $rules = self::$domain;
         // 开启子域名部署 支持二级和三级域名
@@ -173,12 +177,14 @@ class Route
                 // 完整域名或者IP配置
                 $rule = $rules[$_SERVER['HTTP_HOST']];
             } else {
-                // 检测是否配置域名根
-                $root = Config::get('url_domain_root');
-                if(empty($root)) return;
+                $rootDomain = Config::get('url_domain_root');
+                if ($rootDomain) {
+                    // 配置域名根 com.cn net.cn 之类的域名需要配置
+                    $domain = explode('.', rtrim(stristr($_SERVER['HTTP_HOST'], $rootDomain, true), '.'));
+                } else {
+                    $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);
+                }
                 // 子域名配置
-                $domain = rtrim(preg_replace('/'.preg_quote($root).'$/', '', $_SERVER['HTTP_HOST']), '.');
-                $domain = explode('.', $domain);
                 if (!empty($domain)) {
                     $subDomain = implode('.', $domain);
                     $domain2   = array_pop($domain); // 二级域名
@@ -246,10 +252,12 @@ class Route
     public static function check($url, $depr = '/')
     {
         // 检测域名部署
-        self::checkDomain();
+        if (Config::get('url_domain_deploy')) {
+            self::checkDomain();
+        }
 
         if (isset(self::$bind['module'])) {
-            // 如果有模块/控制器绑定
+            // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
             $url = implode('/', self::$bind['module']) . '/' . $url;
         }
 
