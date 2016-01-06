@@ -81,7 +81,7 @@ class App
         }
 
         // 监听app_begin
-        APP_HOOK && Hook::listen('app_begin', $dispatch);
+        APP_HOOK && Hook::listen('app_begin');
 
         // 根据类型调度
         switch (self::$dispatch['type']) {
@@ -97,8 +97,8 @@ class App
                 // 执行操作
                 $data = Loader::action(self::$dispatch['action'], self::$dispatch['params']);
                 break;
-            case 'behavior':
-                // 执行行为
+            case 'class':
+                // 执行类，例如行为
                 $data = Hook::exec(self::$dispatch['class'], self::$dispatch['method'], self::$dispatch['params']);
                 break;
             case 'regex_closure':

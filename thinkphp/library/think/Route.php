@@ -214,7 +214,8 @@ class Route
                 // '子域名'=>['模块[/控制器/操作]','var1=a&var2=b&var3=*'];
                 if ($rule instanceof \Closure) {
                     // 执行闭包
-                    self::$bind = self::invokeRule($rule);
+                    $reflect    = new \ReflectionFunction($rule);
+                    self::$bind = $reflect->invokeArgs([]);
                     return;
                 }
                 if (is_array($rule)) {
@@ -235,14 +236,17 @@ class Route
                     $result = $rule;
                 }
                 if (0 === strpos($result, '\\')) {
-                    // 绑定到类
-                    self::$bind = ['class' => $result];
+                    // 绑定到命名空间 例如 \app\index\behavior
+                    self::$bind = ['type' => 'namespace', 'namespace' => $result];
+                } elseif (0 === strpos($result, '@')) {
+                    // 绑定到类 例如 \app\index\controller\User
+                    self::$bind = ['type' => 'class', 'class' => substr($result, 1)];
                 } elseif (0 === strpos($result, '[')) {
-                    // 绑定到分组
-                    self::$bind = ['group' => substr($result, 1, -1)];
+                    // 绑定到分组 例如 [user]
+                    self::$bind = ['type' => 'group', 'group' => substr($result, 1, -1)];
                 } else {
-                    // 绑定到模块/控制器
-                    self::$bind = ['module' => explode('/', $result)];
+                    // 绑定到模块/控制器 例如 index/user
+                    self::$bind = ['type' => 'module', 'module' => $result];
                 }
             }
         }
@@ -251,24 +255,49 @@ class Route
     // 检测URL路由
     public static function check($url, $depr = '/')
     {
+        // 分隔符替换 确保路由定义使用统一的分隔符
+        if ('/' != $depr) {
+            $url = str_replace($depr, '/', $url);
+        }
+
         // 检测域名部署
         if (Config::get('url_domain_deploy')) {
             self::checkDomain();
         }
-
-        if (isset(self::$bind['module'])) {
-            // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
-            $url = implode('/', self::$bind['module']) . '/' . $url;
+        if (!empty(self::$bind['type'])) {
+            // 如果有URL绑定 则进行绑定检测
+            switch (self::$bind['type']) {
+                case 'clsss':
+                    // 绑定到类
+                    $array = explode('/', $url, 2);
+                    if (isset($array[1])) {
+                        self::parseUrlParams($array[1]);
+                    }
+                    $return = ['type' => 'class', 'class' => self::$bind['class'], 'method' => $array[0] ?: '', 'params' => []];
+                    break;
+                case 'namespace':
+                    // 绑定到命名空间
+                    $array  = explode('/', $url, 3);
+                    $class  = isset($array[0]) ? $array[0] : '';
+                    $method = isset($array[1]) ? $array[1] : '';
+                    if (isset($array[2])) {
+                        self::parseUrlParams($array[2]);
+                    }
+                    $return = ['type' => 'class', 'class' => self::$bind['namespace'] . '\\' . $array[0], 'method' => $method, 'params' => []];
+                    break;
+                case 'module':
+                    // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
+                    $url = self::$bind['module'] . '/' . $url;
+                    break;
+            }
+            if (isset($return)) {
+                return $return;
+            }
         }
 
         // 优先检测是否存在PATH_INFO
         if (empty($url)) {
             $url = '/';
-        }
-
-        // 分隔符替换 确保路由定义使用统一的分隔符
-        if ('/' != $depr) {
-            $url = str_replace($depr, '/', $url);
         }
 
         if (isset(self::$map[$url])) {
@@ -586,7 +615,7 @@ class Route
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
             // 路由到行为
-            $result = ['type' => 'behavior', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
+            $result = ['type' => 'class', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
             $result = ['type' => 'action', 'action' => substr($url, 1), 'params' => $matches];
@@ -603,7 +632,7 @@ class Route
             }
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
-            self::parseUrlParams(implode('/', $paths), $var, $route);
+            self::parseUrlParams(implode('/', $paths), $var);
             $result = ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
         }
         return $result;
@@ -626,8 +655,8 @@ class Route
             // 路由重定向跳转
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
-            // 路由到行为
-            $result = ['type' => 'behavior', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
+            // 路由到类
+            $result = ['type' => 'class', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
             $result = ['type' => 'action', 'action' => substr($url, 1), 'params' => $matches];
@@ -637,28 +666,19 @@ class Route
             $var    = $result['var'];
             // 解析剩余的URL参数
             $regx = substr_replace($pathinfo, '', 0, strlen($matches[0]));
-            self::parseUrlParams($regx, $var, $route);
+            self::parseUrlParams($regx, $var);
             $result = ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
         }
         return $result;
     }
 
     // 解析URL地址中的参数到$_GET
-    private static function parseUrlParams($url, $var, $route)
+    private static function parseUrlParams($url, $var)
     {
         if ($url) {
             preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$var) {
                 $var[strtolower($match[1])] = strip_tags($match[2]);
             }, $url);
-        }
-        // 解析路由自动传人参数
-        if (is_array($route) && isset($route[1])) {
-            if (is_string($route[1])) {
-                parse_str($route[1], $params);
-            } else {
-                $params = $route[1];
-            }
-            $var = array_merge($var, $params);
         }
         $_GET = array_merge($var, $_GET);
     }
