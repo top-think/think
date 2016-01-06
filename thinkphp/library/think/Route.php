@@ -179,7 +179,7 @@ class Route
             } else {
                 $rootDomain = Config::get('url_domain_root');
                 if ($rootDomain) {
-                    // 配置域名根 com.cn net.cn 之类的域名需要配置
+                    // 配置域名根 例如 thinkphp.cn 163.com.cn 如果是国家级域名 com.cn net.cn 之类的域名需要配置
                     $domain = explode('.', rtrim(stristr($_SERVER['HTTP_HOST'], $rootDomain, true), '.'));
                 } else {
                     $domain = explode('.', $_SERVER['HTTP_HOST'], -2);
