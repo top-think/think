@@ -216,6 +216,7 @@ class Route
                 // 子域名部署规则
                 // '子域名'=>'模块[/控制器/操作]'
                 // '子域名'=>['模块[/控制器/操作]','var1=a&var2=b&var3=*'];
+                // '子域名'=>'模块[/控制器/操作]?var1=a&var2=b&var3=*';
                 if ($rule instanceof \Closure) {
                     // 执行闭包
                     $reflect    = new \ReflectionFunction($rule);
@@ -226,18 +227,25 @@ class Route
                     $result = $rule[0];
                     if (isset($rule[1])) {
                         // 传入参数
-                        parse_str($rule[1], $parms);
+                        parse_str($rule[1], $params);
                         if (isset($panDomain)) {
-                            $pos = array_search('*', $parms);
+                            $pos = array_search('*', $params);
                             if (false !== $pos) {
                                 // 泛域名作为参数
-                                $parms[$pos] = $panDomain;
+                                $params[$pos] = $panDomain;
                             }
                         }
-                        $_GET = array_merge($_GET, $parms);
+                        $_GET = array_merge($_GET, $params);
                     }
                 } else {
-                    $result = $rule;
+                    if (strpos($rule, '?')) {
+                        $result = strstr($rule, '?', true);
+                        $query  = strstr($rule, '?');
+                        parse_str(substr($query, 1), $params);
+                        $_GET = array_merge($_GET, $params);
+                    }else{
+                        $result = $rule;
+                    }
                 }
                 if (0 === strpos($result, '\\')) {
                     // 绑定到命名空间 例如 \app\index\behavior
