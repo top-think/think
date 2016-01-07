@@ -316,7 +316,10 @@ class Route
                     break;
                 case 'group':
                     // 绑定到路由分组
-                    $rules = $rules[self::$bind['group']];
+                    $key = self::$bind['group'];
+                    if (array_key_exists($key, $rules)) {
+                        $rules = [$key => $rules[self::$bind['group']]];
+                    }
             }
             if (isset($return)) {
                 return $return;
