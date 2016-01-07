@@ -271,7 +271,7 @@ class Route
         if (!empty(self::$bind['type'])) {
             // 如果有URL绑定 则进行绑定检测
             switch (self::$bind['type']) {
-                case 'clsss':
+                case 'class':
                     // 绑定到类
                     $array = explode('/', $url, 2);
                     if (isset($array[1])) {
