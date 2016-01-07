@@ -267,6 +267,24 @@ class Route
             $url = str_replace($depr, '/', $url);
         }
 
+        // 优先检测是否存在PATH_INFO
+        if (empty($url)) {
+            $url = '/';
+        }
+
+        if (isset(self::$map[$url])) {
+            // URL映射
+            return self::parseUrl(self::$map[$url], $depr);
+        }
+
+        // 获取当前请求类型的路由规则
+        $rules = self::$rules[REQUEST_METHOD];
+
+        if (!empty(self::$rules['*'])) {
+            // 合并任意请求的路由规则
+            $rules = array_merge(self::$rules['*'], $rules);
+        }
+
         // 检测域名部署
         if (Config::get('url_domain_deploy')) {
             self::checkDomain();
@@ -296,36 +314,17 @@ class Route
                     // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
                     $url = self::$bind['module'] . '/' . $url;
                     break;
+                case 'group':
+                    // 绑定到路由分组
+                    $rules = $rules[self::$bind['group']];
             }
             if (isset($return)) {
                 return $return;
             }
         }
 
-        // 优先检测是否存在PATH_INFO
-        if (empty($url)) {
-            $url = '/';
-        }
-
-        if (isset(self::$map[$url])) {
-            // URL映射
-            return self::parseUrl(self::$map[$url], $depr);
-        }
-
-        // 获取当前请求类型的路由规则
-        $rules = self::$rules[REQUEST_METHOD];
-
-        if (!empty(self::$rules['*'])) {
-            // 合并任意请求的路由规则
-            $rules = array_merge(self::$rules['*'], $rules);
-        }
-
         // 路由规则检测
         if (!empty($rules)) {
-            if (isset(self::$bind['group'])) {
-                // 绑定到分组
-                $rules = $rules[self::$bind['group']];
-            }
             foreach ($rules as $rule => $val) {
                 $option  = $val['option'];
                 $pattern = $val['pattern'];
@@ -573,13 +572,6 @@ class Route
     }
 
     // 解析规则路由
-    // '路由规则'=>'[控制器/操作]?额外参数1=值1&额外参数2=值2...'
-    // '路由规则'=>'外部地址'
-    // '路由规则'=>['外部地址','重定向代码']
-    // 路由规则中 :开头 表示动态变量
-    // 外部地址中可以用动态变量 采用 :1 :2 的方式
-    // 'news/:month/:day/:id'=>'News/read?cate=1&status=1',
-    // 'new/:id'=>['/new.php?id=:1',301], 重定向
     private static function parseRule($rule, $route, $pathinfo)
     {
         // 获取URL地址中的参数
@@ -649,12 +641,6 @@ class Route
     }
 
     // 解析正则路由
-    // '路由正则'=>'[控制器/操作]?参数1=值1&参数2=值2...'
-    // '路由正则'=>'外部地址'
-    // '路由正则'=>['外部地址','重定向代码']
-    // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
-    // '/new\/(\d+)\/(\d+)/'=>'News/read?id=:1&page=:2&cate=1&status=1',
-    // '/new\/(\d+)/'=>['/new.php?id=:1&page=:2&status=1','301'], 重定向
     private static function parseRegex($matches, $route, $pathinfo)
     {
         // 获取路由地址规则
