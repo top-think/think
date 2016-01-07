@@ -61,7 +61,9 @@ class Route
     private static function setting($var, $name = '', $value = '')
     {
         if (is_array($name)) {
-            self::${$var} = array_merge(self::${$var}, $name);
+            foreach ($name as $key => $value) {
+                self::${$var}[$key] = $value;
+            }
         } elseif (empty($name)) {
             return self::${$var};
         } else {
