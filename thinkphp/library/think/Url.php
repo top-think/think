@@ -47,13 +47,13 @@ class Url
                 $path = explode($depr, $url);
                 $var  = [];
                 $bind = Route::bind('module');
-                if($bind){
-                    list($var['module'],$var['controller'],$var['action']) = explode('/',$bind);
+                if ($bind) {
+                    list($var['module'], $var['controller'], $var['action']) = explode('/', $bind);
                 }
                 if (empty($var['action'])) {
                     $var['action'] = !empty($path) ? array_pop($path) : ACTION_NAME;
                 }
-                if (empty($var['controller']) {
+                if (empty($var['controller'])) {
                     $var['controller'] = !empty($path) ? array_pop($path) : CONTROLLER_NAME;
                 }
                 if (APP_MULTI_MODULE && empty($var['module'])) {
