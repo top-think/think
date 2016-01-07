@@ -91,7 +91,7 @@ class App
                 break;
             case 'module':
                 // 模块/控制器/操作
-                $data = self::module(self::$dispatch['data'], self::$dispatch['bind'], $config);
+                $data = self::module(self::$dispatch['data'], $config);
                 break;
             case 'controller':
                 // 执行控制器操作
