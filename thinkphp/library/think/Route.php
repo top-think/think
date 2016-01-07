@@ -217,7 +217,6 @@ class Route
             if (!empty($rule)) {
                 // 子域名部署规则
                 // '子域名'=>'模块[/控制器/操作]'
-                // '子域名'=>['模块[/控制器/操作]','var1=a&var2=b&var3=*'];
                 // '子域名'=>'模块[/控制器/操作]?var1=a&var2=b&var3=*';
                 if ($rule instanceof \Closure) {
                     // 执行闭包
@@ -225,30 +224,24 @@ class Route
                     self::$bind = $reflect->invokeArgs([]);
                     return;
                 }
-                if (is_array($rule)) {
-                    $result = $rule[0];
-                    if (isset($rule[1])) {
-                        // 传入参数
-                        parse_str($rule[1], $params);
-                        if (isset($panDomain)) {
-                            $pos = array_search('*', $params);
-                            if (false !== $pos) {
-                                // 泛域名作为参数
-                                $params[$pos] = $panDomain;
-                            }
+
+                if (strpos($rule, '?')) {
+                    // 传入其它参数
+                    $array  = parse_url($rule);
+                    $result = $array['path'];
+                    parse_str($array['query'], $params);
+                    if (isset($panDomain)) {
+                        $pos = array_search('*', $params);
+                        if (false !== $pos) {
+                            // 泛域名作为参数
+                            $params[$pos] = $panDomain;
                         }
-                        $_GET = array_merge($_GET, $params);
                     }
+                    $_GET = array_merge($_GET, $params);
                 } else {
-                    if (strpos($rule, '?')) {
-                        $result = strstr($rule, '?', true);
-                        $query  = strstr($rule, '?');
-                        parse_str(substr($query, 1), $params);
-                        $_GET = array_merge($_GET, $params);
-                    }else{
-                        $result = $rule;
-                    }
+                    $result = $rule;
                 }
+
                 if (0 === strpos($result, '\\')) {
                     // 绑定到命名空间 例如 \app\index\behavior
                     self::$bind = ['type' => 'namespace', 'namespace' => $result];
