@@ -69,6 +69,16 @@ class Route
         }
     }
 
+    // 对路由进行绑定和获取绑定信息
+    public static function bind($type, $bind = '')
+    {
+        if ('' == $bind) {
+            return isset(self::$bind[$type]) ? self::$bind[$type] : null;
+        } else {
+            self::$bind = ['type' => $type, $type => $bind];
+        }
+    }
+
     // 注册路由规则
     public static function register($rule, $route = '', $type = '*', $option = [], $pattern = [])
     {
@@ -122,12 +132,6 @@ class Route
 
             }
         }
-    }
-
-    // 对路由进行绑定
-    public static function bind($type, $bind)
-    {
-        self::$bind[$type] = $bind;
     }
 
     // 路由分组
@@ -467,6 +471,10 @@ class Route
     // 解析模块的URL地址 [模块/控制器/操作?]参数1=值1&参数2=值2...
     public static function parseUrl($url, $depr = '/')
     {
+        if (isset(self::$bind['module'])) {
+            // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
+            $url = self::$bind['module'] . '/' . $url;
+        }
         // 分隔符替换 确保路由定义使用统一的分隔符
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
@@ -475,7 +483,7 @@ class Route
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
         }
-        return ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
+        return ['type' => 'module', 'data' => $result['route']];
     }
 
     // 解析规范的路由地址
@@ -563,12 +571,11 @@ class Route
 
     // 解析规则路由
     // '路由规则'=>'[控制器/操作]?额外参数1=值1&额外参数2=值2...'
-    // '路由规则'=> ['[控制器/操作]','额外参数1=值1&额外参数2=值2...']
     // '路由规则'=>'外部地址'
     // '路由规则'=>['外部地址','重定向代码']
     // 路由规则中 :开头 表示动态变量
     // 外部地址中可以用动态变量 采用 :1 :2 的方式
-    // 'news/:month/:day/:id'=>['News/read?cate=1','status=1'],
+    // 'news/:month/:day/:id'=>'News/read?cate=1&status=1',
     // 'new/:id'=>['/new.php?id=:1',301], 重定向
     private static function parseRule($rule, $route, $pathinfo)
     {
@@ -618,7 +625,7 @@ class Route
             $result = ['type' => 'class', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
-            $result = ['type' => 'action', 'action' => substr($url, 1), 'params' => $matches];
+            $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
@@ -633,18 +640,17 @@ class Route
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var);
-            $result = ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
+            $result = ['type' => 'module', 'data' => $result['route']];
         }
         return $result;
     }
 
     // 解析正则路由
     // '路由正则'=>'[控制器/操作]?参数1=值1&参数2=值2...'
-    // '路由正则'=>['[控制器/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...']
     // '路由正则'=>'外部地址'
     // '路由正则'=>['外部地址','重定向代码']
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
-    // '/new\/(\d+)\/(\d+)/'=>['News/read?id=:1&page=:2&cate=1','status=1'],
+    // '/new\/(\d+)\/(\d+)/'=>'News/read?id=:1&page=:2&cate=1&status=1',
     // '/new\/(\d+)/'=>['/new.php?id=:1&page=:2&status=1','301'], 重定向
     private static function parseRegex($matches, $route, $pathinfo)
     {
@@ -659,7 +665,7 @@ class Route
             $result = ['type' => 'class', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
-            $result = ['type' => 'action', 'action' => substr($url, 1), 'params' => $matches];
+            $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
@@ -667,7 +673,7 @@ class Route
             // 解析剩余的URL参数
             $regx = substr_replace($pathinfo, '', 0, strlen($matches[0]));
             self::parseUrlParams($regx, $var);
-            $result = ['type' => 'module', 'data' => $result['route'], 'bind' => self::$bind];
+            $result = ['type' => 'module', 'data' => $result['route']];
         }
         return $result;
     }

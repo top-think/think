@@ -93,9 +93,9 @@ class App
                 // 模块/控制器/操作
                 $data = self::module(self::$dispatch['data'], self::$dispatch['bind'], $config);
                 break;
-            case 'action':
-                // 执行操作
-                $data = Loader::action(self::$dispatch['action'], self::$dispatch['params']);
+            case 'controller':
+                // 执行控制器操作
+                $data = Loader::action(self::$dispatch['controller'], self::$dispatch['params']);
                 break;
             case 'class':
                 // 执行类，例如行为
@@ -154,14 +154,9 @@ class App
     }
 
     // 执行 模块/控制器/操作
-    private static function module($result, $bind, $config)
+    private static function module($result, $config)
     {
         if (APP_MULTI_MODULE) {
-            if (!empty($bind)) {
-                (!defined('BIND_MODULE') && !empty($bind[0])) && define('BIND_MODULE', $bind[0]);
-                (!defined('BIND_CONTROLLER') && !empty($bind[1])) && define('BIND_CONTROLLER', $bind[1]);
-                (!defined('BIND_ACTION') && !empty($bind[2])) && define('BIND_ACTION', $bind[2]);
-            }
             // 多模块部署
             $module = strtolower($result[0] ?: $config['default_module']);
             if ($maps = $config['url_module_map']) {
