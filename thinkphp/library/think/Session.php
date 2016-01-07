@@ -76,7 +76,7 @@ class Session
             }
         }
         // 启动session
-        if (!empty($config['auto_start'])) {
+        if (!empty($config['auto_start']) && PHP_SESSION_ACTIVE!=session_status()) {
             ini_set('session.auto_start', 0);
             session_start();
         }
