@@ -101,13 +101,9 @@ class App
                 // 执行类，例如行为
                 $data = Hook::exec(self::$dispatch['class'], self::$dispatch['method'], self::$dispatch['params']);
                 break;
-            case 'regex_closure':
-                // 正则闭包
-                $data = self::invokeRegex(self::$dispatch['closure'], self::$dispatch['params']);
-                break;
-            case 'rule_closure':
+            case 'closure':
                 // 规则闭包
-                $data = self::invokeRule(self::$dispatch['closure'], self::$dispatch['params']);
+                $data = self::invoke(self::$dispatch['closure'], self::$dispatch['params']);
                 break;
             default:
                 throw new Exception('dispatch type not support', 10008);
@@ -118,26 +114,8 @@ class App
         return Response::send($data, Response::type(), Config::get('response_return'));
     }
 
-    // 执行正则匹配下的闭包方法 支持参数调用
-    private static function invokeRegex($closure, $var = [])
-    {
-        $reflect = new \ReflectionFunction($closure);
-        $params  = $reflect->getParameters();
-        $args    = [];
-        array_shift($var);
-        foreach ($params as $param) {
-            $name = $param->getName();
-            if (!empty($var)) {
-                $args[] = array_shift($var);
-            } elseif ($param->isDefaultValueAvailable()) {
-                $args[] = $param->getDefaultValue();
-            }
-        }
-        return $reflect->invokeArgs($args);
-    }
-
     // 执行规则匹配下的闭包方法 支持参数调用
-    private static function invokeRule($closure, $var = [])
+    private static function invoke($closure, $var = [])
     {
         $reflect = new \ReflectionFunction($closure);
         $params  = $reflect->getParameters();

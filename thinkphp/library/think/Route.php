@@ -331,29 +331,9 @@ class Route
             foreach ($rules as $rule => $val) {
                 $option  = $val['option'];
                 $pattern = $val['pattern'];
-                // 请求类型检测
-                if (isset($option['method']) && false === stripos($option['method'], REQUEST_METHOD)) {
-                    continue;
-                }
-                // 伪静态后缀检测
-                if (isset($option['ext']) && __EXT__ != $option['ext']) {
-                    continue;
-                }
-                // 域名检测
-                if (isset($option['domain']) && $_SERVER['HTTP_HOST'] != $option['domain']) {
-                    continue;
-                }
-                // https检测
-                if (!empty($option['https']) && !self::isSsl()) {
-                    continue;
-                }
-                // 自定义检测
-                if (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) {
-                    continue;
-                }
 
-                // 行为检测
-                if (!empty($option['behavior']) && false === Hook::exec($option['behavior'])) {
+                // 参数有效性检查
+                if (!self::checkOption($option)) {
                     continue;
                 }
 
@@ -368,32 +348,19 @@ class Route
                             $key = array_shift($route);
                         }
                         $url1 = substr($url, strlen($rule) + 1);
-                        if (0 === strpos($key, '/') && preg_match($key, $url1, $matches)) {
-                            // 检查正则路由
-                            return self::checkRegex($route, $url1, $matches);
-                        } else {
-                            // 检查规则路由
-                            if (is_array($route)) {
-                                $option1 = $route[1];
-                                // 请求类型检测
-                                if (isset($option1['method']) && false === stripos($option1['method'], REQUEST_METHOD)) {
-                                    continue;
-                                }
-                                // 伪静态后缀检测
-                                if (isset($option1['ext']) && __EXT__ != $option1['ext']) {
-                                    continue;
-                                }
-                                // https检测
-                                if (!empty($option1['https']) && !self::isSsl()) {
-                                    continue;
-                                }
-                                $pattern = array_merge($pattern, isset($route[2]) ? $route[2] : []);
-                                $route   = $route[0];
+                        // 检查规则路由
+                        if (is_array($route)) {
+                            $option1 = $route[1];
+                            // 检查参数有效性
+                            if (!self::checkOption($option1)) {
+                                continue;
                             }
-                            $result = self::checkRule($key, $route, $url1, $pattern);
-                            if (false !== $result) {
-                                return $result;
-                            }
+                            $pattern = array_merge($pattern, isset($route[2]) ? $route[2] : []);
+                            $route   = $route[0];
+                        }
+                        $result = self::checkRule($key, $route, $url1, $pattern);
+                        if (false !== $result) {
+                            return $result;
                         }
                     }
                 } else {
@@ -402,14 +369,10 @@ class Route
                     }
                     // 单项路由
                     $route = !empty($val['route']) ? $val['route'] : '';
-                    if (0 === strpos($rule, '/') && preg_match($rule, $url, $matches)) {
-                        return self::checkRegex($route, $url, $matches);
-                    } else {
-                        // 规则路由
-                        $result = self::checkRule($rule, $route, $url, $pattern);
-                        if (false !== $result) {
-                            return $result;
-                        }
+                    // 规则路由
+                    $result = self::checkRule($rule, $route, $url, $pattern);
+                    if (false !== $result) {
+                        return $result;
                     }
                 }
             }
@@ -417,17 +380,20 @@ class Route
         return false;
     }
 
-    /**
-     * 检查正则路由
-     */
-    private static function checkRegex($route, $url, $matches)
+    // 路由参数有效性检查
+    private static function checkOption($option)
     {
-        // 正则路由
-        if ($route instanceof \Closure) {
-            // 执行闭包
-            return ['type' => 'regex_closure', 'closure' => $route, 'params' => $matches];
+        // 请求类型检测
+        if ((isset($option['method']) && false === stripos($option['method'], REQUEST_METHOD))
+            || (isset($option['ext']) && __EXT__ != $option['ext']) // 伪静态后缀检测
+             || (isset($option['domain']) && $_SERVER['HTTP_HOST'] != $option['domain']) // 域名检测
+             || (!empty($option['https']) && !self::isSsl()) // https检测
+             || (!empty($option['behavior']) && false === Hook::exec($option['behavior'])) // 行为检测
+             || (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) // 自定义检测
+        ) {
+            return false;
         }
-        return self::parseRegex($matches, $route, $url);
+        return true;
     }
 
     /**
@@ -435,6 +401,11 @@ class Route
      */
     private static function checkRule($rule, $route, $url, $pattern)
     {
+        // 检测是否设置了参数分隔符
+        if ($depr = Config::get('url_params_depr')) {
+            $url  = str_replace($depr, '/', $url);
+            $rule = str_replace($depr, '/', $rule);
+        }
         $len1 = substr_count($url, '/');
         $len2 = substr_count($rule, '/');
         if ($len1 >= $len2 || strpos($rule, '[')) {
@@ -450,7 +421,7 @@ class Route
             if (false !== $match = self::match($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
-                    return ['type' => 'rule_closure', 'closure' => $route, 'params' => $match];
+                    return ['type' => 'closure', 'closure' => $route, 'params' => $match];
                 }
                 return self::parseRule($rule, $route, $url);
             }
@@ -540,7 +511,6 @@ class Route
         $m1  = explode('/', $url);
         $m2  = explode('/', $rule);
         $var = [];
-
         foreach ($m2 as $key => $val) {
             if (0 === strpos($val, '[:')) {
                 // 可选参数
@@ -548,10 +518,6 @@ class Route
             }
             if (0 === strpos($val, ':')) {
                 // URL变量
-                if ($pos = strpos($val, '|')) {
-                    // 使用函数过滤
-                    $val = substr($val, 1, $pos - 1);
-                }
                 if (strpos($val, '\\')) {
                     $type = substr($val, -1);
                     if ('d' == $type && !is_numeric($m1[$key])) {
@@ -561,7 +527,7 @@ class Route
                 } else {
                     $name = substr($val, 1);
                 }
-                if (isset($pattern[$name]) && !preg_match($pattern[$name], $m1[$key])) {
+                if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match($pattern[$name], $m1[$key])) {
                     // 检查变量规则
                     return false;
                 }
@@ -590,21 +556,14 @@ class Route
                 $item = substr($item, 1, -1);
             }
             if (0 === strpos($item, ':')) {
-                // 动态变量获取
-                if ($pos = strpos($item, '|')) {
-                    // 支持函数过滤
-                    $fun  = substr($item, $pos + 1);
-                    $item = substr($item, 0, $pos);
-                }
+
                 if (strpos($item, '\\')) {
                     $var = substr($item, 1, -2);
                 } else {
                     $var = substr($item, 1);
                 }
                 $matches[$var] = array_shift($paths);
-                if (!empty($fun)) {
-                    $matches[$var] = $fun($matches[$var]);
-                }
+
             } else {
                 // 过滤URL中的静态变量
                 array_shift($paths);
@@ -638,33 +597,6 @@ class Route
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var);
-            $result = ['type' => 'module', 'data' => $result['route']];
-        }
-        return $result;
-    }
-
-    // 解析正则路由
-    private static function parseRegex($matches, $route, $pathinfo)
-    {
-        // 获取路由地址规则
-        $url = is_array($route) ? $route[0] : $route;
-        $url = preg_replace('/:(\d+)/e', '$matches[\\1]', $url);
-        if (0 === strpos($url, '/') || 0 === strpos($url, 'http')) {
-            // 路由重定向跳转
-            $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
-        } elseif (0 === strpos($url, '\\')) {
-            // 路由到类
-            $result = ['type' => 'class', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
-        } elseif (0 === strpos($url, '@')) {
-            // 路由到控制器
-            $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
-        } else {
-            // 解析路由地址
-            $result = self::parseRoute($url);
-            $var    = $result['var'];
-            // 解析剩余的URL参数
-            $regx = substr_replace($pathinfo, '', 0, strlen($matches[0]));
-            self::parseUrlParams($regx, $var);
             $result = ['type' => 'module', 'data' => $result['route']];
         }
         return $result;
