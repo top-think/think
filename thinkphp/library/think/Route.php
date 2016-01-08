@@ -401,6 +401,10 @@ class Route
      */
     private static function checkRule($rule, $route, $url, $pattern)
     {
+        // 检查完整规则定义
+        if (isset($pattern['__url__']) && !preg_match($pattern['__url__'], $url)) {
+            return false;
+        }
         // 检测是否设置了参数分隔符
         if ($depr = Config::get('url_params_depr')) {
             $url  = str_replace($depr, '/', $url);
