@@ -116,6 +116,9 @@ class Route
                         $key = array_shift($val);
                     }
                     if (0 === strpos($key, '[')) {
+                        if (empty($val)) {
+                            break;
+                        }
                         self::$rules[$type][substr($key, 1, -1)] = ['routes' => $val, 'option' => $option, 'pattern' => $pattern];
                     } elseif (is_array($val)) {
                         self::$rules[$type][$key] = ['route' => $val[0], 'option' => $val[1], 'pattern' => $val[2]];
@@ -131,7 +134,6 @@ class Route
                 } else {
                     self::$rules[$type][$rule] = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
                 }
-
             }
         }
     }
