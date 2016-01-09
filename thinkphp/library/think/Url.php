@@ -13,70 +13,82 @@ namespace think;
 
 class Url
 {
-
     /**
      * URL组装 支持不同URL模式
-     * @param string $url URL表达式，格式：'[模块/控制器/操作#锚点@域名]?参数1=值1&参数2=值2...'
+     * @param string $url URL表达式，
+     * 格式：'[模块/控制器/操作]?参数1=值1&参数2=值2...'
+     * @控制器/操作?参数1=值1&参数2=值2...
+     * \\命名空间类\\方法?参数1=值1&参数2=值2...
      * @param string|array $vars 传入的参数，支持数组和字符串
      * @param string $suffix 伪静态后缀，默认为true表示获取配置值
      * @param boolean $domain 是否显示域名
      * @return string
      */
-    public static function build($url = '', $vars = '', $suffix = true, $domain = false)
+    public static function build($url = '', $vars = '', $suffix = true, $domain = true)
     {
-        // 解析URL和参数
-        list($url, $vars, $domain, $anchor) = self::parseUrl($url, $vars, $domain);
+        // 检测是否存在路由别名
+        if ($aliasUrl = Route::getRouteUrl($url, $vars)) {
+            return $aliasUrl;
+        }
+        // 解析参数
+        if (is_string($vars)) {
+            // aaa=1&bbb=2 转换成数组
+            parse_str($vars, $vars);
+        } elseif (!is_array($vars)) {
+            $vars = [];
+        }
+
+        if (strpos($url, '?')) {
+            list($url, $params) = explode('?', $url);
+            parse_str($params, $params);
+            $vars = array_merge($params, $vars);
+        }
+
+        // 检测路由
+        $match = self::checkRoute($url, $vars, $domain, $type);
+        if (false === $match) {
+            // 路由不存在 直接解析
+            // 检测URL绑定
+            $type = Route::bind('type');
+            if ($type) {
+                $bind = Route::bind($type);
+                if (0 === strpos($url, $bind)) {
+                    $url = strstr($url, $bind, true);
+                }
+            }
+            if (false !== strpos($url, '\\')) {
+                $url = ltrim(str_replace('\\', '/', $url), '/');
+            } elseif (0 === strpos($url, '@')) {
+                $url = substr($url, 1);
+            }
+        } else {
+            // 处理路由规则中的特殊内容
+            $url = str_replace(['\\d', '$'], '', $match);
+        }
+        $params = [];
+        foreach ($vars as $key => $val) {
+            if (false !== strpos($url, '[:' . $key . ']')) {
+                $url = str_replace('[:' . $key . ']', $val, $url);
+            } elseif (false !== strpos($url, ':' . $key)) {
+                $url = str_replace(':' . $key, $val, $url);
+            } else {
+                $params[$key] = $val;
+            }
+        }
 
         // URL组装
         $depr = Config::get('pathinfo_depr');
-        if ($url) {
-            if (0 === strpos($url, '/')) {
-                // 定义路由
-                $route = true;
-                $url   = substr($url, 1);
-                if ('/' != $depr) {
-                    $url = str_replace('/', $depr, $url);
-                }
-            } else {
-                if ('/' != $depr) {
-                    // 安全替换
-                    $url = str_replace('/', $depr, $url);
-                }
-                // 解析模块、控制器和操作
-                $url  = trim($url, $depr);
-                $path = explode($depr, $url);
-                $var  = [];
-                $bind = Route::bind('module');
-                if ($bind) {
-                    list($var['module'], $var['controller'], $var['action']) = explode('/', $bind);
-                }
-                if (empty($var['action'])) {
-                    $var['action'] = !empty($path) ? array_pop($path) : ACTION_NAME;
-                }
-                if (empty($var['controller'])) {
-                    $var['controller'] = !empty($path) ? array_pop($path) : CONTROLLER_NAME;
-                }
-                if (APP_MULTI_MODULE && empty($var['module'])) {
-                    if (!empty($path)) {
-                        $var['module'] = array_pop($path);
-                    } elseif (MODULE_NAME) {
-                        $var['module'] = MODULE_NAME;
-                    }
-                }
-            }
-        }
-        // URL组装
-        $url = Config::get('base_url') . '/' . (isset($route) ? rtrim($url, $depr) : implode($depr, array_reverse($var)));
+        $url  = Config::get('base_url') . '/' . $url;
         // URL后缀
         $suffix = self::parseSuffix($suffix);
         // 参数组装
-        if (!empty($vars)) {
+        if (!empty($params)) {
             // 添加参数
             if (Config::get('url_common_param')) {
                 $vars = urldecode(http_build_query($vars));
                 $url .= $suffix . '?' . $vars;
             } else {
-                foreach ($vars as $var => $val) {
+                foreach ($params as $var => $val) {
                     if ('' !== trim($val)) {
                         $url .= $depr . $var . $depr . urlencode($val);
                     }
@@ -91,9 +103,100 @@ class Url
             $url .= '#' . $anchor;
         }
         if ($domain) {
+            if (true === $domain) {
+                $domain = $_SERVER['HTTP_HOST'];
+                if (Config::get('url_domain_deploy')) {
+                    // 开启子域名部署
+                    $domain = 'localhost' == $domain ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
+                    foreach (Route::domain() as $key => $rule) {
+                        $rule = is_array($rule) ? $rule[0] : $rule;
+                        if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
+                            $domain = $key . strstr($domain, '.'); // 生成对应子域名
+                            $url    = substr_replace($url, '', 0, strlen($rule));
+                            break;
+                        }
+                    }
+                }
+            }
             $url = (self::isSsl() ? 'https://' : 'http://') . $domain . $url;
         }
         return $url;
+    }
+
+    protected static function checkRoute($url, $vars, $domain)
+    {
+        // 获取路由定义
+        $rules = Route::any();
+        // 全局变量规则
+        $pattern = Route::pattern();
+        foreach ($rules as $rule => $val) {
+            if (!empty($val['routes'])) {
+                // 匹配到路由分组
+                foreach ($val['routes'] as $key => $route) {
+                    if (is_numeric($key)) {
+                        $key = array_shift($route);
+                    }
+                    $check  = isset($route[2]) ? array_merge($pattern, $route[2]) : $pattern;
+                    $route  = $route[0];
+                    $route  = is_array($route) ? $route[0] : $route;
+                    $result = $rule . Config::get('pathinfo_depr') . $key;
+                    if ($route == $url && self::checkPattern($result, $vars, $check)) {
+                        return $result;
+                    }
+                }
+            } else {
+                if (is_numeric($rule)) {
+                    $rule = array_shift($val);
+                }
+                $route = $val['route'];
+                $route = is_array($route) ? $route[0] : $route;
+                $check = isset($val['pattern']) ? array_merge($pattern, $val['pattern']) : $pattern;
+                if ($route == $url && self::checkPattern($rule, $vars, $check)) {
+                    return $rule;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 检测变量规则
+    protected static function checkPattern($rule, $vars, $pattern)
+    {
+        // 检测路由规则中的变量
+        // 检测是否设置了参数分隔符
+        if ($depr = Config::get('url_params_depr')) {
+            $rule = str_replace($depr, '/', $rule);
+        }
+        // 提取路由规则中的变量
+        $var   = [];
+        $array = explode('/', $rule);
+        foreach ($array as $val) {
+            $optional = false;
+            if (0 === strpos($val, '[:')) {
+                // 可选参数
+                $val      = substr($val, 1, -1);
+                $optional = true;
+            }
+            if (0 === strpos($val, ':')) {
+                // URL变量
+                if (strpos($val, '\\')) {
+                    $name = substr($val, 1, -2);
+                } else {
+                    $name = substr($val, 1);
+                }
+                if (!$optional && !isset($vars[$name])) {
+                    // 变量未设置
+                    return false;
+                }
+            }
+        }
+        foreach ($vars as $name => $val) {
+            if (isset($pattern[$name]) && !preg_match($pattern[$name], $val)) {
+                // 检查变量规则
+                return false;
+            }
+        }
+        return true;
     }
 
     // 解析URL后缀
@@ -106,71 +209,6 @@ class Url
             }
         }
         return (empty($suffix) || 0 === strpos($suffix, '.')) ? $suffix : '.' . $suffix;
-    }
-
-    // 根据路由名称和参数生成URL地址
-    public static function route($name, $params = [])
-    {
-        $url = Route::getRouteUrl($name, $params);
-        if (false === $url) {
-            $url = self::build($name, $params);
-        }
-        return $url;
-    }
-
-    // 解析URL和参数 域名
-    protected static function parseUrl($url, $vars, $domain)
-    {
-        $info   = parse_url($url);
-        $url    = !empty($info['path']) ? $info['path'] : ACTION_NAME;
-        $anchor = '';
-        if (isset($info['fragment'])) {
-            // 解析锚点
-            $anchor = $info['fragment'];
-            if (false !== strpos($anchor, '?')) {
-                // 解析参数
-                list($anchor, $info['query']) = explode('?', $anchor, 2);
-            }
-            if (false !== strpos($anchor, '@')) {
-                // 解析域名
-                list($anchor, $host) = explode('@', $anchor, 2);
-            }
-        } elseif (false !== strpos($url, '@')) {
-            // 解析域名
-            list($url, $host) = explode('@', $info['path'], 2);
-        }
-        // 解析子域名
-        if (isset($host)) {
-            $domain = $host . (strpos($host, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
-        } elseif (true === $domain) {
-            $domain = $_SERVER['HTTP_HOST'];
-            if (Config::get('url_domain_deploy')) {
-                // 开启子域名部署
-                $domain = 'localhost' == $domain ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
-                // '子域名'=>['模块[/控制器/操作]'];
-                foreach (Route::domain() as $key => $rule) {
-                    $rule = is_array($rule) ? $rule[0] : $rule;
-                    if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
-                        $domain = $key . strstr($domain, '.'); // 生成对应子域名
-                        $url    = substr_replace($url, '', 0, strlen($rule));
-                        break;
-                    }
-                }
-            }
-        }
-        // 解析参数
-        if (is_string($vars)) {
-            // aaa=1&bbb=2 转换成数组
-            parse_str($vars, $vars);
-        } elseif (!is_array($vars)) {
-            $vars = [];
-        }
-        if (isset($info['query'])) {
-            // 解析地址里面参数 合并到vars
-            parse_str($info['query'], $params);
-            $vars = array_merge($params, $vars);
-        }
-        return [$url, $vars, $domain, $anchor];
     }
 
     /**

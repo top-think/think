@@ -34,25 +34,25 @@ class Route
     private static $bind = [];
 
     // 添加URL映射规则
-    public static function map($map, $route = '')
+    public static function map($map = '', $route = '')
     {
         return self::setting('map', $map, $route);
     }
 
     // 添加变量规则
-    public static function pattern($name, $rule = '')
+    public static function pattern($name = '', $rule = '')
     {
         return self::setting('pattern', $name, $rule);
     }
 
     // 添加路由别名
-    public static function alias($name, $rule = '')
+    public static function alias($name = '', $rule = '')
     {
         return self::setting('alias', $name, $rule);
     }
 
     // 添加子域名部署规则
-    public static function domain($domain, $rule = '')
+    public static function domain($domain = '', $rule = '')
     {
         return self::setting('domain', $domain, $rule);
     }
@@ -61,9 +61,7 @@ class Route
     private static function setting($var, $name = '', $value = '')
     {
         if (is_array($name)) {
-            foreach ($name as $key => $value) {
-                self::${$var}[$key] = $value;
-            }
+            self::${$var} = self::${$var}+$name;
         } elseif (empty($name)) {
             return self::${$var};
         } else {
@@ -145,32 +143,52 @@ class Route
     }
 
     // 注册任意请求的路由规则
-    public static function any($rule, $route = '', $option = [], $pattern = [])
+    public static function any($rule = '', $route = '', $option = [], $pattern = [])
     {
+        if ('' == $rule) {
+            // 获取路由定义
+            return self::$rules['*'];
+        }
         self::register($rule, $route, '*', $option, $pattern);
     }
 
     // 注册get请求的路由规则
     public static function get($rule, $route = '', $option = [], $pattern = [])
     {
+        if ('' == $rule) {
+            // 获取路由定义
+            return self::$rules['GET'];
+        }
         self::register($rule, $route, 'GET', $option, $pattern);
     }
 
     // 注册post请求的路由规则
     public static function post($rule, $route = '', $option = [], $pattern = [])
     {
+        if ('' == $rule) {
+            // 获取路由定义
+            return self::$rules['POST'];
+        }
         self::register($rule, $route, 'POST', $option, $pattern);
     }
 
     // 注册put请求的路由规则
     public static function put($rule, $route = '', $option = [], $pattern = [])
     {
+        if ('' == $rule) {
+            // 获取路由定义
+            return self::$rules['PUT'];
+        }
         self::register($rule, $route, 'PUT', $option, $pattern);
     }
 
     // 注册delete请求的路由规则
     public static function delete($rule, $route = '', $option = [], $pattern = [])
     {
+        if ('' == $rule) {
+            // 获取路由定义
+            return self::$rules['DELETE'];
+        }
         self::register($rule, $route, 'DELETE', $option, $pattern);
     }
 
