@@ -422,7 +422,7 @@ class Route
     private static function checkRule($rule, $route, $url, $pattern)
     {
         // 检查完整规则定义
-        if (isset($pattern['__url__']) && !preg_match($pattern['__url__'], $url)) {
+        if (isset($pattern['__url__']) && !preg_match('/^' . $pattern['__url__'] . '/', $url)) {
             return false;
         }
         // 检测是否设置了参数分隔符
@@ -551,7 +551,7 @@ class Route
                 } else {
                     $name = substr($val, 1);
                 }
-                if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match($pattern[$name], $m1[$key])) {
+                if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match('/^' . $pattern[$name] . '$/', $m1[$key])) {
                     // 检查变量规则
                     return false;
                 }

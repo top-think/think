@@ -201,7 +201,7 @@ class Url
             }
         }
         foreach ($vars as $name => $val) {
-            if (isset($pattern[$name]) && !preg_match($pattern[$name], $val)) {
+            if (isset($pattern[$name]) && !preg_match('/^' . $pattern[$name] . '$/', $val)) {
                 // 检查变量规则
                 return false;
             }
