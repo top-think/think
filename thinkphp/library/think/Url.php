@@ -26,10 +26,6 @@ class Url
      */
     public static function build($url = '', $vars = '', $suffix = true, $domain = true)
     {
-        // 检测是否存在路由别名
-        if ($aliasUrl = Route::getRouteUrl($url, $vars)) {
-            return $aliasUrl;
-        }
         // 解析参数
         if (is_string($vars)) {
             // aaa=1&bbb=2 转换成数组
@@ -44,30 +40,37 @@ class Url
             $vars = array_merge($params, $vars);
         }
 
-        // 检测路由
-        $match = self::checkRoute($url, $vars, $domain, $type);
-        if (false === $match) {
-            // 路由不存在 直接解析
-            if (false !== strpos($url, '\\')) {
-                // 解析到类
-                $url = ltrim(str_replace('\\', '/', $url), '/');
-            } elseif (0 === strpos($url, '@')) {
-                // 解析到控制器
-                $url = substr($url, 1);
-            } else {
-                // 解析到 模块/控制器/操作
-                $path = explode('/', $url);
-                $len  = count($path);
-                if (2 == $len) {
-                    $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . $url;
-                } elseif (1 == $len) {
-                    $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . CONTROLLER_NAME . '/' . $url;
-                }
-            }
+        // 检测是否存在路由别名
+        if ($aliasUrl = Route::getRouteUrl($url, $vars)) {
+            // 存在别名定义则优先
+            return $aliasUrl;
         } else {
-            // 处理路由规则中的特殊内容
-            $url = str_replace(['\\d', '$'], '', $match);
+            // 检测路由
+            $match = self::checkRoute($url, $vars, $domain);
+            if (false === $match) {
+                // 路由不存在 直接解析
+                if (false !== strpos($url, '\\')) {
+                    // 解析到类
+                    $url = ltrim(str_replace('\\', '/', $url), '/');
+                } elseif (0 === strpos($url, '@')) {
+                    // 解析到控制器
+                    $url = substr($url, 1);
+                } else {
+                    // 解析到 模块/控制器/操作
+                    $path = explode('/', $url);
+                    $len  = count($path);
+                    if (2 == $len) {
+                        $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . $url;
+                    } elseif (1 == $len) {
+                        $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . CONTROLLER_NAME . '/' . $url;
+                    }
+                }
+            } else {
+                // 处理路由规则中的特殊内容
+                $url = str_replace(['\\d', '$'], '', $match);
+            }
         }
+
         // 检测URL绑定
         $type = Route::bind('type');
         if ($type) {
