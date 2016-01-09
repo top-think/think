@@ -323,12 +323,12 @@ class Route
                 case 'namespace':
                     // 绑定到命名空间
                     $array  = explode('/', $url, 3);
-                    $class  = isset($array[0]) ? $array[0] : '';
-                    $method = isset($array[1]) ? $array[1] : '';
+                    $class  = isset($array[0]) ? $array[0] : 'index';
+                    $method = isset($array[1]) ? $array[1] : 'index';
                     if (isset($array[2])) {
                         self::parseUrlParams($array[2]);
                     }
-                    $return = ['type' => 'class', 'class' => self::$bind['namespace'] . '\\' . $array[0], 'method' => $method, 'params' => []];
+                    $return = ['type' => 'class', 'class' => self::$bind['namespace'] . '\\' . $class, 'method' => $method, 'params' => []];
                     break;
                 case 'module':
                     // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
