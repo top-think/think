@@ -43,7 +43,7 @@ class Url
         // 检测是否存在路由别名
         if ($aliasUrl = Route::getRouteUrl($url, $vars)) {
             // 存在别名定义则优先
-            return $aliasUrl;
+            $url = $aliasUrl;
         } else {
             // 检测路由
             $match = self::checkRoute($url, $vars, $domain);
