@@ -319,7 +319,7 @@ class Cx extends Taglib
         $name  = $this->autoBuildVar($name);
         $flag  = substr($value, 0, 1);
         if ('$' == $flag || ':' == $flag) {
-            $value = $this->autoBuildVar($value);
+            $value = '(' . $this->autoBuildVar($value) . ')';
         } else {
             $value = '\'' . $value . '\'';
         }
