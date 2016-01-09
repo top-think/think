@@ -57,12 +57,16 @@ class Url
                     $url = substr($url, 1);
                 } else {
                     // 解析到 模块/控制器/操作
-                    $path = explode('/', $url);
-                    $len  = count($path);
-                    if (2 == $len) {
-                        $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . $url;
-                    } elseif (1 == $len) {
-                        $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . CONTROLLER_NAME . '/' . $url;
+                    $module = MODULE_NAME ? MODULE_NAME . '/' : '';
+                    if ('' == $url) {
+                        // 空字符串输出当前的 模块/控制器/操作
+                        $url = $module . CONTROLLER_NAME . '/' . ACTION_NAME;
+                    } else {
+                        $path = explode('/', $url);
+                        $len  = count($path);
+                        if ($len < 3) {
+                            $url = $module . (1 == $len ? CONTROLLER_NAME . '/' : '') . $url;
+                        }
                     }
                 }
             } else {
