@@ -153,7 +153,7 @@ class Route
     }
 
     // 注册get请求的路由规则
-    public static function get($rule, $route = '', $option = [], $pattern = [])
+    public static function get($rule = '', $route = '', $option = [], $pattern = [])
     {
         if ('' == $rule) {
             // 获取路由定义
@@ -163,7 +163,7 @@ class Route
     }
 
     // 注册post请求的路由规则
-    public static function post($rule, $route = '', $option = [], $pattern = [])
+    public static function post($rule = '', $route = '', $option = [], $pattern = [])
     {
         if ('' == $rule) {
             // 获取路由定义
@@ -173,7 +173,7 @@ class Route
     }
 
     // 注册put请求的路由规则
-    public static function put($rule, $route = '', $option = [], $pattern = [])
+    public static function put($rule = '', $route = '', $option = [], $pattern = [])
     {
         if ('' == $rule) {
             // 获取路由定义
@@ -183,7 +183,7 @@ class Route
     }
 
     // 注册delete请求的路由规则
-    public static function delete($rule, $route = '', $option = [], $pattern = [])
+    public static function delete($rule = '', $route = '', $option = [], $pattern = [])
     {
         if ('' == $rule) {
             // 获取路由定义

@@ -48,23 +48,38 @@ class Url
         $match = self::checkRoute($url, $vars, $domain, $type);
         if (false === $match) {
             // 路由不存在 直接解析
-            // 检测URL绑定
-            $type = Route::bind('type');
-            if ($type) {
-                $bind = Route::bind($type);
-                if (0 === strpos($url, $bind)) {
-                    $url = strstr($url, $bind, true);
-                }
-            }
             if (false !== strpos($url, '\\')) {
+                // 解析到类
                 $url = ltrim(str_replace('\\', '/', $url), '/');
             } elseif (0 === strpos($url, '@')) {
+                // 解析到控制器
                 $url = substr($url, 1);
+            } else {
+                // 解析到 模块/控制器/操作
+                $path = explode('/', $url);
+                $len  = count($path);
+                if (2 == $len) {
+                    $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . $url;
+                } elseif (1 == $len) {
+                    $url = (APP_MULTI_MODULE ? MODULE_NAME . '/' : '') . CONTROLLER_NAME . '/' . $url;
+                }
             }
         } else {
             // 处理路由规则中的特殊内容
             $url = str_replace(['\\d', '$'], '', $match);
         }
+        // 检测URL绑定
+        $type = Route::bind('type');
+        if ($type) {
+            $bind = Route::bind($type);
+            if (0 === strpos($url, $bind)) {
+                $url = substr($url, strlen($bind) + 1);
+            }
+        }
+        // 还原URL分隔符
+        $depr = Config::get('pathinfo_depr');
+        $url  = str_replace('/', $depr, $url);
+        // 替换变量
         $params = [];
         foreach ($vars as $key => $val) {
             if (false !== strpos($url, '[:' . $key . ']')) {
@@ -75,10 +90,8 @@ class Url
                 $params[$key] = $val;
             }
         }
-
         // URL组装
-        $depr = Config::get('pathinfo_depr');
-        $url  = Config::get('base_url') . '/' . $url;
+        $url = Config::get('base_url') . '/' . $url;
         // URL后缀
         $suffix = self::parseSuffix($suffix);
         // 参数组装
@@ -99,9 +112,6 @@ class Url
             $url .= $suffix;
         }
 
-        if (!empty($anchor)) {
-            $url .= '#' . $anchor;
-        }
         if ($domain) {
             if (true === $domain) {
                 $domain = $_SERVER['HTTP_HOST'];
