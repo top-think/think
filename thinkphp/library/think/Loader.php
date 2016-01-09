@@ -56,6 +56,8 @@ class Loader
             $filename = $path . str_replace('\\', DS, $class) . EXT;
             if (is_file($filename)) {
                 include $filename;
+            } elseif (APP_DEBUG) {
+                Log::record(' autoloader error : ' . $filename, 'notic');
             }
         }
     }
