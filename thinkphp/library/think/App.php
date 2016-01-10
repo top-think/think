@@ -99,7 +99,11 @@ class App
                 break;
             case 'callable':
                 // 执行回调方法
-                $data = call_user_func_array(self::$dispatch['callable'], self::$dispatch['params']);
+                if (is_callable(self::$dispatch['callable'])) {
+                    $data = call_user_func_array(self::$dispatch['callable'], self::$dispatch['params']);
+                } else {
+                    throw new Exception('not callable : ' . (is_array(self::$dispatch['callable']) ? implode('->', self::$dispatch['callable']) : self::$dispatch['callable']), 10009);
+                }
                 break;
             case 'closure':
                 // 规则闭包

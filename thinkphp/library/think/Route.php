@@ -315,7 +315,7 @@ class Route
                 case 'class':
                     // 绑定到类
                     $array = explode('/', $url, 2);
-                    if (isset($array[1])) {
+                    if (!empty($array[1])) {
                         self::parseUrlParams($array[1]);
                     }
                     $return = ['type' => 'callable', 'callable' => [self::$bind['class'], $array[0] ?: Config::get('default_action')], 'params' => []];
@@ -323,9 +323,9 @@ class Route
                 case 'namespace':
                     // 绑定到命名空间
                     $array  = explode('/', $url, 3);
-                    $class  = isset($array[0]) ? $array[0] : Config::get('default_controller');
-                    $method = isset($array[1]) ? $array[1] : Config::get('default_action');
-                    if (isset($array[2])) {
+                    $class  = !empty($array[0]) ? $array[0] : Config::get('default_controller');
+                    $method = !empty($array[1]) ? $array[1] : Config::get('default_action');
+                    if (!empty($array[2])) {
                         self::parseUrlParams($array[2]);
                     }
                     $return = ['type' => 'callable', 'callable' => [self::$bind['namespace'] . '\\' . $class, $method], 'params' => []];
