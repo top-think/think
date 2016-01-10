@@ -46,12 +46,12 @@ class Url
             $url = $aliasUrl;
         } else {
             // 检测路由
-            if (!$match = Cache::get(md5($url))) {
+            if (false === $match = Cache::get(md5($url))) {
                 // 没有检测过 重新检测
                 $match = self::checkRoute($url, $vars);
-                Cache::set(md5($url), $match);
+                Cache::set(md5($url), empty($match) ? '' : $match);
             }
-            if (is_null($match)) {
+            if (!$match) {
                 // 路由不存在 直接解析
                 if (false !== strpos($url, '\\')) {
                     // 解析到类
@@ -177,7 +177,7 @@ class Url
                 }
             }
         }
-        return null;
+        return false;
     }
 
     // 检测变量规则
