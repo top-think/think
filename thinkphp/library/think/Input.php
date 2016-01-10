@@ -14,11 +14,10 @@ namespace think;
 class Input
 {
     // 全局过滤规则
-    static $filter = null;
+    public static $filter = null;
 
     /**
      * 获取get变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -31,7 +30,6 @@ class Input
 
     /**
      * 获取post变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -44,7 +42,6 @@ class Input
 
     /**
      * 获取put变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -60,8 +57,7 @@ class Input
     }
 
     /**
-     * 获取post变量
-     * @access public
+     * 根据请求方法获取变量
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -81,7 +77,6 @@ class Input
 
     /**
      * 获取request变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -94,7 +89,6 @@ class Input
 
     /**
      * 获取session变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -107,7 +101,6 @@ class Input
 
     /**
      * 获取cookie变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -120,7 +113,6 @@ class Input
 
     /**
      * 获取post变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -133,7 +125,6 @@ class Input
 
     /**
      * 获取GLOBALS变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -146,7 +137,6 @@ class Input
 
     /**
      * 获取环境变量
-     * @access public
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
@@ -159,96 +149,78 @@ class Input
 
     /**
      * 获取系统变量 支持过滤和默认值
-     * @access   public
-     *
      * @param $name
      * @param $input
      * @param $filter
      * @param $default
-     *
      * @return mixed
-     * @internal param string $method 输入数据类型
-     * @internal param array $args 参数 [key,filter,default]
      */
-    private static function getData($name, $input, $filter, $default)
+    public static function getData($name, $input, $filter = '', $default = null)
     {
-        if (strpos($name, '/')) {
-            // 指定修饰符
-            list($name, $type) = explode('/', $name, 2);
-        } else {
-            // 默认强制转换为字符串
-            $type = 's';
-        }
-        $filters = isset($filter) ? $filter : self::$filter;
-        if ('' == $name) {
-            // 获取全部变量
+        // 解析name
+        list($name, $type) = static::parseName($name);
+        // 解析过滤器
+        $filters = static::parseFilters($filter);
+        // 解析值
+        if ($name === '') {
+            // 过滤所有输入
             $data = $input;
-            if ($filters) {
-                if (is_string($filters)) {
-                    $filters = explode(',', $filters);
-                }
-                foreach ($filters as $filter) {
-                    $data = self::filter($filter, $data); // 参数过滤
-                }
-            }
         } elseif (isset($input[$name])) {
-            // 取值操作
+            // 过滤name指定的输入
             $data = $input[$name];
-            if ($filters) {
-                if (is_string($filters)) {
-                    if (0 === strpos($filters, '/')) {
-                        if (1 !== preg_match($filters, (string) $data)) {
-                            // 支持正则验证
-                            return $default;
-                        }
-                    } else {
-                        $filters = explode(',', $filters);
-                    }
-                } elseif (is_int($filters)) {
-                    $filters = [$filters];
-                }
-
-                if (is_array($filters)) {
-                    foreach ($filters as $filter) {
-                        if (function_exists($filter)) {
-                            $data = is_array($data) ? self::filter($filter, $data) : $filter($data); // 参数过滤
-                        } else {
-                            $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
-                            if (false === $data) {
-                                return $default;
-                            }
-                        }
-                    }
-                }
-            }
-            if (!empty($type)) {
-                switch (strtolower($type)) {
-                    case 'a': // 数组
-                        $data = (array) $data;
-                        break;
-                    case 'd': // 数字
-                        $data = (int) $data;
-                        break;
-                    case 'f': // 浮点
-                        $data = (float) $data;
-                        break;
-                    case 'b': // 布尔
-                        $data = (boolean) $data;
-                        break;
-                    case 's': // 字符串
-                    default:
-                        $data = (string) $data;
-                }
-            }
         } else {
-            // 变量默认值
-            $data = $default;
+            // 无输入数据, 下面直接返回默认值
+            $data = false;
         }
-        is_array($data) && array_walk_recursive($data, 'self::filterExp');
-        return $data;
+        if ($data === false) {
+            // 返回默认值
+            return $default;
+        }
+        // 假如值为数组
+        if (is_array($data)) {
+            // 对数组应用过滤器
+            foreach ($filters as $filter) {
+                $data = self::filter($filter, $data);
+            }
+            // 递归过滤表达式
+            array_walk_recursive($data, 'self::filterExp');
+            // 返回结果
+            return $data;
+        }
+        // 非数组
+        // 正则过滤
+        $regex = static::regexFilter($data, $filter);
+        if ($regex === false) {
+            // 过滤器是正则表达式, 但数据无匹配
+            // 返回默认值
+            return $default;
+        } elseif (!is_null($regex)) {
+            // 数据合法，对结果进行强类型转换
+            return static::typeCast($regex, $type);
+        }
+        foreach ($filters as $filter) {
+            if (!function_exists($filter)) {
+                // filter函数不存在时, 则使用filter_var进行过滤
+                // filter为非整形值时, 调用filter_id取得过滤id
+                $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
+                if ($data === false) {
+                    // 不通过过滤器则返回默认值
+                    return $default;
+                }
+                continue;
+            }
+            // 函数存在时应用过滤
+            $data = call_user_func($filter, $data);
+        }
+        // 最后对结果进行强类型转换
+        return static::typeCast($data, $type);
     }
 
-    // 过滤表单中的表达式
+    /**
+     * 过滤表单中的表达式
+     * @param string &$value
+     * @return void
+     */
     public static function filterExp(&$value)
     {
         // TODO 其他安全过滤
@@ -259,6 +231,12 @@ class Input
         }
     }
 
+    /**
+     * 递归过滤给定的值
+     * @param string $filter
+     * @param mixed  $data
+     * @return mixed
+     */
     public static function filter($filter, $data)
     {
         $result = [];
@@ -266,5 +244,96 @@ class Input
             $result[$key] = is_array($val) ? self::filter($filter, $val) : call_user_func($filter, $val);
         }
         return $result;
+    }
+
+    /**
+     * 解析name
+     * @param string $name
+     * @return array 返回name和类型
+     */
+    private static function parseName($name)
+    {
+        if (strpos($name, '/')) {
+            return explode('/', $name, 2);
+        }
+        return [$name, 's'];
+    }
+
+    /**
+     * 解析过滤器
+     * @param mixed $filters
+     * @return array
+     */
+    private static function parseFilters($filters)
+    {
+        if ($filters === '') {
+            $filters = static::$filter;
+        }
+        if (is_string($filters)) {
+            return explode(',', $filters);
+        }
+        if (is_array($filters)) {
+            return $filters;
+        }
+        if (is_int($filters)) {
+            return [$filters];
+        }
+        return [$filters];
+    }
+
+    /**
+     * 正则过滤
+     * @param string $input
+     * @param string $filter
+     * @return string|false
+     */
+    private static function regexFilter($input, $filter)
+    {
+        $begin = $filter[0];
+        $end   = $filter[strlen($filter) - 1];
+        if (
+            ($begin === '/' && $end === '/') ||
+            ($begin === '#' && $end === '#') ||
+            ($begin === '~' && $end === '~')
+        ) {
+            if (!preg_match($filter, $input)) {
+                return false;
+            }
+            return $input;
+        }
+        return null;
+    }
+
+    /**
+     * 强类型转换
+     * @param string $data
+     * @param string $type
+     * @return mixed
+     */
+    private static function typeCast($data, $type)
+    {
+        switch (strtolower($type)) {
+            // 数组
+            case 'a':
+                $data = (array) $data;
+                break;
+            // 数字
+            case 'd':
+                $data = (int) $data;
+                break;
+            // 浮点
+            case 'f':
+                $data = (float) $data;
+                break;
+            // 布尔
+            case 'b':
+                $data = (boolean) $data;
+                break;
+            // 字符串
+            case 's':
+            default:
+                $data = (string) $data;
+        }
+        return $data;
     }
 }
