@@ -71,11 +71,11 @@ www  WEB部署目录（或者子目录）
 │  │  └─ ...            更多类库目录
 │  │
 │  ├─extend             扩展类库目录（可选）
-│  ├─vendor             第三方类库目录
+│  ├─vendor             第三方类库目录（Composer依赖库）
 │  ├─mode               应用模式目录
 │  ├─tpl                系统模板目录
 │  ├─base.php           基础定义文件
-│  ├─help.php           助手函数文件
+│  ├─helper.php         助手函数文件
 │  ├─convention.php     框架惯例配置文件
 │  └─start.php          框架入口文件
 ~~~

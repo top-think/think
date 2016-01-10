@@ -82,7 +82,7 @@ class Loader
     public static function register($autoload = '')
     {
         // 注册系统自动加载
-        spl_autoload_register($autoload ? $autoload : 'think\\loader::autoload');
+        spl_autoload_register($autoload ? $autoload : 'think\\Loader::autoload');
         // 注册composer自动加载
         self::registerComposerLoader();
     }

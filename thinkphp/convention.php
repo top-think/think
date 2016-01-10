@@ -75,8 +75,8 @@ return [
     'url_params_bind'       => true,
     // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
     'url_parmas_bind_type'  => 0,
-    //url地址的后缀
-    'url_deny_suffix'       => '',
+    //url禁止访问的后缀
+    'url_deny_suffix'       => 'ico|png|gif|jpg',
     // 是否开启路由
     'url_route_on'          => true,
     // 是否强制使用路由
