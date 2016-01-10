@@ -67,12 +67,15 @@ class Input
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'POST':
-                return self::post($name, $default, $filter);
+                $result = self::post($name, $default, $filter);
+                break;
             case 'PUT':
-                return self::put($name, $default, $filter);
+                $result = self::put($name, $default, $filter);
+                break;
             default:
-                return self::get($name, $default, $filter);
+                $result = self::get($name, $default, $filter);
         }
+        return $result;
     }
 
     /**
@@ -162,7 +165,7 @@ class Input
         // 解析过滤器
         $filters = static::parseFilters($filter);
         // 解析值
-        if ($name === '') {
+        if ('' === $name) {
             // 过滤所有输入
             $data = $input;
         } elseif (isset($input[$name])) {
@@ -172,7 +175,7 @@ class Input
             // 无输入数据, 下面直接返回默认值
             $data = false;
         }
-        if ($data === false) {
+        if (false === $data) {
             // 返回默认值
             return $default;
         }
@@ -190,30 +193,32 @@ class Input
         // 非数组
         // 正则过滤
         $regex = static::regexFilter($data, $filter);
-        if ($regex === false) {
+        if (false === $regex) {
             // 过滤器是正则表达式, 但数据无匹配
             // 返回默认值
-            return $default;
+            $result = $default;
         } elseif (!is_null($regex)) {
             // 数据合法，对结果进行强类型转换
-            return static::typeCast($regex, $type);
-        }
-        foreach ($filters as $filter) {
-            if (!function_exists($filter)) {
-                // filter函数不存在时, 则使用filter_var进行过滤
-                // filter为非整形值时, 调用filter_id取得过滤id
-                $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
-                if ($data === false) {
-                    // 不通过过滤器则返回默认值
-                    return $default;
+            $result = static::typeCast($regex, $type);
+        } else {
+            foreach ($filters as $filter) {
+                if (!function_exists($filter)) {
+                    // filter函数不存在时, 则使用filter_var进行过滤
+                    // filter为非整形值时, 调用filter_id取得过滤id
+                    $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
+                    if (false === $data) {
+                        // 不通过过滤器则返回默认值
+                        return $default;
+                    }
+                    continue;
                 }
-                continue;
+                // 函数存在时应用过滤
+                $data = call_user_func($filter, $data);
             }
-            // 函数存在时应用过滤
-            $data = call_user_func($filter, $data);
+            // 最后对结果进行强类型转换
+            $result = static::typeCast($data, $type);
         }
-        // 最后对结果进行强类型转换
-        return static::typeCast($data, $type);
+        return $result;
     }
 
     /**
@@ -253,10 +258,7 @@ class Input
      */
     private static function parseName($name)
     {
-        if (strpos($name, '/')) {
-            return explode('/', $name, 2);
-        }
-        return [$name, 's'];
+        return strpos($name, '/') ? explode('/', $name, 2) : [$name, 's'];
     }
 
     /**
@@ -266,19 +268,16 @@ class Input
      */
     private static function parseFilters($filters)
     {
-        if ($filters === '') {
-            $filters = static::$filter;
-        }
+        $filters = ('' === $filters) ? static::$filter : $filters;
+
         if (is_string($filters)) {
-            return explode(',', $filters);
+            $result = explode(',', $filters);
+        } elseif (is_array($filters)) {
+            $result = $filters;
+        } else {
+            $result = [$filters];
         }
-        if (is_array($filters)) {
-            return $filters;
-        }
-        if (is_int($filters)) {
-            return [$filters];
-        }
-        return [$filters];
+        return $result;
     }
 
     /**
@@ -292,14 +291,11 @@ class Input
         $begin = $filter[0];
         $end   = $filter[strlen($filter) - 1];
         if (
-            ($begin === '/' && $end === '/') ||
-            ($begin === '#' && $end === '#') ||
-            ($begin === '~' && $end === '~')
+            ('/' === $begin && '/' === $end) ||
+            ('#' === $begin && '#' === $end) ||
+            ('~' === $begin && '~' === $end)
         ) {
-            if (!preg_match($filter, $input)) {
-                return false;
-            }
-            return $input;
+            return !preg_match($filter, $input) ? false : $input;
         }
         return null;
     }
