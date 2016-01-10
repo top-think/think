@@ -46,7 +46,11 @@ class Url
             $url = $aliasUrl;
         } else {
             // 检测路由
-            $match = self::checkRoute($url, $vars, $domain);
+            if (!$match = Cache::get(md5($url))) {
+                // 没有检测过 重新检测
+                $match = self::checkRoute($url, $vars);
+                Cache::set(md5($url), $match);
+            }
             if (false === $match) {
                 // 路由不存在 直接解析
                 if (false !== strpos($url, '\\')) {
@@ -140,10 +144,10 @@ class Url
         return $url;
     }
 
-    protected static function checkRoute($url, $vars, $domain)
+    protected static function checkRoute($url, $vars)
     {
         // 获取路由定义
-        $rules = Route::any();
+        $rules = Route::getRules();
         // 全局变量规则
         $pattern = Route::pattern();
         foreach ($rules as $rule => $val) {

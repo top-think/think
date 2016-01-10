@@ -143,53 +143,43 @@ class Route
     }
 
     // 注册任意请求的路由规则
-    public static function any($rule = '', $route = '', $option = [], $pattern = [])
+    public static function any($rule, $route = '', $option = [], $pattern = [])
     {
-        if ('' == $rule) {
-            // 获取路由定义
-            return self::$rules['*'];
-        }
         self::register($rule, $route, '*', $option, $pattern);
     }
 
     // 注册get请求的路由规则
-    public static function get($rule = '', $route = '', $option = [], $pattern = [])
+    public static function get($rule, $route = '', $option = [], $pattern = [])
     {
-        if ('' == $rule) {
-            // 获取路由定义
-            return self::$rules['GET'];
-        }
         self::register($rule, $route, 'GET', $option, $pattern);
     }
 
     // 注册post请求的路由规则
-    public static function post($rule = '', $route = '', $option = [], $pattern = [])
+    public static function post($rule, $route = '', $option = [], $pattern = [])
     {
-        if ('' == $rule) {
-            // 获取路由定义
-            return self::$rules['POST'];
-        }
         self::register($rule, $route, 'POST', $option, $pattern);
     }
 
     // 注册put请求的路由规则
-    public static function put($rule = '', $route = '', $option = [], $pattern = [])
+    public static function put($rule, $route = '', $option = [], $pattern = [])
     {
-        if ('' == $rule) {
-            // 获取路由定义
-            return self::$rules['PUT'];
-        }
         self::register($rule, $route, 'PUT', $option, $pattern);
     }
 
     // 注册delete请求的路由规则
-    public static function delete($rule = '', $route = '', $option = [], $pattern = [])
+    public static function delete($rule, $route = '', $option = [], $pattern = [])
     {
-        if ('' == $rule) {
-            // 获取路由定义
-            return self::$rules['DELETE'];
-        }
         self::register($rule, $route, 'DELETE', $option, $pattern);
+    }
+
+    // 获取路由定义
+    public static function getRules($method = '')
+    {
+        if ($method) {
+            return self::$rules[$method];
+        } else {
+            return self::$rules['*'] + self::$rules['GET'] + self::$rules['POST'] + self::$rules['PUT'] + self::$rules['DELETE'];
+        }
     }
 
     // 检测子域名部署
