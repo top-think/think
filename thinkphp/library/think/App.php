@@ -97,9 +97,9 @@ class App
                 // 执行控制器操作
                 $data = Loader::action(self::$dispatch['controller'], self::$dispatch['params']);
                 break;
-            case 'class':
-                // 执行类，例如行为
-                $data = Hook::exec(self::$dispatch['class'], self::$dispatch['method'], self::$dispatch['params']);
+            case 'callable':
+                // 执行回调方法
+                $data = call_user_func_array(self::$dispatch['callable'], self::$dispatch['params']);
                 break;
             case 'closure':
                 // 规则闭包

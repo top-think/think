@@ -318,17 +318,17 @@ class Route
                     if (isset($array[1])) {
                         self::parseUrlParams($array[1]);
                     }
-                    $return = ['type' => 'class', 'class' => self::$bind['class'], 'method' => $array[0] ?: '', 'params' => []];
+                    $return = ['type' => 'callable', 'callable' => [self::$bind['class'], $array[0] ?: Config::get('default_action')], 'params' => []];
                     break;
                 case 'namespace':
                     // 绑定到命名空间
                     $array  = explode('/', $url, 3);
-                    $class  = isset($array[0]) ? $array[0] : 'index';
-                    $method = isset($array[1]) ? $array[1] : 'index';
+                    $class  = isset($array[0]) ? $array[0] : Config::get('default_controller');
+                    $method = isset($array[1]) ? $array[1] : Config::get('default_action');
                     if (isset($array[2])) {
                         self::parseUrlParams($array[2]);
                     }
-                    $return = ['type' => 'class', 'class' => self::$bind['namespace'] . '\\' . $class, 'method' => $method, 'params' => []];
+                    $return = ['type' => 'callable', 'callable' => [self::$bind['namespace'] . '\\' . $class, $method], 'params' => []];
                     break;
                 case 'module':
                     // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
@@ -580,14 +580,12 @@ class Route
                 $item = substr($item, 1, -1);
             }
             if (0 === strpos($item, ':')) {
-
                 if (strpos($item, '\\')) {
                     $var = substr($item, 1, -2);
                 } else {
                     $var = substr($item, 1);
                 }
                 $matches[$var] = array_shift($paths);
-
             } else {
                 // 过滤URL中的静态变量
                 array_shift($paths);
@@ -602,8 +600,8 @@ class Route
             }
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
-            // 路由到行为
-            $result = ['type' => 'class', 'class' => $url, 'method' => isset($route[1]) ? $route[1] : '', 'params' => $matches];
+            // 路由到回调
+            $result = ['type' => 'callable', 'callable' => $route, 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
