@@ -99,10 +99,13 @@ class App
                 break;
             case 'callable':
                 // 执行回调方法
-                if (is_callable(self::$dispatch['callable'])) {
-                    $data = call_user_func_array(self::$dispatch['callable'], self::$dispatch['params']);
+                $callable = self::$dispatch['callable'];
+                if (is_callable($callable)) {
+                    $data = is_array($callable) ?
+                    self::reflectionInvoke(new $callable[0], $callable[1]) : // 数组定义需要实例化的对象和方法
+                    call_user_func_array($callable, self::$dispatch['params']); // 静态方法或者函数
                 } else {
-                    throw new Exception('not callable : ' . (is_array(self::$dispatch['callable']) ? implode('->', self::$dispatch['callable']) : self::$dispatch['callable']), 10009);
+                    throw new Exception('not callable : ' . (is_array($callable) ? implode('->', $callable) : $callable), 10009);
                 }
                 break;
             case 'closure':
@@ -133,6 +136,29 @@ class App
             }
         }
         return $reflect->invokeArgs($args);
+    }
+
+    // 调用反射执行类的方法 支持参数绑定
+    private static function reflectionInvoke($class, $method)
+    {
+        //执行当前操作
+        $reflect = new \ReflectionMethod($class, $method);
+        if ($reflect->isPublic()) {
+            // URL参数绑定检测
+            if (Config::get('url_params_bind') && $reflect->getNumberOfParameters() > 0) {
+                // 获取绑定参数
+                $args = self::getBindParams($reflect, Config::get('url_parmas_bind_type'));
+                // 全局过滤
+                array_walk_recursive($args, 'think\\Input::filterExp');
+                $data = $reflect->invokeArgs($class, $args);
+            } else {
+                $data = $reflect->invoke($class);
+            }
+        } else {
+            // 操作方法不是Public 抛出异常
+            throw new \ReflectionException();
+        }
+        return $data;
     }
 
     // 执行 模块/控制器/操作
@@ -208,23 +234,8 @@ class App
                 // 非法操作
                 throw new \ReflectionException();
             }
-            //执行当前操作
-            $method = new \ReflectionMethod($instance, $action);
-            if ($method->isPublic()) {
-                // URL参数绑定检测
-                if (Config::get('url_params_bind') && $method->getNumberOfParameters() > 0) {
-                    // 获取绑定参数
-                    $args = self::getBindParams($method, Config::get('url_parmas_bind_type'));
-                    // 全局过滤
-                    array_walk_recursive($args, 'think\\Input::filterExp');
-                    $data = $method->invokeArgs($instance, $args);
-                } else {
-                    $data = $method->invoke($instance);
-                }
-            } else {
-                // 操作方法不是Public 抛出异常
-                throw new \ReflectionException();
-            }
+            // 执行操作方法
+            $data = self::reflectionInvoke($instance, $action);
         } catch (\ReflectionException $e) {
             // 操作不存在
             if (method_exists($instance, '_empty')) {
