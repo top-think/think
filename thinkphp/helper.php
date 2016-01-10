@@ -271,7 +271,7 @@ function S($name, $value = '', $options = null)
  */
 function trace($log = '[think]', $level = 'log')
 {
-    if ('[think]' == $log) {
+    if ('[think]' === $log) {
         return \think\Log::getLog();
     } else {
         \think\Log::record($log, $level);

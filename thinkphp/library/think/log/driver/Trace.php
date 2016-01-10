@@ -15,7 +15,7 @@ namespace think\log\driver;
  */
 class Trace
 {
-    protected $tabs   = ['base' => '基本', 'file' => '文件', 'warn|error' => '错误', 'sql' => 'SQL', 'info|debug|log' => '调试'];
+    protected $tabs   = ['base' => '基本', 'file' => '文件', 'notic|error' => '错误', 'sql' => 'SQL', 'info|debug|log' => '调试'];
     protected $config = [
         'trace_file' => '',
     ];
