@@ -51,7 +51,7 @@ class Url
                 $match = self::checkRoute($url, $vars);
                 Cache::set(md5($url), $match);
             }
-            if (false === $match) {
+            if (is_null($match)) {
                 // 路由不存在 直接解析
                 if (false !== strpos($url, '\\')) {
                     // 解析到类
@@ -177,7 +177,7 @@ class Url
                 }
             }
         }
-        return false;
+        return null;
     }
 
     // 检测变量规则
