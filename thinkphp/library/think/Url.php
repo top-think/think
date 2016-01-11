@@ -53,26 +53,7 @@ class Url
             }
             if (!$match) {
                 // 路由不存在 直接解析
-                if (false !== strpos($url, '\\')) {
-                    // 解析到类
-                    $url = ltrim(str_replace('\\', '/', $url), '/');
-                } elseif (0 === strpos($url, '@')) {
-                    // 解析到控制器
-                    $url = substr($url, 1);
-                } else {
-                    // 解析到 模块/控制器/操作
-                    $module = MODULE_NAME ? MODULE_NAME . '/' : '';
-                    if ('' == $url) {
-                        // 空字符串输出当前的 模块/控制器/操作
-                        $url = $module . CONTROLLER_NAME . '/' . ACTION_NAME;
-                    } else {
-                        $path = explode('/', $url);
-                        $len  = count($path);
-                        if ($len < 3) {
-                            $url = $module . (1 == $len ? CONTROLLER_NAME . '/' : '') . $url;
-                        }
-                    }
-                }
+                $url = self::parseUrl($url);
             } else {
                 // 处理路由规则中的特殊内容
                 $url = str_replace(['\\d', '$'], '', $match);
@@ -122,31 +103,41 @@ class Url
             $url .= $suffix;
         }
 
-        if ($domain) {
-            if (true === $domain) {
-                // 自动判断域名
-                $domain = $_SERVER['HTTP_HOST'];
-                if (Config::get('url_domain_deploy')) {
-                    // 开启子域名部署
-                    $domain = $_SERVER['HTTP_HOST'];
-                    foreach (Route::domain() as $key => $rule) {
-                        $rule = is_array($rule) ? $rule[0] : $rule;
-                        if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
-                            $domain = $key . strstr($domain, '.'); // 生成对应子域名
-                            break;
-                        }
-                    }
-                }
-            }
-            $domain = (self::isSsl() ? 'https://' : 'http://') . $domain;
-        } else {
-            $domain = '';
-        }
+        // 检测域名
+        $domain = self::checkDomain($url, $domain);
+
         // URL组装
         $url = $domain . Config::get('base_url') . '/' . $url;
         return $url;
     }
 
+    // 直接解析URL地址
+    protected static function parseUrl($url)
+    {
+        if (false !== strpos($url, '\\')) {
+            // 解析到类
+            $url = ltrim(str_replace('\\', '/', $url), '/');
+        } elseif (0 === strpos($url, '@')) {
+            // 解析到控制器
+            $url = substr($url, 1);
+        } else {
+            // 解析到 模块/控制器/操作
+            $module = MODULE_NAME ? MODULE_NAME . '/' : '';
+            if ('' == $url) {
+                // 空字符串输出当前的 模块/控制器/操作
+                $url = $module . CONTROLLER_NAME . '/' . ACTION_NAME;
+            } else {
+                $path = explode('/', $url);
+                $len  = count($path);
+                if ($len < 3) {
+                    $url = $module . (1 == $len ? CONTROLLER_NAME . '/' : '') . $url;
+                }
+            }
+        }
+        return $url;
+    }
+
+    // 检测路由定义
     protected static function checkRoute($url, $vars)
     {
         // 获取路由定义
@@ -181,6 +172,32 @@ class Url
             }
         }
         return false;
+    }
+
+    // 检测域名
+    protected static function checkDomain($url, $domain)
+    {
+        if ($domain) {
+            if (true === $domain) {
+                // 自动判断域名
+                $domain = $_SERVER['HTTP_HOST'];
+                if (Config::get('url_domain_deploy')) {
+                    // 开启子域名部署
+                    $domain = $_SERVER['HTTP_HOST'];
+                    foreach (Route::domain() as $key => $rule) {
+                        $rule = is_array($rule) ? $rule[0] : $rule;
+                        if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
+                            $domain = $key . strstr($domain, '.'); // 生成对应子域名
+                            break;
+                        }
+                    }
+                }
+            }
+            $domain = (self::isSsl() ? 'https://' : 'http://') . $domain;
+        } else {
+            $domain = '';
+        }
+        return $domain;
     }
 
     // 检测变量规则
