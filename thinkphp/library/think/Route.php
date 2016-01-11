@@ -117,21 +117,25 @@ class Route
                         if (empty($val)) {
                             break;
                         }
-                        self::$rules[$type][substr($key, 1, -1)] = ['routes' => $val, 'option' => $option, 'pattern' => $pattern];
+                        $key    = substr($key, 1, -1);
+                        $result = ['routes' => $val, 'option' => $option, 'pattern' => $pattern];
                     } elseif (is_array($val)) {
-                        self::$rules[$type][$key] = ['route' => $val[0], 'option' => $val[1], 'pattern' => $val[2]];
+                        $result = ['route' => $val[0], 'option' => $val[1], 'pattern' => $val[2]];
                     } else {
-                        self::$rules[$type][$key] = ['route' => $val, 'option' => $option, 'pattern' => $pattern];
+                        $result = ['route' => $val, 'option' => $option, 'pattern' => $pattern];
                     }
+                    self::$rules[$type][$key] = $result;
                 }
             } else {
                 if (0 === strpos($rule, '[')) {
-                    self::$rules[$type][substr($rule, 1, -1)] = ['routes' => $route, 'option' => $option, 'pattern' => $pattern];
+                    $rule   = substr($rule, 1, -1);
+                    $result = ['routes' => $route, 'option' => $option, 'pattern' => $pattern];
                 } elseif (is_array($route)) {
-                    self::$rules[$type][$rule] = ['route' => $route[0], 'option' => $route[1], 'pattern' => $route[2]];
+                    $result = ['route' => $route[0], 'option' => $route[1], 'pattern' => $route[2]];
                 } else {
-                    self::$rules[$type][$rule] = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
+                    $result = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
                 }
+                self::$rules[$type][$rule] = $result;
             }
         }
     }
@@ -625,31 +629,4 @@ class Route
         $_GET = array_merge($var, $_GET);
     }
 
-    // 根据路由别名和参数获取URL地址
-    public static function getRouteUrl($name, $params = [])
-    {
-        if (strpos($name, '?')) {
-            // [路由别名?]参数1=值1&参数2=值2...
-            list($name, $params) = explode('?', $name);
-        }
-
-        if (!empty(self::$alias[$name])) {
-            $url = self::$alias[$name];
-            if (is_string($params)) {
-                parse_str($params, $vars);
-            } else {
-                $vars = $params;
-            }
-            foreach ($vars as $key => $val) {
-                if (false !== strpos($url, '[:' . $key . ']')) {
-                    $url = str_replace('[:' . $key . ']', $val, $url);
-                } else {
-                    $url = str_replace(':' . $key, $val, $url);
-                }
-            }
-            return $url;
-        } else {
-            return false;
-        }
-    }
 }

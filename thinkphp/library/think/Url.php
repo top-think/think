@@ -40,24 +40,13 @@ class Url
             $vars = array_merge($params, $vars);
         }
 
-        // 检测是否存在路由别名
-        if ($aliasUrl = Route::getRouteUrl($url, $vars)) {
-            // 存在别名定义则优先
-            $url = $aliasUrl;
+        // 检测路由
+        if ($match = self::getRouteUrl($url, $vars)) {
+            // 处理路由规则中的特殊内容
+            $url = str_replace(['\\d', '$'], '', $match);
         } else {
-            // 检测路由
-            if (false === $match = Cache::get(md5($url))) {
-                // 没有检测过 重新检测
-                $match = self::checkRoute($url, $vars);
-                Cache::set(md5($url), empty($match) ? '' : $match);
-            }
-            if (!$match) {
-                // 路由不存在 直接解析
-                $url = self::parseUrl($url);
-            } else {
-                // 处理路由规则中的特殊内容
-                $url = str_replace(['\\d', '$'], '', $match);
-            }
+            // 路由不存在 直接解析
+            $url = self::parseUrl($url);
         }
 
         // 检测URL绑定
@@ -71,17 +60,6 @@ class Url
         // 还原URL分隔符
         $depr = Config::get('pathinfo_depr');
         $url  = str_replace('/', $depr, $url);
-        // 替换变量
-        $params = [];
-        foreach ($vars as $key => $val) {
-            if (false !== strpos($url, '[:' . $key . ']')) {
-                $url = str_replace('[:' . $key . ']', $val, $url);
-            } elseif (false !== strpos($url, ':' . $key)) {
-                $url = str_replace(':' . $key, $val, $url);
-            } else {
-                $params[$key] = $val;
-            }
-        }
 
         // URL后缀
         $suffix = self::parseSuffix($suffix);
@@ -104,7 +82,7 @@ class Url
         }
 
         // 检测域名
-        $domain = self::checkDomain($url, $domain);
+        $domain = self::parseDomain($url, $domain);
 
         // URL组装
         $url = $domain . Config::get('base_url') . '/' . $url;
@@ -137,45 +115,8 @@ class Url
         return $url;
     }
 
-    // 检测路由定义
-    protected static function checkRoute($url, $vars)
-    {
-        // 获取路由定义
-        $rules = Route::getRules();
-        // 全局变量规则
-        $pattern = Route::pattern();
-        foreach ($rules as $rule => $val) {
-            if (!empty($val['routes'])) {
-                // 匹配到路由分组
-                foreach ($val['routes'] as $key => $route) {
-                    if (is_numeric($key)) {
-                        $key = array_shift($route);
-                    }
-                    $check  = isset($route[2]) ? array_merge($pattern, $route[2]) : $pattern;
-                    $route  = $route[0];
-                    $route  = is_array($route) ? $route[0] : $route;
-                    $result = $rule . Config::get('pathinfo_depr') . $key;
-                    if ($route == $url && self::checkPattern($result, $vars, $check)) {
-                        return $result;
-                    }
-                }
-            } else {
-                if (is_numeric($rule)) {
-                    $rule = array_shift($val);
-                }
-                $route = $val['route'];
-                $route = is_array($route) ? $route[0] : $route;
-                $check = isset($val['pattern']) ? array_merge($pattern, $val['pattern']) : $pattern;
-                if ($route == $url && self::checkPattern($rule, $vars, $check)) {
-                    return $rule;
-                }
-            }
-        }
-        return false;
-    }
-
     // 检测域名
-    protected static function checkDomain($url, $domain)
+    protected static function parseDomain($url, $domain)
     {
         if ($domain) {
             if (true === $domain) {
@@ -201,7 +142,7 @@ class Url
     }
 
     // 检测变量规则
-    protected static function checkPattern($rule, $vars, $pattern)
+    protected static function pattern($rule, $vars, $pattern)
     {
         // 检测路由规则中的变量
         // 检测是否设置了参数分隔符
@@ -231,12 +172,6 @@ class Url
                 }
             }
         }
-        foreach ($vars as $name => $val) {
-            if (isset($pattern[$name]) && !preg_match('/^' . $pattern[$name] . '$/', $val)) {
-                // 检查变量规则
-                return false;
-            }
-        }
         return true;
     }
 
@@ -264,5 +199,64 @@ class Url
             return true;
         }
         return false;
+    }
+
+    // 匹配路由地址
+    public static function getRouteUrl($name, &$vars = [])
+    {
+        $alias = self::getRouteAlias();
+        if (!empty($alias[$name])) {
+            foreach ($alias[$name] as $key => $url) {
+                // 检查变量匹配
+                if (self::pattern($url, $vars, $check)) {
+                    foreach ($vars as $key => $val) {
+                        if (false !== strpos($url, '[:' . $key . ']')) {
+                            $url = str_replace('[:' . $key . ']', $val, $url);
+                            unset($vars[$key]);
+                        } elseif (false !== strpos($url, ':' . $key)) {
+                            $url = str_replace(':' . $key, $val, $url);
+                            unset($vars[$key]);
+                        }
+                    }
+                    return $url;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 自动生成路由别名
+    private static function getRouteAlias()
+    {
+        if ($alias = Cache::get('think_route_alias')) {
+            return $alias;
+        }
+        // 获取路由定义
+        $rules = Route::getRules();
+        if ($rules) {
+            foreach ($rules as $rule => $val) {
+                if (!empty($val['routes'])) {
+                    foreach ($val['routes'] as $key => $route) {
+                        if (is_numeric($key)) {
+                            $key = array_shift($route);
+                        }
+                        $route = $route[0];
+                        if (strpos($route, '?')) {
+                            $route = strstr($route, '?', true);
+                        }
+                        $alias[$route][] = $rule . '/' . $key;
+                    }
+                } else {
+                    $route = $val['route'];
+                    if (strpos($route, '?')) {
+                        $route = strstr($route, '?', true);
+                    }
+                    $alias[$route][] = $rule;
+                }
+            }
+            Cache::set('think_route_alias', $alias);
+            return $alias;
+        }
+        return [];
     }
 }
