@@ -101,8 +101,7 @@ class Url
                 $params[$key] = $val;
             }
         }
-        // URL组装
-        $url = Config::get('base_url') . '/' . $url;
+
         // URL后缀
         $suffix = self::parseSuffix($suffix);
         // 参数组装
@@ -134,14 +133,17 @@ class Url
                         $rule = is_array($rule) ? $rule[0] : $rule;
                         if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
                             $domain = $key . strstr($domain, '.'); // 生成对应子域名
-                            $url    = substr_replace($url, '', 0, strlen($rule));
                             break;
                         }
                     }
                 }
             }
-            $url = (self::isSsl() ? 'https://' : 'http://') . $domain . $url;
+            $domain = (self::isSsl() ? 'https://' : 'http://') . $domain;
+        } else {
+            $domain = '';
         }
+        // URL组装
+        $url = $domain . Config::get('base_url') . '/' . $url;
         return $url;
     }
 
