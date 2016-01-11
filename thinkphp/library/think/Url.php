@@ -62,13 +62,13 @@ class Url
         // URL后缀
         $suffix = self::parseSuffix($suffix);
         // 参数组装
-        if (!empty($params)) {
+        if (!empty($vars)) {
             // 添加参数
             if (Config::get('url_common_param')) {
                 $vars = urldecode(http_build_query($vars));
                 $url .= $suffix . '?' . $vars;
             } else {
-                foreach ($params as $var => $val) {
+                foreach ($vars as $var => $val) {
                     if ('' !== trim($val)) {
                         $url .= $depr . $var . $depr . urlencode($val);
                     }
@@ -139,31 +139,13 @@ class Url
         return $domain;
     }
 
-    // 检测变量规则
-    protected static function pattern($rule, $vars, $pattern)
+    // 检测路由规则中的变量是否有传入
+    protected static function pattern($pattern, $vars)
     {
-        // 检测路由规则中的变量
-        // 检测是否设置了参数分隔符
-        if ($depr = Config::get('url_params_depr')) {
-            $rule = str_replace($depr, '/', $rule);
-        }
-        // 提取路由规则中的变量
-        $var   = [];
-        $array = explode('/', $rule);
-        foreach ($array as $val) {
-            $optional = false;
-            if (0 === strpos($val, '[:')) {
-                // 可选参数
-                $val      = substr($val, 1, -1);
-                $optional = true;
-            }
-            if (0 === strpos($val, ':')) {
-                // URL变量
-                $name = substr($val, 1);
-                if (!$optional && !isset($vars[$name])) {
-                    // 变量未设置
-                    return false;
-                }
+        foreach ($pattern as $key => $type) {
+            if (1 == $type && !isset($vars[$key])) {
+                // 变量未设置
+                return false;
             }
         }
         return true;
@@ -200,12 +182,13 @@ class Url
     {
         $alias = self::getRouteAlias();
         if (!empty($alias[$name])) {
-            foreach ($alias[$name] as $key => $url) {
+            foreach ($alias[$name] as $key => $val) {
+                list($url, $pattern) = $val;
                 // 检查变量匹配
                 if (strpos($url, '$')) {
                     $url = str_replace('$', '[--think--]', $url);
                 }
-                if (self::pattern($url, $vars, $check)) {
+                if (self::pattern($pattern, $vars)) {
                     foreach ($vars as $key => $val) {
                         if (false !== strpos($url, '[:' . $key . ']')) {
                             $url = str_replace('[:' . $key . ']', $val, $url);
@@ -241,19 +224,53 @@ class Url
                         if (strpos($route, '?')) {
                             $route = strstr($route, '?', true);
                         }
-                        $alias[$route][] = $rule . '/' . $key;
+                        $var             = self::parseVar($rule . '/' . $key);
+                        $alias[$route][] = [$rule . '/' . $key, $var];
                     }
                 } else {
                     $route = $val['route'];
                     if (strpos($route, '?')) {
                         $route = strstr($route, '?', true);
                     }
-                    $alias[$route][] = $rule;
+                    $var             = self::parseVar($rule);
+                    $alias[$route][] = [$rule, $var];
                 }
             }
             Cache::set('think_route_alias', $alias);
             return $alias;
         }
         return [];
+    }
+
+    // 分析路由规则中的变量
+    private static function parseVar($rule)
+    {
+        // 检测是否设置了参数分隔符
+        if ($depr = Config::get('url_params_depr')) {
+            $rule = str_replace($depr, '/', $rule);
+        }
+        // 提取路由规则中的变量
+        $var = [];
+        foreach (explode('/', $rule) as $val) {
+            $optional = false;
+            if (0 === strpos($val, '[:')) {
+                // 可选参数
+                $optional = true;
+                $val      = substr($val, 1, -1);
+            }
+            if (0 === strpos($val, ':')) {
+                // URL变量
+                $name       = substr($val, 1);
+                $type       = $optional ? 2 : 1;
+                $var[$name] = $type;
+            }
+        }
+        return $var;
+    }
+
+    // 清空路由别名缓存
+    public static function clearAliasCache()
+    {
+        Cache::rm('think_route_alias');
     }
 }
