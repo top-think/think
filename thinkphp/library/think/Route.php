@@ -28,8 +28,6 @@ class Route
     private static $domain = [];
     // 变量规则
     private static $pattern = [];
-    // 路由别名 用于自动生成
-    private static $alias = [];
     // 域名绑定
     private static $bind = [];
 
@@ -43,12 +41,6 @@ class Route
     public static function pattern($name = '', $rule = '')
     {
         return self::setting('pattern', $name, $rule);
-    }
-
-    // 添加路由别名
-    public static function alias($name = '', $rule = '')
-    {
-        return self::setting('alias', $name, $rule);
     }
 
     // 添加子域名部署规则
@@ -102,11 +94,6 @@ class Route
                 if (isset($rule['__map__'])) {
                     self::map($rule['__map__']);
                     unset($rule['__map__']);
-                }
-                // 检查路由别名
-                if (isset($rule['__alias__'])) {
-                    self::alias($rule['__alias__']);
-                    unset($rule['__alias__']);
                 }
 
                 foreach ($rule as $key => $val) {
