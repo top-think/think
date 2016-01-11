@@ -128,7 +128,7 @@ class Url
                 $domain = $_SERVER['HTTP_HOST'];
                 if (Config::get('url_domain_deploy')) {
                     // 开启子域名部署
-                    $domain = 'localhost' == $domain ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
+                    $domain = $_SERVER['HTTP_HOST'];
                     foreach (Route::domain() as $key => $rule) {
                         $rule = is_array($rule) ? $rule[0] : $rule;
                         if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
