@@ -217,8 +217,6 @@ class Route
             }
             if (!empty($rule)) {
                 // 子域名部署规则
-                // '子域名'=>'模块[/控制器/操作]'
-                // '子域名'=>'模块[/控制器/操作]?var1=a&var2=b&var3=*';
                 if ($rule instanceof \Closure) {
                     // 执行闭包
                     $reflect    = new \ReflectionFunction($rule);
@@ -453,7 +451,7 @@ class Route
     public static function parseUrl($url, $depr = '/')
     {
         if (isset(self::$bind['module'])) {
-            // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
+            // 如果有模块/控制器绑定
             $url = self::$bind['module'] . '/' . $url;
         }
         // 分隔符替换 确保路由定义使用统一的分隔符
@@ -523,15 +521,7 @@ class Route
             }
             if (0 === strpos($val, ':')) {
                 // URL变量
-                if (strpos($val, '\\')) {
-                    $type = substr($val, -1);
-                    if ('d' == $type && !is_numeric($m1[$key])) {
-                        return false;
-                    }
-                    $name = substr($val, 1, -2);
-                } else {
-                    $name = substr($val, 1);
-                }
+                $name = substr($val, 1);
                 if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match('/^' . $pattern[$name] . '$/', $m1[$key])) {
                     // 检查变量规则
                     return false;
@@ -561,11 +551,7 @@ class Route
                 $item = substr($item, 1, -1);
             }
             if (0 === strpos($item, ':')) {
-                if (strpos($item, '\\')) {
-                    $var = substr($item, 1, -2);
-                } else {
-                    $var = substr($item, 1);
-                }
+                $var           = substr($item, 1);
                 $matches[$var] = array_shift($paths);
             } else {
                 // 过滤URL中的静态变量

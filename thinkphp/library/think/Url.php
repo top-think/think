@@ -30,8 +30,6 @@ class Url
         if (is_string($vars)) {
             // aaa=1&bbb=2 转换成数组
             parse_str($vars, $vars);
-        } elseif (!is_array($vars)) {
-            $vars = [];
         }
 
         if (strpos($url, '?')) {
@@ -42,8 +40,8 @@ class Url
 
         // 检测路由
         if ($match = self::getRouteUrl($url, $vars)) {
-            // 处理路由规则中的特殊内容
-            $url = str_replace(['\\d', '$'], '', $match);
+            // 处理路由规则中的特殊字符
+            $url = str_replace('[--think--]', '', $match);
         } else {
             // 路由不存在 直接解析
             $url = self::parseUrl($url);
@@ -161,11 +159,7 @@ class Url
             }
             if (0 === strpos($val, ':')) {
                 // URL变量
-                if (strpos($val, '\\')) {
-                    $name = substr($val, 1, -2);
-                } else {
-                    $name = substr($val, 1);
-                }
+                $name = substr($val, 1);
                 if (!$optional && !isset($vars[$name])) {
                     // 变量未设置
                     return false;
@@ -208,6 +202,9 @@ class Url
         if (!empty($alias[$name])) {
             foreach ($alias[$name] as $key => $url) {
                 // 检查变量匹配
+                if (strpos($url, '$')) {
+                    $url = str_replace('$', '[--think--]', $url);
+                }
                 if (self::pattern($url, $vars, $check)) {
                     foreach ($vars as $key => $val) {
                         if (false !== strpos($url, '[:' . $key . ']')) {
