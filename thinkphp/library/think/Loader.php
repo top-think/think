@@ -54,8 +54,12 @@ class Loader
             }
             $filename = $path . str_replace('\\', DS, $class) . EXT;
             if (is_file($filename)) {
+                // 开启调试模式Win环境严格区分大小写
+                if (APP_DEBUG && IS_WIN && false === strpos(str_replace('/', '\\', realpath($filename)), $class . EXT)) {
+                    return;
+                }
                 include $filename;
-            } elseif (APP_DEBUG) {
+            } else {
                 Log::record(' autoloader error : ' . $filename, 'notic');
             }
         }
