@@ -200,7 +200,7 @@ class App
         }
 
         // 获取控制器名
-        $controller = strip_tags(strtolower($result[1] ?: Config::get('default_controller')));
+        $controller = strip_tags($result[1] ?: Config::get('default_controller'));
         define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
 
         // 获取操作名
