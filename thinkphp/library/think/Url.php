@@ -41,7 +41,7 @@ class Url
         // 获取路由别名
         $alias = self::getRouteAlias();
         // 检测路由
-        if (isset($alias[$url]) && $match = self::getRouteUrl($alias[$url], $vars)) {
+        if (0 !== strpos($url, '/') && isset($alias[$url]) && $match = self::getRouteUrl($alias[$url], $vars)) {
             // 处理路由规则中的特殊字符
             $url = str_replace('[--think--]', '', $match);
         } else {
@@ -92,7 +92,10 @@ class Url
     // 直接解析URL地址
     protected static function parseUrl($url)
     {
-        if (false !== strpos($url, '\\')) {
+        if (0 === strpos($url, '/')) {
+            // 直接作为路由地址解析
+            $url = substr($url, 1);
+        } elseif (false !== strpos($url, '\\')) {
             // 解析到类
             $url = ltrim(str_replace('\\', '/', $url), '/');
         } elseif (0 === strpos($url, '@')) {
