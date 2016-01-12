@@ -270,7 +270,9 @@ class Input
     {
         $filters = ('' === $filters) ? static::$filter : $filters;
 
-        if (is_string($filters)) {
+        if (empty($filters)) {
+            $result = [];
+        } elseif (is_string($filters)) {
             $result = explode(',', $filters);
         } elseif (is_array($filters)) {
             $result = $filters;
