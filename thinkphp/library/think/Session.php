@@ -69,14 +69,14 @@ class Session
         }
         if (!empty($config['type'])) {
             // 读取session驱动
-            $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . strtolower($config['type']);
+            $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . ucwords($config['type']);
             // 检查驱动类
             if (!session_set_save_handler(new $class())) {
                 throw new Exception('error session handler', 11700);
             }
         }
         // 启动session
-        if (!empty($config['auto_start']) && PHP_SESSION_ACTIVE!=session_status()) {
+        if (!empty($config['auto_start']) && PHP_SESSION_ACTIVE != session_status()) {
             ini_set('session.auto_start', 0);
             session_start();
         }

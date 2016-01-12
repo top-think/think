@@ -37,7 +37,6 @@ class Loader
         } else {
             // 命名空间自动加载
             list($name, $class) = explode('\\', $class, 2);
-            $name               = strtolower($name);
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $path = self::$namespace[$name];
