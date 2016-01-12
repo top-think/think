@@ -6,17 +6,23 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-php:
-  - 5.4
-  - 5.5
-  - 5.6
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.4
+    - php: 5.5
+    - php: 5.6
+    - php: 7.0
+    - php: hhvm
+  allow_failures:
+    - php: 7
+    - php: hhvm
 
-before_script:
-  - pecl channel-update pecl.php.net
-  - echo "yes" | pecl install apcu-4.0.10
-  - phpenv config-add tests/myconfig.ini
+before_install:
   - composer self-update
-  - composer install
+
+install:
+  - ./tests/script/install.sh
 
 script:
   ## LINT
@@ -32,4 +38,3 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-
