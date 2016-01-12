@@ -188,7 +188,7 @@ class Input
             // 递归过滤表达式
             array_walk_recursive($data, 'self::filterExp');
             // 返回结果
-            return $data;
+            return static::typeCast($data, $type);
         }
         // 非数组
         // 正则过滤
@@ -258,7 +258,7 @@ class Input
      */
     private static function parseName($name)
     {
-        return strpos($name, '/') ? explode('/', $name, 2) : [$name, 's'];
+        return (strpos($name, '/') !== false) ? explode('/', $name, 2) : [$name, 's'];
     }
 
     /**
