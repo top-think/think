@@ -102,8 +102,8 @@ class App
                 $callable = self::$dispatch['callable'];
                 if (is_callable($callable)) {
                     $data = is_array($callable) ?
-                    self::reflectionInvoke(new $callable[0], $callable[1]) : // 数组定义需要实例化的对象和方法
-                    call_user_func_array($callable, self::$dispatch['params']); // 静态方法或者函数
+                    self::reflectionInvoke(new $callable[0], $callable[1]) :     // 数组定义需要实例化的对象和方法
+                    call_user_func_array($callable, self::$dispatch['params']);     // 静态方法或者函数
                 } else {
                     throw new Exception('not callable : ' . (is_array($callable) ? implode('->', $callable) : $callable), 10009);
                 }
@@ -166,7 +166,7 @@ class App
     {
         if (APP_MULTI_MODULE) {
             // 多模块部署
-            $module = strtolower($result[0] ?: $config['default_module']);
+            $module = $result[0] ?: $config['default_module'];
             if ($maps = $config['url_module_map']) {
                 if (isset($maps[$module])) {
                     // 记录当前别名
@@ -204,7 +204,7 @@ class App
         define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
 
         // 获取操作名
-        $action = strip_tags(strtolower($result[2] ?: Config::get('default_action')));
+        $action = strip_tags($result[2] ?: Config::get('default_action'));
         define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
 
         // 执行操作

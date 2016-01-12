@@ -1,5 +1,5 @@
 <?php
-namespace {$app}\{$module}controller;
+namespace {$app}\{$module}{layer};
 
 class Index
 {

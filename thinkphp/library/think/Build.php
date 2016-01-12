@@ -133,7 +133,7 @@ class Build
         $filename = APP_PATH . ($module ? $module . DS : '') . CONTROLLER_LAYER . DS . Config::get('default_controller') . EXT;
         if (!is_file($filename)) {
             $content = file_get_contents(THINK_PATH . 'tpl' . DS . 'default_index.tpl');
-            $content = str_replace(['{$app}', '{$module}'], [APP_NAMESPACE, $module ? $module . '\\' : ''], $content);
+            $content = str_replace(['{$app}', '{$module}', '{layer}'], [APP_NAMESPACE, $module ? $module . '\\' : '', CONTROLLER_LAYER], $content);
             if (!is_dir(dirname($filename))) {
                 mkdir(dirname($filename), 0777, true);
             }
