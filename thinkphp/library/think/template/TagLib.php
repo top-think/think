@@ -86,7 +86,6 @@ class TagLib
      */
     public function parseTag(&$content, $lib = '')
     {
-        $lib  = strtolower($lib);
         $tags = [];
         foreach ($this->tags as $name => $val) {
             $close               = !isset($val['close']) || $val['close'] ? 1 : 0;
