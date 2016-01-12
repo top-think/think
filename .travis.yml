@@ -24,9 +24,6 @@ before_install:
 install:
   - ./tests/script/install.sh
 
-before_script:
-  - phpenv config-add tests/conf/php.ini
-
 script:
   ## LINT
   - find thinkphp ! -path "thinkphp/vendor/*" -type f -name \*.php -exec php -l {} \;
