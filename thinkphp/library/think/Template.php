@@ -538,7 +538,6 @@ class Template
      */
     public function parseTagLib($tagLib, &$content, $hide = false)
     {
-        $tagLib = strtolower($tagLib);
         if (strpos($tagLib, '\\')) {
             // 支持指定标签库的命名空间
             $className = $tagLib;
