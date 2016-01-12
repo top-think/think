@@ -16,7 +16,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
     public function testEmptyStringName()
     {
         Input::$filter = 'trim';
-        $input = ['a' => 'test'];
+        $input         = ['a' => 'test'];
         $this->assertEquals($input, Input::getData('', $input));
     }
 
@@ -64,7 +64,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
 
     public function testFiltrateWithRegex()
     {
-        $input = ['a' => 'test1', 'b'=> '_test2'];
+        $input   = ['a' => 'test1', 'b' => '_test2'];
         $filters = '/^test/';
         $this->assertEquals('test1', Input::getData('a', $input, $filters));
         $default = 'default value';
@@ -114,7 +114,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
             'c' => '3.14',
             'd' => 'test boolean',
         ];
-        $this->assertEquals([1, 2, 3], Input::getData('a', $input));
+        $this->assertEquals([1, 2, 3], Input::getData('a/a', $input));
         $this->assertEquals(1000, Input::getData('b/d', $input));
         $this->assertEquals(3.14, Input::getData('c/f', $input));
         $this->assertEquals(true, Input::getData('d/b', $input));
