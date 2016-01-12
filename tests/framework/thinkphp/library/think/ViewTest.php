@@ -122,7 +122,7 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $view_instance = \think\View::instance();
         $method        = new \ReflectionMethod('\think\View', 'ParseTemplate');
         $method->setAccessible(true);
-        $this->assertEquals('view_path/theme_name/CONTROLLER_NAME/template_name.html', $method->invoke($view_instance, 'template_name'));
+        $this->assertEquals('theme_name/CONTROLLER_NAME/template_name.html', $method->invoke($view_instance, 'template_name'));
     }
 
     /**
@@ -135,6 +135,6 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $view_instance = \think\View::instance();
         $method        = new \ReflectionMethod('\think\View', 'getThemePath');
         $method->setAccessible(true);
-        $this->assertEquals('view_path/theme_name/', $method->invoke($view_instance));
+        $this->assertEquals('theme_name/', $method->invoke($view_instance));
     }
 }
