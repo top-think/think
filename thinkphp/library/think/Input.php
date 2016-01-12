@@ -168,19 +168,6 @@ class Input
         if ('' === $name) {
             // 过滤所有输入
             $data = $input;
-        } elseif (isset($input[$name])) {
-            // 过滤name指定的输入
-            $data = $input[$name];
-        } else {
-            // 无输入数据, 下面直接返回默认值
-            $data = false;
-        }
-        if (false === $data) {
-            // 返回默认值
-            return $default;
-        }
-        // 假如值为数组
-        if (is_array($data)) {
             // 对数组应用过滤器
             foreach ($filters as $filter) {
                 $data = self::filter($filter, $data);
@@ -189,20 +176,36 @@ class Input
             array_walk_recursive($data, 'self::filterExp');
             // 返回结果
             return $data;
+        } elseif (isset($input[$name])) {
+            // 过滤name指定的输入
+            $data = $input[$name];
+        } else {
+            // 无输入数据, 下面直接返回默认值
+            return $default;
         }
-        // 非数组
+
+        // 强制类型转换
+        $data = static::typeCast($data, $type);
+
         // 正则过滤
         $regex = static::regexFilter($data, $filter);
         if (false === $regex) {
             // 过滤器是正则表达式, 但数据无匹配
             // 返回默认值
-            $result = $default;
+            $data = $default;
         } elseif (!is_null($regex)) {
             // 数据合法，对结果进行强类型转换
-            $result = static::typeCast($regex, $type);
+            $data = static::typeCast($regex, $type);
         } else {
+            // 假如值为数组
+            if (is_array($data)) {
+                // 递归过滤表达式
+                array_walk_recursive($data, 'self::filterExp');
+            }
             foreach ($filters as $filter) {
-                if (!function_exists($filter)) {
+                if (is_callable($filter)) {
+                    $data = is_array($data) ? self::filter($filter, $data) : call_user_func($filter, $data); // 参数过滤
+                } else {
                     // filter函数不存在时, 则使用filter_var进行过滤
                     // filter为非整形值时, 调用filter_id取得过滤id
                     $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
@@ -210,15 +213,10 @@ class Input
                         // 不通过过滤器则返回默认值
                         return $default;
                     }
-                    continue;
                 }
-                // 函数存在时应用过滤
-                $data = call_user_func($filter, $data);
             }
-            // 最后对结果进行强类型转换
-            $result = static::typeCast($data, $type);
         }
-        return $result;
+        return $data;
     }
 
     /**
@@ -292,6 +290,9 @@ class Input
     {
         $begin = $filter[0];
         $end   = $filter[strlen($filter) - 1];
+        if (is_array($input)) {
+            return null;
+        }
         if (
             ('/' === $begin && '/' === $end) ||
             ('#' === $begin && '#' === $end) ||
