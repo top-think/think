@@ -146,12 +146,12 @@ trait Auto
             } else {
                 $_auto = $this->options['auto'];
                 unset($this->options['auto']);
-                if (empty($_auto) && !empty($this->_auto)) {
-                    $_auto = $this->_auto;
+                if (empty($_auto) && !empty($this->auto)) {
+                    $_auto = $this->auto;
                 }
             }
-        } elseif (!empty($this->_auto)) {
-            $_auto = $this->_auto;
+        } elseif (!empty($this->auto)) {
+            $_auto = $this->auto;
         }
         // 自动填充
         if (!empty($_auto)) {
@@ -248,12 +248,12 @@ trait Auto
             } else {
                 $_validate = $this->options['validate'];
                 unset($this->options['validate']);
-                if (empty($_validate) && !empty($this->_validate)) {
-                    $_validate = $this->_validate;
+                if (empty($_validate) && !empty($this->validate)) {
+                    $_validate = $this->validate;
                 }
             }
-        } elseif (!empty($this->_validate)) {
-            $_validate = $this->_validate;
+        } elseif (!empty($this->validate)) {
+            $_validate = $this->validate;
         }
         // 属性验证
         if (!empty($_validate)) {
