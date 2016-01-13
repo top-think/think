@@ -60,7 +60,7 @@ class Loader
                 }
                 include $filename;
             } else {
-                Log::record(' autoloader error : ' . $filename, 'notic');
+                Log::record('autoloader error : ' . $filename, 'notic');
             }
         }
     }
