@@ -118,7 +118,7 @@ class Route
                     $rule   = substr($rule, 1, -1);
                     $result = ['routes' => $route, 'option' => $option, 'pattern' => $pattern];
                 } elseif (is_array($route)) {
-                    $result = ['route' => $route[0], 'option' => $route[1], 'pattern' => $route[2]];
+                    $result = ['route' => !empty($route[0])?$route[0]:'', 'option' => !empty($route[1])?$route[1]:'', 'pattern' => !empty($route[2])?$route[2]:''];
                 } else {
                     $result = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
                 }
