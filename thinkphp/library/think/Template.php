@@ -268,6 +268,8 @@ class Template
         if (empty($content)) {
             return;
         }
+        // 替换literal标签内容
+        $this->parseLiteral($content);
         // 解析继承
         $this->parseExtend($content);
         // 解析布局
@@ -276,8 +278,6 @@ class Template
         $this->parseInclude($content);
         // 检查PHP语法
         $this->parsePhp($content);
-        // 替换literal标签内容
-        $this->parseLiteral($content);
 
         // 获取需要引入的标签库列表
         // 标签库只需要定义一次，允许引入多个一次
