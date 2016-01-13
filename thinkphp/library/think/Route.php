@@ -118,7 +118,7 @@ class Route
                     $rule   = substr($rule, 1, -1);
                     $result = ['routes' => $route, 'option' => $option, 'pattern' => $pattern];
                 } elseif (is_array($route)) {
-                    $result = ['route' => !empty($route[0])?$route[0]:'', 'option' => !empty($route[1])?$route[1]:'', 'pattern' => !empty($route[2])?$route[2]:''];
+                    $result = ['route' => !empty($route[0]) ? $route[0] : '', 'option' => !empty($route[1]) ? $route[1] : '', 'pattern' => !empty($route[2]) ? $route[2] : ''];
                 } else {
                     $result = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
                 }
@@ -297,7 +297,7 @@ class Route
                     if (!empty($array[1])) {
                         self::parseUrlParams($array[1]);
                     }
-                    $return = ['type' => 'callable', 'callable' => [self::$bind['class'], $array[0] ?: Config::get('default_action')], 'params' => []];
+                    $return = ['type' => 'method', 'method' => [self::$bind['class'], $array[0] ?: Config::get('default_action')], 'params' => []];
                     break;
                 case 'namespace':
                     // 绑定到命名空间
@@ -307,7 +307,7 @@ class Route
                     if (!empty($array[2])) {
                         self::parseUrlParams($array[2]);
                     }
-                    $return = ['type' => 'callable', 'callable' => [self::$bind['namespace'] . '\\' . $class, $method], 'params' => []];
+                    $return = ['type' => 'method', 'method' => [self::$bind['namespace'] . '\\' . $class, $method], 'params' => []];
                     break;
                 case 'module':
                     // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
@@ -424,7 +424,7 @@ class Route
             if (false !== $match = self::match($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
-                    return ['type' => 'closure', 'closure' => $route, 'params' => $match];
+                    return ['type' => 'function', 'function' => $route, 'params' => $match];
                 }
                 return self::parseRule($rule, $route, $url);
             }
@@ -462,7 +462,7 @@ class Route
         if (!empty($result['var'])) {
             $_GET = array_merge($result['var'], $_GET);
         }
-        return ['type' => 'module', 'data' => $result['route']];
+        return ['type' => 'module', 'module' => $result['route']];
     }
 
     // 解析规范的路由地址
@@ -568,7 +568,7 @@ class Route
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
             // 路由到回调
-            $result = ['type' => 'callable', 'callable' => $route, 'params' => $matches];
+            $result = ['type' => 'method', 'method' => $route, 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
@@ -586,7 +586,7 @@ class Route
             $var = array_merge($matches, $var);
             // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var);
-            $result = ['type' => 'module', 'data' => $result['route']];
+            $result = ['type' => 'module', 'module' => $result['route']];
         }
         return $result;
     }

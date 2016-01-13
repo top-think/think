@@ -91,19 +91,19 @@ class App
                 break;
             case 'module':
                 // 模块/控制器/操作
-                $data = self::module(self::$dispatch['data'], $config);
+                $data = self::module(self::$dispatch['module'], $config);
                 break;
             case 'controller':
                 // 执行控制器操作
                 $data = Loader::action(self::$dispatch['controller'], self::$dispatch['params']);
                 break;
-            case 'callable':
+            case 'method':
                 // 执行回调方法
-                $data = self::invokeMethod(self::$dispatch['callable'], self::$dispatch['params']);
+                $data = self::invokeMethod(self::$dispatch['method'], self::$dispatch['params']);
                 break;
-            case 'closure':
+            case 'function':
                 // 规则闭包
-                $data = self::invokeFunction(self::$dispatch['closure'], self::$dispatch['params']);
+                $data = self::invokeFunction(self::$dispatch['function'], self::$dispatch['params']);
                 break;
             default:
                 throw new Exception('dispatch type not support', 10008);
@@ -115,9 +115,9 @@ class App
     }
 
     // 执行函数或者闭包方法 支持参数调用
-    private static function invokeFunction($closure, $vars = [])
+    private static function invokeFunction($function, $vars = [])
     {
-        $reflect = new \ReflectionFunction($closure);
+        $reflect = new \ReflectionFunction($function);
         $args    = self::bindParams($reflect, $vars);
         return $reflect->invokeArgs($args);
     }
