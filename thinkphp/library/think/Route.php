@@ -575,15 +575,17 @@ class Route
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
-            $var    = $result['var'];
-            // 解析路由地址里面的动态参数
-            $values = array_values($matches);
-            foreach ($var as $key => $val) {
-                if (0 === strpos($val, ':')) {
-                    $var[$key] = $values[substr($val, 1) - 1];
+            // 解析路由地址中的变量
+            foreach ($result['route'] as $key => $item) {
+                if (0 === strpos($item, ':')) {
+                    $item = substr($item, 1);
+                    if (isset($matches[$item])) {
+                        $result['route'][$key] = $matches[$item];
+                        unset($matches[$item]);
+                    }
                 }
             }
-            $var = array_merge($matches, $var);
+            $var = array_merge($matches, $result['var']);
             // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var);
             $result = ['type' => 'module', 'module' => $result['route']];
