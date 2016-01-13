@@ -402,7 +402,7 @@ abstract class Driver
     protected function parseSet($data)
     {
         foreach ($data as $key => $val) {
-            if (is_array($val) && 'exp' == $val[0]) {
+            if (isset($val[0]) && 'exp' == $val[0]) {
                 $set[] = $this->parseKey($key) . '=' . $val[1];
             } elseif (is_null($val)) {
                 $set[] = $this->parseKey($key) . '=NULL';
@@ -880,7 +880,7 @@ abstract class Driver
         $this->model = $options['model'];
         $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
         foreach ($data as $key => $val) {
-            if (is_array($val) && 'exp' == $val[0]) {
+            if (isset($val[0]) && 'exp' == $val[0]) {
                 $fields[] = $this->parseKey($key);
                 $values[] = $val[1];
             } elseif (is_null($val)) {

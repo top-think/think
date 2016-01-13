@@ -179,7 +179,7 @@ class App
                 }
             }
             // 获取模块名称
-            define('MODULE_NAME', defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module));
+            define('MODULE_NAME', strtolower(defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module)));
 
             // 模块初始化
             if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
@@ -201,11 +201,11 @@ class App
 
         // 获取控制器名
         $controller = strip_tags($result[1] ?: Config::get('default_controller'));
-        define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller);
+        define('CONTROLLER_NAME', strtolower(defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller));
 
         // 获取操作名
         $action = strip_tags($result[2] ?: Config::get('default_action'));
-        define('ACTION_NAME', defined('BIND_ACTION') ? BIND_ACTION : $action);
+        define('ACTION_NAME', strtolower(defined('BIND_ACTION') ? BIND_ACTION : $action));
 
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {

@@ -30,7 +30,7 @@ class View
         'http_cache_id'     => null,
         'view_path'         => '',
         'view_suffix'       => '.html',
-        'view_depr'         => '/',
+        'view_depr'         => DS,
         'view_layer'        => VIEW_LAYER,
         'parse_str'         => [],
         'engine_type'       => 'think',
@@ -153,8 +153,9 @@ class View
         if (!$renderContent) {
             // 获取模板文件名
             $template = $this->parseTemplate($template);
+            // 开启调试模式Win环境严格区分大小写
             // 模板不存在 抛出异常
-            if (!is_file($template)) {
+            if (!is_file($template) || (APP_DEBUG && IS_WIN && realpath($template) != $template)) {
                 throw new Exception('template file not exists:' . $template, 10700);
             }
         }
@@ -209,7 +210,7 @@ class View
             return $template;
         }
         $depr     = $this->config['view_depr'];
-        $template = str_replace(':', $depr, $template);
+        $template = str_replace(['/', ':'], $depr, $template);
 
         // 获取当前模块
         $module = MODULE_NAME;
@@ -257,7 +258,7 @@ class View
             } else {
                 $theme = $this->config['default_theme'];
             }
-            return $theme . '/';
+            return $theme . DS;
         }
         return '';
     }
@@ -278,7 +279,7 @@ class View
             // 定义TMPL_PATH 则改变全局的视图目录到模块之外
             $tmplPath = defined('TMPL_PATH') ? TMPL_PATH . $module . DS : APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS;
         }
-        return $tmplPath . $theme;
+        return realpath($tmplPath) . DS . $theme;
     }
 
     /**

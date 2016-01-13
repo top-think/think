@@ -54,9 +54,13 @@ class Loader
             }
             $filename = $path . str_replace('\\', DS, $class) . EXT;
             if (is_file($filename)) {
+                // 开启调试模式Win环境严格区分大小写
+                if (APP_DEBUG && IS_WIN && false === strpos(realpath($filename), $class . EXT)) {
+                    return;
+                }
                 include $filename;
-            } elseif (APP_DEBUG) {
-                Log::record(' autoloader error : ' . $filename, 'notic');
+            } else {
+                Log::record('autoloader error : ' . $filename, 'notic');
             }
         }
     }
@@ -186,36 +190,42 @@ class Loader
     public static function import($class, $baseUrl = '', $ext = EXT)
     {
         static $_file = [];
-        $class        = str_replace(['.', '#'], ['/', '.'], $class);
+        $class        = str_replace(['.', '#'], [DS, '.'], $class);
         if (isset($_file[$class . $baseUrl])) {
             return true;
         } else {
             $_file[$class . $baseUrl] = true;
         }
 
-        $class_strut = explode('/', $class);
         if (empty($baseUrl)) {
-            if ('@' == $class_strut[0] || MODULE_NAME == $class_strut[0]) {
-                //加载当前项目应用类库
-                $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
+            list($name, $class) = explode(DS, $class, 2);
+            if (isset(self::$namespace[$name])) {
+                // 注册的命名空间
+                $baseUrl = self::$namespace[$name];
+            } elseif ('@' == $name || MODULE_NAME == $name) {
+                //加载当前模块应用类库
                 $baseUrl = MODULE_PATH;
-            } elseif (in_array($class_strut[0], ['traits', 'think', 'behavior', 'org', 'com'])) {
-                // org 第三方公共类库 com 企业公共类库
+            } elseif (in_array($name, ['traits', 'think', 'behavior']) || is_dir(LIB_PATH . $name)) {
                 $baseUrl = LIB_PATH;
-            } elseif (in_array($class_strut[0], ['vendor'])) {
-                $baseUrl = THINK_PATH;
+            } elseif (is_dir(EXTEND_PATH . $name)) {
+                $baseUrl = EXTEND_PATH;
+            } elseif (APP_NAMESPACE == $name) {
+                // 项目命名空间
+                $baseUrl = APP_PATH;
             } else {
-                // 加载其他项目应用类库
-                $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-                $baseUrl = APP_PATH . $class_strut[0] . DS;
+                // 加载其他模块应用类库
+                $baseUrl = APP_PATH . $name . DS;
             }
-        }
-        if (substr($baseUrl, -1) != DS) {
+        } elseif (substr($baseUrl, -1) != DS) {
             $baseUrl .= DS;
         }
         // 如果类存在 则导入类库文件
         $filename = $baseUrl . $class . $ext;
         if (is_file($filename)) {
+            // 开启调试模式Win环境严格区分大小写
+            if (APP_DEBUG && IS_WIN && false === strpos(realpath($filename), $class . $ext)) {
+                return false;
+            }
             include $filename;
             return true;
         }
