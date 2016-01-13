@@ -46,10 +46,10 @@ class Sqlite extends Driver
                 $info[$val['name']] = [
                     'name'    => $val['name'],
                     'type'    => $val['type'],
-                    'notnull' => (bool) (1 === $val['notnull']),
+                    'notnull' => 1 === $val['notnull'],
                     'default' => $val['dflt_value'],
                     'primary' => '1' == $val['pk'],
-                    'autoinc' => false,
+                    'autoinc' => '1' == $val['pk'],
                 ];
             }
         }
