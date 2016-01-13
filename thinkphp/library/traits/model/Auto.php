@@ -196,7 +196,7 @@ trait Auto
                 case 'function':    //  使用函数进行填充 字段的值作为参数
                 case 'callback':    // 使用回调方法
                     $args = isset($auto[4]) ? (array)$auto[4] : [];
-                    if (is_string($auto[0])) {
+                    if (is_string($auto[0]) && strpos($auto[0], ',')) {
                         $auto[0] = explode(',', $auto[0]);
                     }
                     if (is_array($auto[0])) {
@@ -205,6 +205,8 @@ trait Auto
                             $_data[$field] = isset($data[$field]) ? $data[$field] : null;
                         }
                         array_unshift($args, $_data);
+                    } else {
+                        array_unshift($args, isset($data[$auto[0]]) ? $data[$auto[0]] : null);
                     }
                     if ('function' == $auto[3]) {
                         $data[$auto[0]] = call_user_func_array($auto[1], $args);
@@ -357,7 +359,7 @@ trait Auto
             case 'function': // 使用函数进行验证
             case 'callback': // 调用方法进行验证
                 $args = isset($val[6]) ? (array)$val[6] : [];
-                if (is_string($val[0])) {
+                if (is_string($val[0]) && strpos($val[0], ',')) {
                     $val[0] = explode(',', $val[0]);
                 }
                 if (is_array($val[0])) {
@@ -366,6 +368,8 @@ trait Auto
                         $_data[$field] = isset($data[$field]) ? $data[$field] : null;
                     }
                     array_unshift($args, $_data);
+                } else {
+                    array_unshift($args, isset($data[$val[0]]) ? $data[$val[0]] : null);
                 }
                 return call_user_func_array('function' == $val[4] ? $val[1] : [& $this, $val[1]], $args);
             case 'confirm': // 验证两个字段是否相同
