@@ -137,10 +137,11 @@ return [
     // 是否使用session
     'use_session'           => true,
     'session'               => [
-        'id'         => '',
-        'prefix'     => 'think',
-        'type'       => '',
-        'auto_start' => true,
+        'id'             => '',
+        'var_session_id' => '', // SESSION_ID的提交变量,解决flash上传跨域
+        'prefix'         => 'think',
+        'type'           => '',
+        'auto_start'     => true,
     ],
 
     // +----------------------------------------------------------------------
