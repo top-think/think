@@ -39,8 +39,8 @@ class Session
         if (isset($config['prefix'])) {
             self::$prefix = $config['prefix'];
         }
-        if (Config::get('var_session_id') && isset($_REQUEST[Config::get('var_session_id')])) {
-            session_id($_REQUEST[Config::get('var_session_id')]);
+        if ($config['var_session_id'] && isset($_REQUEST[$config['var_session_id']])) {
+            session_id($_REQUEST[$config['var_session_id']]);
         } elseif (isset($config['id']) && !empty($config['id'])) {
             session_id($config['id']);
         }
