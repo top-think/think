@@ -188,7 +188,7 @@ trait Auto
                 $flags = $flags | 1 << ($v - 1);
             }
         } else {
-            $flags = 1 << ($auto[2] - 1);
+            $flags = 3 == $auto[2] ? 3 : 1 << ($auto[2] - 1);
         }
         // 检查填充条件
         if ($flags & $type) {
@@ -304,11 +304,11 @@ trait Auto
             $flags = 1 << (self::MODEL_BOTH - 1);
         } elseif (is_array($val[5])) {
             $flags = 0;
-            foreach ($val[2] as $v) {
+            foreach ($val[5] as $v) {
                 $flags = $flags | 1 << ($v - 1);
             }
         } else {
-            $flags = 1 << ($val[5] - 1);
+            $flags = 3 == $val[5] ? 3 : 1 << ($val[5] - 1);
         }
         // 判断是否需要执行验证
         if ($flags & $type) {
