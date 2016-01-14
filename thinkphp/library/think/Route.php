@@ -567,10 +567,16 @@ class Route
             }
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
-            // 路由到回调
+            // 路由到方法
             $result = ['type' => 'method', 'method' => $route, 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
             // 路由到控制器
+            if (strpos($url, ':')) {
+                // 传递动态参数
+                foreach ($matches as $key => $val) {
+                    $url = str_replace(':' . $key, $val, $url);
+                }
+            }
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
             // 解析路由地址
