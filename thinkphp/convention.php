@@ -87,6 +87,8 @@ return [
     'url_domain_deploy'     => false,
     // 域名根，如.thinkphp.cn
     'url_domain_root'       => '',
+    // 是否开启 rest 操作方法
+    'url_rest_action'       => false,
 
     // +----------------------------------------------------------------------
     // | 视图及模板设置
