@@ -51,17 +51,6 @@ class InputTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test&lt;&gt;', Input::getData('b', $input, $filters));
     }
 
-    public function testFilterExp()
-    {
-        $src    = 'EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN';
-        $regexs = explode('|', strtolower($src));
-        foreach ($regexs as $value) {
-            $expected = $value . ' ';
-            Input::filterExp($value);
-            $this->assertEquals($expected, $value);
-        }
-    }
-
     public function testFiltrateWithRegex()
     {
         $input   = ['a' => 'test1', 'b' => '_test2'];
