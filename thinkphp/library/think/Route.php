@@ -558,41 +558,26 @@ class Route
                 array_shift($paths);
             }
         }
-        if (0 === strpos($url, '/') || 0 === strpos($url, 'http')) {
-            if (strpos($url, ':')) {
-                // 传递动态参数
-                $values = array_values($matches);
-                $url    = preg_replace('/:(\d+)/e', '$values[\\1-1]', $url);
+        // 替换路由地址中的变量
+        foreach ($matches as $key => $val) {
+            if (strpos($url, ':' . $key)) {
+                $url = str_replace(':' . $key, $val, $url);
+                unset($matches[$key]);
             }
+        }
+        if (0 === strpos($url, '/') || 0 === strpos($url, 'http')) {
             // 路由到重定向地址
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
         } elseif (0 === strpos($url, '\\')) {
             // 路由到方法
-            $result = ['type' => 'method', 'method' => $route, 'params' => $matches];
+            $result = ['type' => 'method', 'method' => is_array($route) ? [$url, $route[1]] : $url, 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
-            // 传递动态参数
-            foreach ($matches as $key => $val) {
-                if (strpos($url, ':' . $key)) {
-                    $url = str_replace(':' . $key, $val, $url);
-                    unset($matches[$key]);
-                }
-            }
             // 路由到控制器
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
             // 解析路由地址
             $result = self::parseRoute($url);
-            // 解析路由地址中的变量
-            foreach ($result['route'] as $key => $item) {
-                if (0 === strpos($item, ':')) {
-                    $item = substr($item, 1);
-                    if (isset($matches[$item])) {
-                        $result['route'][$key] = $matches[$item];
-                        unset($matches[$item]);
-                    }
-                }
-            }
-            $var = array_merge($matches, $result['var']);
+            $var    = array_merge($matches, $result['var']);
             // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var);
             // 路由到模块/控制器/操作
