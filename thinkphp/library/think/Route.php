@@ -385,7 +385,7 @@ class Route
         // 请求类型检测
         if ((isset($option['method']) && false === stripos($option['method'], REQUEST_METHOD))
             || (isset($option['ext']) && false === stripos($option['ext'], __EXT__)) // 伪静态后缀检测
-             || (isset($option['domain']) && $_SERVER['HTTP_HOST'] != $option['domain']) // 域名检测
+             || (isset($option['domain']) && 0 === stripos($option['domain'] . '.', $_SERVER['HTTP_HOST'])) // 域名检测
              || (!empty($option['https']) && !self::isSsl()) // https检测
              || (!empty($option['behavior']) && false === Hook::exec($option['behavior'])) // 行为检测
              || (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) // 自定义检测
@@ -502,8 +502,13 @@ class Route
                 $controller = !empty($path) ? array_pop($path) : null;
                 $module     = APP_MULTI_MODULE && !empty($path) ? array_pop($path) : null;
             }
-            $action = '[rest]' == $action ? REQUEST_METHOD : $action;
-            $route  = [$module, $controller, $action];
+            // REST 操作方法支持
+            if ('[rest]' == $action) {
+                $action = REQUEST_METHOD;
+            } elseif (Config::get('url_rest_action')) {
+                $action = REQUEST_METHOD . '_' . $action;
+            }
+            $route = [$module, $controller, $action];
         }
         return ['route' => $route, 'var' => $var];
     }
