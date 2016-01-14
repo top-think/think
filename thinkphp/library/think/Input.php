@@ -288,6 +288,9 @@ class Input
      */
     private static function regexFilter($input, $filter)
     {
+        if(empty($filter_)){
+            return null;
+        }
         $begin = $filter[0];
         $end   = $filter[strlen($filter) - 1];
         if (is_array($input)) {
