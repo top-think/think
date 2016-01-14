@@ -756,9 +756,6 @@ class Model
             $options = array_merge($this->options, $options);
         }
 
-        if (!empty($options['alias'])) {
-            $options['table'] .= ' ' . $options['alias'];
-        }
         // 记录操作的模型名称
         $options['model'] = $this->name;
 
@@ -769,6 +766,9 @@ class Model
         } else {
             $options['table'] = $this->getTableName();
             $fields           = $this->getDbFields();
+        }
+        if (!empty($options['alias'])) {
+            $options['table'] .= ' ' . $options['alias'];
         }
         // 字段类型验证
         if (isset($options['where']) && is_array($options['where']) && !empty($fields)) {
