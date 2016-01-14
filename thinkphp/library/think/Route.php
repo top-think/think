@@ -560,7 +560,7 @@ class Route
         }
         // 替换路由地址中的变量
         foreach ($matches as $key => $val) {
-            if (strpos($url, ':' . $key)) {
+            if (false !== strpos($url, ':' . $key)) {
                 $url = str_replace(':' . $key, $val, $url);
                 unset($matches[$key]);
             }
