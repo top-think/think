@@ -88,7 +88,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($config['name'], session_name());
         
         $this->assertEquals($config['path'], session_save_path());
-        
+        $this->assertEquals($config['use_cookies'], ini_get('session.use_cookies'));
         $this->assertEquals($config['domain'], ini_get('session.cookie_domain'));
         $this->assertEquals($config['expire'], ini_get('session.gc_maxlifetime'));
         $this->assertEquals($config['expire'], ini_get('session.cookie_lifetime'));
@@ -109,9 +109,11 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         // PHP_SESSION_ACTIVE
         // session_status()
         $this->assertEquals(0, ini_get('session.auto_start'));
+        
+        $this->assertEquals($config['use_trans_sid'], ini_get('session.use_trans_sid'));
+        
+        \think\Session::init($config);
         $this->assertEquals($config['id'], session_id());
-        $this->assertEquals($config['use_trans_sid'], ini_get('session.use_trans_sid')); // ?
-        $this->assertEquals($config['use_cookies'], ini_get('session.use_cookies')); // ?
     }
 
     /**
