@@ -157,9 +157,9 @@ class DebugTest extends \PHPUnit_Framework_TestCase
         $output = \think\Debug::dump($var, false, $label = "label");
         
         if (IS_WIN) {
-            $this->assertEquals("array(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\r\\n\"", end(explode(":", json_encode($output))));
+            $this->assertEquals("(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\r\\n\"", end(explode("array", json_encode($output))));
         } else {
-            $this->assertEquals("array(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\n\"", end(explode(":", json_encode($output))));
+            $this->assertEquals("(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\n\"", end(explode("array", json_encode($output))));
         }
     }
 }
