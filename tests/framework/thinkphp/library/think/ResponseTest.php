@@ -143,24 +143,28 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         \think\Response::isExit(false);
     }
 
-//     /**
-//      * @covers think\Response::result
-//      * @todo Implement testResult().
-//      */
-//     public function testResult()
-//     {
-//         $data = "data";
-//         $code = "1001";
-//         $msg = "the msg";
-//         $type = "json";
-//         $result = \think\Response::result($data, $code, $msg, $type);
+    /**
+     * @covers think\Response::result
+     * @todo Implement testResult().
+     */
+    public function testResult()
+    {
+        $data = "data";
+        $code = "1001";
+        $msg = "the msg";
+        $type = "json";
+        $result = \think\Response::result($data, $code, $msg, $type);
         
-//         $this->assertEquals($code, $result["code"]);
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
-//         $this->assertEquals($type, \think\Response::type());
-//     }
+        $this->assertEquals($code, $result["code"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
+        $this->assertEquals($type, \think\Response::type());
+        
+        
+        
+        
+    }
 
 //     /**
 //      * @covers think\Response::success
