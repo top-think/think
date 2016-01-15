@@ -1271,7 +1271,7 @@ class Model
                     $table = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
                         return $prefix . strtolower($match[1]);
                     }, $join);
-                } elseif (false === strpos($join, '(') && 0 !== strpos($join, $prefix)) {
+                } elseif (false === strpos($join, '(') && !empty($prefix) && 0 !== strpos($join, $prefix)) {
                     // 传入的表名中不带有'('并且不以默认的表前缀开头时加上默认的表前缀
                     $table = $prefix . $join;
                 } else {
