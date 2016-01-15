@@ -21,6 +21,11 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      * @var Response
      */
     protected $object;
+    
+    
+    protected $default_return_type;
+    
+    protected $default_ajax_return;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -44,6 +49,12 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // /**
         // * @runInSeparateProcess
         // */
+        if (!$this->default_return_type){
+        $this->default_return_type=\think\Config::get('default_return_type');
+        }
+        if (!$this->default_ajax_return){
+        $this->default_ajax_return=\think\Config::get('default_ajax_return');
+             }
     }
 
     /**
@@ -52,8 +63,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        
+        \think\Config::set('default_ajax_return', $this->default_ajax_return);
+        \think\Config::set('default_return_type', $this->default_return_type);
         \think\Response::type(\think\Config::get('default_return_type'));//会影响其他测试
+
     }
 
 //     /**
@@ -190,6 +203,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("json", \think\Response::type());
         $this->assertEquals(3, $result["wait"]);
         
+
         // round 2
         $msg = "the msg";
         $url = "www.thinkphptestsucess.com";
@@ -214,7 +228,6 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // FIXME 静态方法mock
         // $this->assertEquals('content', $result);
         
-        
         $_SERVER["HTTP_REFERER"]=$HTTP_REFERER;
     }
 
@@ -227,6 +240,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // round 1
         $msg = 1001;
         $data = "data";
+
         
         \think\Config::set('default_return_type', "json");
         
@@ -237,6 +251,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('javascript:history.back(-1);', $result["url"]);
         $this->assertEquals("json", \think\Response::type());
         $this->assertEquals(3, $result["wait"]);
+        
+
         
         // round 2
         $msg = "the msg";
@@ -257,10 +273,16 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
         \think\Config::set('default_return_type', "html");
+   
+        
         $result = \think\Response::error($msg, $data, $url);
+        
+
         
         // FIXME 静态方法mock
         // $this->assertEquals('content', $result);
+        
+
     }
 
 //     /**
