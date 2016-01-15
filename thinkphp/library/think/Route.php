@@ -199,11 +199,7 @@ class Route
                 $last  = array_pop($array);
                 $item  = [];
                 foreach ($array as $val) {
-                    if (isset($option['rule'][$val])) {
-                        $item[] = $val . '/:' . $option['rule'][$val];
-                    } else {
-                        $item[] = $val . '/:' . $val . '_id';
-                    }
+                    $item[] = $val . '/:' . (isset($option['var'][$val]) ? $option['var'][$val] : $val . '_id');
                 }
                 $rule = implode('/', $item) . '/' . $last;
             }
@@ -212,6 +208,9 @@ class Route
                 if ((isset($option['only']) && !in_array($key, $option['only']))
                     || (isset($option['except']) && in_array($key, $option['except']))) {
                     continue;
+                }
+                if (strpos($val[1], ':id') && isset($option['var'][$rule])) {
+                    $val[1] = str_replace(':id', ':' . $option['var'][$rule], $val[1]);
                 }
                 self::register($rule . $val[1] . '$', $route . '/' . $key, $val[0], $option, $pattern);
             }
