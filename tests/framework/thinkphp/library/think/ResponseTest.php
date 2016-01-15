@@ -140,6 +140,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         $result = \think\Response::isExit();
         $this->assertTrue($isExit, $result);
+        \think\Response::isExit(false);
     }
 
 //     /**
