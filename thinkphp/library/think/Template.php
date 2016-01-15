@@ -593,13 +593,13 @@ class Template
                         $this->parseVar($str);
                         $identify = isset($this->config['tpl_var_identify']) ? strtolower($this->config['tpl_var_identify']) : '';
                         switch ($identify) {
-                        case 'array':
+                            case 'array':
                                 $begin = 0;
                                 break;
-                        case 'obj':
+                            case 'obj':
                                 $begin = 1;
                                 break;
-                        default:
+                            default:
                                 // 如果是自动识别.语法，则要查找:之后的?号
                                 $begin = strpos($str, ':');
                         }
@@ -627,31 +627,31 @@ class Template
                             } elseif ($begin || ')' == substr($name, -1, 1)) {
                                 // $name为对象或是自动识别，或者含有函数
                                 switch ($first) {
-                                case '?':
+                                    case '?':
                                         $str = '<?php echo ' . $name . ' ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
-                                case '=':
+                                    case '=':
                                         $str = '<?php if(' . $name . ') echo ' . substr($str, 1) . '; ?>';
                                         break;
-                                default:
+                                    default:
                                         $str = '<?php echo ' . $name . '?' . $str . '; ?>';
                                 }
                             } else {
                                 // $name为数组
                                 switch ($first) {
-                                case '?':
+                                    case '?':
                                         // {$varname??'xxx'} $varname有定义则输出$varname,否则输出xxx
                                         $str = '<?php echo isset(' . $name . ') ? ' . $name . ' : ' . substr($str, 1) . '; ?>';
                                         break;
-                                case '=':
+                                    case '=':
                                         // {$varname?='xxx'} $varname为真时才输出xxx
                                         $str = '<?php if(!empty(' . $name . ')) echo ' . substr($str, 1) . '; ?>';
                                         break;
-                                case ':':
+                                    case ':':
                                         // {$varname?:'xxx'} $varname为真时输出$varname,否则输出xxx
                                         $str = '<?php echo !empty(' . $name . ') ? ' . $name . $str . '; ?>';
                                         break;
-                                default:
+                                    default:
                                         if (strpos($str, ':')) {
                                             // {$varname ? 'a' : 'b'} $varname为真时输出a,否则输出b
                                             $str = '<?php echo !empty(' . $name . ') ? ' . $str . '; ?>';
@@ -730,7 +730,7 @@ class Template
                                     $parseStr = $first . '->' . implode('->', $vars);
                                     break;
                                 default:    // 自动判断数组或对象 只支持二维
-                                    $parseStr = 'is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars);
+                                    $parseStr = '(is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars) . ')';
                             }
                         }
                     } else {
@@ -918,8 +918,8 @@ class Template
         if (false === strpos($template, '.')) {
             // 跨模块支持
             $template = strpos($template, '@') ?
-            APP_PATH . str_replace('@', '/' . basename($this->config['tpl_path']) . '/', $template) . $this->config['tpl_suffix'] :
-            (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $template . $this->config['tpl_suffix'];
+                APP_PATH . str_replace('@', '/' . basename($this->config['tpl_path']) . '/', $template) . $this->config['tpl_suffix'] :
+                (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['tpl_path']) . $template . $this->config['tpl_suffix'];
         }
         return $template;
     }

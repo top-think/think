@@ -321,11 +321,10 @@ class TagLib
             if (!empty($this->tags[$tag]['expression'])) {
                 static $_taglibs;
                 if (!isset($_taglibs[$tag])) {
-                    $_taglibs[$tag][0] = strlen($this->tpl->config('taglib_begin') . $tag);
-                    $_taglibs[$tag][1] = strlen($this->tpl->config('taglib_end'));
+                    $_taglibs[$tag][0] = strlen(ltrim($this->tpl->config('taglib_begin'), '\\') . $tag);
+                    $_taglibs[$tag][1] = strlen(ltrim($this->tpl->config('taglib_end'), '\\'));
                 }
-                $str                  = substr($str, $_taglibs[$tag][0], -$_taglibs[$tag][1]);
-                $result['expression'] = trim($str);
+                $result['expression'] = trim(substr($str, $_taglibs[$tag][0], -$_taglibs[$tag][1]));
             } elseif (empty($this->tags[$tag]) || !empty($this->tags[$tag]['attr'])) {
                 throw new Exception('_XML_TAG_ERROR_:' . $tag);
             }
