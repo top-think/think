@@ -57,8 +57,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      * @covers think\Response::send
      * @todo Implement testSend().
      */
-    public function testSend()
-    {
+//     public function testSend()
+//     {
         // $dataArr = array();
         // $dataArr["key"] = "value";
         // $dataArr->key = "val";
@@ -81,14 +81,14 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         // $result = \think\Response::send($dataArr, "", true);
         // $this->assertEquals("callbackreturndata", $result);
-    }
+//     }
 
     /**
      * @covers think\Response::tramsform
      * @todo Implement testTramsform().
      */
-    public function testTramsform()
-    {
+//     public function testTramsform()
+//     {
         // \think\Response::tramsform(function () {
         
         // return "callbackreturndata";
@@ -96,7 +96,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         // $result = \think\Response::send($dataArr, "", true);
         // $this->assertEquals("callbackreturndata", $result);
-    }
+//     }
 
     /**
      * @covers think\Response::type
@@ -139,20 +139,20 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      * @covers think\Response::result
      * @todo Implement testResult().
      */
-    public function testResult()
-    {
-        $data = "data";
-        $code = "1001";
-        $msg = "the msg";
-        $type = "json";
-        $result = \think\Response::result($data, $code, $msg, $type);
+//     public function testResult()
+//     {
+//         $data = "data";
+//         $code = "1001";
+//         $msg = "the msg";
+//         $type = "json";
+//         $result = \think\Response::result($data, $code, $msg, $type);
         
-        $this->assertEquals($code, $result["code"]);
-        $this->assertEquals($msg, $result["msg"]);
-        $this->assertEquals($data, $result["data"]);
-        $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
-        $this->assertEquals($type, \think\Response::type());
-    }
+//         $this->assertEquals($code, $result["code"]);
+//         $this->assertEquals($msg, $result["msg"]);
+//         $this->assertEquals($data, $result["data"]);
+//         $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
+//         $this->assertEquals($type, \think\Response::type());
+//     }
 
 //     /**
 //      * @covers think\Response::success
@@ -252,41 +252,41 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      * @covers think\Response::redirect
      * @todo Implement testRedirect().
      */
-    public function testRedirect()
-    {
-        $url = "http://www.testredirect.com";
-        $params = array();
-        $params[] = 301;
+//     public function testRedirect()
+//     {
+//         $url = "http://www.testredirect.com";
+//         $params = array();
+//         $params[] = 301;
         
         // FIXME 静态方法mock Url::build
         // echo "\r\n" . json_encode(xdebug_get_headers()) . "\r\n";
         // \think\Response::redirect($url, $params);
         
         // $this->assertContains('Location: ' . $url, xdebug_get_headers());
-    }
+//     }
 
     /**
      *
      * @covers think\Response::header
      * @todo Implement testHeader().
      */
-    public function testHeader()
-    {
-        $name = "Location";
-        $url = "http://www.testheader.com/";
+//     public function testHeader()
+//     {
+//         $name = "Location";
+//         $url = "http://www.testheader.com/";
         // \think\Response::header($name, $url);
         // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
-    }
+//     }
 
     /**
      * @covers think\Response::sendHttpStatus
      * @todo Implement testSendHttpStatus().
      */
-    public function testSendHttpStatus()
-    {
+//     public function testSendHttpStatus()
+//     {
         // \think\Response::sendHttpStatus(416);
         
         // $this->assertContains('HTTP/1.1 ' . ': ' . $status, xdebug_get_headers());
         // $this->assertContains('Status:' . ': ' . $status, xdebug_get_headers());
-    }
+//     }
 }
