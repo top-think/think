@@ -59,28 +59,28 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testSend()
     {
-        // $dataArr = array();
-        // $dataArr["key"] = "value";
-        // $dataArr->key = "val";
+        $dataArr = array();
+        $dataArr["key"] = "value";
+        $dataArr->key = "val";
         
-        // $result = \Think\Response::send($dataArr, "", true);
-        // $this->assertArrayHasKey("key", $result);
+        $result = \think\Response::send($dataArr, "", true);
+        $this->assertArrayHasKey("key", $result);
         
-        // $result = \Think\Response::send($dataArr, "json", true);
-        // $this->assertEquals('{"key":"value"}', $result);
+        $result = \think\Response::send($dataArr, "json", true);
+        $this->assertEquals('{"key":"value"}', $result);
         
-        // $handler = "callback";
-        // $_GET[Config::get('var_jsonp_handler')] = $handler;
-        // $result = \Think\Response::send($dataArr, "jsonp", true);
-        // $this->assertEquals('callback({"key":"value"});', $result);
+        $handler = "callback";
+        $_GET[Config::get('var_jsonp_handler')] = $handler;
+        $result = \think\Response::send($dataArr, "jsonp", true);
+        $this->assertEquals('callback({"key":"value"});', $result);
         
-        // \Think\Response::tramsform(function () {
+        \think\Response::tramsform(function () {
+            
+            return "callbackreturndata";
+        });
         
-        // return "callbackreturndata";
-        // });
-        
-        // $result = \Think\Response::send($dataArr, "", true);
-        // $this->assertEquals("callbackreturndata", $result);
+        $result = \think\Response::send($dataArr, "", true);
+        $this->assertEquals("callbackreturndata", $result);
     }
 
     /**
@@ -89,12 +89,12 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testTramsform()
     {
-        // \Think\Response::tramsform(function () {
+        // \think\Response::tramsform(function () {
         
         // return "callbackreturndata";
         // });
         
-        // $result = \Think\Response::send($dataArr, "", true);
+        // $result = \think\Response::send($dataArr, "", true);
         // $this->assertEquals("callbackreturndata", $result);
     }
 
@@ -105,9 +105,9 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function testType()
     {
         $type = "json";
-        \Think\Response::type($type);
+        \think\Response::type($type);
         
-        $result = \Think\Response::type();
+        $result = \think\Response::type();
         $this->assertEquals($type, $result);
     }
 
@@ -118,8 +118,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function testData()
     {
         $data = "data";
-        \Think\Response::data($data);
-        \Think\Response::data(null);
+        \think\Response::data($data);
+        \think\Response::data(null);
     }
 
     /**
@@ -129,123 +129,123 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function testIsExit()
     {
         $isExit = true;
-        \Think\Response::isExit($isExit);
+        \think\Response::isExit($isExit);
         
-        $result = \Think\Response::isExit();
+        $result = \think\Response::isExit();
         $this->assertTrue($isExit, $result);
     }
 
-//     /**
-//      * @covers think\Response::result
-//      * @todo Implement testResult().
-//      */
-//     public function testResult()
-//     {
-//         $data = "data";
-//         $code = "1001";
-//         $msg = "the msg";
-//         $type = "json";
-//         $result = \Think\Response::result($data, $code, $msg, $type);
+    /**
+     * @covers think\Response::result
+     * @todo Implement testResult().
+     */
+    public function testResult()
+    {
+        $data = "data";
+        $code = "1001";
+        $msg = "the msg";
+        $type = "json";
+        $result = \think\Response::result($data, $code, $msg, $type);
         
-//         $this->assertEquals($code, $result["code"]);
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
-//         $this->assertEquals($type, \Think\Response::type());
-//     }
+        $this->assertEquals($code, $result["code"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
+        $this->assertEquals($type, \think\Response::type());
+    }
 
-//     /**
-//      * @covers think\Response::success
-//      * @todo Implement testSuccess().
-//      */
-//     public function testSuccess()
-//     {
-//         // round 1
-//         $msg = 1001;
-//         $data = "data";
+    /**
+     * @covers think\Response::success
+     * @todo Implement testSuccess().
+     */
+    public function testSuccess()
+    {
+        // round 1
+        $msg = 1001;
+        $data = "data";
         
-//         $url = "www.HTTP_REFERER.com";
-//         $_SERVER["HTTP_REFERER"] = $url;
-//         Config::set('default_return_type', "json");
+        $url = "www.HTTP_REFERER.com";
+        $_SERVER["HTTP_REFERER"] = $url;
+        Config::set('default_return_type', "json");
         
-//         $result = \Think\Response::success($msg, $data);
+        $result = \think\Response::success($msg, $data);
         
-//         $this->assertEquals($msg, $result["code"]);
+        $this->assertEquals($msg, $result["code"]);
         
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals($url, $result["url"]);
-//         $this->assertEquals("json", \Think\Response::type());
-//         $this->assertEquals(3, $result["wait"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals($url, $result["url"]);
+        $this->assertEquals("json", \think\Response::type());
+        $this->assertEquals(3, $result["wait"]);
         
-//         // round 2
-//         $msg = "the msg";
-//         $url = "www.thinkphptestsucess.com";
+        // round 2
+        $msg = "the msg";
+        $url = "www.thinkphptestsucess.com";
         
-//         $result = \Think\Response::success($msg, $data, $url);
+        $result = \think\Response::success($msg, $data, $url);
         
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($url, $result["url"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($url, $result["url"]);
         
-//         // round 3
-//         $this->setExpectedException('\think\Exception');
-//         // FIXME 静态方法mock
-//         // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
-//         // 'fetch'
-//         // ))->getMock();
+        // round 3
+        $this->setExpectedException('\think\Exception');
+        // FIXME 静态方法mock
+        // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
+        // 'fetch'
+        // ))->getMock();
         
-//         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
+        // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
-//         Config::set('default_return_type', "html");
-//         $result = \Think\Response::success($msg, $data, $url);
+        Config::set('default_return_type', "html");
+        $result = \think\Response::success($msg, $data, $url);
         
-//         // FIXME 静态方法mock
-//         // $this->assertEquals('content', $result);
-//     }
+        // FIXME 静态方法mock
+        // $this->assertEquals('content', $result);
+    }
 
-//     /**
-//      * @covers think\Response::error
-//      * @todo Implement testError().
-//      */
-//     public function testError()
-//     {
-//         // round 1
-//         $msg = 1001;
-//         $data = "data";
+    /**
+     * @covers think\Response::error
+     * @todo Implement testError().
+     */
+    public function testError()
+    {
+        // round 1
+        $msg = 1001;
+        $data = "data";
         
-//         Config::set('default_return_type', "json");
+        Config::set('default_return_type', "json");
         
-//         $result = \Think\Response::error($msg, $data);
+        $result = \think\Response::error($msg, $data);
         
-//         $this->assertEquals($msg, $result["code"]);
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals('javascript:history.back(-1);', $result["url"]);
-//         $this->assertEquals("json", \Think\Response::type());
-//         $this->assertEquals(3, $result["wait"]);
+        $this->assertEquals($msg, $result["code"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals('javascript:history.back(-1);', $result["url"]);
+        $this->assertEquals("json", \think\Response::type());
+        $this->assertEquals(3, $result["wait"]);
         
-//         // round 2
-//         $msg = "the msg";
-//         $url = "www.thinkphptesterror.com";
+        // round 2
+        $msg = "the msg";
+        $url = "www.thinkphptesterror.com";
         
-//         $result = \Think\Response::error($msg, $data, $url);
+        $result = \think\Response::error($msg, $data, $url);
         
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($url, $result["url"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($url, $result["url"]);
         
-//         // round 3
-//         $this->setExpectedException('\think\Exception');
-//         // FIXME 静态方法mock
-//         // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
-//         // 'fetch'
-//         // ))->getMock();
+        // round 3
+        $this->setExpectedException('\think\Exception');
+        // FIXME 静态方法mock
+        // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
+        // 'fetch'
+        // ))->getMock();
         
-//         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
+        // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
-//         Config::set('default_return_type', "html");
-//         $result = \Think\Response::error($msg, $data, $url);
+        Config::set('default_return_type', "html");
+        $result = \think\Response::error($msg, $data, $url);
         
-//         // FIXME 静态方法mock
-//         // $this->assertEquals('content', $result);
-//     }
+        // FIXME 静态方法mock
+        // $this->assertEquals('content', $result);
+    }
 
     /**
      *
@@ -260,7 +260,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         // FIXME 静态方法mock Url::build
         // echo "\r\n" . json_encode(xdebug_get_headers()) . "\r\n";
-        // \Think\Response::redirect($url, $params);
+        // \think\Response::redirect($url, $params);
         
         // $this->assertContains('Location: ' . $url, xdebug_get_headers());
     }
@@ -274,7 +274,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     {
         $name = "Location";
         $url = "http://www.testheader.com/";
-        // \Think\Response::header($name, $url);
+        // \think\Response::header($name, $url);
         // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
     }
 
@@ -284,7 +284,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendHttpStatus()
     {
-        // \Think\Response::sendHttpStatus(416);
+        // \think\Response::sendHttpStatus(416);
         
         // $this->assertContains('HTTP/1.1 ' . ': ' . $status, xdebug_get_headers());
         // $this->assertContains('Status:' . ': ' . $status, xdebug_get_headers());
