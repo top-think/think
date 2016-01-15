@@ -105,7 +105,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
         // \think\Debug::remark($end);
         $rangeMem = \think\Debug::getRangeMem($start, $end);
         
-        $this->assertLessThan(32, explode(" ", $rangeMem)[0]);
+        $this->assertLessThan(33, explode(" ", $rangeMem)[0]);
     }
 
     /**
@@ -157,9 +157,9 @@ class DebugTest extends \PHPUnit_Framework_TestCase
         $output = \think\Debug::dump($var, false, $label = "label");
         
         if (IS_WIN) {
-            $this->assertEquals("\"\\r\\nlabel:array(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\r\\n\"", json_encode($output));
+            $this->assertEquals("array(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\r\\n\"", end(explode(":", json_encode($output))));
         } else {
-            $this->assertEquals("\"\\nlabel:array(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\n\"", json_encode($output));
+            $this->assertEquals("array(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\n\"", end(explode(":", json_encode($output))));
         }
     }
 }
