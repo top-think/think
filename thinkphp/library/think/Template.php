@@ -730,7 +730,7 @@ class Template
                                     $parseStr = $first . '->' . implode('->', $vars);
                                     break;
                                 default:    // 自动判断数组或对象 只支持二维
-                                    $parseStr = 'is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars);
+                                    $parseStr = '(is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars) . ')';
                             }
                         }
                     } else {
