@@ -53,10 +53,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {}
 
-    /**
-     * @covers think\Response::send
-     * @todo Implement testSend().
-     */
+//     /**
+//      * @covers think\Response::send
+//      * @todo Implement testSend().
+//      */
 //     public function testSend()
 //     {
         // $dataArr = array();
@@ -83,10 +83,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $this->assertEquals("callbackreturndata", $result);
 //     }
 
-    /**
-     * @covers think\Response::tramsform
-     * @todo Implement testTramsform().
-     */
+//     /**
+//      * @covers think\Response::tramsform
+//      * @todo Implement testTramsform().
+//      */
 //     public function testTramsform()
 //     {
         // \think\Response::tramsform(function () {
@@ -111,34 +111,34 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($type, $result);
     }
 
-    /**
-     * @covers think\Response::data
-     * @todo Implement testData().
-     */
-    public function testData()
-    {
-        $data = "data";
-        \think\Response::data($data);
-        \think\Response::data(null);
-    }
+//     /**
+//      * @covers think\Response::data
+//      * @todo Implement testData().
+//      */
+//     public function testData()
+//     {
+//         $data = "data";
+//         \think\Response::data($data);
+//         \think\Response::data(null);
+//     }
 
-    /**
-     * @covers think\Response::isExit
-     * @todo Implement testIsExit().
-     */
-    public function testIsExit()
-    {
-        $isExit = true;
-        \think\Response::isExit($isExit);
+//     /**
+//      * @covers think\Response::isExit
+//      * @todo Implement testIsExit().
+//      */
+//     public function testIsExit()
+//     {
+//         $isExit = true;
+//         \think\Response::isExit($isExit);
         
-        $result = \think\Response::isExit();
-        $this->assertTrue($isExit, $result);
-    }
+//         $result = \think\Response::isExit();
+//         $this->assertTrue($isExit, $result);
+//     }
 
-    /**
-     * @covers think\Response::result
-     * @todo Implement testResult().
-     */
+//     /**
+//      * @covers think\Response::result
+//      * @todo Implement testResult().
+//      */
 //     public function testResult()
 //     {
 //         $data = "data";
@@ -247,11 +247,11 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 //         // $this->assertEquals('content', $result);
 //     }
 
-    /**
-     *
-     * @covers think\Response::redirect
-     * @todo Implement testRedirect().
-     */
+//     /**
+//      *
+//      * @covers think\Response::redirect
+//      * @todo Implement testRedirect().
+//      */
 //     public function testRedirect()
 //     {
 //         $url = "http://www.testredirect.com";
@@ -265,11 +265,11 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $this->assertContains('Location: ' . $url, xdebug_get_headers());
 //     }
 
-    /**
-     *
-     * @covers think\Response::header
-     * @todo Implement testHeader().
-     */
+//     /**
+//      *
+//      * @covers think\Response::header
+//      * @todo Implement testHeader().
+//      */
 //     public function testHeader()
 //     {
 //         $name = "Location";
@@ -278,10 +278,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
 //     }
 
-    /**
-     * @covers think\Response::sendHttpStatus
-     * @todo Implement testSendHttpStatus().
-     */
+//     /**
+//      * @covers think\Response::sendHttpStatus
+//      * @todo Implement testSendHttpStatus().
+//      */
 //     public function testSendHttpStatus()
 //     {
         // \think\Response::sendHttpStatus(416);
