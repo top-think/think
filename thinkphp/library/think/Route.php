@@ -37,6 +37,8 @@ class Route
     private static $map = [];
     // 子域名部署规则
     private static $domain = [];
+    // 子域名
+    private static $subDomain = '';
     // 变量规则
     private static $pattern = [];
     // 域名绑定
@@ -249,8 +251,11 @@ class Route
                 }
                 // 子域名配置
                 if (!empty($domain)) {
+                    // 记录子域名
+                    self::$subDomain = $domain;
+                    // 二级域名
                     $subDomain = implode('.', $domain);
-                    $domain2   = array_pop($domain); // 二级域名
+                    $domain2   = array_pop($domain); 
                     if ($domain) {
                         // 存在三级域名
                         $domain3 = array_pop($domain);
@@ -441,7 +446,7 @@ class Route
         // 请求类型检测
         if ((isset($option['method']) && false === stripos($option['method'], REQUEST_METHOD))
             || (isset($option['ext']) && false === stripos($option['ext'], __EXT__)) // 伪静态后缀检测
-             || (isset($option['domain']) && 0 === stripos($option['domain'] . '.', $_SERVER['HTTP_HOST'])) // 域名检测
+             || (isset($option['domain']) && !in_array($option['domain'], [$_SERVER['HTTP_HOST'], self::$subDomain])) // 域名检测
              || (!empty($option['https']) && !self::isSsl()) // https检测
              || (!empty($option['behavior']) && false === Hook::exec($option['behavior'])) // 行为检测
              || (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) // 自定义检测
