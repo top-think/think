@@ -59,28 +59,28 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testSend()
     {
-//         $dataArr = array();
-//         $dataArr["key"] = "value";
-//         $dataArr->key = "val";
+        // $dataArr = array();
+        // $dataArr["key"] = "value";
+        // $dataArr->key = "val";
         
-//         $result = \think\Response::send($dataArr, "", true);
-//         $this->assertArrayHasKey("key", $result);
+        // $result = \think\Response::send($dataArr, "", true);
+        // $this->assertArrayHasKey("key", $result);
         
-//         $result = \think\Response::send($dataArr, "json", true);
-//         $this->assertEquals('{"key":"value"}', $result);
+        // $result = \think\Response::send($dataArr, "json", true);
+        // $this->assertEquals('{"key":"value"}', $result);
         
-//         $handler = "callback";
-//         $_GET[Config::get('var_jsonp_handler')] = $handler;
-//         $result = \think\Response::send($dataArr, "jsonp", true);
-//         $this->assertEquals('callback({"key":"value"});', $result);
+        // $handler = "callback";
+        // $_GET[\think\Config::get('var_jsonp_handler')] = $handler;
+        // $result = \think\Response::send($dataArr, "jsonp", true);
+        // $this->assertEquals('callback({"key":"value"});', $result);
         
-//         \think\Response::tramsform(function () {
-            
-//             return "callbackreturndata";
-//         });
+        // \think\Response::tramsform(function () {
         
-//         $result = \think\Response::send($dataArr, "", true);
-//         $this->assertEquals("callbackreturndata", $result);
+        // return "callbackreturndata";
+        // });
+        
+        // $result = \think\Response::send($dataArr, "", true);
+        // $this->assertEquals("callbackreturndata", $result);
     }
 
     /**
@@ -166,7 +166,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         $url = "www.HTTP_REFERER.com";
         $_SERVER["HTTP_REFERER"] = $url;
-        Config::set('default_return_type', "json");
+        \think\Config::set('default_return_type', "json");
         
         $result = \think\Response::success($msg, $data);
         
@@ -195,7 +195,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
-        Config::set('default_return_type', "html");
+        \think\Config::set('default_return_type', "html");
         $result = \think\Response::success($msg, $data, $url);
         
         // FIXME 静态方法mock
@@ -212,7 +212,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $msg = 1001;
         $data = "data";
         
-        Config::set('default_return_type', "json");
+        \think\Config::set('default_return_type', "json");
         
         $result = \think\Response::error($msg, $data);
         
@@ -240,7 +240,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
-        Config::set('default_return_type', "html");
+        \think\Config::set('default_return_type', "html");
         $result = \think\Response::error($msg, $data, $url);
         
         // FIXME 静态方法mock
