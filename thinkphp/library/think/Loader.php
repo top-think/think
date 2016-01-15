@@ -131,7 +131,6 @@ class Loader
     {
         if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
             require $file;
-
             $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
         }
     }
@@ -153,7 +152,6 @@ class Loader
                 }
             }
         }
-
         // PSR-0 lookup
         if (false !== $pos = strrpos($class, '\\')) {
             // namespaced class name
@@ -175,7 +173,6 @@ class Loader
                 }
             }
         }
-
         // Remember that this class does not exist.
         return self::$map[$class] = false;
     }
@@ -314,10 +311,10 @@ class Loader
             $action                    = new $class;
             $_instance[$name . $layer] = $action;
             return $action;
-        } elseif ($empty && class_exists($class = self::parseClass($module, $layer, $empty))) {
-            return new $class;
+        } elseif ($empty && class_exists($emptyClass = self::parseClass($module, $layer, $empty))) {
+            return new $emptyClass;
         } else {
-            return false;
+            throw new Exception('class [ ' . $class . ' ] not exists', 10001);
         }
     }
 
@@ -349,9 +346,8 @@ class Loader
             if (is_string($vars)) {
                 parse_str($vars, $vars);
             }
-            return call_user_func_array([ & $class, $action . Config::get('action_suffix')], $vars);
-        } else {
-            return false;
+            $method = new \ReflectionMethod($class, $action . Config::get('action_suffix'));
+            return $method->invokeArgs($class, $vars);
         }
     }
     /**
@@ -375,11 +371,9 @@ class Loader
                 } else {
                     $_instance[$identify] = $o;
                 }
-
             } else {
                 throw new Exception('class not exist :' . $class, 10007);
             }
-
         }
         return $_instance[$identify];
     }
@@ -409,6 +403,6 @@ class Loader
      */
     public static function parseClass($module, $layer, $name)
     {
-        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . self::parseName(str_replace('/', '\\', $name), 1);
+        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . self::parseName(str_replace(['/', '.'], '\\', $name), 1);
     }
 }

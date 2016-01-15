@@ -23,10 +23,23 @@ class Route
         '*'      => [],
     ];
 
+    // REST路由操作方法定义
+    private static $rest = [
+        'index'  => ['GET', ''],
+        'create' => ['GET', '/create'],
+        'read'   => ['GET', '/:id'],
+        'edit'   => ['GET', '/:id/edit'],
+        'save'   => ['POST', ''],
+        'update' => ['PUT', '/:id'],
+        'delete' => ['DELETE', '/:id'],
+    ];
+
     // URL映射规则
     private static $map = [];
     // 子域名部署规则
     private static $domain = [];
+    // 子域名
+    private static $subDomain = '';
     // 变量规则
     private static $pattern = [];
     // 域名绑定
@@ -96,6 +109,11 @@ class Route
                     self::map($rule['__map__']);
                     unset($rule['__map__']);
                 }
+                // 检查资源路由
+                if (isset($rule['__rest__'])) {
+                    self::resource($rule['__rest__']);
+                    unset($rule['__rest__']);
+                }
 
                 foreach ($rule as $key => $val) {
                     if (is_numeric($key)) {
@@ -164,6 +182,51 @@ class Route
         self::register($rule, $route, 'DELETE', $option, $pattern);
     }
 
+    // 注册资源路由
+    public static function resource($rule, $route = '', $option = [], $pattern = [])
+    {
+        if (is_array($rule)) {
+            foreach ($rule as $key => $val) {
+                if (is_array($val)) {
+                    list($val, $option, $pattern) = array_pad($val, 3, []);
+                }
+                self::resource($key, $val, $option, $pattern);
+            }
+        } else {
+            if (strpos($rule, '.')) {
+                // 注册嵌套资源路由
+                $array = explode('.', $rule);
+                $last  = array_pop($array);
+                $item  = [];
+                foreach ($array as $val) {
+                    $item[] = $val . '/:' . (isset($option['var'][$val]) ? $option['var'][$val] : $val . '_id');
+                }
+                $rule = implode('/', $item) . '/' . $last;
+            }
+            // 注册资源路由
+            foreach (self::$rest as $key => $val) {
+                if ((isset($option['only']) && !in_array($key, $option['only']))
+                    || (isset($option['except']) && in_array($key, $option['except']))) {
+                    continue;
+                }
+                if (strpos($val[1], ':id') && isset($option['var'][$rule])) {
+                    $val[1] = str_replace(':id', ':' . $option['var'][$rule], $val[1]);
+                }
+                self::register($rule . $val[1] . '$', $route . '/' . $key, $val[0], $option, $pattern);
+            }
+        }
+    }
+
+    // rest方法定义和修改
+    public static function rest($method, $resocure = '')
+    {
+        if (is_array($method)) {
+            self::$rest = array_merge(self::$rest, $method);
+        } else {
+            self::$rest[$method] = $resource;
+        }
+    }
+
     // 获取路由定义
     public static function getRules($method = '')
     {
@@ -194,8 +257,10 @@ class Route
                 }
                 // 子域名配置
                 if (!empty($domain)) {
-                    $subDomain = implode('.', $domain);
-                    $domain2   = array_pop($domain); // 二级域名
+                    // 当前子域名
+                    $subDomain       = implode('.', $domain);
+                    self::$subDomain = $subDomain;
+                    $domain2         = array_pop($domain);
                     if ($domain) {
                         // 存在三级域名
                         $domain3 = array_pop($domain);
@@ -386,7 +451,7 @@ class Route
         // 请求类型检测
         if ((isset($option['method']) && false === stripos($option['method'], REQUEST_METHOD))
             || (isset($option['ext']) && false === stripos($option['ext'], __EXT__)) // 伪静态后缀检测
-             || (isset($option['domain']) && 0 === stripos($option['domain'] . '.', $_SERVER['HTTP_HOST'])) // 域名检测
+             || (isset($option['domain']) && !in_array($option['domain'], [$_SERVER['HTTP_HOST'], self::$subDomain])) // 域名检测
              || (!empty($option['https']) && !self::isSsl()) // https检测
              || (!empty($option['behavior']) && false === Hook::exec($option['behavior'])) // 行为检测
              || (!empty($option['callback']) && is_callable($option['callback']) && false === call_user_func($option['callback'])) // 自定义检测
@@ -394,6 +459,12 @@ class Route
             return false;
         }
         return true;
+    }
+
+    // 检查资源路由
+    private static function checkResoure()
+    {
+
     }
 
     /**
@@ -502,12 +573,10 @@ class Route
                 $action     = array_pop($path);
                 $controller = !empty($path) ? array_pop($path) : null;
                 $module     = APP_MULTI_MODULE && !empty($path) ? array_pop($path) : null;
-            }
-            // REST 操作方法支持
-            if ('[rest]' == $action) {
-                $action = REQUEST_METHOD;
-            } elseif (Config::get('url_rest_action')) {
-                $action = REQUEST_METHOD . '_' . $action;
+                // REST 操作方法支持
+                if ('[rest]' == $action) {
+                    $action = REQUEST_METHOD;
+                }
             }
             $route = [$module, $controller, $action];
         }

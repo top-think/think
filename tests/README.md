@@ -155,9 +155,9 @@ thinkphp5的测试的主要流程是跟think的系统流程是相似的，大体
 |Loader|||
 |Log|||
 |Model|||
-|Response|||
+|Response|大漠||
 |Route|||
-|Session|大漠||
+|Session|大漠|√|
 |Template|||
 |Url|||
 |View|||
