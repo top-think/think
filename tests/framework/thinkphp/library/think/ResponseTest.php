@@ -249,7 +249,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @##runInSeparateProcess
+     * 
      * @covers think\Response::redirect
      * @todo Implement testRedirect().
      */
@@ -267,7 +267,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @##runInSeparateProcess
+     * 
      * @covers think\Response::header
      * @todo Implement testHeader().
      */
@@ -280,8 +280,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @##runInSeparateProcess
-     * @covers think\Response::sendHttpStatus
+     *      * @covers think\Response::sendHttpStatus
      * @todo Implement testSendHttpStatus().
      */
     public function testSendHttpStatus()
