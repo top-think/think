@@ -122,18 +122,18 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 //         \think\Response::data(null);
 //     }
 
-    /**
-     * @covers think\Response::isExit
-     * @todo Implement testIsExit().
-     */
-    public function testIsExit()
-    {
-        $isExit = true;
-        \think\Response::isExit($isExit);
+//     /**
+//      * @covers think\Response::isExit
+//      * @todo Implement testIsExit().
+//      */
+//     public function testIsExit()
+//     {
+//         $isExit = true;
+//         \think\Response::isExit($isExit);
         
-        $result = \think\Response::isExit();
-        $this->assertTrue($isExit, $result);
-    }
+//         $result = \think\Response::isExit();
+//         $this->assertTrue($isExit, $result);
+//     }
 
 //     /**
 //      * @covers think\Response::result
