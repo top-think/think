@@ -233,9 +233,6 @@ class App
             $action = ACTION_NAME . Config::get('action_suffix');
         }
 
-        if (!$instance) {
-            throw new Exception('class [ ' . Loader::parseClass(MODULE_NAME, CONTROLLER_LAYER, CONTROLLER_NAME) . ' ] not exists', 10001);
-        }
         try {
             // 操作方法开始监听
             $call = [$instance, $action];
