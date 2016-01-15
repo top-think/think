@@ -25,13 +25,13 @@ class Route
 
     // REST路由操作方法定义
     private static $rest = [
-        'index'  => ['GET', ''],
-        'create' => ['GET', '/create'],
-        'read'   => ['GET', '/:id'],
-        'edit'   => ['GET', '/:id/edit'],
-        'save'   => ['POST', ''],
-        'update' => ['PUT', '/:id'],
-        'delete' => ['DELETE', '/:id'],
+        'index'  => ['GET', '', 'index'],
+        'create' => ['GET', '/create', 'create'],
+        'read'   => ['GET', '/:id', 'read'],
+        'edit'   => ['GET', '/:id/edit', 'edit'],
+        'save'   => ['POST', '', 'save'],
+        'update' => ['PUT', '/:id', 'update'],
+        'delete' => ['DELETE', '/:id', 'delete'],
     ];
 
     // URL映射规则
@@ -212,18 +212,18 @@ class Route
                 if (strpos($val[1], ':id') && isset($option['var'][$rule])) {
                     $val[1] = str_replace(':id', ':' . $option['var'][$rule], $val[1]);
                 }
-                self::register($rule . $val[1] . '$', $route . '/' . $key, $val[0], $option, $pattern);
+                self::register($rule . $val[1] . '$', $route . '/' . $val[2], $val[0], $option, $pattern);
             }
         }
     }
 
     // rest方法定义和修改
-    public static function rest($method, $resocure = '')
+    public static function rest($name, $resocure = [])
     {
-        if (is_array($method)) {
-            self::$rest = array_merge(self::$rest, $method);
+        if (is_array($name)) {
+            self::$rest = array_merge(self::$rest, $name);
         } else {
-            self::$rest[$method] = $resource;
+            self::$rest[$name] = $resource;
         }
     }
 
