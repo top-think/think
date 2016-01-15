@@ -28,7 +28,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Response();
+       // $this->object = new Response();
         // 1.
         // restore_error_handler();
         // Warning: Cannot modify header information - headers already sent by (output started at PHPUnit\Util\Printer.php:173)
@@ -99,61 +99,61 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $this->assertEquals("callbackreturndata", $result);
     }
 
-    /**
-     * @covers think\Response::type
-     * @todo Implement testType().
-     */
-    public function testType()
-    {
-        $type = "json";
-        \Think\Response::type($type);
+//     /**
+//      * @covers think\Response::type
+//      * @todo Implement testType().
+//      */
+//     public function testType()
+//     {
+//         $type = "json";
+//         \Think\Response::type($type);
         
-        $result = \Think\Response::type();
-        $this->assertEquals($type, $result);
-    }
+//         $result = \Think\Response::type();
+//         $this->assertEquals($type, $result);
+//     }
 
-    /**
-     * @covers think\Response::data
-     * @todo Implement testData().
-     */
-    public function testData()
-    {
-        $data = "data";
-        \Think\Response::data($data);
-        \Think\Response::data(null);
-    }
+//     /**
+//      * @covers think\Response::data
+//      * @todo Implement testData().
+//      */
+//     public function testData()
+//     {
+//         $data = "data";
+//         \Think\Response::data($data);
+//         \Think\Response::data(null);
+//     }
 
-    /**
-     * @covers think\Response::isExit
-     * @todo Implement testIsExit().
-     */
-    public function testIsExit()
-    {
-        $isExit = true;
-        \Think\Response::isExit($isExit);
+//     /**
+//      * @covers think\Response::isExit
+//      * @todo Implement testIsExit().
+//      */
+//     public function testIsExit()
+//     {
+//         $isExit = true;
+//         \Think\Response::isExit($isExit);
         
-        $result = \Think\Response::isExit();
-        $this->assertTrue($isExit, $result);
-    }
+//         $result = \Think\Response::isExit();
+//         $this->assertTrue($isExit, $result);
+//     }
 
-    /**
-     * @covers think\Response::result
-     * @todo Implement testResult().
-     */
-    public function testResult()
-    {
-        $data = "data";
-        $code = "1001";
-        $msg = "the msg";
-        $type = "json";
-        $result = \Think\Response::result($data, $code, $msg, $type);
+//     /**
+//      * @covers think\Response::result
+//      * @todo Implement testResult().
+//      */
+//     public function testResult()
+//     {
+//         $data = "data";
+//         $code = "1001";
+//         $msg = "the msg";
+//         $type = "json";
+//         $result = \Think\Response::result($data, $code, $msg, $type);
         
-        $this->assertEquals($code, $result["code"]);
-        $this->assertEquals($msg, $result["msg"]);
-        $this->assertEquals($data, $result["data"]);
-        $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
-        $this->assertEquals($type, \Think\Response::type());
-    }
+//         $this->assertEquals($code, $result["code"]);
+//         $this->assertEquals($msg, $result["msg"]);
+//         $this->assertEquals($data, $result["data"]);
+//         $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
+//         $this->assertEquals($type, \Think\Response::type());
+//     }
 
 //     /**
 //      * @covers think\Response::success
