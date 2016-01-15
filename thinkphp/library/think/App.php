@@ -175,6 +175,9 @@ class App
     private static function module($result, $config)
     {
         if (APP_MULTI_MODULE) {
+            if (defined('BIND_MODULE')) {
+                array_unshift($result, BIND_MODULE);
+            }
             // 多模块部署
             $module = $result[0] ?: $config['default_module'];
             if ($maps = $config['url_module_map']) {
