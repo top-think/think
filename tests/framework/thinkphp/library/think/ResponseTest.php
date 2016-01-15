@@ -98,18 +98,18 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $this->assertEquals("callbackreturndata", $result);
 //     }
 
-    /**
-     * @covers think\Response::type
-     * @todo Implement testType().
-     */
-    public function testType()
-    {
-        $type = "json";
-        \think\Response::type($type);
+//     /**
+//      * @covers think\Response::type
+//      * @todo Implement testType().
+//      */
+//     public function testType()
+//     {
+//         $type = "json";
+//         \think\Response::type($type);
         
-        $result = \think\Response::type();
-        $this->assertEquals($type, $result);
-    }
+//         $result = \think\Response::type();
+//         $this->assertEquals($type, $result);
+//     }
 
 //     /**
 //      * @covers think\Response::data
@@ -122,18 +122,18 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 //         \think\Response::data(null);
 //     }
 
-//     /**
-//      * @covers think\Response::isExit
-//      * @todo Implement testIsExit().
-//      */
-//     public function testIsExit()
-//     {
-//         $isExit = true;
-//         \think\Response::isExit($isExit);
+    /**
+     * @covers think\Response::isExit
+     * @todo Implement testIsExit().
+     */
+    public function testIsExit()
+    {
+        $isExit = true;
+        \think\Response::isExit($isExit);
         
-//         $result = \think\Response::isExit();
-//         $this->assertTrue($isExit, $result);
-//     }
+        $result = \think\Response::isExit();
+        $this->assertTrue($isExit, $result);
+    }
 
 //     /**
 //      * @covers think\Response::result
