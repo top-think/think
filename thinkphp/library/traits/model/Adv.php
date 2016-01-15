@@ -43,7 +43,7 @@ trait Adv
      * @param mixed $data 要操作的数据
      * @return boolean
      */
-    protected function _before_write($data)
+    protected function _before_write(&$data)
     {
         // 检查序列化字段
         $data = $this->serializeField($data);
