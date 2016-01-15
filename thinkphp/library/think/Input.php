@@ -14,7 +14,7 @@ namespace think;
 class Input
 {
     // 全局过滤规则
-    public static $filter = null;
+    public static $filters = [];
 
     /**
      * 获取get变量
@@ -164,67 +164,31 @@ class Input
         list($name, $type) = static::parseName($name);
         // 解析过滤器
         $filters = static::parseFilters($filter);
-        // 解析值
-        if ('' === $name) {
-            // 过滤所有输入
+        // 为方便传参把默认值附加在过滤器后面
+        $filters[] = $default;
+        if (empty($name)) {
             $data = $input;
-            // 对数组应用过滤器
-            foreach ($filters as $filter) {
-                $data = self::filter($filter, $data);
-            }
-            // 递归过滤表达式
-            array_walk_recursive($data, 'self::filterExp');
-            // 返回结果
-            return $data;
+            array_walk_recursive($data, 'self::filter', $filters);
         } elseif (isset($input[$name])) {
             // 过滤name指定的输入
-            $data = $input[$name];
+            $data = [$input[$name]];
+            array_walk_recursive($data, 'self::filter', $filters);
+            $data = $data[0];
+            // 强制类型转换
+            static::typeCast($data, $type);
         } else {
-            // 无输入数据, 下面直接返回默认值
-            return $default;
-        }
-
-        // 强制类型转换
-        $data = static::typeCast($data, $type);
-
-        // 正则过滤
-        $regex = static::regexFilter($data, $filter);
-        if (false === $regex) {
-            // 过滤器是正则表达式, 但数据无匹配
-            // 返回默认值
+            // 无输入数据
             $data = $default;
-        } elseif (!is_null($regex)) {
-            // 数据合法，对结果进行强类型转换
-            $data = static::typeCast($regex, $type);
-        } else {
-            // 假如值为数组
-            if (is_array($data)) {
-                // 递归过滤表达式
-                array_walk_recursive($data, 'self::filterExp');
-            }
-            foreach ($filters as $filter) {
-                if (is_callable($filter)) {
-                    $data = is_array($data) ? self::filter($filter, $data) : call_user_func($filter, $data); // 参数过滤
-                } else {
-                    // filter函数不存在时, 则使用filter_var进行过滤
-                    // filter为非整形值时, 调用filter_id取得过滤id
-                    $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
-                    if (false === $data) {
-                        // 不通过过滤器则返回默认值
-                        return $default;
-                    }
-                }
-            }
         }
         return $data;
     }
 
     /**
      * 过滤表单中的表达式
-     * @param string &$value
+     * @param string $value
      * @return void
      */
-    public static function filterExp(&$value)
+    protected static function filterExp(&$value)
     {
         // TODO 其他安全过滤
 
@@ -236,17 +200,43 @@ class Input
 
     /**
      * 递归过滤给定的值
-     * @param string $filter
-     * @param mixed  $data
+     * @param mixed $value 键值
+     * @param mixed $key 键名
+     * @param array $filters 过滤方法+默认值
      * @return mixed
      */
-    public static function filter($filter, $data)
+    private static function filter(&$value, $key, $filters)
     {
-        $result = [];
-        foreach ($data as $key => $val) {
-            $result[$key] = is_array($val) ? self::filter($filter, $val) : call_user_func($filter, $val);
+        if (!empty($value)) {
+            // 分离出默认值
+            $default = array_pop($filters);
+            foreach ($filters as $filter) {
+                if (is_callable($filter)) {
+                    // 调用函数过滤
+                    $value = call_user_func($filter, $value);
+                } else {
+                    $begin = substr($filter, 0, 1);
+                    if (in_array($begin, ['/','#','~']) && $begin == $end = substr($filter, -1)) {
+                        // 正则过滤
+                        if (!preg_match($filter, $value)) {
+                            // 匹配不成功返回默认值
+                            $value = $default;
+                            break;
+                        }
+                    } else {
+                        // filter函数不存在时, 则使用filter_var进行过滤
+                        // filter为非整形值时, 调用filter_id取得过滤id
+                        $value = filter_var($value, ctype_digit($filter) ? $filter : filter_id($filter));
+                        if (false === $value) {
+                            // 不通过过滤器则返回默认值
+                            $value = $default;
+                            break;
+                        }
+                    }
+                }
+            }
+            self::filterExp($value);
         }
-        return $result;
     }
 
     /**
@@ -266,41 +256,15 @@ class Input
      */
     private static function parseFilters($filters)
     {
-        $filters = ('' === $filters) ? static::$filter : $filters;
-
-        if (empty($filters)) {
-            $result = [];
-        } elseif (is_string($filters)) {
-            $result = explode(',', $filters);
-        } elseif (is_array($filters)) {
-            $result = $filters;
+        if (!empty($filters)) {
+            if (!is_array($filters)) {
+                $result = explode(',', $filters);
+            }
+            $result = array_merge(static::$filters, $result);
         } else {
-            $result = [$filters];
+            $result = static::$filters;
         }
         return $result;
-    }
-
-    /**
-     * 正则过滤
-     * @param string $input
-     * @param string $filter
-     * @return string|false
-     */
-    private static function regexFilter($input, $filter)
-    {
-        if (empty($filter) || is_array($input)) {
-            return null;
-        }
-        $begin = $filter[0];
-        $end   = $filter[strlen($filter) - 1];
-        if (
-            ('/' === $begin && '/' === $end) ||
-            ('#' === $begin && '#' === $end) ||
-            ('~' === $begin && '~' === $end)
-        ) {
-            return !preg_match($filter, $input) ? false : $input;
-        }
-        return null;
     }
 
     /**
@@ -309,7 +273,7 @@ class Input
      * @param string $type
      * @return mixed
      */
-    private static function typeCast($data, $type)
+    private static function typeCast(&$data, $type)
     {
         switch (strtolower($type)) {
             // 数组
@@ -333,6 +297,5 @@ class Input
             default:
                 $data = (string) $data;
         }
-        return $data;
     }
 }
