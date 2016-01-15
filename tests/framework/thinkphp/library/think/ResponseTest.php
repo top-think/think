@@ -51,7 +51,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      * This method is called after a test is executed.
      */
     protected function tearDown()
-    {}
+    {
+        
+        \think\Response::type(\think\Config::get('default_return_type'));//会影响其他测试
+    }
 
 //     /**
 //      * @covers think\Response::send
@@ -109,6 +112,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         $result = \think\Response::type();
         $this->assertEquals($type, $result);
+        \think\Response::type($type);
+        
+   
+        
     }
 
     /**
