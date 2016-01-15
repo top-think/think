@@ -21,8 +21,18 @@ class Route
         'DELETE' => [],
         'HEAD'   => [],
         '*'      => [],
+        'REST'   => [],
     ];
 
+    private static $rest = [
+        'index'  => ['GET', ''],
+        'create' => ['GET', '/create'],
+        'read'   => ['GET', '/:id'],
+        'edit'   => ['GET', '/:id/edit'],
+        'save'   => ['POST', ''],
+        'update' => ['PUT', '/:id'],
+        'delete' => ['DELETE', '/:id'],
+    ];
     // URL映射规则
     private static $map = [];
     // 子域名部署规则
@@ -96,6 +106,11 @@ class Route
                     self::map($rule['__map__']);
                     unset($rule['__map__']);
                 }
+                // 检查资源路由
+                if (isset($rule['__rest__'])) {
+                    self::resource($rule['__rest__']);
+                    unset($rule['__rest__']);
+                }
 
                 foreach ($rule as $key => $val) {
                     if (is_numeric($key)) {
@@ -162,6 +177,46 @@ class Route
     public static function delete($rule, $route = '', $option = [], $pattern = [])
     {
         self::register($rule, $route, 'DELETE', $option, $pattern);
+    }
+
+    // 注册资源路由
+    public static function resource($rule, $route = '', $option = [], $pattern = [])
+    {
+        if (is_array($rule)) {
+            foreach ($rule as $key => $val) {
+                if (is_array($val)) {
+                    $val = array_pad($val, 3, []);
+                    self::resource($key, $val[0], $val[1], $val[2]);
+                } else {
+                    self::resource($key, $val, $option, $pattern);
+                }
+            }
+        } else {
+            if (strpos($rule, '.')) {
+                // 注册嵌套资源路由
+                list($rule1, $rule2) = explode('.', $rule);
+                self::get($rule1 . '/:' . $rule1 . '_id/' . $rule2 . '/:' . $rule2 . '_id$', $route . '/read', $option, $pattern);
+            } else {
+                // 注册资源路由
+                foreach (self::$rest as $key => $val) {
+                    if ((isset($option['only']) && !in_array($key, $option['only']))
+                        || (isset($option['except']) && in_array($key, $option['except']))) {
+                        continue;
+                    }
+                    self::register($rule . $val[1] . '$', $route . '/' . $key, $val[0], $option, $pattern);
+                }
+            }
+        }
+    }
+
+    // rest方法定义和修改
+    public static function rest($method, $resocure = '')
+    {
+        if (is_array($method)) {
+            self::$rest = array_merge(self::$rest, $method);
+        } else {
+            self::$rest[$method] = $resource;
+        }
     }
 
     // 获取路由定义
@@ -396,6 +451,12 @@ class Route
         return true;
     }
 
+    // 检查资源路由
+    private static function checkResoure()
+    {
+
+    }
+
     /**
      * 检查规则路由
      */
@@ -502,12 +563,10 @@ class Route
                 $action     = array_pop($path);
                 $controller = !empty($path) ? array_pop($path) : null;
                 $module     = APP_MULTI_MODULE && !empty($path) ? array_pop($path) : null;
-            }
-            // REST 操作方法支持
-            if ('[rest]' == $action) {
-                $action = REQUEST_METHOD;
-            } elseif (Config::get('url_rest_action')) {
-                $action = REQUEST_METHOD . '_' . $action;
+                // REST 操作方法支持
+                if ('[rest]' == $action) {
+                    $action = REQUEST_METHOD;
+                }
             }
             $route = [$module, $controller, $action];
         }
