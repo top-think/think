@@ -1,4 +1,4 @@
-// <?php
+<?php
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
@@ -261,7 +261,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         
         // FIXME 静态方法mock Url::build
         // echo "\r\n" . json_encode(xdebug_get_headers()) . "\r\n";
-        //\Think\Response::redirect($url, $params);
+        // \Think\Response::redirect($url, $params);
         
         // $this->assertContains('Location: ' . $url, xdebug_get_headers());
     }
@@ -275,7 +275,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     {
         $name = "Location";
         $url = "http://www.testheader.com/";
-        //\Think\Response::header($name, $url);
+        // \Think\Response::header($name, $url);
         // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
     }
 
@@ -286,7 +286,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendHttpStatus()
     {
-        //\Think\Response::sendHttpStatus(416);
+        // \Think\Response::sendHttpStatus(416);
         
         // $this->assertContains('HTTP/1.1 ' . ': ' . $status, xdebug_get_headers());
         // $this->assertContains('Status:' . ': ' . $status, xdebug_get_headers());
