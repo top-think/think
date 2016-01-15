@@ -136,7 +136,7 @@ class Socket
         $this->send($this->config['host'], $msg, $address);
     }
 
-    protected static function check()
+    protected function check()
     {
         if (!$this->config['enable']) {
             return false;
