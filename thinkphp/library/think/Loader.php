@@ -403,6 +403,10 @@ class Loader
      */
     public static function parseClass($module, $layer, $name)
     {
-        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . self::parseName(str_replace(['/', '.'], '\\', $name), 1);
+        $name  = str_replace(['/', '.'], '\\', $name);
+        $array = explode('\\', $name);
+        $class = self::parseName(array_pop($array), 1);
+        $path  = $array ? implode('\\', $array) . '\\' : '';
+        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . $path . $class;
     }
 }
