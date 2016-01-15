@@ -28,7 +28,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-       // $this->object = new Response();
+        //$this->object = new Response();此行影响覆盖率?
         // 1.
         // restore_error_handler();
         // Warning: Cannot modify header information - headers already sent by (output started at PHPUnit\Util\Printer.php:173)
@@ -99,195 +99,195 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         // $this->assertEquals("callbackreturndata", $result);
     }
 
-//     /**
-//      * @covers think\Response::type
-//      * @todo Implement testType().
-//      */
-//     public function testType()
-//     {
-//         $type = "json";
-//         \Think\Response::type($type);
+    /**
+     * @covers think\Response::type
+     * @todo Implement testType().
+     */
+    public function testType()
+    {
+        $type = "json";
+        \Think\Response::type($type);
         
-//         $result = \Think\Response::type();
-//         $this->assertEquals($type, $result);
-//     }
+        $result = \Think\Response::type();
+        $this->assertEquals($type, $result);
+    }
 
-//     /**
-//      * @covers think\Response::data
-//      * @todo Implement testData().
-//      */
-//     public function testData()
-//     {
-//         $data = "data";
-//         \Think\Response::data($data);
-//         \Think\Response::data(null);
-//     }
+    /**
+     * @covers think\Response::data
+     * @todo Implement testData().
+     */
+    public function testData()
+    {
+        $data = "data";
+        \Think\Response::data($data);
+        \Think\Response::data(null);
+    }
 
-//     /**
-//      * @covers think\Response::isExit
-//      * @todo Implement testIsExit().
-//      */
-//     public function testIsExit()
-//     {
-//         $isExit = true;
-//         \Think\Response::isExit($isExit);
+    /**
+     * @covers think\Response::isExit
+     * @todo Implement testIsExit().
+     */
+    public function testIsExit()
+    {
+        $isExit = true;
+        \Think\Response::isExit($isExit);
         
-//         $result = \Think\Response::isExit();
-//         $this->assertTrue($isExit, $result);
-//     }
+        $result = \Think\Response::isExit();
+        $this->assertTrue($isExit, $result);
+    }
 
-//     /**
-//      * @covers think\Response::result
-//      * @todo Implement testResult().
-//      */
-//     public function testResult()
-//     {
-//         $data = "data";
-//         $code = "1001";
-//         $msg = "the msg";
-//         $type = "json";
-//         $result = \Think\Response::result($data, $code, $msg, $type);
+    /**
+     * @covers think\Response::result
+     * @todo Implement testResult().
+     */
+    public function testResult()
+    {
+        $data = "data";
+        $code = "1001";
+        $msg = "the msg";
+        $type = "json";
+        $result = \Think\Response::result($data, $code, $msg, $type);
         
-//         $this->assertEquals($code, $result["code"]);
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
-//         $this->assertEquals($type, \Think\Response::type());
-//     }
+        $this->assertEquals($code, $result["code"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
+        $this->assertEquals($type, \Think\Response::type());
+    }
 
-//     /**
-//      * @covers think\Response::success
-//      * @todo Implement testSuccess().
-//      */
-//     public function testSuccess()
-//     {
-//         // round 1
-//         $msg = 1001;
-//         $data = "data";
+    /**
+     * @covers think\Response::success
+     * @todo Implement testSuccess().
+     */
+    public function testSuccess()
+    {
+        // round 1
+        $msg = 1001;
+        $data = "data";
         
-//         $url = "www.HTTP_REFERER.com";
-//         $_SERVER["HTTP_REFERER"] = $url;
-//         Config::set('default_return_type', "json");
+        $url = "www.HTTP_REFERER.com";
+        $_SERVER["HTTP_REFERER"] = $url;
+        Config::set('default_return_type', "json");
         
-//         $result = \Think\Response::success($msg, $data);
+        $result = \Think\Response::success($msg, $data);
         
-//         $this->assertEquals($msg, $result["code"]);
+        $this->assertEquals($msg, $result["code"]);
         
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals($url, $result["url"]);
-//         $this->assertEquals("json", \Think\Response::type());
-//         $this->assertEquals(3, $result["wait"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals($url, $result["url"]);
+        $this->assertEquals("json", \Think\Response::type());
+        $this->assertEquals(3, $result["wait"]);
         
-//         // round 2
-//         $msg = "the msg";
-//         $url = "www.thinkphptestsucess.com";
+        // round 2
+        $msg = "the msg";
+        $url = "www.thinkphptestsucess.com";
         
-//         $result = \Think\Response::success($msg, $data, $url);
+        $result = \Think\Response::success($msg, $data, $url);
         
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($url, $result["url"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($url, $result["url"]);
         
-//         // round 3
-//         $this->setExpectedException('\think\Exception');
-//         // FIXME 静态方法mock
-//         // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
-//         // 'fetch'
-//         // ))->getMock();
+        // round 3
+        $this->setExpectedException('\think\Exception');
+        // FIXME 静态方法mock
+        // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
+        // 'fetch'
+        // ))->getMock();
         
-//         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
+        // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
-//         Config::set('default_return_type', "html");
-//         $result = \Think\Response::success($msg, $data, $url);
+        Config::set('default_return_type', "html");
+        $result = \Think\Response::success($msg, $data, $url);
         
-//         // FIXME 静态方法mock
-//         // $this->assertEquals('content', $result);
-//     }
+        // FIXME 静态方法mock
+        // $this->assertEquals('content', $result);
+    }
 
-//     /**
-//      * @covers think\Response::error
-//      * @todo Implement testError().
-//      */
-//     public function testError()
-//     {
-//         // round 1
-//         $msg = 1001;
-//         $data = "data";
+    /**
+     * @covers think\Response::error
+     * @todo Implement testError().
+     */
+    public function testError()
+    {
+        // round 1
+        $msg = 1001;
+        $data = "data";
         
-//         Config::set('default_return_type', "json");
+        Config::set('default_return_type', "json");
         
-//         $result = \Think\Response::error($msg, $data);
+        $result = \Think\Response::error($msg, $data);
         
-//         $this->assertEquals($msg, $result["code"]);
-//         $this->assertEquals($data, $result["data"]);
-//         $this->assertEquals('javascript:history.back(-1);', $result["url"]);
-//         $this->assertEquals("json", \Think\Response::type());
-//         $this->assertEquals(3, $result["wait"]);
+        $this->assertEquals($msg, $result["code"]);
+        $this->assertEquals($data, $result["data"]);
+        $this->assertEquals('javascript:history.back(-1);', $result["url"]);
+        $this->assertEquals("json", \Think\Response::type());
+        $this->assertEquals(3, $result["wait"]);
         
-//         // round 2
-//         $msg = "the msg";
-//         $url = "www.thinkphptesterror.com";
+        // round 2
+        $msg = "the msg";
+        $url = "www.thinkphptesterror.com";
         
-//         $result = \Think\Response::error($msg, $data, $url);
+        $result = \Think\Response::error($msg, $data, $url);
         
-//         $this->assertEquals($msg, $result["msg"]);
-//         $this->assertEquals($url, $result["url"]);
+        $this->assertEquals($msg, $result["msg"]);
+        $this->assertEquals($url, $result["url"]);
         
-//         // round 3
-//         $this->setExpectedException('\think\Exception');
-//         // FIXME 静态方法mock
-//         // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
-//         // 'fetch'
-//         // ))->getMock();
+        // round 3
+        $this->setExpectedException('\think\Exception');
+        // FIXME 静态方法mock
+        // $oMockView = $this->getMockBuilder('\think\View')->setMethods(array(
+        // 'fetch'
+        // ))->getMock();
         
-//         // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
+        // $oMockView->expects($this->any())->method('fetch')->will($this->returnValue('content'));
         
-//         Config::set('default_return_type', "html");
-//         $result = \Think\Response::error($msg, $data, $url);
+        Config::set('default_return_type', "html");
+        $result = \Think\Response::error($msg, $data, $url);
         
-//         // FIXME 静态方法mock
-//         // $this->assertEquals('content', $result);
-//     }
+        // FIXME 静态方法mock
+        // $this->assertEquals('content', $result);
+    }
 
-//     /**
-//      *
-//      * @covers think\Response::redirect
-//      * @todo Implement testRedirect().
-//      */
-//     public function testRedirect()
-//     {
-//         $url = "http://www.testredirect.com";
-//         $params = array();
-//         $params[] = 301;
+    /**
+     *
+     * @covers think\Response::redirect
+     * @todo Implement testRedirect().
+     */
+    public function testRedirect()
+    {
+        $url = "http://www.testredirect.com";
+        $params = array();
+        $params[] = 301;
         
-//         // FIXME 静态方法mock Url::build
-//         // echo "\r\n" . json_encode(xdebug_get_headers()) . "\r\n";
-//         // \Think\Response::redirect($url, $params);
+        // FIXME 静态方法mock Url::build
+        // echo "\r\n" . json_encode(xdebug_get_headers()) . "\r\n";
+        // \Think\Response::redirect($url, $params);
         
-//         // $this->assertContains('Location: ' . $url, xdebug_get_headers());
-//     }
+        // $this->assertContains('Location: ' . $url, xdebug_get_headers());
+    }
 
-//     /**
-//      *
-//      * @covers think\Response::header
-//      * @todo Implement testHeader().
-//      */
-//     public function testHeader()
-//     {
-//         $name = "Location";
-//         $url = "http://www.testheader.com/";
-//         // \Think\Response::header($name, $url);
-//         // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
-//     }
+    /**
+     *
+     * @covers think\Response::header
+     * @todo Implement testHeader().
+     */
+    public function testHeader()
+    {
+        $name = "Location";
+        $url = "http://www.testheader.com/";
+        // \Think\Response::header($name, $url);
+        // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
+    }
 
-//     /**
-//      * @covers think\Response::sendHttpStatus
-//      * @todo Implement testSendHttpStatus().
-//      */
-//     public function testSendHttpStatus()
-//     {
-//         // \Think\Response::sendHttpStatus(416);
+    /**
+     * @covers think\Response::sendHttpStatus
+     * @todo Implement testSendHttpStatus().
+     */
+    public function testSendHttpStatus()
+    {
+        // \Think\Response::sendHttpStatus(416);
         
-//         // $this->assertContains('HTTP/1.1 ' . ': ' . $status, xdebug_get_headers());
-//         // $this->assertContains('Status:' . ': ' . $status, xdebug_get_headers());
-//     }
+        // $this->assertContains('HTTP/1.1 ' . ': ' . $status, xdebug_get_headers());
+        // $this->assertContains('Status:' . ': ' . $status, xdebug_get_headers());
+    }
 }
