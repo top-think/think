@@ -56,7 +56,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetRangeTime()
     {
         $start = "testGetRangeTimeStart";
-        // $end="testGetRangeTimeEnd";
+        $end = "testGetRangeTimeEnd";
         \think\Debug::remark($start);
         sleep(2);
         // \think\Debug::remark($end);
@@ -72,8 +72,12 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetUseTime()
     {
+        $start = "testGetUseTimeStart";
+        $end = "testGetUseTimeEnd";
+        \think\Debug::remark($start);
+        
         sleep(1);
-        $time = \think\Debug::getUseTime();
+        $time = \think\Debug::getUseTime($start, $end);
         $this->assertLessThan(6, $time);
     }
 
@@ -95,14 +99,13 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetRangeMem()
     {
         $start = "testGetRangeMemStart";
-        // $end = "testGetRangeMemEnd";
+        $end = "testGetRangeMemEnd";
         \think\Debug::remark($start);
         $str = "";
         for ($i = 0; $i < 10000; $i ++) {
             $str .= "mem";
         }
         
-        // \think\Debug::remark($end);
         $rangeMem = \think\Debug::getRangeMem($start, $end);
         
         $this->assertLessThan(33, explode(" ", $rangeMem)[0]);
@@ -125,9 +128,18 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetMemPeak()
     {
-        $memPeak = \think\Debug::getMemPeak();
+        $start = "testGetMemPeakStart";
+        $end = "testGetMemPeakEnd";
+        \think\Debug::remark($start);
+        $str = "";
+        for ($i = 0; $i < 100000; $i ++) {
+            $str .= "mem";
+        }
+        $memPeak = \think\Debug::getMemPeak($start, $end);
         
-        $this->assertLessThan(32, explode(" ", $memPeak)[0]);
+        // echo "\r\n" . $memPeak . "\r\n";
+        
+        $this->assertLessThan(38, explode(" ", $memPeak)[0]);
     }
 
     /**
