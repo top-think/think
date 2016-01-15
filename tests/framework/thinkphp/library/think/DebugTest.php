@@ -139,7 +139,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
         
         // echo "\r\n" . $memPeak . "\r\n";
         
-        $this->assertLessThan(38, explode(" ", $memPeak)[0]);
+        $this->assertLessThan(138, explode(" ", $memPeak)[0]);
     }
 
     /**
