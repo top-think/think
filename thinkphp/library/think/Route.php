@@ -21,9 +21,9 @@ class Route
         'DELETE' => [],
         'HEAD'   => [],
         '*'      => [],
-        'REST'   => [],
     ];
 
+    // REST路由操作方法定义
     private static $rest = [
         'index'  => ['GET', ''],
         'create' => ['GET', '/create'],
@@ -33,6 +33,7 @@ class Route
         'update' => ['PUT', '/:id'],
         'delete' => ['DELETE', '/:id'],
     ];
+
     // URL映射规则
     private static $map = [];
     // 子域名部署规则
@@ -187,26 +188,32 @@ class Route
         if (is_array($rule)) {
             foreach ($rule as $key => $val) {
                 if (is_array($val)) {
-                    $val = array_pad($val, 3, []);
-                    self::resource($key, $val[0], $val[1], $val[2]);
-                } else {
-                    self::resource($key, $val, $option, $pattern);
+                    list($val, $option, $pattern) = array_pad($val, 3, []);
                 }
+                self::resource($key, $val, $option, $pattern);
             }
         } else {
             if (strpos($rule, '.')) {
                 // 注册嵌套资源路由
-                list($rule1, $rule2) = explode('.', $rule);
-                self::get($rule1 . '/:' . $rule1 . '_id/' . $rule2 . '/:' . $rule2 . '_id$', $route . '/read', $option, $pattern);
-            } else {
-                // 注册资源路由
-                foreach (self::$rest as $key => $val) {
-                    if ((isset($option['only']) && !in_array($key, $option['only']))
-                        || (isset($option['except']) && in_array($key, $option['except']))) {
-                        continue;
+                $array = explode('.', $rule);
+                $last  = array_pop($array);
+                $item  = [];
+                foreach ($array as $val) {
+                    if (isset($option['rule'][$val])) {
+                        $item[] = $val . '/:' . $option['rule'][$val];
+                    } else {
+                        $item[] = $val . '/:' . $val . '_id';
                     }
-                    self::register($rule . $val[1] . '$', $route . '/' . $key, $val[0], $option, $pattern);
                 }
+                $rule = implode('/', $item) . '/' . $last;
+            }
+            // 注册资源路由
+            foreach (self::$rest as $key => $val) {
+                if ((isset($option['only']) && !in_array($key, $option['only']))
+                    || (isset($option['except']) && in_array($key, $option['except']))) {
+                    continue;
+                }
+                self::register($rule . $val[1] . '$', $route . '/' . $key, $val[0], $option, $pattern);
             }
         }
     }
@@ -251,11 +258,10 @@ class Route
                 }
                 // 子域名配置
                 if (!empty($domain)) {
-                    // 记录子域名
-                    self::$subDomain = join('.', $domain);
-                    // 二级域名
-                    $subDomain = implode('.', $domain);
-                    $domain2   = array_pop($domain); 
+                    // 当前子域名
+                    $subDomain       = implode('.', $domain);
+                    self::$subDomain = $subDomain;
+                    $domain2         = array_pop($domain);
                     if ($domain) {
                         // 存在三级域名
                         $domain3 = array_pop($domain);
