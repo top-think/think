@@ -252,7 +252,7 @@ class Route
                 // 子域名配置
                 if (!empty($domain)) {
                     // 记录子域名
-                    self::$subDomain = $domain;
+                    self::$subDomain = join('.', $domain);
                     // 二级域名
                     $subDomain = implode('.', $domain);
                     $domain2   = array_pop($domain); 
