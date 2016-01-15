@@ -111,16 +111,16 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 //         $this->assertEquals($type, $result);
 //     }
 
-//     /**
-//      * @covers think\Response::data
-//      * @todo Implement testData().
-//      */
-//     public function testData()
-//     {
-//         $data = "data";
-//         \think\Response::data($data);
-//         \think\Response::data(null);
-//     }
+    /**
+     * @covers think\Response::data
+     * @todo Implement testData().
+     */
+    public function testData()
+    {
+        $data = "data";
+        \think\Response::data($data);
+       // \think\Response::data(null);
+    }
 
 //     /**
 //      * @covers think\Response::isExit
