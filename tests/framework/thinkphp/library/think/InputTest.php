@@ -15,9 +15,8 @@ class InputTest extends \PHPUnit_Framework_TestCase
 {
     public function testEmptyStringName()
     {
-        Input::$filter = 'trim';
         $input         = ['a' => 'test'];
-        $this->assertEquals($input, Input::getData('', $input));
+        $this->assertEquals($input, Input::getData('', $input, 'trim'));
     }
 
     public function testInputName()
@@ -54,11 +53,11 @@ class InputTest extends \PHPUnit_Framework_TestCase
     public function testFilterExp()
     {
         $src    = 'EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN';
-        $regexs = explode('|', strtolower($src));
-        foreach ($regexs as $value) {
+        $regexs = explode('|', $src);
+        $data = Input::getData('', $regexs);
+        foreach ($regexs as $key => $value) {
             $expected = $value . ' ';
-            Input::filterExp($value);
-            $this->assertEquals($expected, $value);
+            $this->assertEquals($expected, $data[$key]);
         }
     }
 
@@ -79,9 +78,9 @@ class InputTest extends \PHPUnit_Framework_TestCase
         $input   = ['a' => $email, 'b' => $error];
         $filters = FILTER_VALIDATE_EMAIL;
         $this->assertEquals($email, Input::getData('a', $input, $filters));
-        $this->assertFalse(Input::getData('b', $input, $filters, false));
+        $this->assertFalse(Input::getData('b', $input, $filters, $default));
         $filters = 'validate_email';
-        $this->assertFalse(Input::getData('b', $input, $filters, false));
+        $this->assertFalse(Input::getData('b', $input, $filters, $default));
     }
 
     public function testAllInput()
@@ -94,7 +93,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
             'e' => 'NEQ',
             'f' => 'gt',
         ];
-        $filters  = 'trim,htmlspecialchars';
+        $filters  = 'htmlspecialchars,trim';
         $excepted = [
             'a' => 'trim',
             'b' => 'htmlspecialchars&lt;&gt;',
@@ -122,7 +121,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
 
     public function testSuperglobals()
     {
-        Input::$filter = 'trim';
+        Input::setFilter('trim');
         $_GET['get']   = 'get value ';
         $this->assertEquals('get value', Input::get('get'));
         $_POST['post'] = 'post value ';
@@ -148,4 +147,19 @@ class InputTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('testing', Input::env('APP_ENV'));
     }
+
+    public function testFilterCover()
+    {
+        Input::setFilter('htmlspecialchars');
+        $input   = ['a' => ' test<> ', 'b' => '<b\\ar />'];
+        $filters = ['trim'];
+        $this->assertEquals('test&lt;&gt;', Input::getData('a', $input, $filters));
+        $filters = ['trim', false];
+        $this->assertEquals('test<>', Input::getData('a', $input, $filters));
+        $filters = 'stripslashes';
+        $this->assertEquals("&lt;bar /&gt;", Input::getData('b', $input, $filters));
+        $filters = 'stripslashes,0';
+        $this->assertEquals("<bar />", Input::getData('b', $input, $filters));
+    }
+
 }
