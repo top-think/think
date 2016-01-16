@@ -68,6 +68,9 @@ class App
             defined('LANG_SET') or define('LANG_SET', Lang::range());
             // 加载系统语言包
             Lang::load(THINK_PATH . 'lang' . DS . LANG_SET . EXT);
+            if (!APP_MULTI_MODULE) {
+                Lang::load(APP_PATH . 'lang' . DS . LANG_SET . EXT);
+            }
         }
 
         // 启动session CLI 不开启
@@ -175,11 +178,8 @@ class App
     private static function module($result, $config)
     {
         if (APP_MULTI_MODULE) {
-            if (defined('BIND_MODULE')) {
-                array_unshift($result, BIND_MODULE);
-            }
             // 多模块部署
-            $module = $result[0] ?: $config['default_module'];
+            $module = strtolower($result[0] ?: $config['default_module']);
             if ($maps = $config['url_module_map']) {
                 if (isset($maps[$module])) {
                     // 记录当前别名
@@ -192,14 +192,13 @@ class App
                 }
             }
             // 获取模块名称
-            define('MODULE_NAME', strtolower(defined('BIND_MODULE') ? BIND_MODULE : strip_tags($module)));
+            define('MODULE_NAME', strip_tags($module));
 
             // 模块初始化
             if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
                 APP_HOOK && Hook::listen('app_begin');
                 define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
                 define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
-
                 // 初始化模块
                 self::initModule(MODULE_NAME, $config);
             } else {
@@ -213,12 +212,9 @@ class App
         }
 
         // 获取控制器名
-        $controller = strip_tags($result[1] ?: Config::get('default_controller'));
-        define('CONTROLLER_NAME', strtolower(defined('BIND_CONTROLLER') ? BIND_CONTROLLER : $controller));
-
+        define('CONTROLLER_NAME', strtolower(strip_tags($result[1] ?: Config::get('default_controller'))));
         // 获取操作名
-        $action = strip_tags($result[2] ?: Config::get('default_action'));
-        define('ACTION_NAME', strtolower(defined('BIND_ACTION') ? BIND_ACTION : $action));
+        define('ACTION_NAME', strtolower(strip_tags($result[2] ?: Config::get('default_action'))));
 
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
