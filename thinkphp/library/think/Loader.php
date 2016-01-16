@@ -324,7 +324,7 @@ class Loader
      * @param boolean $lite 是否采用lite方式连接
      * @return object
      */
-    public static function db($config, $lite = false)
+    public static function db($config = [], $lite = false)
     {
         return Db::instance($config, $lite);
     }
