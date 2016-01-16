@@ -62,7 +62,9 @@ class Response
                     $data    = $handler . '(' . json_encode($data, JSON_UNESCAPED_UNICODE) . ');';
                     break;
                 case '':
-                    // 类型为空不做处理
+                case 'html':
+                case 'text':
+                    // 不做处理
                     break;
                 default:
                     // 用于扩展其他返回格式数据
