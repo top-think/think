@@ -379,7 +379,7 @@ class App
                 Route::register($config['route']);
             }
             // 路由检测（根据路由定义返回不同的URL调度）
-            $result = Route::check($_SERVER['PATH_INFO'], $depr, $Config['url_domain_deploy']);
+            $result = Route::check($_SERVER['PATH_INFO'], $depr, $config['url_domain_deploy']);
             if (false === $result) {
                 // 路由无效
                 if ($config['url_route_must']) {
