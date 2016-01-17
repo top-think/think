@@ -325,7 +325,7 @@ class Route
     }
 
     // 检测URL路由
-    public static function check($url, $depr = '/')
+    public static function check($url, $depr = '/', $checkDomain = false)
     {
         // 分隔符替换 确保路由定义使用统一的分隔符
         if ('/' != $depr) {
@@ -351,44 +351,14 @@ class Route
         }
 
         // 检测域名部署
-        if (Config::get('url_domain_deploy')) {
+        if ($checkDomain) {
             self::checkDomain();
         }
-        if (!empty(self::$bind['type'])) {
-            // 如果有URL绑定 则进行绑定检测
-            switch (self::$bind['type']) {
-                case 'class':
-                    // 绑定到类
-                    $array = explode('/', $url, 2);
-                    if (!empty($array[1])) {
-                        self::parseUrlParams($array[1]);
-                    }
-                    $return = ['type' => 'method', 'method' => [self::$bind['class'], $array[0] ?: Config::get('default_action')], 'params' => []];
-                    break;
-                case 'namespace':
-                    // 绑定到命名空间
-                    $array  = explode('/', $url, 3);
-                    $class  = !empty($array[0]) ? $array[0] : Config::get('default_controller');
-                    $method = !empty($array[1]) ? $array[1] : Config::get('default_action');
-                    if (!empty($array[2])) {
-                        self::parseUrlParams($array[2]);
-                    }
-                    $return = ['type' => 'method', 'method' => [self::$bind['namespace'] . '\\' . $class, $method], 'params' => []];
-                    break;
-                case 'module':
-                    // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
-                    $url = self::$bind['module'] . '/' . $url;
-                    break;
-                case 'group':
-                    // 绑定到路由分组
-                    $key = self::$bind['group'];
-                    if (array_key_exists($key, $rules)) {
-                        $rules = [$key => $rules[self::$bind['group']]];
-                    }
-            }
-            if (isset($return)) {
-                return $return;
-            }
+
+        // 检测URL绑定
+        $return = self::checkUrlBind($url, $rules);
+        if ($return) {
+            return $return;
         }
 
         // 路由规则检测
@@ -445,6 +415,43 @@ class Route
         return false;
     }
 
+    // 检测URL绑定
+    private static function checkUrlBind(&$url, &$rules)
+    {
+        if (!empty(self::$bind['type'])) {
+            // 如果有URL绑定 则进行绑定检测
+            switch (self::$bind['type']) {
+                case 'class':
+                    // 绑定到类
+                    $array = explode('/', $url, 2);
+                    if (!empty($array[1])) {
+                        self::parseUrlParams($array[1]);
+                    }
+                    return ['type' => 'method', 'method' => [self::$bind['class'], $array[0] ?: Config::get('default_action')], 'params' => []];
+                case 'namespace':
+                    // 绑定到命名空间
+                    $array  = explode('/', $url, 3);
+                    $class  = !empty($array[0]) ? $array[0] : Config::get('default_controller');
+                    $method = !empty($array[1]) ? $array[1] : Config::get('default_action');
+                    if (!empty($array[2])) {
+                        self::parseUrlParams($array[2]);
+                    }
+                    return ['type' => 'method', 'method' => [self::$bind['namespace'] . '\\' . $class, $method], 'params' => []];
+                case 'module':
+                    // 如果有模块/控制器绑定 针对路由到 模块/控制器 有效
+                    $url = self::$bind['module'] . '/' . $url;
+                    break;
+                case 'group':
+                    // 绑定到路由分组
+                    $key = self::$bind['group'];
+                    if (array_key_exists($key, $rules)) {
+                        $rules = [$key => $rules[self::$bind['group']]];
+                    }
+            }
+        }
+        return false;
+    }
+
     // 路由参数有效性检查
     private static function checkOption($option)
     {
@@ -459,12 +466,6 @@ class Route
             return false;
         }
         return true;
-    }
-
-    // 检查资源路由
-    private static function checkResoure()
-    {
-
     }
 
     /**

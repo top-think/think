@@ -373,10 +373,13 @@ class App
         $depr = $config['pathinfo_depr'];
         // 路由检测
         if (!empty($config['url_route_on'])) {
-            // 开启路由 注册路由定义文件
-            Route::register(!empty($config['route']) ? $config['route'] : null);
+            // 开启路由
+            if (!empty($config['route'])) {
+                // 注册路由定义文件
+                Route::register($config['route']);
+            }
             // 路由检测（根据路由定义返回不同的URL调度）
-            $result = Route::check($_SERVER['PATH_INFO'], $depr);
+            $result = Route::check($_SERVER['PATH_INFO'], $depr, $Config['url_domain_deploy']);
             if (false === $result) {
                 // 路由无效
                 if ($config['url_route_must']) {
