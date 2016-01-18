@@ -75,7 +75,7 @@ abstract class Rest
             $fun = $method . '_' . $this->_method;
         }
         if (isset($fun)) {
-            $this->$fun();
+            return $this->$fun();
         } else {
             // 抛出异常
             throw new \Exception('error action :' . ACTION_NAME);
