@@ -43,7 +43,7 @@ class Template
         'display_cache'      => false, // 模板渲染缓存
         'cache_id'           => '', // 模板缓存ID
         'tpl_replace_string' => [],
-        'tpl_var_identify'   => '', // .语法变量识别，array|object, 为空时自动识别
+        'tpl_var_identify'   => 'array', // .语法变量识别，array|object|'', 为空时自动识别
         'namespace'          => '\\think\\template\\driver\\',
     ];
 
