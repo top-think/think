@@ -1,11 +1,13 @@
 <?php
-namespace tests\framework\thinkphp\library\think\cache\driver;
-use think\app;
+
+namespace tests\thinkphp\library\think\cache\driver;
+
 use think\cache;
-    /**
-     * 缓存抽象类，提供一些测试
-     * @author simon <mahuan@d1web.top>
-     */
+
+/**
+ * 缓存抽象类，提供一些测试
+ * @author simon <mahuan@d1web.top>
+ */
 abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
 {
 
