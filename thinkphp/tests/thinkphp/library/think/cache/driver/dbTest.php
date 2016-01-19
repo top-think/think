@@ -13,7 +13,7 @@
  * 数据库缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
-namespace tests\framework\thinkphp\library\think\cache\driver;
+namespace tests\thinkphp\library\think\cache\driver;
 
 class dbTest extends CacheTestCase
 {
