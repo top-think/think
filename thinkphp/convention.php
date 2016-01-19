@@ -152,6 +152,7 @@ return [
 
     // 是否启用多状态数据库配置 如果启用的话 需要跟随app_status配置不同的数据库信息
     'use_db_switch'         => false,
+    'db_fields_strict'      => true,
     'database'              => [
         // 数据库类型
         'type'        => 'mysql',

@@ -195,6 +195,9 @@ class Model
         if (!empty($fields)) {
             foreach ($data as $key => $val) {
                 if (!in_array($key, $fields, true)) {
+                    if (Config::get('db_fields_strict')) {
+                        throw new Exception(' fields not exists :[' . $key . '=>' . $val . ']');
+                    }
                     unset($data[$key]);
                 } elseif (is_scalar($val) && empty($this->options['bind'][':' . $key])) {
                     // 字段类型检查
