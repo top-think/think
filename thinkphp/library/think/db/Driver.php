@@ -41,23 +41,39 @@ abstract class Driver
     protected $_linkID = null;
     // 数据库连接参数配置
     protected $config = [
-        'type'           => '',             // 数据库类型
-        'hostname'       => '127.0.0.1',    // 服务器地址
-        'database'       => '',             // 数据库名
-        'username'       => '',             // 用户名
-        'password'       => '',             // 密码
-        'hostport'       => '',             // 端口
-        'dsn'            => '',             //
-        'params'         => [],             // 数据库连接参数
-        'charset'        => 'utf8',         // 数据库编码默认采用utf8
-        'prefix'         => '',             // 数据库表前缀
-        'debug'          => false,          // 数据库调试模式
-        'deploy'         => 0,              // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
-        'rw_separate'    => false,          // 数据库读写是否分离 主从式有效
-        'master_num'     => 1,              // 读写分离后 主服务器数量
-        'slave_no'       => '',             // 指定从服务器序号
-        'db_like_fields' => '',             // like字段自动替换为%%包裹
-        'debug'          => false,          // 是否调试
+        // 数据库类型
+        'type'           => '',
+        // 服务器地址
+        'hostname'       => '127.0.0.1',
+        // 数据库名
+        'database'       => '',
+        // 用户名
+        'username'       => '',
+        // 密码
+        'password'       => '',
+        // 端口
+        'hostport'       => '',
+        'dsn'            => '',
+        // 数据库连接参数
+        'params'         => [],
+        // 数据库编码默认采用utf8
+        'charset'        => 'utf8',
+        // 数据库表前缀
+        'prefix'         => '',
+        // 数据库调试模式
+        'debug'          => false,
+        // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
+        'deploy'         => 0,
+        // 数据库读写是否分离 主从式有效
+        'rw_separate'    => false,
+        // 读写分离后 主服务器数量
+        'master_num'     => 1,
+        // 指定从服务器序号
+        'slave_no'       => '',
+        // like字段自动替换为%%包裹
+        'db_like_fields' => '',
+        // 是否开启数据库调试
+        'debug'          => false,
     ];
     // 数据库表达式
     protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=', 'notlike' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'notin' => 'NOT IN', 'not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN', 'notbetween' => 'NOT BETWEEN'];
@@ -409,7 +425,7 @@ abstract class Driver
             } elseif (is_scalar($val)) {
                 // 过滤非标量数据
                 if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
-                    $set[] = $this->parseKey($key) . '=' . $this->quote($val);
+                    $set[] = $this->parseKey($key) . '=' . $val;
                 } else {
                     $name  = count($this->bind);
                     $set[] = $this->parseKey($key) . '=:' . $name;
@@ -890,7 +906,7 @@ abstract class Driver
                 // 过滤非标量数据
                 $fields[] = $this->parseKey($key);
                 if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
-                    $values[] = $this->parseValue($val);
+                    $values[] = $val;
                 } else {
                     $name     = count($this->bind);
                     $values[] = ':' . $name;
@@ -932,7 +948,7 @@ abstract class Driver
                     $value[] = 'NULL';
                 } elseif (is_scalar($val)) {
                     if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
-                        $value[] = $this->parseValue($val);
+                        $value[] = $val;
                     } else {
                         $name    = count($this->bind);
                         $value[] = ':' . $name;
