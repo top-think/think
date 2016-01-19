@@ -21,7 +21,7 @@ before_install:
   - composer self-update
 
 install:
-  - ./tests/script/install.sh
+  - ./thinkphp/tests/script/install.sh
 
 script:
   ## LINT
