@@ -19,7 +19,7 @@ $_SERVER['REQUEST_METHOD'] = 'GET';
 define('TEST_PATH', __DIR__ . '/');
 
 // 定义项目路径
-define('APP_PATH', __DIR__ . '/fixtures/');
+define('APP_PATH', __DIR__ . '/../../application/');
 // 开启调试模式
 define('APP_DEBUG', true);
 

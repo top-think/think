@@ -26,7 +26,7 @@ class xmlTest extends \PHPUnit_Framework_TestCase
         Config::parse('<?xml version="1.0"?><document><xmlstring>1</xmlstring></document>', 'xml');
         $this->assertEquals(1, Config::get('xmlstring'));
         Config::reset();
-        Config::parse('thinkphp/tests/fixtures/config.xml');
+        Config::parse(__DIR__ . '/fixtures/config.xml');
         $this->assertTrue(Config::has('xmlfile.istrue'));
         $this->assertEquals(1, Config::get('xmlfile.istrue'));
         Config::reset();
