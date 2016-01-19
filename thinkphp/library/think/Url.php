@@ -24,7 +24,7 @@ class Url
      * @param boolean|string $domain 是否显示域名 或者直接传入域名
      * @return string
      */
-    public static function build($url = '', $vars = '', $suffix = true, $domain = true)
+    public static function build($url = '', $vars = '', $suffix = true, $domain = false)
     {
         // 解析参数
         if (is_string($vars)) {
@@ -226,7 +226,9 @@ class Url
                         $key = array_shift($route);
                     }
                     $route = $route[0];
-                    if (strpos($route, '?')) {
+                    if (is_array($route)) {
+                        $route = implode('\\', $route);
+                    } elseif (strpos($route, '?')) {
                         $route = strstr($route, '?', true);
                     }
                     $var             = self::parseVar($rule . '/' . $key);
@@ -234,7 +236,9 @@ class Url
                 }
             } else {
                 $route = $val['route'];
-                if (strpos($route, '?')) {
+                if (is_array($route)) {
+                    $route = implode('\\', $route);
+                } elseif (strpos($route, '?')) {
                     $route = strstr($route, '?', true);
                 }
                 $var             = self::parseVar($rule);
