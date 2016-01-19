@@ -95,7 +95,7 @@ return [
     // +----------------------------------------------------------------------
 
     // 默认跳转页面对应的模板文件
-    'dispatch_jump_tmpl'    => THINK_PATH . 'tpl/dispatch_jump.tpl',
+    'dispatch_jump_tmpl'    => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
     // 默认的模板引擎
     'template_engine'       => 'Think',
 
@@ -104,7 +104,7 @@ return [
     // +----------------------------------------------------------------------
 
     // 异常页面的模板文件
-    'exception_tmpl'        => THINK_PATH . 'tpl/think_exception.tpl',
+    'exception_tmpl'        => THINK_PATH . 'tpl' . DS . 'think_exception.tpl',
     // 错误显示信息,非调试模式有效
     'error_message'         => '页面错误！请稍后再试～',
     // 错误定向页面
