@@ -44,7 +44,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemark()
     {
-        $name = "testremarkkey";
+        $name  = "testremarkkey";
         $value = "testremarkval";
         \think\Debug::remark($name);
     }
@@ -56,14 +56,14 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetRangeTime()
     {
         $start = "testGetRangeTimeStart";
-        $end = "testGetRangeTimeEnd";
+        $end   = "testGetRangeTimeEnd";
         \think\Debug::remark($start);
-        sleep(2);
+        usleep(20000);
         // \think\Debug::remark($end);
-        
+
         $time = \think\Debug::getRangeTime($start, $end);
-        $this->assertLessThan(3, $time);
-        $this->assertEquals(3, ceil($time));
+        $this->assertLessThan(0.03, $time);
+        //$this->assertEquals(0.03, ceil($time));
     }
 
     /**
@@ -72,13 +72,8 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetUseTime()
     {
-        $start = "testGetUseTimeStart";
-        $end = "testGetUseTimeEnd";
-        \think\Debug::remark($start);
-        
-        sleep(1);
-        $time = \think\Debug::getUseTime($start, $end);
-        $this->assertLessThan(6, $time);
+        $time = \think\Debug::getUseTime();
+        $this->assertLessThan(1.5, $time);
     }
 
     /**
@@ -87,7 +82,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetThroughputRate()
     {
-        sleep(1);
+        usleep(10000);
         $throughputRate = \think\Debug::getThroughputRate();
         $this->assertLessThan(0.5, $throughputRate);
     }
@@ -99,15 +94,15 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetRangeMem()
     {
         $start = "testGetRangeMemStart";
-        $end = "testGetRangeMemEnd";
+        $end   = "testGetRangeMemEnd";
         \think\Debug::remark($start);
         $str = "";
-        for ($i = 0; $i < 10000; $i ++) {
+        for ($i = 0; $i < 10000; $i++) {
             $str .= "mem";
         }
-        
+
         $rangeMem = \think\Debug::getRangeMem($start, $end);
-        
+
         $this->assertLessThan(33, explode(" ", $rangeMem)[0]);
     }
 
@@ -118,7 +113,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetUseMem()
     {
         $useMem = \think\Debug::getUseMem();
-        
+
         $this->assertLessThan(13, explode(" ", $useMem)[0]);
     }
 
@@ -129,17 +124,17 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetMemPeak()
     {
         $start = "testGetMemPeakStart";
-        $end = "testGetMemPeakEnd";
+        $end   = "testGetMemPeakEnd";
         \think\Debug::remark($start);
         $str = "";
-        for ($i = 0; $i < 100000; $i ++) {
+        for ($i = 0; $i < 100000; $i++) {
             $str .= "mem";
         }
         $memPeak = \think\Debug::getMemPeak($start, $end);
-        
+
         // echo "\r\n" . $memPeak . "\r\n";
-        
-        $this->assertLessThan(138, explode(" ", $memPeak)[0]);
+
+        $this->assertLessThan(238, explode(" ", $memPeak)[0]);
     }
 
     /**
@@ -149,12 +144,12 @@ class DebugTest extends \PHPUnit_Framework_TestCase
     public function testGetFile()
     {
         $count = \think\Debug::getFile();
-        
+
         $this->assertEquals(count(get_included_files()), $count);
-        
+
         $info = \think\Debug::getFile(true);
         $this->assertEquals(count(get_included_files()), count($info));
-        
+
         $this->assertContains("KB", $info[0]);
     }
 
@@ -164,10 +159,10 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testDump()
     {
-        $var = array();
+        $var        = array();
         $var["key"] = "val";
-        $output = \think\Debug::dump($var, false, $label = "label");
-        
+        $output     = \think\Debug::dump($var, false, $label = "label");
+
         if (IS_WIN) {
             $this->assertEquals("(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\r\\n\"", end(explode("array", json_encode($output))));
         } else {
