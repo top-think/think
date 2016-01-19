@@ -43,6 +43,7 @@ class Template
         'display_cache'      => false, // 模板渲染缓存
         'cache_id'           => '', // 模板缓存ID
         'tpl_replace_string' => [],
+        'tpl_var_identify'   => 'array', // .语法变量识别，array|object|'', 为空时自动识别
         'namespace'          => '\\think\\template\\driver\\',
     ];
 
@@ -87,7 +88,7 @@ class Template
      * @access public
      * @param mixed $name
      * @param mixed $value
-     * @return viod
+     * @return void
      */
     public function assign($name, $value = '')
     {
@@ -113,7 +114,7 @@ class Template
      * 模板引擎配置项
      * @access public
      * @param array $config
-     * @return void
+     * @return void|array
      */
     public function config($config)
     {
@@ -199,7 +200,7 @@ class Template
      * @access private
      * @param string $template  模板文件名
      * @param string $cacheFile 缓存文件名
-     * @return boolen
+     * @return boolean
      */
     private function checkCache($template, $cacheFile)
     {
@@ -215,7 +216,7 @@ class Template
      * 检查编译缓存是否存在
      * @access public
      * @param string $cacheId 缓存的id
-     * @return boolen
+     * @return boolean
      */
     public function isCache($cacheId)
     {
@@ -260,7 +261,7 @@ class Template
      * 支持普通标签和TagLib解析 支持自定义标签库
      * @access public
      * @param string $content 要解析的模板内容
-     * @return viod
+     * @return void
      */
     public function parse(&$content)
     {
@@ -276,6 +277,8 @@ class Template
         $this->parseLayout($content);
         // 检查include语法
         $this->parseInclude($content);
+        // 替换包含文件中literal标签内容
+        $this->parseLiteral($content);
         // 检查PHP语法
         $this->parsePhp($content);
 
@@ -454,8 +457,8 @@ class Template
             if (!$restore) {
                 // 替换literal标签
                 foreach ($matches as $i => $match) {
-                    $this->literal[$i] = substr($match[0], strlen($match[1]), -strlen($match[2]));
-                    $content           = str_replace($match[0], "<!--###literal{$i}###-->", $content);
+                    $this->literal[] = substr($match[0], strlen($match[1]), -strlen($match[2]));
+                    $content         = str_replace($match[0], "<!--###literal{$i}###-->", $content);
                 }
             } else {
                 // 还原literal标签
@@ -591,8 +594,7 @@ class Template
                 switch ($flag) {
                     case '$':    // 解析模板变量 格式 {$varName}
                         $this->parseVar($str);
-                        $identify = isset($this->config['tpl_var_identify']) ? strtolower($this->config['tpl_var_identify']) : '';
-                        switch ($identify) {
+                        switch ($this->config['tpl_var_identify']) {
                             case 'array':
                                 $begin = 0;
                                 break;
@@ -721,15 +723,14 @@ class Template
                             // 所有以Think.打头的以特殊变量对待 无需模板赋值就可以输出
                             $parseStr = $this->parseThinkVar($vars);
                         } else {
-                            $identify = isset($this->config['tpl_var_identify']) ? strtolower($this->config['tpl_var_identify']) : '';
-                            switch ($identify) {
+                            switch ($this->config['tpl_var_identify']) {
                                 case 'array':    // 识别为数组
                                     $parseStr = $first . '[\'' . implode('\'][\'', $vars) . '\']';
                                     break;
                                 case 'obj':    // 识别为对象
                                     $parseStr = $first . '->' . implode('->', $vars);
                                     break;
-                                default:    // 自动判断数组或对象 只支持二维
+                                default:    // 自动判断数组或对象
                                     $parseStr = '(is_array(' . $first . ')?' . $first . '[\'' . implode('\'][\'', $vars) . '\']:' . $first . '->' . implode('->', $vars) . ')';
                             }
                         }
@@ -775,7 +776,11 @@ class Template
                 $fun = trim($args[0]);
                 switch ($fun) {
                     case 'default':    // 特殊模板函数
-                        $name = '(isset(' . $name . ') && (' . $name . ' !== \'\'))?(' . $name . '):' . $args[1];
+                        if (false === strpos($name, '(')) {
+                            $name = '((isset(' . $name . ') && (' . $name . ' !== \'\')?(' . $name . '):' . $args[1] . ')';
+                        } else {
+                            $name = '((' . $name . ' !== \'\')?(' . $name . '):' . $args[1] . ')';
+                        }
                         break;
                     default:    // 通用模板函数
                         if (!in_array($fun, $template_deny_funs)) {
