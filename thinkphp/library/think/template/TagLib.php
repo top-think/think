@@ -324,7 +324,10 @@ class TagLib
                     $_taglibs[$tag][0] = strlen(ltrim($this->tpl->config('taglib_begin'), '\\') . $tag);
                     $_taglibs[$tag][1] = strlen(ltrim($this->tpl->config('taglib_end'), '\\'));
                 }
-                $result['expression'] = trim(substr($str, $_taglibs[$tag][0], -$_taglibs[$tag][1]));
+                $result['expression'] = substr($str, $_taglibs[$tag][0], -$_taglibs[$tag][1]);
+                // 清除自闭合标签尾部/
+                $result['expression'] = rtrim($result['expression'], '/');
+                $result['expression'] = trim($result['expression']);
             } elseif (empty($this->tags[$tag]) || !empty($this->tags[$tag]['attr'])) {
                 throw new Exception('_XML_TAG_ERROR_:' . $tag);
             }
