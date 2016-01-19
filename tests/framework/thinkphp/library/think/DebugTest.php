@@ -82,7 +82,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetThroughputRate()
     {
-        usleep(10000);
+        sleep(1);
         $throughputRate = \think\Debug::getThroughputRate();
         $this->assertLessThan(0.5, $throughputRate);
     }
