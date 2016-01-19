@@ -190,14 +190,18 @@ class Model
                 }
             }
         }
+        $fields = $this->getDbFields();
         // 检查非数据字段
-        if (!empty($this->fields)) {
+        if (!empty($fields)) {
             foreach ($data as $key => $val) {
-                if (!in_array($key, $this->fields, true)) {
+                if (!in_array($key, $fields, true)) {
+                    if (Config::get('db_fields_strict')) {
+                        throw new Exception(' fields not exists :[' . $key . '=>' . $val . ']');
+                    }
                     unset($data[$key]);
                 } elseif (is_scalar($val) && empty($this->options['bind'][':' . $key])) {
                     // 字段类型检查
-                    $this->_parseType($data, $key);
+                    $this->_parseType($data, $key, $this->options['bind']);
                 }
             }
         }
@@ -777,7 +781,7 @@ class Model
                 $key = trim($key);
                 if (in_array($key, $fields, true)) {
                     if (is_scalar($val) && empty($options['bind'][':' . $key])) {
-                        $this->_parseType($options['where'], $key);
+                        $this->_parseType($options['where'], $key, $options['bind']);
                     }
                 }
             }
@@ -799,18 +803,21 @@ class Model
      * @param string $key 字段名
      * @return void
      */
-    protected function _parseType(&$data, $key)
+    protected function _parseType(&$data, $key, &$bind)
     {
-        if (!isset($this->options['bind'][':' . $key]) && isset($this->fields['_type'][$key])) {
+        if (!isset($bind[':' . $key]) && isset($this->fields['_type'][$key])) {
             $fieldType = strtolower($this->fields['_type'][$key]);
             if (false !== strpos($fieldType, 'enum')) {
                 // 支持ENUM类型优先检测
             } elseif (false === strpos($fieldType, 'bigint') && false !== strpos($fieldType, 'int')) {
-                $data[$key] = intval($data[$key]);
+                $bind[':' . $key] = [$data[$key], \PDO::PARAM_INT];
+                $data[$key]       = ':' . $key;
             } elseif (false !== strpos($fieldType, 'float') || false !== strpos($fieldType, 'double')) {
-                $data[$key] = floatval($data[$key]);
+                $bind[':' . $key] = [$data[$key], \PDO::PARAM_INT];
+                $data[$key]       = ':' . $key;
             } elseif (false !== strpos($fieldType, 'bool')) {
-                $data[$key] = (bool) $data[$key];
+                $bind[':' . $key] = [$data[$key], \PDO::PARAM_BOOL];
+                $data[$key]       = ':' . $key;
             } elseif (false !== strpos($fieldType, 'json') && is_array($data[$key])) {
                 $data[$key] = json_encode($data[$key]);
             }

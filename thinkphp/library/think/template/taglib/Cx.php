@@ -253,7 +253,7 @@ class Cx extends Taglib
     {
         $name     = !empty($tag['expression']) ? $tag['expression'] : $tag['name'];
         $name     = $this->autoBuildVar($name);
-        $parseStr = '<?php switch(' . $name . '): ?>' . $content . '<?php endswitch;?>';
+        $parseStr = '<?php switch(' . $name . '): ?>' . $content . '<?php endswitch; ?>';
         return $parseStr;
     }
 
@@ -270,20 +270,20 @@ class Cx extends Taglib
         $flag  = substr($value, 0, 1);
         if ('$' == $flag || ':' == $flag) {
             $value = $this->autoBuildVar($value);
-            $value = 'case ' . $value . ': ';
+            $value = 'case ' . $value . ':';
         } elseif (strpos($value, '|')) {
             $values = explode('|', $value);
             $value  = '';
             foreach ($values as $val) {
-                $value .= 'case "' . addslashes($val) . '": ';
+                $value .= 'case "' . addslashes($val) . '":';
             }
         } else {
-            $value = 'case "' . $value . '": ';
+            $value = 'case "' . $value . '":';
         }
         $parseStr = '<?php ' . $value . ' ?>' . $content;
         $isBreak  = isset($tag['break']) ? $tag['break'] : '';
         if ('' == $isBreak || $isBreak) {
-            $parseStr .= '<?php break;?>';
+            $parseStr .= '<?php break; ?>';
         }
         return $parseStr;
     }

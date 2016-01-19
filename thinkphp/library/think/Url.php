@@ -24,17 +24,36 @@ class Url
      * @param boolean|string $domain 是否显示域名 或者直接传入域名
      * @return string
      */
-    public static function build($url = '', $vars = '', $suffix = true, $domain = true)
+    public static function build($url = '', $vars = '', $suffix = true, $domain = false)
     {
+        // 解析URL
+        $info = parse_url($url);
+        $url  = !empty($info['path']) ? $info['path'] : '';
+        if (isset($info['fragment'])) {
+            // 解析锚点
+            $anchor = $info['fragment'];
+            if (false !== strpos($anchor, '?')) {
+                // 解析参数
+                list($anchor, $info['query']) = explode('?', $anchor, 2);
+            }
+            if (false !== strpos($anchor, '@')) {
+                // 解析域名
+                list($anchor, $domain) = explode('@', $anchor, 2);
+            }
+        } elseif (false !== strpos($url, '@')) {
+            // 解析域名
+            list($url, $domain) = explode('@', $info['path'], 2);
+        }
+
         // 解析参数
         if (is_string($vars)) {
             // aaa=1&bbb=2 转换成数组
             parse_str($vars, $vars);
         }
 
-        if (strpos($url, '?')) {
-            list($url, $params) = explode('?', $url);
-            parse_str($params, $params);
+        if (isset($info['query'])) {
+            // 解析地址里面参数 合并到vars
+            parse_str($info['query'], $params);
             $vars = array_merge($params, $vars);
         }
 
@@ -63,22 +82,24 @@ class Url
 
         // URL后缀
         $suffix = self::parseSuffix($suffix);
+        // 锚点
+        $anchor = !empty($anchor) ? '#' . $anchor : '';
         // 参数组装
         if (!empty($vars)) {
             // 添加参数
             if (Config::get('url_common_param')) {
                 $vars = urldecode(http_build_query($vars));
-                $url .= $suffix . '?' . $vars;
+                $url .= $suffix . $anchor . '?' . $vars;
             } else {
                 foreach ($vars as $var => $val) {
                     if ('' !== trim($val)) {
                         $url .= $depr . $var . $depr . urlencode($val);
                     }
                 }
-                $url .= $suffix;
+                $url .= $suffix . $anchor;
             }
         } else {
-            $url .= $suffix;
+            $url .= $suffix . $anchor;
         }
 
         // 检测域名
@@ -136,6 +157,8 @@ class Url
                         }
                     }
                 }
+            } else {
+                $domain = $domain . (strpos($domain, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
             }
             $domain = (self::isSsl() ? 'https://' : 'http://') . $domain;
         } else {
@@ -226,7 +249,9 @@ class Url
                         $key = array_shift($route);
                     }
                     $route = $route[0];
-                    if (strpos($route, '?')) {
+                    if (is_array($route)) {
+                        $route = implode('\\', $route);
+                    } elseif (strpos($route, '?')) {
                         $route = strstr($route, '?', true);
                     }
                     $var             = self::parseVar($rule . '/' . $key);
@@ -234,7 +259,9 @@ class Url
                 }
             } else {
                 $route = $val['route'];
-                if (strpos($route, '?')) {
+                if (is_array($route)) {
+                    $route = implode('\\', $route);
+                } elseif (strpos($route, '?')) {
                     $route = strstr($route, '?', true);
                 }
                 $var             = self::parseVar($rule);
