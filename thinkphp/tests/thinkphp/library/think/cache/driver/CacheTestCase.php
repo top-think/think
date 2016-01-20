@@ -1,14 +1,24 @@
 <?php
-
-namespace tests\thinkphp\library\think\cache\driver;
-
-use think\cache;
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: liu21st <liu21st@gmail.com>
+// +----------------------------------------------------------------------
 
 /**
  * 缓存抽象类，提供一些测试
  * @author simon <mahuan@d1web.top>
  */
-abstract class CacheTestCase extends \PHPUnit_Framework_TestCase
+
+namespace tests\thinkphp\library\think\cache\driver;
+
+use think\cache;
+
+abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
 {
 
     /**

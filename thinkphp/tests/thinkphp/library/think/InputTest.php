@@ -2,20 +2,27 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Haotong Lin <lofanmi@gmail.com>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
+/**
+ * Input测试
+ * @author    Haotong Lin <lofanmi@gmail.com>
+ */
+
+namespace tests\thinkphp\library\think;
 
 use think\Input;
 
-class InputTest extends \PHPUnit_Framework_TestCase
+class inputTest extends \PHPUnit_Framework_TestCase
 {
     public function testEmptyStringName()
     {
-        $input         = ['a' => 'test'];
+        $input = ['a' => 'test'];
         $this->assertEquals($input, Input::getData('', $input, 'trim'));
     }
 
@@ -54,7 +61,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
     {
         $src    = 'EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN';
         $regexs = explode('|', $src);
-        $data = Input::getData('', $regexs);
+        $data   = Input::getData('', $regexs);
         foreach ($regexs as $key => $value) {
             $expected = $value . ' ';
             $this->assertEquals($expected, $data[$key]);
@@ -122,7 +129,7 @@ class InputTest extends \PHPUnit_Framework_TestCase
     public function testSuperglobals()
     {
         Input::setFilter('trim');
-        $_GET['get']   = 'get value ';
+        $_GET['get'] = 'get value ';
         $this->assertEquals('get value', Input::get('get'));
         $_POST['post'] = 'post value ';
         $this->assertEquals('post value', Input::post('post'));
