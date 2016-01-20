@@ -115,7 +115,7 @@ thinkphp5 的测试的主要流程是跟 thinkphp 的系统流程是相似的，
 |Controller|Haotong Lin||
 |Cookie|Haotong Lin||
 |Db|||
-|Debug|大漠||
+|Debug|大漠|√|
 |Error|大漠||
 |Hook|||
 |Input|Haotong Lin||
