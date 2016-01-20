@@ -33,7 +33,7 @@ script:
   ## PHPLOC
   - thinkphp/vendor/bin/phploc --exclude vendor thinkphp
   ## PHPUNIT
-  - thinkphp/vendor/bin/phpunit --coverage-clover=coverage.xml
+  - thinkphp/vendor/bin/phpunit --coverage-clover=coverage.xml --configuration=thinkphp/phpunit.xml
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
