@@ -46,7 +46,7 @@ class configTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $file   = include APP_PATH . 'config' . EXT;
+        $file   = APP_PATH . 'config' . EXT;
         $config = array_change_key_case(include $file);
         $name   = '_name_';
         $range  = '_test_';
