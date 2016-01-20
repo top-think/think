@@ -34,7 +34,7 @@ class App
         // 读取扩展配置文件
         if (Config::get('extra_config_list')) {
             foreach (Config::get('extra_config_list') as $file) {
-                Config::load($file, $file);
+                Config::load(APP_PATH . $file . EXT, $file);
             }
         }
 
@@ -287,11 +287,11 @@ class App
         } else {
             $path = APP_PATH . $module;
             // 加载模块配置
-            Config::load($module . 'config');
+            Config::load(APP_PATH . $module . 'config' . EXT);
 
             // 加载应用状态配置
             if ($config['app_status']) {
-                Config::load($module . $config['app_status']);
+                Config::load(APP_PATH . $module . $config['app_status'] . EXT);
             }
 
             // 加载别名文件

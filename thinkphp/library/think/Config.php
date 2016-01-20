@@ -55,7 +55,6 @@ class Config
     public static function load($file, $name = '', $range = '')
     {
         $range = $range ?: self::$range;
-        $file  = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
         if (!isset(self::$config[$range])) {
             self::$config[$range] = [];
         }
