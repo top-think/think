@@ -90,7 +90,7 @@ class Mysql extends Driver
      * @param string $key
      * @return string
      */
-    protected function parseKey(&$key)
+    protected function parseKey($key)
     {
         $key = trim($key);
         if (strpos($key, '$.') && false === strpos($key, '(')) {

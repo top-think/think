@@ -432,8 +432,8 @@ abstract class Driver
                     $set[] = $this->parseKey($key) . '=' . $val;
                 } else {
                     $name  = count($this->bind);
-                    $set[] = $this->parseKey($key) . '=:' . $name;
-                    $this->bindParam($name, $val);
+                    $set[] = $this->parseKey($key) . '=:' . $key . '_' . $name;
+                    $this->bindParam($key . '_' . $name, $val);
                 }
             }
         }
@@ -458,7 +458,7 @@ abstract class Driver
      * @param string $key
      * @return string
      */
-    protected function parseKey(&$key)
+    protected function parseKey($key)
     {
         return $key;
     }
@@ -539,8 +539,7 @@ abstract class Driver
             }
             $tables = $array;
         } elseif (is_string($tables)) {
-            $tables = explode(',', $tables);
-            array_walk($tables, [ & $this, 'parseKey']);
+            $tables = array_map([$this, 'parseKey'], explode(',', $tables));
         }
         return implode(',', $tables);
     }
@@ -913,8 +912,8 @@ abstract class Driver
                     $values[] = $val;
                 } else {
                     $name     = count($this->bind);
-                    $values[] = ':' . $name;
-                    $this->bindParam($name, $val);
+                    $values[] = ':' . $key . '_' . $name;
+                    $this->bindParam($key . '_' . $name, $val);
                 }
             }
         }
@@ -983,8 +982,8 @@ abstract class Driver
             $fields = explode(',', $fields);
         }
 
-        array_walk($fields, [$this, 'parseKey']);
-        $sql = 'INSERT INTO ' . $this->parseTable($table) . ' (' . implode(',', $fields) . ') ';
+        $fields = array_map([$this, 'parseKey'], $fields);
+        $sql    = 'INSERT INTO ' . $this->parseTable($table) . ' (' . implode(',', $fields) . ') ';
         $sql .= $this->buildSelectSql($options);
         return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
     }
