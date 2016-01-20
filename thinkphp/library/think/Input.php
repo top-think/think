@@ -21,11 +21,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function get($name = '', $default = null, $filter = null)
+    public static function get($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_GET, $filter, $default);
+        return self::getData($name, $_GET, $filter, $default, $merge);
     }
 
     /**
@@ -33,11 +34,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function post($name = '', $default = null, $filter = null)
+    public static function post($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_POST, $filter, $default);
+        return self::getData($name, $_POST, $filter, $default, $merge);
     }
 
     /**
@@ -45,15 +47,16 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function put($name = '', $default = null, $filter = null)
+    public static function put($name = '', $default = null, $filter = null, $merge = false)
     {
         static $_PUT = null;
         if (is_null($_PUT)) {
             parse_str(file_get_contents('php://input'), $_PUT);
         }
-        return self::getData($name, $_PUT, $filter, $default);
+        return self::getData($name, $_PUT, $filter, $default, $merge);
     }
 
     /**
@@ -61,21 +64,22 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function param($name = '', $default = null, $filter = null)
+    public static function param($name = '', $default = null, $filter = null, $merge = false)
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'POST':
-                $result = self::post($name, $default, $filter);
+                $method = 'post';
                 break;
             case 'PUT':
-                $result = self::put($name, $default, $filter);
+                $method = 'put';
                 break;
             default:
-                $result = self::get($name, $default, $filter);
+                $method = 'get';
         }
-        return $result;
+        return self::$method($name, $default, $filter, $merge);
     }
 
     /**
@@ -83,11 +87,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function request($name = '', $default = null, $filter = null)
+    public static function request($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_REQUEST, $filter, $default);
+        return self::getData($name, $_REQUEST, $filter, $default, $merge);
     }
 
     /**
@@ -95,11 +100,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function session($name = '', $default = null, $filter = null)
+    public static function session($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_SESSION, $filter, $default);
+        return self::getData($name, $_SESSION, $filter, $default, $merge);
     }
 
     /**
@@ -107,11 +113,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function cookie($name = '', $default = null, $filter = null)
+    public static function cookie($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_COOKIE, $filter, $default);
+        return self::getData($name, $_COOKIE, $filter, $default, $merge);
     }
 
     /**
@@ -119,11 +126,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function server($name = '', $default = null, $filter = null)
+    public static function server($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData(strtoupper($name), $_SERVER, $filter, $default);
+        return self::getData(strtoupper($name), $_SERVER, $filter, $default, $merge);
     }
 
     /**
@@ -131,11 +139,12 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function globals($name = '', $default = null, $filter = null)
+    public static function globals($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $GLOBALS, $filter, $default);
+        return self::getData($name, $GLOBALS, $filter, $default, $merge);
     }
 
     /**
@@ -143,51 +152,105 @@ class Input
      * @param string $name 数据名称
      * @param string $default 默认值
      * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function env($name = '', $default = null, $filter = null)
+    public static function env($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData(strtoupper($name), $_ENV, $filter, $default);
+        return self::getData(strtoupper($name), $_ENV, $filter, $default, $merge);
+    }
+    
+    /**
+     * 获取PATH_INFO
+     * @param string $name 数据名称
+     * @param string $default 默认值
+     * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
+     * @return mixed
+     */
+    public static function path($name = '', $default = null, $filter = null, $merge = false)
+    {
+        if (!empty($_SERVER['PATH_INFO'])) {
+            $depr  = \think\Config::get('pathinfo_depr');
+            $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
+            return self::getData($name, $input, $filter, $default, $merge);
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * 获取$_FILES
+     * @param string $name 数据名称
+     * @param string $default 默认值
+     * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
+     * @return mixed
+     */
+    public static function file($name = '', $default = null, $filter = null, $merge = false)
+    {
+        return self::getData($name, $_FILES, $filter, $default, $merge);
+    }
+
+    /**
+     * 获取数组
+     * @param mixed $name 数据名称
+     * @param string $default 默认值
+     * @param string $filter 过滤方法
+     * @param boolean $merge 是否与默认的过虑方法合并
+     * @return mixed
+     */
+    public static function data($name = '', $default = null, $filter = null, $merge = false)
+    {
+        if (!empty($name)) {
+            return self::getData('', $name, $filter, $default, $merge);
+        } else {
+            return $default;
+        }
     }
 
     /**
      * 获取系统变量 支持过滤和默认值
-     * @param string $name
-     * @param array $input
-     * @param mixed $filter
-     * @param mixed $default
+     * @param string $name 字段名
+     * @param array $input 输入的数组
+     * @param mixed $filter 过滤函数
+     * @param mixed $default 默认值
+     * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function getData($name, $input = [], $filter = null, $default = null)
+    private static function getData($name, $input, $filter = null, $default = null, $merge = false)
     {
-        // 解析过滤器
-        $filters = static::parseFilter($filter);
-        // 为方便传参把默认值附加在过滤器后面
-        $filters[] = $default;
-        if (!is_array($input)) {
-            $data = $default;
-        } elseif (empty($name)) {
+        if (!empty($input)) {
             $data = $input;
-            array_walk_recursive($data, 'self::filter', $filters);
-        } else {
-            // 解析name
-            list($name, $type) = static::parseName($name);
-            if (isset($input[$name])) {
-                // 过滤name指定的输入
-                $data = $input[$name];
-                if (is_array($data)) {
-                    array_walk_recursive($data, 'self::filter', $filters);
-                } else {
-                    self::filter($data, $name, $filters);
+            if (!empty($name)) {
+                // 解析name
+                list($name, $type) = static::parseName($name);
+                // 按.拆分成多维数组进行判断
+                foreach (explode('.', $name) as $val) {
+                    if (isset($data[$val])) {
+                        $data = $data[$val];
+                    } else {
+                        // 无输入数据，返回默认值
+                        return $default;
+                    }
                 }
-                if ($data !== $default) {
-                    // 强制类型转换
-                    static::typeCast($data, $type);
-                }
-            } else {
-                // 无输入数据
-                $data = $default;
             }
+
+            // 解析过滤器
+            $filters = static::parseFilter($filter, $merge);
+            // 为方便传参把默认值附加在过滤器后面
+            $filters[] = $default;
+            if (is_array($data)) {
+                array_walk_recursive($data, 'self::filter', $filters);
+            } else {
+                self::filter($data, $name?:0, $filters);
+            }
+            if (isset($type) && $data !== $default) {
+                // 强制类型转换
+                static::typeCast($data, $type);
+            }
+        } else {
+            $data = $default;
         }
         return $data;
     }
@@ -210,7 +273,7 @@ class Input
      * @param string $value
      * @return void
      */
-    protected static function filterExp(&$value)
+    public static function filterExp(&$value)
     {
         // TODO 其他安全过滤
 
@@ -276,7 +339,7 @@ class Input
      * @param mixed $filter
      * @return array
      */
-    private static function parseFilter($filter)
+    private static function parseFilter($filter, $merge = false)
     {
         if (is_null($filter)) {
             $result = self::getFilter();
@@ -290,10 +353,8 @@ class Input
             } else {
                 $result = [$filter];
             }
-            // 如果最后一项为0或false，表示覆盖默认的过滤函数，否则为叠加
-            if (!end($result)) {
-                array_pop($result);
-            } else {
+            if ($merge) {
+                // 与默认的过滤函数合并
                 $result = array_merge(self::getFilter(), array_diff($result, self::getFilter()));
             }
         }
