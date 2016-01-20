@@ -11,11 +11,10 @@
 
 /**
  * Xml配置测试
- *
  * @author    7IN0SAN9 <me@7in0.me>
  */
 
-namespace think\config\driver;
+namespace tests\thinkphp\library\think\config\driver;
 
 use think\config;
 

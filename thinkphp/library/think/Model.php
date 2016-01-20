@@ -1699,4 +1699,17 @@ class Model
         $this->options['master'] = true;
         return $this;
     }
+
+    /**
+     * 设置模型的属性值
+     * @access public
+     * @param string $name 名称
+     * @param mixed $value 值
+     * @return Model
+     */
+    public function setProperty($name,$value) {
+        if(property_exists($this,$name))
+            $this->$name = $value;
+        return $this;
+    }
 }

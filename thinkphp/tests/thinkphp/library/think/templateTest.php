@@ -2,16 +2,23 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2015 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Haotong Lin <lofanmi@gmail.com>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
+/**
+ * 模板测试
+ * @author    Haotong Lin <lofanmi@gmail.com>
+ */
+
+namespace tests\thinkphp\library\think;
 
 use think\Template;
 
-class TemplateTest extends \PHPUnit_Framework_TestCase
+class templateTest extends \PHPUnit_Framework_TestCase
 {
     public function testVar()
     {
@@ -139,10 +146,10 @@ EOF;
 
     public function testVarIdentify()
     {
-        $config['tpl_begin'] = '<#';
-        $config['tpl_end'] = '#>';
+        $config['tpl_begin']        = '<#';
+        $config['tpl_end']          = '#>';
         $config['tpl_var_identify'] = '';
-        $template = new Template($config);
+        $template                   = new Template($config);
 
         $content = <<<EOF
 <#\$info.a??'test'#>

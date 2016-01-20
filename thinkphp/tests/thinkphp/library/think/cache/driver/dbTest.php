@@ -13,9 +13,10 @@
  * 数据库缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
+
 namespace tests\thinkphp\library\think\cache\driver;
 
-class dbTest extends CacheTestCase
+class dbTest extends cacheTestCase
 {
     private $_cacheInstance = null;
 
