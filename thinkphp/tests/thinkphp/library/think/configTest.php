@@ -6,12 +6,18 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Haotong Lin <lofanmi@gmail.com>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think;
+/**
+ * 配置测试
+ * @author    Haotong Lin <lofanmi@gmail.com>
+ */
+
+namespace tests\thinkphp\library\think;
 
 use ReflectionClass;
+use think\Config;
 
 class configTest extends \PHPUnit_Framework_TestCase
 {

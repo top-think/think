@@ -8,13 +8,15 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
 /**
  * Apc缓存驱动测试
  * @author    mahuan <mahuan@d1web.top>
  */
+
 namespace tests\thinkphp\library\think\cache\driver;
 
-class apcTest extends CacheTestCase
+class apcTest extends cacheTestCase
 {
     private $_cacheInstance = null;
     /**
