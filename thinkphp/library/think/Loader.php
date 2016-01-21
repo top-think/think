@@ -235,7 +235,7 @@ class Loader
      * @param array $options 模型参数
      * @return Model
      */
-    public static function table($name = '', $options = [])
+    public static function table($name = '', array $options = [])
     {
         static $_model = [];
         if (strpos($name, ':')) {

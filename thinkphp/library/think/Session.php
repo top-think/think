@@ -18,12 +18,12 @@ class Session
     /**
      * 设置或者获取session作用域（前缀）
      *
-     * @param string $prefix            
+     * @param string $prefix
      * @return string|void
      */
     public static function prefix($prefix = '')
     {
-        if (empty($prefix) && $prefix !== null) {
+        if (empty($prefix) && null !== $prefix) {
             return self::$prefix;
         } else {
             self::$prefix = $prefix;
@@ -33,28 +33,28 @@ class Session
     /**
      * session初始化
      *
-     * @param array $config            
+     * @param array $config
      * @return void
      */
-    public static function init($config = [])
+    public static function init(array $config = [])
     {
         $isDoStart = false;
         if (isset($config['use_trans_sid'])) {
             ini_set('session.use_trans_sid', $config['use_trans_sid'] ? 1 : 0);
         }
-        
+
         // 启动session
-        if (! empty($config['auto_start']) && PHP_SESSION_ACTIVE != session_status()) {
+        if (!empty($config['auto_start']) && PHP_SESSION_ACTIVE != session_status()) {
             ini_set('session.auto_start', 0);
             $isDoStart = true;
         }
-        
+
         if (isset($config['prefix'])) {
             self::$prefix = $config['prefix'];
         }
         if ($config['var_session_id'] && isset($_REQUEST[$config['var_session_id']])) {
             session_id($_REQUEST[$config['var_session_id']]);
-        } elseif (isset($config['id']) && ! empty($config['id'])) {
+        } elseif (isset($config['id']) && !empty($config['id'])) {
             session_id($config['id']);
         }
         if (isset($config['name'])) {
@@ -70,7 +70,7 @@ class Session
             ini_set('session.gc_maxlifetime', $config['expire']);
             ini_set('session.cookie_lifetime', $config['expire']);
         }
-        
+
         if (isset($config['use_cookies'])) {
             ini_set('session.use_cookies', $config['use_cookies'] ? 1 : 0);
         }
@@ -80,12 +80,12 @@ class Session
         if (isset($config['cache_expire'])) {
             session_cache_expire($config['cache_expire']);
         }
-        if (! empty($config['type'])) {
+        if (!empty($config['type'])) {
             // 读取session驱动
-            $class = (! empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . ucwords($config['type']);
-            
+            $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . ucwords($config['type']);
+
             // 检查驱动类
-            if (! class_exists($class) || ! session_set_save_handler(new $class())) {
+            if (!class_exists($class) || !session_set_save_handler(new $class())) {
                 throw new \think\Exception('error session handler', 11700);
             }
         }
@@ -110,7 +110,7 @@ class Session
         $prefix = $prefix ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 二维数组赋值
-            list ($name1, $name2) = explode('.', $name);
+            list($name1, $name2) = explode('.', $name);
             if ($prefix) {
                 $_SESSION[$prefix][$name1][$name2] = $value;
             } else {
@@ -141,15 +141,15 @@ class Session
         } elseif ($prefix) {
             // 获取session
             if (strpos($name, '.')) {
-                list ($name1, $name2) = explode('.', $name);
-                $value = isset($_SESSION[$prefix][$name1][$name2]) ? $_SESSION[$prefix][$name1][$name2] : null;
+                list($name1, $name2) = explode('.', $name);
+                $value               = isset($_SESSION[$prefix][$name1][$name2]) ? $_SESSION[$prefix][$name1][$name2] : null;
             } else {
                 $value = isset($_SESSION[$prefix][$name]) ? $_SESSION[$prefix][$name] : null;
             }
         } else {
             if (strpos($name, '.')) {
-                list ($name1, $name2) = explode('.', $name);
-                $value = isset($_SESSION[$name1][$name2]) ? $_SESSION[$name1][$name2] : null;
+                list($name1, $name2) = explode('.', $name);
+                $value               = isset($_SESSION[$name1][$name2]) ? $_SESSION[$name1][$name2] : null;
             } else {
                 $value = isset($_SESSION[$name]) ? $_SESSION[$name] : null;
             }
@@ -170,7 +170,7 @@ class Session
     {
         $prefix = $prefix ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
-            list ($name1, $name2) = explode('.', $name);
+            list($name1, $name2) = explode('.', $name);
             if ($prefix) {
                 unset($_SESSION[$prefix][$name1][$name2]);
             } else {
@@ -207,7 +207,7 @@ class Session
      *
      * @param string $name
      *            session名称
-     * @param string $prefix            
+     * @param string $prefix
      *
      * @return bool
      * @internal param mixed $value session值
@@ -217,7 +217,7 @@ class Session
         $prefix = $prefix ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 支持数组
-            list ($name1, $name2) = explode('.', $name);
+            list($name1, $name2) = explode('.', $name);
             return $prefix ? isset($_SESSION[$prefix][$name1][$name2]) : isset($_SESSION[$name1][$name2]);
         } else {
             return $prefix ? isset($_SESSION[$prefix][$name]) : isset($_SESSION[$name]);

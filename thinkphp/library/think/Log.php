@@ -30,7 +30,7 @@ class Log
     protected static $alarm = null;
 
     // 日志初始化
-    public static function init($config = [])
+    public static function init(array $config = [])
     {
         $type  = isset($config['type']) ? $config['type'] : 'File';
         $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\log\\driver\\') . ucwords($type);
@@ -39,7 +39,7 @@ class Log
     }
 
     // 通知初始化
-    public static function alarm($config = [])
+    public static function alarm(array $config = [])
     {
         $type  = isset($config['type']) ? $config['type'] : 'Email';
         $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\log\\alarm\\') . ucwords($type);

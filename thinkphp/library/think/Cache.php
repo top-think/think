@@ -29,7 +29,7 @@ class Cache
      * @param array $options  配置数组
      * @return object
      */
-    public static function connect($options = [])
+    public static function connect(array $options = [])
     {
         $type  = !empty($options['type']) ? $options['type'] : 'File';
         $class = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\cache\\driver\\') . ucwords($type);

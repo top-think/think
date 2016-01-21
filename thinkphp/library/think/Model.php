@@ -57,7 +57,7 @@ class Model
      * @param string $name 模型名称
      * @param array $config 模型配置
      */
-    public function __construct($name = '', $config = [])
+    public function __construct($name = '', array $config = [])
     {
         // 模型初始化
         $this->_initialize();
@@ -740,10 +740,9 @@ class Model
     /**
      * 生成查询SQL 可用于子查询
      * @access public
-     * @param array $options 表达式参数
      * @return string
      */
-    public function buildSql($options = [])
+    public function buildSql()
     {
         return '( ' . $this->fetchSql(true)->select() . ' )';
     }
