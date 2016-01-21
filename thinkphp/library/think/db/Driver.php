@@ -155,11 +155,12 @@ abstract class Driver
      * 执行查询 返回数据集
      * @access public
      * @param string $str  sql指令
+     * @param array $bind 参数绑定
      * @param boolean $fetchSql  不执行只是获取SQL
      * @param boolean $master  是否在主服务器读操作
      * @return mixed
      */
-    public function query($str, $fetchSql = false, $master = false)
+    public function query($str, $bind = [], $fetchSql = false, $master = false)
     {
         $this->initConnect($master);
         if (!$this->_linkID) {
@@ -167,11 +168,11 @@ abstract class Driver
         }
 
         $this->queryStr = $str;
-        if (!empty($this->bind)) {
+        if (!empty($bind)) {
             $that           = $this;
             $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
                 return $that->quote(is_array($val) ? $val[0] : $val);
-            }, $this->bind));
+            }, $bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -189,14 +190,13 @@ abstract class Driver
             $this->error();
             return false;
         }
-        foreach ($this->bind as $key => $val) {
+        foreach ($bind as $key => $val) {
             if (is_array($val)) {
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             } else {
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
-        $this->bind = [];
         try {
             $result = $this->PDOStatement->execute();
             // 调试结束
@@ -217,10 +217,11 @@ abstract class Driver
      * 执行语句
      * @access public
      * @param string $str  sql指令
+     * @param array $bind 参数绑定
      * @param boolean $fetchSql  不执行只是获取SQL
      * @return integer
      */
-    public function execute($str, $fetchSql = false)
+    public function execute($str, $bind = [], $fetchSql = false)
     {
         $this->initConnect(true);
         if (!$this->_linkID) {
@@ -228,11 +229,11 @@ abstract class Driver
         }
 
         $this->queryStr = $str;
-        if (!empty($this->bind)) {
+        if (!empty($bind)) {
             $that           = $this;
             $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
                 return $that->quote(is_array($val) ? $val[0] : $val);
-            }, $this->bind));
+            }, $bind));
         }
         if ($fetchSql) {
             return $this->queryStr;
@@ -250,14 +251,13 @@ abstract class Driver
             $this->error();
             return false;
         }
-        foreach ($this->bind as $key => $val) {
+        foreach ($bind as $key => $val) {
             if (is_array($val)) {
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             } else {
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
-        $this->bind = [];
         try {
             $result = $this->PDOStatement->execute();
             $this->debug(false);
@@ -432,8 +432,8 @@ abstract class Driver
                     $set[] = $this->parseKey($key) . '=' . $val;
                 } else {
                     $name  = count($this->bind);
-                    $set[] = $this->parseKey($key) . '=:' . $_SERVER['REQUEST_TIME'].'_' . $name;
-                    $this->bindParam($_SERVER['REQUEST_TIME'].'_' . $name, $val);
+                    $set[] = $this->parseKey($key) . '=:' . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                    $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                 }
             }
         }
@@ -452,6 +452,20 @@ abstract class Driver
         $this->bind[':' . $name] = $value;
     }
 
+    /**
+     * 获取参数绑定信息并清空
+     * @access protected
+     * @param bool $reset 获取后清空
+     * @return array
+     */
+    protected function getBindParams($reset = false)
+    {
+        $bind = $this->bind;
+        if ($reset) {
+            $this->bind = [];
+        }
+        return $bind;
+    }
     /**
      * 字段名分析
      * @access protected
@@ -912,8 +926,8 @@ abstract class Driver
                     $values[] = $val;
                 } else {
                     $name     = count($this->bind);
-                    $values[] = ':' . $_SERVER['REQUEST_TIME'].'_' . $name;
-                    $this->bindParam($_SERVER['REQUEST_TIME'].'_' . $name, $val);
+                    $values[] = ':' . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                    $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                 }
             }
         }
@@ -921,7 +935,7 @@ abstract class Driver
         $replace = (is_numeric($replace) && $replace > 0) ? true : $replace;
         $sql     = (true === $replace ? 'REPLACE' : 'INSERT') . ' INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') VALUES (' . implode(',', $values) . ')' . $this->parseDuplicate($replace);
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
-        return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -954,8 +968,8 @@ abstract class Driver
                         $value[] = $val;
                     } else {
                         $name    = count($this->bind);
-                        $value[] = ':' . $_SERVER['REQUEST_TIME'].'_' . $name;
-                        $this->bindParam($_SERVER['REQUEST_TIME'].'_' . $name, $val);
+                        $value[] = ':' . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                        $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                     }
                 }
             }
@@ -963,7 +977,7 @@ abstract class Driver
         }
         $sql = 'INSERT INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') ' . implode(' UNION ALL ', $values);
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
-        return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -985,7 +999,7 @@ abstract class Driver
         $fields = array_map([$this, 'parseKey'], $fields);
         $sql    = 'INSERT INTO ' . $this->parseTable($table) . ' (' . implode(',', $fields) . ') ';
         $sql .= $this->buildSelectSql($options);
-        return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -1012,7 +1026,7 @@ abstract class Driver
             . $this->parseLimit(!empty($options['limit']) ? $options['limit'] : '');
         }
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
-        return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -1041,7 +1055,7 @@ abstract class Driver
             . $this->parseLimit(!empty($options['limit']) ? $options['limit'] : '');
         }
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
-        return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -1055,7 +1069,7 @@ abstract class Driver
         $this->model = $options['model'];
         $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
         $sql    = $this->buildSelectSql($options);
-        $result = $this->query($sql, !empty($options['fetch_sql']) ? true : false, !empty($options['master']) ? true : false);
+        $result = $this->query($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false, !empty($options['master']) ? true : false);
         return $result;
     }
 
