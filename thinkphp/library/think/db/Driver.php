@@ -125,7 +125,7 @@ abstract class Driver
                 if ($autoConnection) {
                     Log::record($e->getMessage(), 'error');
                     return $this->connect($autoConnection, $linkNum);
-                } elseif ($config['debug']) {
+                } else {
                     throw new Exception($e->getMessage());
                 }
             }
@@ -154,22 +154,26 @@ abstract class Driver
     /**
      * 执行查询 返回数据集
      * @access public
-     * @param string $str  sql指令
+     * @param string $sql  sql指令
      * @param array $bind 参数绑定
-     * @param boolean $fetchSql  不执行只是获取SQL
+     * @param boolean $fetch  不执行只是获取SQL
      * @param boolean $master  是否在主服务器读操作
      * @return mixed
      */
-    public function query($str, $bind = [], $fetchSql = false, $master = false)
+    public function query($sql, $bind = [], $fetch = false, $master = false)
     {
         $this->initConnect($master);
         if (!$this->_linkID) {
             return false;
         }
 
-        $this->queryStr = $str;
-        if ($fetchSql) {
-            return $this->getBindSql($this->queryStr, $bind);
+        $this->queryStr = $sql;
+
+        if ($bind) {
+            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
+        }
+        if ($fetch) {
+            return $this->queryStr;
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -181,7 +185,7 @@ abstract class Driver
             // 调试开始
             $this->debug(true);
             // 预处理
-            $this->PDOStatement = $this->_linkID->prepare($str);
+            $this->PDOStatement = $this->_linkID->prepare($sql);
             // 参数绑定
             $this->bindValue($bind);
             // 执行查询
@@ -197,21 +201,25 @@ abstract class Driver
     /**
      * 执行语句
      * @access public
-     * @param string $str  sql指令
+     * @param string $sql  sql指令
      * @param array $bind 参数绑定
-     * @param boolean $fetchSql  不执行只是获取SQL
+     * @param boolean $fetch  不执行只是获取SQL
      * @return integer
      */
-    public function execute($str, $bind = [], $fetchSql = false)
+    public function execute($sql, $bind = [], $fetch = false)
     {
         $this->initConnect(true);
         if (!$this->_linkID) {
             return false;
         }
 
-        $this->queryStr = $str;
-        if ($fetchSql) {
-            return $this->getBindSql($this->queryStr, $bind);
+        $this->queryStr = $sql;
+
+        if ($bind) {
+            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
+        }
+        if ($fetch) {
+            return $this->queryStr;
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -223,7 +231,7 @@ abstract class Driver
             // 调试开始
             $this->debug(true);
             // 预处理
-            $this->PDOStatement = $this->_linkID->prepare($str);
+            $this->PDOStatement = $this->_linkID->prepare($sql);
             // 参数绑定操作
             $this->bindValue($bind);
             // 执行语句
@@ -232,30 +240,13 @@ abstract class Driver
             $this->debug(false);
 
             $this->numRows = $this->PDOStatement->rowCount();
-            if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+            if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $sql)) {
                 $this->lastInsID = $this->_linkID->lastInsertId();
             }
             return $this->numRows;
         } catch (\PDOException $e) {
             throw new Exception($e->getMessage());
         }
-    }
-
-    protected function getBindSql($sql, array $bind = [])
-    {
-        if ($bind) {
-            foreach ($bind as $key => $val) {
-                // 占位符
-                $val = is_array($val) ? $val[0] : $val;
-                if (is_numeric($key)) {
-                    // 问号占位符
-                    $sql = substr_replace($sql, $val, strpos($sql, '?'), 1);
-                } else {
-                    $sql = str_replace(':' . $key, $val, $sql);
-                }
-            }
-        }
-        return $sql;
     }
 
     /**
@@ -527,7 +518,6 @@ abstract class Driver
                 } else {
                     $array[] = $this->parseKey($alias);
                 }
-
             }
             $tables = $array;
         } elseif (is_string($tables)) {
@@ -622,9 +612,6 @@ abstract class Driver
                     } else {
                         $whereStr .= $key . ' ' . $this->exp[$exp] . ' ' . $this->parseValue($val[1]);
                     }
-                } elseif ('bind' == $exp) {
-                    // 使用表达式
-                    $whereStr .= $key . ' = :' . $val[1];
                 } elseif ('exp' == $exp) {
                     // 使用表达式
                     $whereStr .= $key . ' ' . $val[1];
@@ -837,17 +824,6 @@ abstract class Driver
     }
 
     /**
-     * 参数绑定分析
-     * @access protected
-     * @param array $bind
-     * @return array
-     */
-    protected function parseBind($bind)
-    {
-        $this->bind = array_merge($this->bind, $bind);
-    }
-
-    /**
      * index分析，可在操作链中指定需要强制使用的索引
      * @access protected
      * @param mixed $index
@@ -889,7 +865,8 @@ abstract class Driver
     {
         $values      = $fields      = [];
         $this->model = $options['model'];
-        $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
+
         foreach ($data as $key => $val) {
             if (isset($val[0]) && 'exp' == $val[0]) {
                 $fields[] = $this->parseKey($key);
@@ -931,9 +908,8 @@ abstract class Driver
         if (!is_array($dataSet[0])) {
             return false;
         }
-
-        $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
-        $fields = array_map([$this, 'parseKey'], array_keys($dataSet[0]));
+        $this->bind = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
+        $fields     = array_map([$this, 'parseKey'], array_keys($dataSet[0]));
         foreach ($dataSet as $data) {
             $value = [];
             foreach ($data as $key => $val) {
@@ -969,7 +945,7 @@ abstract class Driver
     public function selectInsert($fields, $table, $options = [])
     {
         $this->model = $options['model'];
-        $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
         if (is_string($fields)) {
             $fields = explode(',', $fields);
         }
@@ -990,9 +966,9 @@ abstract class Driver
     public function update($data, $options)
     {
         $this->model = $options['model'];
-        $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
-        $table = $this->parseTable($options['table']);
-        $sql   = 'UPDATE ' . $table . $this->parseSet($data);
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
+        $table       = $this->parseTable($options['table']);
+        $sql         = 'UPDATE ' . $table . $this->parseSet($data);
         if (strpos($table, ',')) {
             // 多表更新支持JOIN操作
             $sql .= $this->parseJoin(!empty($options['join']) ? $options['join'] : '');
@@ -1016,9 +992,9 @@ abstract class Driver
     public function delete($options = [])
     {
         $this->model = $options['model'];
-        $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
-        $table = $this->parseTable($options['table']);
-        $sql   = 'DELETE FROM ' . $table;
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
+        $table       = $this->parseTable($options['table']);
+        $sql         = 'DELETE FROM ' . $table;
         if (strpos($table, ',')) {
             // 多表删除支持USING和JOIN操作
             if (!empty($options['using'])) {
@@ -1045,9 +1021,9 @@ abstract class Driver
     public function select($options = [])
     {
         $this->model = $options['model'];
-        $this->parseBind(!empty($options['bind']) ? $options['bind'] : []);
-        $sql    = $this->buildSelectSql($options);
-        $result = $this->query($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false, !empty($options['master']) ? true : false);
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
+        $sql         = $this->buildSelectSql($options);
+        $result      = $this->query($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false, !empty($options['master']) ? true : false);
         return $result;
     }
 
