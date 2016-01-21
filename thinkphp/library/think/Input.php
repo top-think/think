@@ -26,7 +26,7 @@ class Input
      */
     public static function get($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_GET, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $_GET);
     }
 
     /**
@@ -39,7 +39,7 @@ class Input
      */
     public static function post($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_POST, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $_POST);
     }
 
     /**
@@ -56,7 +56,7 @@ class Input
         if (is_null($_PUT)) {
             parse_str(file_get_contents('php://input'), $_PUT);
         }
-        return self::getData($name, $_PUT, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $_PUT);
     }
 
     /**
@@ -92,7 +92,7 @@ class Input
      */
     public static function request($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_REQUEST, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $_REQUEST);
     }
 
     /**
@@ -105,7 +105,7 @@ class Input
      */
     public static function session($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_SESSION, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $_SESSION);
     }
 
     /**
@@ -118,7 +118,7 @@ class Input
      */
     public static function cookie($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_COOKIE, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $_COOKIE);
     }
 
     /**
@@ -131,7 +131,7 @@ class Input
      */
     public static function server($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData(strtoupper($name), $_SERVER, $filter, $default, $merge);
+        return self::data(strtoupper($name), $default, $filter, $merge, $_SERVER);
     }
 
     /**
@@ -144,7 +144,7 @@ class Input
      */
     public static function globals($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $GLOBALS, $filter, $default, $merge);
+        return self::data($name, $default, $filter, $merge, $GLOBALS);
     }
 
     /**
@@ -157,7 +157,7 @@ class Input
      */
     public static function env($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData(strtoupper($name), $_ENV, $filter, $default, $merge);
+        return self::data(strtoupper($name), $default, $filter, $merge, $_ENV);
     }
     
     /**
@@ -173,7 +173,7 @@ class Input
         if (!empty($_SERVER['PATH_INFO'])) {
             $depr  = \think\Config::get('pathinfo_depr');
             $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
-            return self::getData($name, $input, $filter, $default, $merge);
+            return self::data($name, $default, $filter, $merge, $input);
         } else {
             return $default;
         }
@@ -189,40 +189,28 @@ class Input
      */
     public static function file($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::getData($name, $_FILES, $filter, $default, $merge);
-    }
-
-    /**
-     * 获取数组
-     * @param mixed $name 数据名称
-     * @param string $default 默认值
-     * @param string $filter 过滤方法
-     * @param boolean $merge 是否与默认的过虑方法合并
-     * @return mixed
-     */
-    public static function data($name = '', $default = null, $filter = null, $merge = false)
-    {
-        if (!empty($name)) {
-            return self::getData('', $name, $filter, $default, $merge);
-        } else {
-            return $default;
-        }
+        return self::data($name, $default, $filter, $merge, $_FILES);
     }
 
     /**
      * 获取系统变量 支持过滤和默认值
      * @param string $name 字段名
-     * @param array $input 输入的数组
-     * @param mixed $filter 过滤函数
      * @param mixed $default 默认值
+     * @param mixed $filter 过滤函数
      * @param boolean $merge 是否与默认的过虑方法合并
+     * @param array $input 数据源
      * @return mixed
      */
-    private static function getData($name, $input, $filter = null, $default = null, $merge = false)
+    public static function data($name, $default = null, $filter = null, $merge = false, $input = null)
     {
+        if (is_null($input) && !empty($name)) {
+            $input = $name;
+            $name = '';
+        }
         if (!empty($input)) {
             $data = $input;
-            if (!empty($name)) {
+            $name = (string) $name;
+            if ('' != $name) {
                 // 解析name
                 list($name, $type) = static::parseName($name);
                 // 按.拆分成多维数组进行判断
@@ -292,36 +280,34 @@ class Input
      */
     private static function filter(&$value, $key, $filters)
     {
-        if (!empty($value)) {
-            // 分离出默认值
-            $default = array_pop($filters);
-            foreach ($filters as $filter) {
-                if (is_callable($filter)) {
-                    // 调用函数过滤
-                    $value = call_user_func($filter, $value);
+        // 分离出默认值
+        $default = array_pop($filters);
+        foreach ($filters as $filter) {
+            if (is_callable($filter)) {
+                // 调用函数过滤
+                $value = call_user_func($filter, $value);
+            } else {
+                $begin = substr($filter, 0, 1);
+                if (in_array($begin, ['/','#','~']) && $begin == $end = substr($filter, -1)) {
+                    // 正则过滤
+                    if (!preg_match($filter, $value)) {
+                        // 匹配不成功返回默认值
+                        $value = $default;
+                        break;
+                    }
                 } else {
-                    $begin = substr($filter, 0, 1);
-                    if (in_array($begin, ['/','#','~']) && $begin == $end = substr($filter, -1)) {
-                        // 正则过滤
-                        if (!preg_match($filter, $value)) {
-                            // 匹配不成功返回默认值
-                            $value = $default;
-                            break;
-                        }
-                    } else {
-                        // filter函数不存在时, 则使用filter_var进行过滤
-                        // filter为非整形值时, 调用filter_id取得过滤id
-                        $value = filter_var($value, is_int($filter) ? $filter : filter_id($filter));
-                        if (false === $value) {
-                            // 不通过过滤器则返回默认值
-                            $value = $default;
-                            break;
-                        }
+                    // filter函数不存在时, 则使用filter_var进行过滤
+                    // filter为非整形值时, 调用filter_id取得过滤id
+                    $value = filter_var($value, is_int($filter) ? $filter : filter_id($filter));
+                    if (false === $value) {
+                        // 不通过过滤器则返回默认值
+                        $value = $default;
+                        break;
                     }
                 }
             }
-            self::filterExp($value);
         }
+        self::filterExp($value);
     }
 
     /**

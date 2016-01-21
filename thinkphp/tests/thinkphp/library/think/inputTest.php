@@ -20,15 +20,11 @@ use think\Input;
 
 class inputTest extends \PHPUnit_Framework_TestCase
 {
-    public function testArray()
-    {
-        $input = ['a' => 'a', 'b' => 'b'];
-        $this->assertEquals($input, Input::data($input));
-    }
 
     public function testInputName()
     {
-        $input = ['a' => 'test'];
+        $input = ['a' => 'a', 'b' => 'b'];
+        $this->assertEquals($input, Input::data($input));
         $this->assertEquals($input['a'], Input::data($input['a']));
     }
 
@@ -37,24 +33,26 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $input   = ['a' => 'test'];
         $default = 'default';
         $this->assertEquals($default, Input::data($input['b'], $default));
+        $this->assertEquals($default, Input::data($input, $default, '', false, $input));
+        $this->assertEquals($default, Input::get('a', $default));
     }
 
     public function testStringFilter()
     {
         $input   = ['a' => ' test ', 'b' => ' test<> '];
         $filters = 'trim';
-        $this->assertEquals('test', Input::data($input['a'], '', $filters));
+        $this->assertEquals('test', Input::data('a', '', $filters, false, $input));
         $filters = 'trim,htmlspecialchars';
-        $this->assertEquals('test&lt;&gt;', Input::data($input['b'], '', $filters));
+        $this->assertEquals('test&lt;&gt;', Input::data('b', '', $filters, false, $input));
     }
 
     public function testArrayFilter()
     {
         $input   = ['a' => ' test ', 'b' => ' test<> '];
         $filters = ['trim'];
-        $this->assertEquals('test', Input::data($input['a'], '', $filters));
+        $this->assertEquals('test', Input::data('a', '', $filters, false, $input));
         $filters = ['trim', 'htmlspecialchars'];
-        $this->assertEquals('test&lt;&gt;', Input::data($input['b'], '', $filters));
+        $this->assertEquals('test&lt;&gt;', Input::data('b', '', $filters, false, $input));
     }
 
     public function testFilterExp()
@@ -70,11 +68,13 @@ class inputTest extends \PHPUnit_Framework_TestCase
 
     public function testFiltrateWithRegex()
     {
-        $input   = ['a' => 'test1', 'b' => '_test2'];
+        $input   = ['a' => 'test1', 'b' => '_test2', 'c' => ''];
         $filters = '/^test/';
-        $this->assertEquals('test1', Input::data($input['a'], '', $filters));
+        $this->assertEquals('test1', Input::data('a', '', $filters, false, $input));
         $default = 'default value';
-        $this->assertEquals($default, Input::data($input['b'], $default, $filters));
+        $this->assertEquals($default, Input::data('b', $default, $filters, false, $input));
+        $filters = '/.+/';
+        $this->assertEquals('default value', Input::data('c', $default, $filters, false, $input));
     }
 
     public function testFiltrateWithFilterVar()
@@ -84,10 +84,10 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $default = false;
         $input   = ['a' => $email, 'b' => $error];
         $filters = FILTER_VALIDATE_EMAIL;
-        $this->assertEquals($email, Input::data($input['a'], '', $filters));
-        $this->assertFalse(Input::data($input['b'], $default, $filters));
+        $this->assertEquals($email, Input::data('a', '', $filters, false, $input));
+        $this->assertFalse(Input::data('b', $default, $filters, false, $input));
         $filters = 'validate_email';
-        $this->assertFalse(Input::data($input['b'], $default, $filters));
+        $this->assertFalse(Input::data('b', $default, $filters, false, $input));
     }
 
     public function testAllInput()
@@ -154,8 +154,9 @@ class inputTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('testing', Input::env('APP_ENV'));
 
-        $_SERVER['PATH_INFO'] = 'path/info';
-        $this->assertEquals(['path','info'], Input::path());
+        //$_SERVER['PATH_INFO'] = 'path/info';
+        $paths = $_SERVER['PATH_INFO'] ? explode('/', $_SERVER['PATH_INFO']) : null;
+        $this->assertEquals($paths, Input::path());
 
         $_FILES = ['file'=>['name'=>'test.png', 'type'=>'image/png', 'tmp_name'=>'/tmp/php5Wx0aJ', 'error'=>0, size=>15726]];
         $this->assertEquals('image/png', Input::file('file.type'));
@@ -166,11 +167,12 @@ class inputTest extends \PHPUnit_Framework_TestCase
     {
         Input::setFilter('htmlspecialchars');
         $input   = ['a' => ' test<> ', 'b' => '<b\\ar />'];
-        $this->assertEquals(' test&lt;&gt; ', Input::data($input['a']));
+        $this->assertEquals(' test<> ', Input::data('a', '', '', false, $input));
         $filters = ['trim'];
-        $this->assertEquals('test<>', Input::data($input['a'], '', $filters));
+        $this->assertEquals('test<>', Input::data('a', '', $filters, false, $input));
+        $this->assertEquals('test&lt;&gt;', Input::data('a', '', $filters, true, $input));
         $filters = 'stripslashes';
-        $this->assertEquals("&lt;bar /&gt;", Input::data($input['b'], '', $filters, true));
+        $this->assertEquals("&lt;bar /&gt;", Input::data('b', '', $filters, true, $input));
     }
 
 }
