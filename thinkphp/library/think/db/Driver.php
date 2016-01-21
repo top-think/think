@@ -877,7 +877,7 @@ abstract class Driver
             } elseif (is_scalar($val)) {
                 // 过滤非标量数据
                 $fields[] = $this->parseKey($key);
-                if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
+                if (0 === strpos($val, ':') && isset($this->bind[substr($val, 1)])) {
                     $values[] = $val;
                 } else {
                     $name     = count($this->bind);
@@ -918,7 +918,7 @@ abstract class Driver
                 } elseif (is_null($val)) {
                     $value[] = 'NULL';
                 } elseif (is_scalar($val)) {
-                    if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
+                    if (0 === strpos($val, ':') && isset($this->bind[substr($val, 1)])) {
                         $value[] = $val;
                     } else {
                         $name    = count($this->bind);
