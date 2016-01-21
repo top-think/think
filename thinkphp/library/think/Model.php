@@ -1089,7 +1089,7 @@ class Model
      */
     public function getPk()
     {
-        return isset($this->fields['_pk']) ? $this->fields['_pk'] : $this->pk;
+        return $this->pk;
     }
 
     /**
@@ -1101,11 +1101,12 @@ class Model
     {
         if ($this->fields) {
             $fields = $this->fields;
-            unset($fields['_pk'], $fields['_type']);
+            unset($fields['_type']);
             return $fields;
         } else {
             $tableName = $this->getTableName();
-            $fields    = Cache::get(md5($tableName));
+            $guid      = md5($tableName);
+            $fields    = Cache::get($guid);
             if (!$fields) {
                 $fields       = $this->db->getFields($tableName);
                 $this->fields = array_keys($fields);
@@ -1113,28 +1114,21 @@ class Model
                     // 记录字段类型
                     $type[$key] = $val['type'];
                     if (!empty($val['primary'])) {
-                        // 增加复合主键支持
-                        if (!empty($this->fields['_pk'])) {
-                            if (is_string($this->fields['_pk'])) {
-                                $this->pk            = [$this->fields['_pk']];
-                                $this->fields['_pk'] = $this->pk;
-                            }
-                            $this->pk[]            = $key;
-                            $this->fields['_pk'][] = $key;
-                        } else {
-                            $this->pk            = $key;
-                            $this->fields['_pk'] = $key;
-                        }
+                        $pk[] = $key;
                     }
+                }
+                if (isset($pk)) {
+                    // 设置主键
+                    $this->pk = count($pk) > 1 ? $pk : $pk[0];
                 }
                 // 记录字段类型信息
                 $this->fields['_type'] = $type;
-                Cache::set(md5($tableName), $this->fields);
+                Cache::set($guid, $this->fields);
                 $fields = $this->fields;
             } else {
                 $this->fields = $fields;
             }
-            unset($fields['_pk'], $fields['_type']);
+            unset($fields['_type']);
             return $fields;
         }
     }
