@@ -159,7 +159,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
             $_SERVER['PATH_INFO'] = 'path/info';
         }
         $path = explode('/', $_SERVER['PATH_INFO'])[0];
-        $this->assertEquals($path, Input::path('0'));
+        $this->assertEquals($path, Input::path('0', ''));
 
         $_FILES = ['file'=>['name'=>'test.png', 'type'=>'image/png', 'tmp_name'=>'/tmp/php5Wx0aJ', 'error'=>0, size=>15726]];
         $this->assertEquals('image/png', Input::file('file.type'));
