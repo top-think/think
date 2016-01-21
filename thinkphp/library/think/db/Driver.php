@@ -168,14 +168,8 @@ abstract class Driver
         }
 
         $this->queryStr = $str;
-        if (!empty($bind)) {
-            $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
-                return $that->quote(is_array($val) ? $val[0] : $val);
-            }, $bind));
-        }
         if ($fetchSql) {
-            return $this->queryStr;
+            return $this->getBindSql($this->queryStr, $bind);
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -183,33 +177,20 @@ abstract class Driver
         }
 
         Db::$queryTimes++;
-        // 调试开始
-        $this->debug(true);
-        $this->PDOStatement = $this->_linkID->prepare($str);
-        if (false === $this->PDOStatement) {
-            $this->error();
-            return false;
-        }
-        foreach ($bind as $key => $val) {
-            if (is_array($val)) {
-                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
-            } else {
-                $this->PDOStatement->bindValue($key, $val);
-            }
-        }
         try {
+            // 调试开始
+            $this->debug(true);
+            // 预处理
+            $this->PDOStatement = $this->_linkID->prepare($str);
+            // 参数绑定
+            $this->bindValue($bind);
+            // 执行查询
             $result = $this->PDOStatement->execute();
             // 调试结束
             $this->debug(false);
-            if (false === $result) {
-                $this->error();
-                return false;
-            } else {
-                return $this->getResult();
-            }
+            return $this->getResult();
         } catch (\PDOException $e) {
-            $this->error();
-            return false;
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -229,14 +210,8 @@ abstract class Driver
         }
 
         $this->queryStr = $str;
-        if (!empty($bind)) {
-            $that           = $this;
-            $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {
-                return $that->quote(is_array($val) ? $val[0] : $val);
-            }, $bind));
-        }
         if ($fetchSql) {
-            return $this->queryStr;
+            return $this->getBindSql($this->queryStr, $bind);
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -244,36 +219,66 @@ abstract class Driver
         }
 
         Db::$executeTimes++;
-        // 记录开始执行时间
-        $this->debug(true);
-        $this->PDOStatement = $this->_linkID->prepare($str);
-        if (false === $this->PDOStatement) {
-            $this->error();
-            return false;
-        }
-        foreach ($bind as $key => $val) {
-            if (is_array($val)) {
-                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
-            } else {
-                $this->PDOStatement->bindValue($key, $val);
-            }
-        }
         try {
+            // 调试开始
+            $this->debug(true);
+            // 预处理
+            $this->PDOStatement = $this->_linkID->prepare($str);
+            // 参数绑定操作
+            $this->bindValue($bind);
+            // 执行语句
             $result = $this->PDOStatement->execute();
+            // 调试结束
             $this->debug(false);
-            if (false === $result) {
-                $this->error();
-                return false;
-            } else {
-                $this->numRows = $this->PDOStatement->rowCount();
-                if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                    $this->lastInsID = $this->_linkID->lastInsertId();
-                }
-                return $this->numRows;
+
+            $this->numRows = $this->PDOStatement->rowCount();
+            if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+                $this->lastInsID = $this->_linkID->lastInsertId();
             }
+            return $this->numRows;
         } catch (\PDOException $e) {
-            $this->error();
-            return false;
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    protected function getBindSql($sql, array $bind = [])
+    {
+        if ($bind) {
+            foreach ($bind as $key => $val) {
+                // 占位符
+                $val = is_array($val) ? $val[0] : $val;
+                if (is_numeric($key)) {
+                    // 问号占位符
+                    $sql = substr_replace($sql, $val, strpos($sql, '?'), 1);
+                } else {
+                    $sql = str_replace(':' . $key, $val, $sql);
+                }
+            }
+        }
+        return $sql;
+    }
+
+    /**
+     * 参数绑定
+     * 支持 ['name'=>'value','id'=>123] 对应命名占位符
+     * 或者 ['value',123] 对应问号占位符
+     * @access public
+     * @param array $bind 要绑定的参数列表
+     * @return void
+     */
+    protected function bindValue(array $bind = [])
+    {
+        foreach ($bind as $key => $val) {
+            // 占位符
+            $param = is_numeric($key) ? $key + 1 : ':' . $key;
+            if (is_array($val)) {
+                $result = $this->PDOStatement->bindValue($param, $val[0], $val[1]);
+            } else {
+                $result = $this->PDOStatement->bindValue($param, $val);
+            }
+            if (!$result) {
+                throw new Exception('bind param error : [ ' . $param . '=>' . $val . ' ]');
+            }
         }
     }
 
@@ -305,11 +310,11 @@ abstract class Driver
     public function commit()
     {
         if ($this->transTimes > 0) {
-            $result           = $this->_linkID->commit();
-            $this->transTimes = 0;
-            if (!$result) {
-                $this->error();
-                return false;
+            try {
+                $result           = $this->_linkID->commit();
+                $this->transTimes = 0;
+            } catch (\PDOException $e) {
+                throw new Exception($e->getMessage());
             }
         }
         return true;
@@ -323,11 +328,11 @@ abstract class Driver
     public function rollback()
     {
         if ($this->transTimes > 0) {
-            $result           = $this->_linkID->rollback();
-            $this->transTimes = 0;
-            if (!$result) {
-                $this->error();
-                return false;
+            try {
+                $result           = $this->_linkID->rollback();
+                $this->transTimes = 0;
+            } catch (\PDOException $e) {
+                throw new Exception($e->getMessage());
             }
         }
         return true;
@@ -377,33 +382,6 @@ abstract class Driver
     }
 
     /**
-     * 数据库错误信息
-     * 并显示当前的SQL语句
-     * @access public
-     * @return string
-     */
-    public function error()
-    {
-        if ($this->PDOStatement) {
-            $error       = $this->PDOStatement->errorInfo();
-            $this->error = $error[1] . ':' . $error[2];
-        } else {
-            $this->error = '';
-        }
-        if ('' != $this->queryStr) {
-            $this->error .= "\n [ SQL语句 ] : " . $this->queryStr;
-        }
-        // 记录错误日志
-        Log::record($this->error, 'error');
-        if ($this->config['debug']) {
-            // 开启数据库调试模式
-            throw new Exception($this->error);
-        } else {
-            return $this->error;
-        }
-    }
-
-    /**
      * 设置锁机制
      * @access protected
      * @return string
@@ -428,12 +406,12 @@ abstract class Driver
                 $set[] = $this->parseKey($key) . '=NULL';
             } elseif (is_scalar($val)) {
                 // 过滤非标量数据
-                if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
+                if (0 === strpos($val, ':') && isset($this->bind[substr($val, 1)])) {
                     $set[] = $this->parseKey($key) . '=' . $val;
                 } else {
                     $name  = count($this->bind);
-                    $set[] = $this->parseKey($key) . '=:' . $_SERVER['REQUEST_TIME'] . '_' . $name;
-                    $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
+                    $set[] = $this->parseKey($key) . '=:' . $key . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                    $this->bindParam($key . $_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                 }
             }
         }
@@ -449,7 +427,7 @@ abstract class Driver
      */
     protected function bindParam($name, $value)
     {
-        $this->bind[':' . $name] = $value;
+        $this->bind[$name] = $value;
     }
 
     /**
@@ -486,7 +464,7 @@ abstract class Driver
     protected function parseValue($value)
     {
         if (is_string($value)) {
-            $value = strpos($value, ':') === 0 && in_array($value, array_keys($this->bind)) ? $value : $this->quote($value);
+            $value = strpos($value, ':') === 0 && isset($this->bind[substr($value, 1)]) ? $value : $this->quote($value);
         } elseif (isset($value[0]) && is_string($value[0]) && strtolower($value[0]) == 'exp') {
             $value = $this->quote($value[1]);
         } elseif (is_array($value)) {
@@ -926,8 +904,8 @@ abstract class Driver
                     $values[] = $val;
                 } else {
                     $name     = count($this->bind);
-                    $values[] = ':' . $_SERVER['REQUEST_TIME'] . '_' . $name;
-                    $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
+                    $values[] = ':' . $key . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                    $this->bindParam($key . $_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                 }
             }
         }
@@ -968,8 +946,8 @@ abstract class Driver
                         $value[] = $val;
                     } else {
                         $name    = count($this->bind);
-                        $value[] = ':' . $_SERVER['REQUEST_TIME'] . '_' . $name;
-                        $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
+                        $value[] = ':' . $key . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                        $this->bindParam($key . $_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                     }
                 }
             }
@@ -1149,7 +1127,16 @@ abstract class Driver
      */
     public function getError()
     {
-        return $this->error;
+        if ($this->PDOStatement) {
+            $error = $this->PDOStatement->errorInfo();
+            $error = $error[1] . ':' . $error[2];
+        } else {
+            $error = '';
+        }
+        if ('' != $this->queryStr) {
+            $error .= "\n [ SQL语句 ] : " . $this->queryStr;
+        }
+        return $error;
     }
 
     /**

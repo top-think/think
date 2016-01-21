@@ -14,7 +14,6 @@ namespace think\db\driver;
 use think\db\Driver;
 use think\Exception;
 use think\Lang;
-use think\Log;
 
 /**
  * Mongo数据库驱动
@@ -69,7 +68,7 @@ class Mongo extends Driver
 
             $host = 'mongodb://' . ($config['username'] ? "{$config['username']}" : '') . ($config['password'] ? ":{$config['password']}@" : '') . $config['hostname'] . ($config['hostport'] ? ":{$config['hostport']}" : '') . '/' . ($config['database'] ? "{$config['database']}" : '');
             try {
-                $this->linkID[$linkNum] = new \mongoClient($host, !empty($this->config['params'])?$this->config['params']:array());
+                $this->linkID[$linkNum] = new \mongoClient($host, !empty($this->config['params']) ? $this->config['params'] : array());
             } catch (\MongoConnectionException $e) {
                 throw new Exception($e->getmessage());
             }
@@ -94,7 +93,7 @@ class Mongo extends Driver
             $this->initConnect($master);
         }
 
-        $db = $db?$db:$this->config['database'];
+        $db = $db ? $db : $this->config['database'];
 
         try {
             if (!empty($db)) {
@@ -191,11 +190,10 @@ class Mongo extends Driver
      * @access public
      * @return string
      */
-    public function error()
+    public function getError()
     {
-        $this->error = $this->_mongo->lastError();
-        Log::record($this->error, 'error');
-        return $this->error;
+        $error = $this->_mongo->lastError();
+        return $error;
     }
 
     /**
@@ -482,8 +480,8 @@ class Mongo extends Driver
         }
         $this->model = $options['model'];
         $this->queryTimes++;
-        $query  = $this->parseWhere(!empty($options['where'])?$options['where']:'');
-        $fields = $this->parseField(!empty($options['field'])?$options['field']:'');
+        $query  = $this->parseWhere(!empty($options['where']) ? $options['where'] : '');
+        $fields = $this->parseField(!empty($options['field']) ? $options['field'] : '');
         if ($this->config['debug']) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.findOne(';
             $this->queryStr .= $query ? json_encode($query) : '{}';
@@ -637,7 +635,7 @@ class Mongo extends Driver
      */
     protected function parseOrder($order)
     {
-        if(is_array($order)) {
+        if (is_array($order)) {
             $order = join(',', $order);
         }
         if (is_string($order)) {
@@ -742,14 +740,14 @@ class Mongo extends Driver
     {
         $query = [];
         switch ($key) {
-            case '_query': // 字符串模式查询条件
+            case '_query':    // 字符串模式查询条件
                 parse_str($val, $query);
                 if (isset($query['_logic']) && strtolower($query['_logic']) == 'or') {
                     unset($query['_logic']);
                     $query['$or'] = $query;
                 }
                 break;
-            case '_string': // MongoCode查询
+            case '_string':    // MongoCode查询
                 $query['$where'] = new \MongoCode($val);
                 break;
         }

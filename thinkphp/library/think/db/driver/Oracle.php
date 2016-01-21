@@ -11,6 +11,7 @@
 
 namespace think\db\driver;
 
+use think\Db;
 use think\db\Driver;
 
 /**
@@ -64,30 +65,20 @@ class Oracle extends Driver
             $this->free();
         }
 
-        $this->executeTimes++;
-        // 记录开始执行时间
-        $this->debug(true);
-        $this->PDOStatement = $this->_linkID->prepare($str);
-        if (false === $this->PDOStatement) {
-            $this->error();
-            return false;
-        }
+        Db::$executeTimes++;
         try {
-            $result = $this->PDOStatement->execute($bind);
+            // 记录开始执行时间
+            $this->debug(true);
+            $this->PDOStatement = $this->_linkID->prepare($str);
+            $result             = $this->PDOStatement->execute($bind);
             $this->debug(false);
-            if (false === $result) {
-                $this->error();
-                return false;
-            } else {
-                $this->numRows = $this->PDOStatement->rowCount();
-                if ($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                    $this->lastInsID = $this->_linkID->lastInsertId();
-                }
-                return $this->numRows;
+            $this->numRows = $this->PDOStatement->rowCount();
+            if ($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+                $this->lastInsID = $this->_linkID->lastInsertId();
             }
+            return $this->numRows;
         } catch (\PDOException $e) {
-            $this->error();
-            return false;
+            throw new Exception($e->getMessage());
         }
     }
 
