@@ -89,12 +89,11 @@ function D($name = '', $layer = MODEL_LAYER)
 /**
  * 实例化数据库类
  * @param array $config 数据库配置参数
- * @param boolean $lite 是否lite连接
  * @return object
  */
-function db($config = [], $lite = false)
+function db($config = [])
 {
-    return \think\Db::instance($config, $lite);
+    return \think\Db::instance($config);
 }
 
 /**

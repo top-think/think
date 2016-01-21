@@ -321,12 +321,11 @@ class Loader
     /**
      * 实例化数据库
      * @param mixed $config 数据库配置
-     * @param boolean $lite 是否采用lite方式连接
      * @return object
      */
-    public static function db($config = [], $lite = false)
+    public static function db($config = [])
     {
-        return Db::instance($config, $lite);
+        return Db::instance($config);
     }
 
     /**

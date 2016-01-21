@@ -30,10 +30,9 @@ class Db
      * @static
      * @access public
      * @param mixed $config 连接配置
-     * @param boolean $lite 是否lite方式
      * @return Object 返回数据库驱动类
      */
-    public static function instance($config = [], $lite = false)
+    public static function instance($config = [])
     {
         $md5 = md5(serialize($config));
         if (!isset(self::$instances[$md5])) {
@@ -42,8 +41,7 @@ class Db
             if (empty($options['type'])) {
                 throw new Exception('db type error');
             }
-            // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
-            $class                 = $lite ? '\\think\\db\\Lite' : (!empty($options['namespace']) ? $options['namespace'] : '\\think\\db\\driver\\') . ucwords($options['type']);
+            $class                 = !empty($options['namespace']) ? $options['namespace'] : '\\think\\db\\driver\\') . ucwords($options['type'];
             self::$instances[$md5] = new $class($options);
         }
         self::$instance = self::$instances[$md5];
