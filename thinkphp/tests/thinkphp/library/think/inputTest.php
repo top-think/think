@@ -155,10 +155,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('testing', Input::env('APP_ENV'));
 
-        if (empty($_SERVER['PATH_INFO'])) {
-            $_SERVER['PATH_INFO'] = '--coverage-clover=coverage.xml';
-        }
-        $path = explode('/', $_SERVER['PATH_INFO'])[0];
+        $path = $_SERVER['PATH_INFO'] ? explode('/', $_SERVER['PATH_INFO'])[0] : '';
         $this->assertEquals($path, Input::path('0', ''));
 
         $_FILES = ['file'=>['name'=>'test.png', 'type'=>'image/png', 'tmp_name'=>'/tmp/php5Wx0aJ', 'error'=>0, size=>15726]];
