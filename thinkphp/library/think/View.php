@@ -34,7 +34,6 @@ class View
         'view_layer'        => VIEW_LAYER,
         'parse_str'         => [],
         'engine_type'       => 'think',
-        'parse_var'         => false,
         'namespace'         => '\\think\\view\\driver\\',
     ];
 
