@@ -884,13 +884,13 @@ class Model
         }
         // 数据处理
         $data = $this->_read_data($resultSet[0], $options);
-        // 数据对象赋值
-        $this->data = $data;
         // 回调
         $this->_after_find($data, $options);
         if (isset($cache)) {
             Cache::set($key, $data, $cache['expire']);
         }
+        // 数据对象赋值
+        $this->data = $data;
         return $this->data;
     }
 
