@@ -218,7 +218,7 @@ class Route
     }
 
     // rest方法定义和修改
-    public static function rest($name, $resocure = [])
+    public static function rest($name, $resource = [])
     {
         if (is_array($name)) {
             self::$rest = array_merge(self::$rest, $name);
