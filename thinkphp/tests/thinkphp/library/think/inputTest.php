@@ -141,6 +141,9 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $this->assertEquals('get value', Input::param('get'));
         $this->assertEquals(null, Input::param('post'));
+        $this->assertEquals(null, Input::param('put'));
+        $_REQUEST = array_merge($_GET, $_POST);
+        $this->assertEquals('get value', Input::request('get'));
 
         session_start();
         $_SESSION['test'] = 'session value ';
@@ -153,8 +156,12 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET ';
         $this->assertEquals('GET', Input::server('REQUEST_METHOD'));
 
+        $GLOBALS['total'] = 1000;
+        $this->assertEquals(1000, Input::globals('total'));
+
         $this->assertEquals('testing', Input::env('APP_ENV'));
 
+        $_SERVER['PATH_INFO'] = 'path/info';
         $path = $_SERVER['PATH_INFO'] ? explode('/', $_SERVER['PATH_INFO'])[0] : '';
         $this->assertEquals($path, Input::path('0', ''));
 
