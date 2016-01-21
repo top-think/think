@@ -39,6 +39,9 @@ class Db
         if (!isset(self::$instances[$md5])) {
             // 解析连接参数 支持数组和字符串
             $options = self::parseConfig($config);
+            if (empty($options['type'])) {
+                throw new Exception('db type error');
+            }
             // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
             $class                 = $lite ? '\\think\\db\\Lite' : (!empty($options['namespace']) ? $options['namespace'] : '\\think\\db\\driver\\') . ucwords($options['type']);
             self::$instances[$md5] = new $class($options);
@@ -80,10 +83,9 @@ class Db
      */
     private static function parseDsn($dsnStr)
     {
-        if (empty($dsnStr)) {return false;}
         $info = parse_url($dsnStr);
         if (!$info) {
-            return false;
+            return [];
         }
         $dsn = [
             'type'     => $info['scheme'],
@@ -91,7 +93,7 @@ class Db
             'password' => isset($info['pass']) ? $info['pass'] : '',
             'hostname' => isset($info['host']) ? $info['host'] : '',
             'hostport' => isset($info['port']) ? $info['port'] : '',
-            'database' => isset($info['path']) ? substr($info['path'], 1) : '',
+            'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
             'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
         ];
 
