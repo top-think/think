@@ -1167,9 +1167,8 @@ class Model
     protected function parseSql($sql)
     {
         // 分析表达式
-        $sql    = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
-        $prefix = $this->tablePrefix;
-        $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $sql);
+        $sql = strtr($sql, ['__TABLE__' => $this->getTableName(), '__PREFIX__' => $this->tablePrefix]);
+        $sql = $this->parseSqlTable($sql);
         $this->db->setModel($this->name);
         return $sql;
     }
@@ -1205,16 +1204,15 @@ class Model
      */
     public function _join($join, $type = 'INNER')
     {
-        $prefix = $this->tablePrefix;
         if (is_array($join)) {
             foreach ($join as $key => &$_join) {
-                $_join = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $_join);
+                $_join = $this->parseSqlTable($_join);
                 $_join = false !== stripos($_join, 'JOIN') ? $_join : $type . ' JOIN ' . $_join;
             }
             $this->options['join'] = $join;
         } elseif (!empty($join)) {
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $join = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $join);
+            $join                    = $this->parseSqlTable($join);
             $this->options['join'][] = false !== stripos($join, 'JOIN') ? $join : $type . ' JOIN ' . $join;
         }
         return $this;
@@ -1270,9 +1268,7 @@ class Model
                 $join = trim($join);
                 if (0 === strpos($join, '__')) {
                     //将__TABLE_NAME__字符串替换成带前缀的表名
-                    $table = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
-                        return $prefix . strtolower($match[1]);
-                    }, $join);
+                    $table = $this->parseSqlTable($join);
                 } elseif (false === strpos($join, '(') && !empty($prefix) && 0 !== strpos($join, $prefix)) {
                     // 传入的表名中不带有'('并且不以默认的表前缀开头时加上默认的表前缀
                     $table = $prefix . $join;
@@ -1309,9 +1305,8 @@ class Model
         }
         // 转换union表达式
         if (is_string($union)) {
-            $prefix = $this->tablePrefix;
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $options = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $union);
+            $options = $this->parseSqlTable($union);
         } elseif (is_array($union)) {
             if (isset($union[0])) {
                 $this->options['union'] = array_merge($this->options['union'], $union);
@@ -1474,12 +1469,11 @@ class Model
      */
     public function table($table)
     {
-        $prefix = $this->tablePrefix;
         if (is_array($table)) {
             $this->options['table'] = $table;
         } elseif (!empty($table)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $table = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $table);
+            $table                  = $this->parseSqlTable($table);
             $this->options['table'] = $table;
         }
         return $this;
@@ -1493,12 +1487,11 @@ class Model
      */
     public function using($using)
     {
-        $prefix = $this->tablePrefix;
         if (is_array($using)) {
             $this->options['using'] = $using;
         } elseif (!empty($using)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $using = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $using);
+            $using                  = $this->parseSqlTable($using);
             $this->options['using'] = $using;
         }
         return $this;
@@ -1693,5 +1686,23 @@ class Model
     {
         $this->options['master'] = true;
         return $this;
+    }
+
+    /**
+     * 将SQL语句中的__TABLE_NAME__字符串替换成带前缀的表名（小写）
+     * @access protected
+     * @param string $sql sql语句
+     * @return string
+     */
+    protected function parseSqlTable($sql)
+    {
+        if (false !== strpos($sql, '__')) {
+            $prefix = $this->tablePrefix;
+            return preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+                return $prefix . strtolower($match[1]);
+            }, $sql);
+        } else {
+            return $sql;
+        }
     }
 }
