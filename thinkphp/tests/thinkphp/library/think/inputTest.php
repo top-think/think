@@ -23,9 +23,10 @@ class inputTest extends \PHPUnit_Framework_TestCase
 
     public function testInputName()
     {
-        $input = ['a' => 'a', 'b' => 'b'];
+        $input = ['a' => 'a', 'b' => ['c' => [' one ', 'two']]];
         $this->assertEquals($input, Input::data($input));
         $this->assertEquals($input['a'], Input::data($input['a']));
+        $this->assertEquals('one', Input::data('b.c.0/s', 'default', 'trim', false, $input));
     }
 
     public function testDefaultValue()
