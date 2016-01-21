@@ -41,7 +41,7 @@ class Db
             if (empty($options['type'])) {
                 throw new Exception('db type error');
             }
-            $class                 = !empty($options['namespace']) ? $options['namespace'] : '\\think\\db\\driver\\') . ucwords($options['type'];
+            $class                 = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\db\\driver\\') . ucwords($options['type']);
             self::$instances[$md5] = new $class($options);
         }
         self::$instance = self::$instances[$md5];
