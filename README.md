@@ -44,7 +44,7 @@ www  WEB部署目录（或者子目录）
 ├─application           应用目录
 │  ├─common             公共模块目录（可以更改）
 │  ├─runtime            应用的运行时目录（可写，可定制）
-│  ├─module             模块目录
+│  ├─module_name        模块目录
 │  │  ├─config.php      模块配置文件
 │  │  ├─common.php      模块函数文件
 │  │  ├─controller      控制器目录
@@ -63,20 +63,19 @@ www  WEB部署目录（或者子目录）
 │  └─router.php         快速测试文件（用于PHP内置webserver）
 │
 ├─thinkphp              框架系统目录
+│  ├─lang               语言文件目录
 │  ├─library            框架类库目录
-│  │  ├─behavior        行为类库目录
 │  │  ├─think           Think类库包目录
-│  │  ├─org             Org类库包目录
-│  │  ├─traits          系统Trait目录
-│  │  └─ ...            更多类库目录
+│  │  └─traits          系统Trait目录
 │  │
-│  ├─extend             扩展类库目录（可选）
-│  ├─vendor             第三方类库目录（Composer依赖库）
 │  ├─mode               应用模式目录
 │  ├─tpl                系统模板目录
+│  ├─tests              单元测试文件目录
+│  ├─vendor             第三方类库目录（Composer依赖库）
 │  ├─base.php           基础定义文件
-│  ├─helper.php         助手函数文件
 │  ├─convention.php     框架惯例配置文件
+│  ├─helper.php         助手函数文件
+│  ├─phpunit.xml        phpunit配置文件
 │  └─start.php          框架入口文件
 ~~~
 
