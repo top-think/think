@@ -36,9 +36,9 @@ abstract class Driver
     // 错误信息
     protected $error = '';
     // 数据库连接ID 支持多个连接
-    protected $linkID = [];
+    protected $links = [];
     // 当前连接ID
-    protected $_linkID = null;
+    protected $linkID = null;
     // 数据库连接参数配置
     protected $config = [
         // 数据库类型
@@ -111,7 +111,7 @@ abstract class Driver
      */
     public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
-        if (!isset($this->linkID[$linkNum])) {
+        if (!isset($this->links[$linkNum])) {
             if (empty($config)) {
                 $config = $this->config;
             }
@@ -120,7 +120,7 @@ abstract class Driver
                 if (empty($config['dsn'])) {
                     $config['dsn'] = $this->parseDsn($config);
                 }
-                $this->linkID[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $this->options);
+                $this->links[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $this->options);
             } catch (\PDOException $e) {
                 if ($autoConnection) {
                     Log::record($e->getMessage(), 'error');
@@ -130,7 +130,7 @@ abstract class Driver
                 }
             }
         }
-        return $this->linkID[$linkNum];
+        return $this->links[$linkNum];
     }
 
     /**
@@ -163,7 +163,7 @@ abstract class Driver
     public function query($sql, $bind = [], $fetch = false, $master = false)
     {
         $this->initConnect($master);
-        if (!$this->_linkID) {
+        if (!$this->linkID) {
             return false;
         }
 
@@ -185,7 +185,7 @@ abstract class Driver
             // 调试开始
             $this->debug(true);
             // 预处理
-            $this->PDOStatement = $this->_linkID->prepare($sql);
+            $this->PDOStatement = $this->linkID->prepare($sql);
             // 参数绑定
             $this->bindValue($bind);
             // 执行查询
@@ -209,7 +209,7 @@ abstract class Driver
     public function execute($sql, $bind = [], $fetch = false)
     {
         $this->initConnect(true);
-        if (!$this->_linkID) {
+        if (!$this->linkID) {
             return false;
         }
 
@@ -231,7 +231,7 @@ abstract class Driver
             // 调试开始
             $this->debug(true);
             // 预处理
-            $this->PDOStatement = $this->_linkID->prepare($sql);
+            $this->PDOStatement = $this->linkID->prepare($sql);
             // 参数绑定操作
             $this->bindValue($bind);
             // 执行语句
@@ -241,7 +241,7 @@ abstract class Driver
 
             $this->numRows = $this->PDOStatement->rowCount();
             if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $sql)) {
-                $this->lastInsID = $this->_linkID->lastInsertId();
+                $this->lastInsID = $this->linkID->lastInsertId();
             }
             return $this->numRows;
         } catch (\PDOException $e) {
@@ -281,13 +281,13 @@ abstract class Driver
     public function startTrans()
     {
         $this->initConnect(true);
-        if (!$this->_linkID) {
+        if (!$this->linkID) {
             return false;
         }
 
         //数据rollback 支持
         if (0 == $this->transTimes) {
-            $this->_linkID->beginTransaction();
+            $this->linkID->beginTransaction();
         }
         $this->transTimes++;
         return;
@@ -302,7 +302,7 @@ abstract class Driver
     {
         if ($this->transTimes > 0) {
             try {
-                $result           = $this->_linkID->commit();
+                $result           = $this->linkID->commit();
                 $this->transTimes = 0;
             } catch (\PDOException $e) {
                 throw new Exception($e->getMessage());
@@ -320,7 +320,7 @@ abstract class Driver
     {
         if ($this->transTimes > 0) {
             try {
-                $result           = $this->_linkID->rollback();
+                $result           = $this->linkID->rollback();
                 $this->transTimes = 0;
             } catch (\PDOException $e) {
                 throw new Exception($e->getMessage());
@@ -369,7 +369,7 @@ abstract class Driver
      */
     public function close()
     {
-        $this->_linkID = null;
+        $this->linkID = null;
     }
 
     /**
@@ -1124,7 +1124,7 @@ abstract class Driver
     public function quote($str)
     {
         $this->initConnect();
-        return $this->_linkID ? $this->_linkID->quote($str) : $str;
+        return $this->linkID ? $this->linkID->quote($str) : $str;
     }
 
     /**
@@ -1168,10 +1168,10 @@ abstract class Driver
     {
         if (!empty($this->config['deploy'])) {
             // 采用分布式数据库
-            $this->_linkID = $this->multiConnect($master);
-        } elseif (!$this->_linkID) {
+            $this->linkID = $this->multiConnect($master);
+        } elseif (!$this->linkID) {
             // 默认单数据库
-            $this->_linkID = $this->connect();
+            $this->linkID = $this->connect();
         }
 
     }

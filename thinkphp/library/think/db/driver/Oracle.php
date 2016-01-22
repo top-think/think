@@ -47,7 +47,7 @@ class Oracle extends Driver
     public function execute($str, $bind = [])
     {
         $this->initConnect(true);
-        if (!$this->_linkID) {
+        if (!$this->linkID) {
             return false;
         }
 
@@ -69,12 +69,12 @@ class Oracle extends Driver
         try {
             // 记录开始执行时间
             $this->debug(true);
-            $this->PDOStatement = $this->_linkID->prepare($str);
+            $this->PDOStatement = $this->linkID->prepare($str);
             $result             = $this->PDOStatement->execute($bind);
             $this->debug(false);
             $this->numRows = $this->PDOStatement->rowCount();
             if ($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
-                $this->lastInsID = $this->_linkID->lastInsertId();
+                $this->lastInsID = $this->linkID->lastInsertId();
             }
             return $this->numRows;
         } catch (\PDOException $e) {

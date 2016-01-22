@@ -61,19 +61,19 @@ class Mongo extends Driver
      */
     public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
-        if (!isset($this->linkID[$linkNum])) {
+        if (!isset($this->links[$linkNum])) {
             if (empty($config)) {
                 $config = $this->config;
             }
 
             $host = 'mongodb://' . ($config['username'] ? "{$config['username']}" : '') . ($config['password'] ? ":{$config['password']}@" : '') . $config['hostname'] . ($config['hostport'] ? ":{$config['hostport']}" : '') . '/' . ($config['database'] ? "{$config['database']}" : '');
             try {
-                $this->linkID[$linkNum] = new \mongoClient($host, !empty($this->config['params']) ? $this->config['params'] : array());
+                $this->links[$linkNum] = new \mongoClient($host, !empty($this->config['params']) ? $this->config['params'] : array());
             } catch (\MongoConnectionException $e) {
                 throw new Exception($e->getmessage());
             }
         }
-        return $this->linkID[$linkNum];
+        return $this->links[$linkNum];
     }
 
     /**
@@ -89,7 +89,7 @@ class Mongo extends Driver
     public function switchCollection($collection, $db = '', $master = true)
     {
         // 当前没有连接 则首先进行数据库连接
-        if (!$this->_linkID) {
+        if (!$this->linkID) {
             $this->initConnect($master);
         }
 
@@ -100,7 +100,7 @@ class Mongo extends Driver
                 // 传人Db则切换数据库
                 // 当前MongoDb对象
                 $this->_dbName = $db;
-                $this->_mongo  = $this->_linkID->selectDb($db);
+                $this->_mongo  = $this->linkID->selectDb($db);
             }
             // 当前MongoCollection对象
             if ($this->config['debug']) {
@@ -176,9 +176,9 @@ class Mongo extends Driver
      */
     public function close()
     {
-        if ($this->_linkID) {
-            $this->_linkID->close();
-            $this->_linkID     = null;
+        if ($this->linkID) {
+            $this->linkID->close();
+            $this->linkID     = null;
             $this->_mongo      = null;
             $this->_collection = null;
             $this->_cursor     = null;
