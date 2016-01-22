@@ -983,11 +983,8 @@ class Model
             // 创建一个新的实例
             if (is_string($linkId) && '' == $config) {
                 $config = Config::get($linkId);
-            } elseif (!empty($config) && is_string($config) && false === strpos($config, '/')) {
-                // 支持读取配置参数
-                $config = Config::get($config);
             }
-            $this->links[$linkId] = Db::instance($config);
+            $this->links[$linkId] = Db::connect($config);
         } elseif (null === $config) {
             $this->links[$linkId]->close(); // 关闭数据库连接
             unset($this->links[$linkId]);

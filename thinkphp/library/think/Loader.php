@@ -325,7 +325,7 @@ class Loader
      */
     public static function db($config = [])
     {
-        return Db::instance($config);
+        return Db::connect($config);
     }
 
     /**

@@ -26,13 +26,13 @@ class Db
     public static $executeTimes = 0;
 
     /**
-     * 取得数据库类实例
+     * 数据库初始化 并取得数据库类实例
      * @static
      * @access public
      * @param mixed $config 连接配置
      * @return Object 返回数据库驱动类
      */
-    public static function instance($config = [])
+    public static function connect($config = [])
     {
         $md5 = md5(serialize($config));
         if (!isset(self::$instances[$md5])) {
@@ -63,6 +63,9 @@ class Db
                 $status = Config::get('app_status');
                 $config = $config[$status ?: 'default'];
             }
+        } elseif (is_string($config) && false === strpos($config, '/')) {
+            // 支持读取配置参数
+            $config = Config::get($config);
         }
         if (is_string($config)) {
             return self::parseDsn($config);
@@ -106,6 +109,10 @@ class Db
     // 调用驱动类的方法
     public static function __callStatic($method, $params)
     {
+        if (is_null(self::$instance)) {
+            // 自动初始化数据库
+            self::connect();
+        }
         return call_user_func_array([self::$instance, $method], $params);
     }
 }

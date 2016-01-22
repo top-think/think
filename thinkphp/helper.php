@@ -93,7 +93,7 @@ function D($name = '', $layer = MODEL_LAYER)
  */
 function db($config = [])
 {
-    return \think\Db::instance($config);
+    return \think\Db::connect($config);
 }
 
 /**

@@ -11,7 +11,7 @@
 
 namespace traits\model;
 
-trait Query
+trait Transaction
 {
 
     /**

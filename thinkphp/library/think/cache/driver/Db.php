@@ -46,7 +46,7 @@ class Db
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $this->handler = \Think\Db::instance();
+        $this->handler = \Think\Db::connect();
     }
 
     /**
