@@ -736,8 +736,8 @@ abstract class Driver
      */
     protected function parseOrder($order)
     {
-        $array = [];
         if (is_array($order)) {
+            $array = [];
             foreach ($order as $key => $val) {
                 if (is_numeric($key)) {
                     if (false === strpos($val, '(')) {
@@ -750,8 +750,8 @@ abstract class Driver
                     $array[] = $this->parseKey($key) . ' ' . $sort;
                 }
             }
+            $order = implode(',', $array);
         }
-        $order = implode(',', $array);
         return !empty($order) ? ' ORDER BY ' . $order : '';
     }
 
