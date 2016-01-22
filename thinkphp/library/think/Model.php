@@ -23,7 +23,7 @@ class Model
     // 当前数据库操作对象
     protected $db = null;
     // 数据库对象池
-    private $_db = [];
+    private $links = [];
     // 主键名称
     protected $pk = 'id';
     // 数据表前缀
@@ -165,7 +165,7 @@ class Model
             // 命名范围的单独调用支持
             return $this->scope($method, $args[0]);
         } else {
-            throw new \think\Exception(__CLASS__ . ':' . $method . ' method not exist');
+            throw new Exception(__CLASS__ . ':' . $method . ' method not exist');
         }
     }
 
@@ -499,9 +499,6 @@ class Model
             }
         }
         $resultSet = $this->db->select($options);
-        if (false === $resultSet) {
-            return false;
-        }
 
         if (!empty($resultSet)) {
             // 有查询结果
@@ -531,7 +528,6 @@ class Model
         if (isset($cache)) {
             Cache::set($key, $resultSet, $cache['expire']);
         }
-
         return $resultSet;
     }
 
@@ -798,17 +794,16 @@ class Model
     /**
      * 数据类型检测
      * @access protected
-     * @param mixed $data 数据
+     * @param array $data 数据
      * @param string $key 字段名
+     * @param array $bind 参数绑定列表
      * @return void
      */
     protected function _parseType(&$data, $key, &$bind)
     {
         if (!isset($bind[$key]) && isset($this->fields['_type'][$key])) {
             $fieldType = strtolower($this->fields['_type'][$key]);
-            if (false !== strpos($fieldType, 'enum')) {
-                // 支持ENUM类型优先检测
-            } elseif (false === strpos($fieldType, 'bigint') && false !== strpos($fieldType, 'int')) {
+            if (false === strpos($fieldType, 'bigint') && false !== strpos($fieldType, 'int')) {
                 $bind[$key] = [$data[$key], \PDO::PARAM_INT];
                 $data[$key] = ':' . $key;
             } elseif (false !== strpos($fieldType, 'float') || false !== strpos($fieldType, 'double')) {
@@ -817,8 +812,9 @@ class Model
             } elseif (false !== strpos($fieldType, 'bool')) {
                 $bind[$key] = [$data[$key], \PDO::PARAM_BOOL];
                 $data[$key] = ':' . $key;
-            } elseif (false !== strpos($fieldType, 'json') && is_array($data[$key])) {
-                $data[$key] = json_encode($data[$key]);
+            } else {
+                $bind[$key] = [$data[$key], \PDO::PARAM_STR];
+                $data[$key] = ':' . $key;
             }
         }
     }
@@ -872,9 +868,7 @@ class Model
             }
         }
         $resultSet = $this->db->select($options);
-        if (false === $resultSet) {
-            return false;
-        }
+
         if (empty($resultSet)) {
             // 查询结果为空
             return null;
@@ -985,7 +979,7 @@ class Model
             return $this->db;
         }
 
-        if (!isset($this->_db[$linkId])) {
+        if (!isset($this->links[$linkId])) {
             // 创建一个新的实例
             if (is_string($linkId) && '' == $config) {
                 $config = Config::get($linkId);
@@ -993,15 +987,15 @@ class Model
                 // 支持读取配置参数
                 $config = Config::get($config);
             }
-            $this->_db[$linkId] = Db::instance($config);
+            $this->links[$linkId] = Db::instance($config);
         } elseif (null === $config) {
-            $this->_db[$linkId]->close(); // 关闭数据库连接
-            unset($this->_db[$linkId]);
+            $this->links[$linkId]->close(); // 关闭数据库连接
+            unset($this->links[$linkId]);
             return;
         }
 
         // 切换数据库连接
-        $this->db = $this->_db[$linkId];
+        $this->db = $this->links[$linkId];
         $this->_after_db();
         return $this;
     }
@@ -1211,7 +1205,6 @@ class Model
             }
             $this->options['join'] = $join;
         } elseif (!empty($join)) {
-            //将__TABLE_NAME__字符串替换成带前缀的表名
             $join                    = $this->parseSqlTable($join);
             $this->options['join'][] = false !== stripos($join, 'JOIN') ? $join : $type . ' JOIN ' . $join;
         }
@@ -1267,7 +1260,6 @@ class Model
             } else {
                 $join = trim($join);
                 if (0 === strpos($join, '__')) {
-                    //将__TABLE_NAME__字符串替换成带前缀的表名
                     $table = $this->parseSqlTable($join);
                 } elseif (false === strpos($join, '(') && !empty($prefix) && 0 !== strpos($join, $prefix)) {
                     // 传入的表名中不带有'('并且不以默认的表前缀开头时加上默认的表前缀
@@ -1305,7 +1297,6 @@ class Model
         }
         // 转换union表达式
         if (is_string($union)) {
-            //将__TABLE_NAME__字符串替换成带前缀的表名
             $options = $this->parseSqlTable($union);
         } elseif (is_array($union)) {
             if (isset($union[0])) {
@@ -1391,7 +1382,6 @@ class Model
                 if (!isset($this->scope[$name])) {
                     continue;
                 }
-
                 $options = array_merge($options, $this->scope[$name]);
             }
             if (!empty($args) && is_array($args)) {
@@ -1472,9 +1462,7 @@ class Model
         if (is_array($table)) {
             $this->options['table'] = $table;
         } elseif (!empty($table)) {
-            //将__TABLE_NAME__替换成带前缀的表名
-            $table                  = $this->parseSqlTable($table);
-            $this->options['table'] = $table;
+            $this->options['table'] = $this->parseSqlTable($table);
         }
         return $this;
     }
@@ -1490,9 +1478,7 @@ class Model
         if (is_array($using)) {
             $this->options['using'] = $using;
         } elseif (!empty($using)) {
-            //将__TABLE_NAME__替换成带前缀的表名
-            $using                  = $this->parseSqlTable($using);
-            $this->options['using'] = $using;
+            $this->options['using'] = $this->parseSqlTable($using);
         }
         return $this;
     }
@@ -1615,7 +1601,7 @@ class Model
     /**
      * 参数绑定
      * @access public
-     * @param string $key  参数名
+     * @param mixed $key  参数名
      * @param mixed $value  绑定的变量及绑定参数
      * @return Model
      */
@@ -1698,11 +1684,10 @@ class Model
     {
         if (false !== strpos($sql, '__')) {
             $prefix = $this->tablePrefix;
-            return preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
+            $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {
                 return $prefix . strtolower($match[1]);
             }, $sql);
-        } else {
-            return $sql;
         }
+        return $sql;
     }
 }
