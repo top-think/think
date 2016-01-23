@@ -179,9 +179,10 @@ class Model
      * 对写入到数据库的数据进行处理
      * @access protected
      * @param mixed $data 要操作的数据
+     * @param string $type insert 或者 update
      * @return array
      */
-    protected function _write_data($data)
+    protected function _write_data($data, $type)
     {
         if (!empty($this->duplicate)) {
             // 存在数据副本
@@ -190,16 +191,17 @@ class Model
                 // 没有数据变化
                 return [];
             }
-            // 保留主键信息
-            $pk = $this->getPk();
-            if (is_array($pk)) {
-                foreach ($pk as $key) {
-                    if (isset($this->duplicate[$key])) {
-                        $data[$key] = $this->duplicate[$key];
+
+            if ('update' == $type) {
+                // 保留主键信息
+                $pk = $this->getPk();
+                if (is_array($pk)) {
+                    foreach ($pk as $key) {
+                        if (isset($this->duplicate[$key])) {
+                            $data[$key] = $this->duplicate[$key];
+                        }
                     }
-                }
-            } else {
-                if (isset($this->duplicate[$pk])) {
+                } elseif (isset($this->duplicate[$pk])) {
                     $data[$pk] = $this->duplicate[$pk];
                 }
             }
@@ -264,7 +266,7 @@ class Model
             }
         }
         // 数据处理
-        $data = $this->_write_data($data);
+        $data = $this->_write_data($data, 'insert');
         // 分析表达式
         $options = $this->_parseOptions();
         if (false === $this->_before_insert($data, $options)) {
@@ -308,7 +310,7 @@ class Model
         }
         // 数据处理
         foreach ($dataList as $key => $data) {
-            $dataList[$key] = $this->_write_data($data);
+            $dataList[$key] = $this->_write_data($data, 'insert');
         }
         // 分析表达式
         $options = $this->_parseOptions($options);
@@ -343,7 +345,7 @@ class Model
             }
         }
         // 数据处理
-        $data = $this->_write_data($data);
+        $data = $this->_write_data($data, 'update');
         if (empty($data)) {
             // 没有数据则不执行
             $this->error = Lang::get('_DATA_TYPE_INVALID_');
