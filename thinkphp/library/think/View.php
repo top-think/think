@@ -245,7 +245,7 @@ class View
                 } elseif (Cookie::get('think_theme')) {
                     $theme = Cookie::get('think_theme');
                 }
-                if (!is_dir(APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS . $theme)) {
+                if (!isset($theme) || !is_dir(APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS . $theme)) {
                     $theme = $this->config['default_theme'];
                 }
                 Cookie::set('think_theme', $theme, 864000);
