@@ -44,6 +44,8 @@ class Model
     protected $fields = [];
     // 数据信息
     protected $data = [];
+    // 数据副本
+    protected $duplicate = [];
     // 查询表达式参数
     protected $options = [];
     // 命名范围定义
@@ -181,6 +183,29 @@ class Model
      */
     protected function _write_data($data)
     {
+        if (!empty($this->duplicate)) {
+            // 存在数据副本
+            $data = array_diff_assoc($data, $this->duplicate);
+            if (empty($data)) {
+                // 没有数据变化
+                return [];
+            }
+            // 保留主键信息
+            $pk = $this->getPk();
+            if (is_array($pk)) {
+                foreach ($pk as $key) {
+                    if (isset($this->duplicate[$key])) {
+                        $data[$key] = $this->duplicate[$key];
+                    }
+                }
+            } else {
+                if (isset($this->duplicate[$pk])) {
+                    $data[$pk] = $this->duplicate[$pk];
+                }
+            }
+            // 重置副本
+            $this->duplicate = [];
+        }
         // 检查字段映射
         if (!empty($this->map)) {
             foreach ($this->map as $key => $val) {
@@ -885,6 +910,8 @@ class Model
         }
         // 数据对象赋值
         $this->data = $data;
+        // 数据副本
+        $this->duplicate = $data;
         return $this->data;
     }
 
