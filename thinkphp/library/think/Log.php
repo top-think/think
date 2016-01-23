@@ -76,7 +76,10 @@ class Log
      */
     public static function save()
     {
-        self::$driver && self::$driver->save(self::$log);
+        if (is_null(self::$driver)) {
+            self::init(Config::get('log'));
+        }
+        self::$driver->save(self::$log);
     }
 
     /**
@@ -95,8 +98,11 @@ class Log
 
         // 监听log_write
         APP_HOOK && Hook::listen('log_write', $log);
+        if (is_null(self::$driver)) {
+            self::init(Config::get('log'));
+        }
         // 写入日志
-        self::$driver && self::$driver->save($log);
+        self::$driver->save($log);
     }
 
     /**

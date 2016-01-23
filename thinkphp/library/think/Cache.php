@@ -13,8 +13,9 @@ namespace think;
 
 class Cache
 {
-    public static $readTimes  = 0;
-    public static $writeTimes = 0;
+    protected static $instance = [];
+    public static $readTimes   = 0;
+    public static $writeTimes  = 0;
 
     /**
      * 操作句柄
@@ -31,15 +32,23 @@ class Cache
      */
     public static function connect(array $options = [])
     {
-        $type  = !empty($options['type']) ? $options['type'] : 'File';
-        $class = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\cache\\driver\\') . ucwords($type);
-        unset($options['type']);
-        self::$handler = new $class($options);
+        $md5 = md5(serialize($options));
+        if (!isset(self::$instance[$md5])) {
+            $type  = !empty($options['type']) ? $options['type'] : 'File';
+            $class = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\cache\\driver\\') . ucwords($type);
+            unset($options['type']);
+            self::$instance[$md5] = new $class($options);
+        }
+        self::$handler = self::$instance[$md5];
         return self::$handler;
     }
 
     public static function __callStatic($method, $params)
     {
+        if (is_null(self::$handler)) {
+            // 自动初始化缓存
+            self::connect(Config::get('cache'));
+        }
         return call_user_func_array([self::$handler, $method], $params);
     }
 }

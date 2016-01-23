@@ -51,11 +51,6 @@ class App
             }
         }
 
-        // 日志初始化
-        Log::init($config['log']);
-        // 缓存初始化
-        Cache::connect($config['cache']);
-
         // 设置系统时区
         date_default_timezone_set($config['default_timezone']);
 

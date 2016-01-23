@@ -1142,7 +1142,7 @@ class Model
                 }
                 // 记录字段类型信息
                 $this->fields['_type'] = $type;
-                Cache::set($guid, $this->fields);
+                APP_DEBUG && Cache::set($guid, $this->fields);
                 $fields = $this->fields;
             } else {
                 $this->fields = $fields;
