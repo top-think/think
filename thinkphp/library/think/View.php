@@ -201,7 +201,7 @@ class View
     private function parseTemplate($template)
     {
         if (is_file($template)) {
-            return $template;
+            return realpath($template);
         }
         $depr     = $this->config['view_depr'];
         $template = str_replace(['/', ':'], $depr, $template);
