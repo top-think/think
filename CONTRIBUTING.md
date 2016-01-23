@@ -21,3 +21,45 @@
 * 对于代码**不同方面**的修改，请在自己 fork 的项目中**创建不同的分支**（原因参见`修改流程`第9条备注部分）；
 * 对于 Issues 的处理，请在 pull requests 时使用诸如 `fix #xxx(Issue ID)` 的 title 直接关闭 issue。
 * 变基及交互式变基操作参见 [Git 交互式变基](http://pakchoi.me/2015/03/17/git-interactive-rebase/)
+
+## 推荐资源
+
+### 开发环境
+
+* XAMPP for Windows 5.5.x
+* WampServer (for Windows)
+* upupw Apache PHP5.4 ( for Windows)
+
+或自行安装
+
+- Apache / Nginx
+- PHP 5.4 ~ 5.6
+- MySQL / MariaDB
+
+*Windows 用户推荐添加 PHP bin 目录到 PATH，方便使用 composer*
+*Linux 用户自行配置环境， Mac 用户推荐使用内嵌 Apache 配合 Homebrew 安装 PHP 和 MariaDB*
+
+### 编辑器
+
+Sublime Text 3 + phpfmt 插件
+
+phpfmt 插件参数
+
+```json
+{
+	"enable_auto_align": true,
+	"indent_with_space": true,
+	"psr1_naming": true,
+	"psr2": true,
+	"version": 1
+}
+```
+
+或其他 编辑器 / IDE 配合 PSR2 自动格式化工具
+
+### Git GUI
+
+* SourceTree
+* GitHub Desktop
+
+或其他 Git 图形界面客户端
