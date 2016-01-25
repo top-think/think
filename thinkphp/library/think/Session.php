@@ -85,7 +85,7 @@ class Session
             $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . ucwords($config['type']);
 
             // 检查驱动类
-            if (!class_exists($class) || !session_set_save_handler(new $class())) {
+            if (!class_exists($class) || !session_set_save_handler(new $class($conifg))) {
                 throw new \think\Exception('error session handler', 11700);
             }
         }
