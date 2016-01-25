@@ -6,13 +6,14 @@ use think\Config;
 
 class Memcache extends Driver
 {
-    protected $handle       = null;
+    protected $handler      = null;
     protected $config       = [
-        'expire'        => 3600,                // 有效期
-        'timeout'       => 1,                   // 超时时间
-        'persistent'    => 0,                   // 是否长连接
-        'connections'   => '127.0.0.1:11211',   // 服务器连接配置 OR ['127.0.0.1:11211', '127.0.0.1:11212']
-        'session_name'  => '',                  // memcache key前缀
+        'host'          => '127.0.0.1', // 主机
+        'port'          => 1121,        // 端口
+        'expire'        => 3600,        // 有效期
+        'timeout'       => 1,           // 超时时间
+        'persistent'    => 0,           // 是否长连接
+        'session_name'  => '',          // memcache key前缀
     ];
 
     /**
@@ -22,11 +23,20 @@ class Memcache extends Driver
      * @param mixed $sessName  
      */
     public function open($savePath, $sessName) {
-        $this->handle       = new \Memcache;
-        $connections        = is_array($connections) ? $connections : explode(',', $connections);
-        foreach ($connections as $connection) {
-            list($host, $port)  = explode(':', $connection);
-            $this->handle->addServer($host, $port, $this->config['persistent'], 1, $this->config['timeout']);
+        // 检测php环境
+        if (!extension_loaded('memcache')) {
+            throw new Exception('_NOT_SUPPERT_:memcache');
+        }
+        $this->handler  = new \Memcache;
+        // 支持集群
+        $hosts          = explode(',', $this->config['host']);
+        $ports          = explode(',', $this->config['port']);
+        // 建立连接
+        foreach ((array) $hosts as $i => $host) {
+            $port       = isset($ports[$i]) ? $ports[$i] : $ports[0];
+            false === $config['timeout'] ?
+            $this->handler->addServer($host, $port, $this->config['persistent'], 1) :
+            $this->handler->addServer($host, $port, $this->config['persistent'], 1, $this->config['timeout']);
         }
         return true;
     }
@@ -37,8 +47,8 @@ class Memcache extends Driver
      */
     public function close() {
         $this->gc(ini_get('session.gc_maxlifetime'));
-        $this->handle->close();
-        $this->handle       = null;
+        $this->handler->close();
+        $this->handler  = null;
         return true;
     }
 
@@ -48,7 +58,7 @@ class Memcache extends Driver
      * @param string $sessID 
      */
     public function read($sessID) {
-        return $this->handle->get($this->config['session_name'].$sessID);
+        return $this->handler->get($this->config['session_name'].$sessID);
     }
 
     /**
@@ -58,7 +68,7 @@ class Memcache extends Driver
      * @param String $sessData  
      */
     public function write($sessID, $sessData) {
-        return $this->handle->set($this->config['session_name'].$sessID, $sessData, 0, $this->config['expire']);
+        return $this->handler->set($this->config['session_name'].$sessID, $sessData, 0, $this->config['expire']);
     }
 
     /**
@@ -67,7 +77,7 @@ class Memcache extends Driver
      * @param string $sessID 
      */
     public function destroy($sessID) {
-        return $this->handle->delete($this->config['session_name'].$sessID);
+        return $this->handler->delete($this->config['session_name'].$sessID);
     }
 
     /**
