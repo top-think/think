@@ -42,6 +42,7 @@ defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
 defined('APP_AUTO_BUILD') or define('APP_AUTO_BUILD', false); // 是否自动生成应用模块
+defined('APP_AUTO_RUN') or define('APP_AUTO_RUN', false); // 是否自动运行
 
 // 应用模式 默认为普通模式
 defined('APP_MODE') or define('APP_MODE', function_exists('saeAutoLoader') ? 'sae' : 'common');

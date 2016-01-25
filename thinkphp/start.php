@@ -46,3 +46,8 @@ if (APP_HOOK && isset($mode['tags'])) {
 if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
     Build::run(include APP_PATH . 'build.php');
 }
+
+// 是否自动运行
+if (APP_AUTO_RUN) {
+    App::run();
+}
