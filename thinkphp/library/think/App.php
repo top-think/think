@@ -33,8 +33,9 @@ class App
 
         // 读取扩展配置文件
         if (Config::get('extra_config_list')) {
-            foreach (Config::get('extra_config_list') as $file) {
-                Config::load(APP_PATH . $file . EXT, $file);
+            foreach (Config::get('extra_config_list') as $name => $file) {
+                $file = strpos($file, '.') ? $file : APP_PATH . $file . EXT;
+                Config::load($file, is_string($name) ? $name : pathinfo($file, PATHINFO_FILENAME));
             }
         }
 
