@@ -1,10 +1,6 @@
-language: php
-
 sudo: false
 
-cache:
-  directories:
-    - $HOME/.composer/cache
+language: php
 
 matrix:
   fast_finish: true
@@ -16,6 +12,10 @@ matrix:
     - php: hhvm
   allow_failures:
     - php: hhvm
+
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 before_install:
   - composer self-update
