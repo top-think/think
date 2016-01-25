@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace think\session\driver;
+namespace think\session;
 
 use SessionHandler;
 
