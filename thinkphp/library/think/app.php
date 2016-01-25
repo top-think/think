@@ -31,7 +31,7 @@ class App
         // 读取扩展配置文件
         if ($config['extra_config_list']) {
             foreach ($config['extra_config_list'] as $name => $file) {
-                Config::load($file, $name?:$file);
+                Config::load($file, is_string($name)?$name:$file);
             }
         }
 
