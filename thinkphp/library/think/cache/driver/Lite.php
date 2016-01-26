@@ -19,7 +19,6 @@ use think\Cache;
  */
 class Lite
 {
-
     protected $options = [
         'prefix' => '',
         'path'   => '',
@@ -106,7 +105,7 @@ class Lite
         if (!is_dir($dir))
             mkdir($dir,0755,true);
         */
-        $ret = file_put_contents($filename, ("<?php\treturn " . var_export($value, true) . ";?>"));
+        $ret = file_put_contents($filename, ("<?php return " . var_export($value, true) . ";"));
         // 通过设置修改时间实现有效期
         if ($ret) {
             touch($filename, time()+$expire);
