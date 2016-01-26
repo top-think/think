@@ -29,11 +29,18 @@ class Db
 
     protected $handler = null;
     protected $options = [
-        'db'     => '',
-        'table'  => '',
-        'prefix' => '',
-        'expire' => 0,
-        'length' => 0,
+        'type'      => '',
+        'dsn'       => '',
+        'hostname'  => '',
+        'hostport'  => '',
+        'username'  => '',
+        'password'  => '',
+        'database'  => '',
+        'charset'   => '',
+        'table'     => '',
+        'prefix'    => '',
+        'expire'    => 0,
+        'length'    => 0,
     ];
 
     /**
@@ -46,7 +53,7 @@ class Db
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $this->handler = \Think\Db::connect();
+        $this->handler = \think\Db::connect((!empty($this->options['hostname']) || !empty($this->options['dsn'])) ? $this->options : []);
     }
 
     /**
