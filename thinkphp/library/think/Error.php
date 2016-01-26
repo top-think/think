@@ -28,7 +28,7 @@ class Error
             'code'    => $e->getCode(),
         ];
         // 发送http状态信息
-        Response::sendHttpStatus(Config::get('exception_http_status'));
+        http_response_code(Config::get('exception_http_status'));
         // 输出异常页面
         self::halt($error);
     }

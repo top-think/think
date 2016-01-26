@@ -304,15 +304,4 @@ class responseTest extends \PHPUnit_Framework_TestCase
         // $this->assertContains($name . ': ' . $url, xdebug_get_headers());
     }
 
-    /**
-     * @#runInSeparateProcess
-     * @covers think\Response::sendHttpStatus
-     * @todo Implement testSendHttpStatus().
-     */
-    public function testSendHttpStatus()
-    {
-        // \think\Response::sendHttpStatus(416);
-        // $this->assertContains('HTTP/1.1 ' . ': ' . $status, xdebug_get_headers());
-        // $this->assertContains('Status:' . ': ' . $status, xdebug_get_headers());
-    }
 }
