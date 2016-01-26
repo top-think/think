@@ -167,11 +167,9 @@ abstract class Driver
             return false;
         }
 
-        $this->queryStr = $sql;
+        // 根据参数绑定组装最终的SQL语句
+        $this->queryStr = $this->getBindSql($sql, $bind);
 
-        if ($bind) {
-            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
-        }
         if ($fetch) {
             return $this->queryStr;
         }
@@ -213,11 +211,9 @@ abstract class Driver
             return false;
         }
 
-        $this->queryStr = $sql;
+        // 根据参数绑定组装最终的SQL语句
+        $this->queryStr = $this->getBindSql($sql, $bind);
 
-        if ($bind) {
-            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
-        }
         if ($fetch) {
             return $this->queryStr;
         }
@@ -247,6 +243,27 @@ abstract class Driver
         } catch (\PDOException $e) {
             throw new Exception($e->getMessage());
         }
+    }
+
+    /**
+     * 组装最终的SQL语句 便于调试
+     * @access public
+     * @param string $sql 带参数绑定的sql语句
+     * @param array $bind 参数绑定列表
+     * @return string
+     */
+    protected function getBindSql($sql, array $bind = [])
+    {
+        if ($bind) {
+            foreach ($bind as $key => $val) {
+                $val = is_array($val) ? $val[0] : $val;
+                // 判断占位符
+                $sql = is_numeric($key) ?
+                substr_replace($sql, $val, strpos($sql, '?'), 1) :
+                str_replace(':' . $key, $val, $sql);
+            }
+        }
+        return $sql;
     }
 
     /**
