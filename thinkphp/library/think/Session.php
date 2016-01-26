@@ -52,7 +52,7 @@ class Session
         if (isset($config['prefix'])) {
             self::$prefix = $config['prefix'];
         }
-        if ($config['var_session_id'] && isset($_REQUEST[$config['var_session_id']])) {
+        if (isset($config['var_session_id']) && isset($_REQUEST[$config['var_session_id']])) {
             session_id($_REQUEST[$config['var_session_id']]);
         } elseif (isset($config['id']) && !empty($config['id'])) {
             session_id($config['id']);
@@ -85,7 +85,7 @@ class Session
             $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\session\\driver\\') . ucwords($config['type']);
 
             // 检查驱动类
-            if (!class_exists($class) || !session_set_save_handler(new $class($conifg))) {
+            if (!class_exists($class) || !session_set_save_handler(new $class($config))) {
                 throw new \think\Exception('error session handler', 11700);
             }
         }
