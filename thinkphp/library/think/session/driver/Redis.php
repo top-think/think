@@ -11,8 +11,8 @@
 
 namespace think\session\driver;
 
-use think\Config;
 use SessionHandler;
+use think\Exception;
 
 class Redis extends SessionHandler
 {
