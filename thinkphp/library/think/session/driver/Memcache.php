@@ -11,10 +11,9 @@
 
 namespace think\session\driver;
 
-use think\Config;
-use think\session\Driver;
+use SessionHandler;
 
-class Memcache extends Driver
+class Memcache extends SessionHandler
 {
     protected $handler = null;
     protected $config  = [
@@ -25,6 +24,11 @@ class Memcache extends Driver
         'persistent'   => 0, // 是否长连接
         'session_name' => '', // memcache key前缀
     ];
+
+    public function __construct($config = [])
+    {
+        $this->config = array_merge($this->config, $config);
+    }
 
     /**
      * 打开Session
