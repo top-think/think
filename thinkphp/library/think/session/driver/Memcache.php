@@ -12,6 +12,7 @@
 namespace think\session\driver;
 
 use SessionHandler;
+use think\Exception;
 
 class Memcache extends SessionHandler
 {
