@@ -49,7 +49,7 @@ class Memcache extends SessionHandler
         // 建立连接
         foreach ((array) $hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-            false === $config['timeout'] ?
+            false === $this->config['timeout'] ?
             $this->handler->addServer($host, $port, $this->config['persistent'], 1) :
             $this->handler->addServer($host, $port, $this->config['persistent'], 1, $this->config['timeout']);
         }
