@@ -1170,7 +1170,17 @@ abstract class Driver
                 $this->modelSql[$this->model] = $this->queryStr;
                 // 记录操作结束时间
                 Debug::remark('queryEndTime', 'time');
-                Log::record($this->queryStr . ' [ RunTime:' . Debug::getRangeTime('queryStartTime', 'queryEndTime') . 's ]', 'sql');
+                $log = $this->queryStr . ' [ RunTime:' . Debug::getRangeTime('queryStartTime', 'queryEndTime') . 's ]';
+                // SQL性能分析
+                if (0 === stripos(trim($this->queryStr), 'select')) {
+                    $pdo    = $this->linkID->query("EXPLAIN " . $this->queryStr);
+                    $result = $pdo->fetch(PDO::FETCH_ASSOC);
+                    if (strpos($result['extra'], 'filesort') || strpos($result['extra'], 'temporary')) {
+                        Log::record('SQL:' . $this->queryStr . '[' . $result['extra'] . ']', 'warn');
+                    }
+                    $log .= '[ EXPLAIN : ' . var_export($result, true) . ' ]';
+                }
+                Log::record($log, 'sql');
             }
         }
     }
