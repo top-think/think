@@ -281,3 +281,14 @@ function trace($log = '[think]', $level = 'log')
         \think\Log::record($log, $level);
     }
 }
+
+/**
+ * 渲染模板输出
+ * @param string $template 模板文件
+ * @param array $vars 模板变量
+ * @return string
+ */
+function V($template, $vars)
+{
+    return \think\View::instance(Config::get())->fetch($template, $vars);
+}
