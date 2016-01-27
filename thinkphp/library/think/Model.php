@@ -1120,7 +1120,7 @@ class Model
     {
         if ($this->fields) {
             $fields = $this->fields;
-            unset($fields['_type']);
+            unset($fields['_type'], $fields['_pk']);
             return $fields;
         } else {
             $tableName = $this->getTableName();
@@ -1144,12 +1144,14 @@ class Model
                 }
                 // 记录字段类型信息
                 $this->fields['_type'] = $type;
+                $this->fields['_pk']   = $this->pk;
                 APP_DEBUG && Cache::set($guid, $this->fields);
                 $fields = $this->fields;
             } else {
                 $this->fields = $fields;
+                $this->pk     = $fields['_pk'];
             }
-            unset($fields['_type']);
+            unset($fields['_type'], $fields['_pk']);
             return $fields;
         }
     }
