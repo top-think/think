@@ -149,6 +149,8 @@ class View
      */
     public function fetch($template = '', $vars = [], $cache = [], $renderContent = false)
     {
+        // 模板变量
+        $vars = $vars ? $vars : $this->data;
         if (!$renderContent) {
             // 获取模板文件名
             $template = $this->parseTemplate($template);
@@ -157,8 +159,9 @@ class View
             if (!is_file($template) || (APP_DEBUG && IS_WIN && realpath($template) != $template)) {
                 throw new Exception('template file not exists:' . $template, 10700);
             }
+            // 记录视图信息
+            Log::record('[ VIEW ] ' . $template . ' [ VARS : ' . var_export($vars, true) . ' ]', 'info');
         }
-        $vars = $vars ? $vars : $this->data;
         // 页面缓存
         ob_start();
         ob_implicit_flush(0);

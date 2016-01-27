@@ -1179,7 +1179,7 @@ abstract class Driver
                     }
                     $log .= '[ EXPLAIN : ' . var_export($result, true) . ' ]';
                 }
-                Log::record($log, 'sql');
+                Log::record('[ SQL ] ' . $log, 'sql');
             }
         }
     }

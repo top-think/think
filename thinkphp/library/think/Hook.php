@@ -23,15 +23,15 @@ class Hook
      * @param bool $first 是否放到开头执行
      * @return void
      */
-    public static function add($tag, $behavior,$first=false)
+    public static function add($tag, $behavior, $first = false)
     {
         if (!isset(self::$tags[$tag])) {
             self::$tags[$tag] = [];
         }
         if (is_array($behavior)) {
             self::$tags[$tag] = array_merge(self::$tags[$tag], $behavior);
-        } elseif($first){
-            array_unshift(self::$tags[$tag],$behavior);
+        } elseif ($first) {
+            array_unshift(self::$tags[$tag], $behavior);
         } else {
             self::$tags[$tag][] = $behavior;
         }
@@ -101,7 +101,7 @@ class Hook
 
                 if (APP_DEBUG) {
                     Debug::remark('behavior_end', 'time');
-                    Log::record('Run ' . $name . ' [ RunTime:' . Debug::getRangeTime('behavior_start', 'behavior_end') . 's ]', 'log');
+                    Log::record('[ BEHAVIOR ] Run ' . $name . ' @' . $tag . ' [ RunTime:' . Debug::getRangeTime('behavior_start', 'behavior_end') . 's ]', 'log');
                 }
                 if (false === $result) {
                     // 如果返回false 则中断行为执行

@@ -120,7 +120,7 @@ class App
         $reflect = new \ReflectionFunction($function);
         $args    = self::bindParams($reflect, $vars);
         // 记录执行信息
-        Log::record('[ RUN ] ' . $reflect->getFileName(), 'info');
+        Log::record('[ RUN ] ' . $reflect->getFileName() . '[ ' . var_export($vars, true) . ' ]', 'info');
         return $reflect->invokeArgs($args);
     }
 
@@ -149,7 +149,7 @@ class App
         }
         $args = self::bindParams($reflect, $vars);
         // 记录执行信息
-        Log::record('[ RUN ] ' . $reflect->getFileName(), 'info');
+        Log::record('[ RUN ] ' . $reflect->getFileName() . '[ ' . var_export($args, true) . ' ]', 'info');
         return $reflect->invokeArgs(isset($class) ? $class : null, $args);
     }
 
