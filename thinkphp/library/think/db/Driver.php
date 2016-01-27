@@ -192,7 +192,7 @@ abstract class Driver
             $this->debug(false);
             return $this->getResult();
         } catch (\PDOException $e) {
-            throw new Exception($e->getMessage());
+            throw new Exception($this->getError());
         }
     }
 
@@ -241,7 +241,7 @@ abstract class Driver
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new Exception($e->getMessage());
+            throw new Exception($this->getError());
         }
     }
 
@@ -256,11 +256,11 @@ abstract class Driver
     {
         if ($bind) {
             foreach ($bind as $key => $val) {
-                $val = is_array($val) ? $val[0] : $val;
+                $val = $this->parseValue(is_array($val) ? $val[0] : $val);
                 // 判断占位符
                 $sql = is_numeric($key) ?
                 substr_replace($sql, $val, strpos($sql, '?'), 1) :
-                str_replace(':' . $key, $this->parseValue($val), $sql);
+                str_replace(':' . $key, $val, $sql);
             }
         }
         return $sql;
