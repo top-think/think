@@ -419,6 +419,8 @@ class Route
     private static function checkUrlBind(&$url, &$rules)
     {
         if (!empty(self::$bind['type'])) {
+            // 记录绑定信息
+            Log::record('[ BIND ] ' . var_export(self::$bind, true), 'info');
             // 如果有URL绑定 则进行绑定检测
             switch (self::$bind['type']) {
                 case 'class':

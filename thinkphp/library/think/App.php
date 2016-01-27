@@ -78,8 +78,8 @@ class App
             // 未指定调度类型 则进行URL路由检测
             self::route($config);
         }
-        // 记录调度信息
-        Log::record('[ DISPATCH ] ' . var_export(self::$dispatch, true), 'info');
+        // 记录路由信息
+        Log::record('[ ROUTE ] ' . var_export(self::$dispatch, true), 'info');
         // 监听app_begin
         APP_HOOK && Hook::listen('app_begin');
 
