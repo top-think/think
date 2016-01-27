@@ -18,16 +18,16 @@ use think\Exception;
  * Memcache缓存驱动
  * @author    liu21st <liu21st@gmail.com>
  */
-class Memcache
+class Memcached
 {
     protected $handler = null;
     protected $options = [
-        'host'       => '127.0.0.1',
-        'port'       => 11211,
-        'expire'     => 0,
-        'timeout'    => 1,
-        'persistent' => false,
-        'length'     => 0,
+        'host'    => '127.0.0.1',
+        'port'    => 11211,
+        'expire'  => 0,
+        'timeout' => 1,
+        //'persistent' => false,
+        'length'  => 0,
     ];
 
     /**
@@ -37,22 +37,20 @@ class Memcache
      */
     public function __construct($options = [])
     {
-        if (!extension_loaded('memcache')) {
-            throw new Exception('_NOT_SUPPERT_:memcache');
+        if (!extension_loaded('memcached')) {
+            throw new Exception('_NOT_SUPPERT_:memcached');
         }
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $this->handler = new \Memcache;
+        $this->handler = new \Memcached;
         // 支持集群
         $hosts = explode(',', $this->options['host']);
         $ports = explode(',', $this->options['port']);
 
         foreach ((array) $hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-            false === $options['timeout'] ?
-            $this->handler->addServer($host, $port, $this->options['persistent'], 1) :
-            $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']);
+            $this->handler->addServer($host, $port, 1);
         }
     }
 

@@ -14,7 +14,7 @@ namespace think\session\driver;
 use SessionHandler;
 use think\Exception;
 
-class Memcache extends SessionHandler
+class Memcached extends SessionHandler
 {
     protected $handler = null;
     protected $config  = [
@@ -22,7 +22,7 @@ class Memcache extends SessionHandler
         'port'         => 1121, // 端口
         'expire'       => 3600, // 有效期
         'timeout'      => 1, // 超时时间
-        'persistent'   => 0, // 是否长连接
+        //'persistent'   => 0, // 是否长连接
         'session_name' => '', // memcache key前缀
     ];
 
@@ -40,19 +40,17 @@ class Memcache extends SessionHandler
     public function open($savePath, $sessName)
     {
         // 检测php环境
-        if (!extension_loaded('memcache')) {
-            throw new Exception('_NOT_SUPPERT_:memcache');
+        if (!extension_loaded('memcached')) {
+            throw new Exception('_NOT_SUPPERT_:memcached');
         }
-        $this->handler = new \Memcache;
+        $this->handler = new \Memcached;
         // 支持集群
         $hosts = explode(',', $this->config['host']);
         $ports = explode(',', $this->config['port']);
         // 建立连接
         foreach ((array) $hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-            false === $this->config['timeout'] ?
-            $this->handler->addServer($host, $port, $this->config['persistent'], 1) :
-            $this->handler->addServer($host, $port, $this->config['persistent'], 1, $this->config['timeout']);
+            $this->handler->addServer($host, $port, 1);
         }
         return true;
     }
