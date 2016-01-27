@@ -172,7 +172,7 @@ class responseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($code, $result["code"]);
         $this->assertEquals($msg, $result["msg"]);
         $this->assertEquals($data, $result["data"]);
-        $this->assertEquals($_SERVER['REQUEST_TIME_FLOAT'], $result["time"]);
+        $this->assertEquals($_SERVER['REQUEST_TIME'], $result["time"]);
         $this->assertEquals($type, \think\Response::type());
     }
 
