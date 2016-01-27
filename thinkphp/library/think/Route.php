@@ -393,7 +393,7 @@ class Route
                             $pattern = array_merge($pattern, isset($route[2]) ? $route[2] : []);
                             $route   = $route[0];
                         }
-                        $result = self::checkRule($key, $route, $url1, $pattern);
+                        $result = self::checkRule($key, $route, $url1, $pattern, $option1);
                         if (false !== $result) {
                             return $result;
                         }
@@ -405,7 +405,7 @@ class Route
                     // 单项路由
                     $route = !empty($val['route']) ? $val['route'] : '';
                     // 规则路由
-                    $result = self::checkRule($rule, $route, $url, $pattern);
+                    $result = self::checkRule($rule, $route, $url, $pattern, $option);
                     if (false !== $result) {
                         return $result;
                     }
@@ -471,7 +471,7 @@ class Route
     /**
      * 检查规则路由
      */
-    private static function checkRule($rule, $route, $url, $pattern)
+    private static function checkRule($rule, $route, $url, $pattern, $option)
     {
         // 检查完整规则定义
         if (isset($pattern['__url__']) && !preg_match('/^' . $pattern['__url__'] . '/', $url)) {
@@ -495,6 +495,11 @@ class Route
             }
             $pattern = array_merge(self::$pattern, $pattern);
             if (false !== $match = self::match($url, $rule, $pattern)) {
+                // 匹配到路由规则
+                // 检测是否定义路由
+                if ($option['after_behavior']) {
+                    Hook::exec($option['after_behavior'], $route);
+                }
                 if ($route instanceof \Closure) {
                     // 执行闭包
                     return ['type' => 'function', 'function' => $route, 'params' => $match];
