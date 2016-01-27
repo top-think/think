@@ -1139,6 +1139,8 @@ class Model
                 if (isset($pk)) {
                     // 设置主键
                     $this->pk = count($pk) > 1 ? $pk : $pk[0];
+                } else {
+                    $this->pk = null;
                 }
                 // 记录字段类型信息
                 $this->fields['_type'] = $type;
