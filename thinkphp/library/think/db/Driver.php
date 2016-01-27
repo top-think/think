@@ -260,7 +260,7 @@ abstract class Driver
                 // 判断占位符
                 $sql = is_numeric($key) ?
                 substr_replace($sql, $val, strpos($sql, '?'), 1) :
-                str_replace(':' . $key, $val, $sql);
+                str_replace(':' . $key, $this->parseValue($val), $sql);
             }
         }
         return $sql;
@@ -506,7 +506,6 @@ abstract class Driver
                 } else {
                     $array[] = $this->parseKey($field);
                 }
-
             }
             $fieldsStr = implode(',', $array);
         } elseif (is_string($fields) && !empty($fields)) {
