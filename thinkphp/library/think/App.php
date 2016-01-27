@@ -78,7 +78,8 @@ class App
             // 未指定调度类型 则进行URL路由检测
             self::route($config);
         }
-
+        // 记录调度信息
+        Log::record('[ DISPATCH ] ' . var_export(self::$dispatch, true), 'info');
         // 监听app_begin
         APP_HOOK && Hook::listen('app_begin');
 
@@ -118,6 +119,8 @@ class App
     {
         $reflect = new \ReflectionFunction($function);
         $args    = self::bindParams($reflect, $vars);
+        // 记录执行信息
+        Log::record('[ RUN ] ' . $reflect->getFileName(), 'info');
         return $reflect->invokeArgs($args);
     }
 
@@ -145,6 +148,8 @@ class App
             $reflect = new \ReflectionMethod($method);
         }
         $args = self::bindParams($reflect, $vars);
+        // 记录执行信息
+        Log::record('[ RUN ] ' . $reflect->getFileName(), 'info');
         return $reflect->invokeArgs(isset($class) ? $class : null, $args);
     }
 
@@ -243,6 +248,7 @@ class App
             if (method_exists($instance, '_empty')) {
                 $method = new \ReflectionMethod($instance, '_empty');
                 $data   = $method->invokeArgs($instance, [$action, '']);
+                Log::record('[ RUN ] ' . $method->getFileName(), 'info');
             } else {
                 throw new Exception('method [ ' . (new \ReflectionClass($instance))->getName() . '->' . $action . ' ] not exists ', 10002);
             }

@@ -346,6 +346,8 @@ class Loader
                 parse_str($vars, $vars);
             }
             $method = new \ReflectionMethod($class, $action . Config::get('action_suffix'));
+            // 记录执行信息
+            Log::record('[ RUN ] ' . $method->getFileName(), 'info');
             return $method->invokeArgs($class, $vars);
         }
     }
