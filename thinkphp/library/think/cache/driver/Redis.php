@@ -27,7 +27,7 @@ class Redis
         'port'       => 6379,
         'password'   => '',
         'timeout'    => false,
-        'expire'     => 0,
+        'expire'     => false,
         'persistent' => false,
         'length'     => 0,
     ];
