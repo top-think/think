@@ -45,7 +45,7 @@ class Memcached extends SessionHandler
         $this->handler = new \Memcached;
         // 设置连接超时时间（单位：毫秒）
         if ($this->config['timeout'] > 0) {
-            $this->handler->setOption(Memcached::OPT_CONNECT_TIMEOUT, $this->config['timeout']);
+            $this->handler->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->config['timeout']);
         }
         // 支持集群
         $hosts = explode(',', $this->config['host']);
