@@ -92,7 +92,7 @@ class Memcached extends SessionHandler
      */
     public function write($sessID, $sessData)
     {
-        return $this->handler->set($this->config['session_name'] . $sessID, $sessData, 0, $this->config['expire']);
+        return $this->handler->set($this->config['session_name'] . $sessID, $sessData, $this->config['expire']);
     }
 
     /**
