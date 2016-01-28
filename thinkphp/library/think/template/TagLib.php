@@ -136,12 +136,12 @@ class TagLib
                 // 标签替换 从后向前
                 foreach ($nodes as $pos => $node) {
                     // 对应的标签名
-                    $name = $tags[1][$node['name']];
+                    $name = $node['name'];
                     // 解析标签属性
                     $attrs  = $this->parseAttr($node['begin'][0], $name);
                     $method = '_' . $name;
                     // 读取标签库中对应的标签内容 replace[0]用来替换标签头，replace[1]用来替换标签尾
-                    $replace = explode($break, $this->$method($attrs, $break, $node['name']));
+                    $replace = explode($break, $this->$method($attrs, $break));
                     if (count($replace) > 1) {
                         while ($beginArray) {
                             $begin = end($beginArray);
@@ -171,13 +171,13 @@ class TagLib
         // 自闭合标签
         if (!empty($tags[0])) {
             $regex   = $this->getRegex(array_keys($tags[0]), 0);
-            $self    = &$this;
-            $content = preg_replace_callback($regex, function ($matches) use (&$tags, &$self) {
-                $name = $tags[0][$matches[1]];
+            $content = preg_replace_callback($regex, function ($matches) use (&$tags) {
+                // 对应的标签名
+                $name = $matches[1];
                 // 解析标签属性
-                $attrs = $self->parseAttr($matches[0], $name);
+                $attrs = $this->parseAttr($matches[0], $name);
                 $method = '_' . $name;
-                return $self->$method($attrs, '', $matches[1]);
+                return $this->$method($attrs, '');
             }, $content);
         }
         return;

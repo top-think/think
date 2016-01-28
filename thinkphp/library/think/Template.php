@@ -383,6 +383,9 @@ class Template
                     $parseStr = $this->parseTemplateName($file);
                     // 替换变量
                     foreach ($array as $k => $v) {
+                        if (0 == strpos($v, '$')) {
+                            $v = ltrim($this->config['tpl_begin'], '\\') . $v . ltrim($this->config['tpl_end'], '\\');
+                        }
                         $parseStr = str_replace('[' . $k . ']', $v, $parseStr);
                     }
                     // 再次对包含文件进行模板分析
@@ -455,10 +458,12 @@ class Template
         $regex = $this->getRegex($restore ? 'restoreliteral' : 'literal');
         if (preg_match_all($regex, $content, $matches, PREG_SET_ORDER)) {
             if (!$restore) {
+                $count = count($this->literal);
                 // 替换literal标签
                 foreach ($matches as $i => $match) {
                     $this->literal[] = substr($match[0], strlen($match[1]), -strlen($match[2]));
-                    $content         = str_replace($match[0], "<!--###literal{$i}###-->", $content);
+                    $content         = str_replace($match[0], "<!--###literal{$count}###-->", $content);
+                    $count++;
                 }
             } else {
                 // 还原literal标签
@@ -821,14 +826,14 @@ class Template
                     if (isset($vars[2])) {
                         $parseStr = '$_COOKIE[\'' . $vars[1] . '\'][\'' . $vars[2] . '\']';
                     } else {
-                        $parseStr = '\\think\\cookie::get(\'' . $vars[1] . '\')';
+                        $parseStr = '\\think\\Cookie::get(\'' . $vars[1] . '\')';
                     }
                     break;
                 case 'SESSION':
                     if (isset($vars[2])) {
                         $parseStr = '$_SESSION[\'' . $vars[1] . '\'][\'' . $vars[2] . '\']';
                     } else {
-                        $parseStr = '\\think\\session::get(\'' . $vars[1] . '\')';
+                        $parseStr = '\\think\\Session::get(\'' . $vars[1] . '\')';
                     }
                     break;
                 case 'ENV':
@@ -841,13 +846,13 @@ class Template
                     $parseStr = strtoupper($vars[1]);
                     break;
                 case 'LANG':
-                    $parseStr = '\\think\\lang::get(\'' . $vars[1] . '\')';
+                    $parseStr = '\\think\\Lang::get(\'' . $vars[1] . '\')';
                     break;
                 case 'CONFIG':
                     if (isset($vars[2])) {
                         $vars[1] .= '.' . $vars[2];
                     }
-                    $parseStr = '\\think\\config::get(\'' . $vars[1] . '\')';
+                    $parseStr = '\\think\\Config::get(\'' . $vars[1] . '\')';
                     break;
                 default:
                     break;
@@ -862,10 +867,10 @@ class Template
                         $parseStr = 'THINK_VERSION';
                         break;
                     case 'LDELIM':
-                        $parseStr = $this->config['tpl_begin'];
+                        $parseStr = '\'' . ltrim($this->config['tpl_begin'], '\\') . '\'';
                         break;
                     case 'RDELIM':
-                        $parseStr = $this->config['tpl_end'];
+                        $parseStr = '\'' . ltrim($this->config['tpl_end'], '\\') . '\'';
                         break;
                     default:
                         if (defined($vars[0])) {
