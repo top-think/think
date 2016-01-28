@@ -14,10 +14,6 @@ namespace think\cache\driver;
 use think\Cache;
 use think\Exception;
 
-/**
- * Memcache缓存驱动
- * @author    liu21st <liu21st@gmail.com>
- */
 class Memcached
 {
     protected $handler = null;
@@ -25,8 +21,7 @@ class Memcached
         'host'    => '127.0.0.1',
         'port'    => 11211,
         'expire'  => 0,
-        'timeout' => 1,
-        //'persistent' => false,
+        'timeout' => 0, // 超时时间（单位：毫秒）
         'length'  => 0,
     ];
 
@@ -44,14 +39,22 @@ class Memcached
             $this->options = array_merge($this->options, $options);
         }
         $this->handler = new \Memcached;
+        // 设置连接超时时间（单位：毫秒）
+        if ($this->options['timeout'] > 0) {
+            $this->handler->setOption(Memcached::OPT_CONNECT_TIMEOUT, $this->options['timeout']);
+        }
         // 支持集群
         $hosts = explode(',', $this->options['host']);
         $ports = explode(',', $this->options['port']);
-
-        foreach ((array) $hosts as $i => $host) {
-            $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-            $this->handler->addServer($host, $port, 1);
+        if (empty($ports[0])) {
+            $ports[0] = 11211;
         }
+        // 建立连接
+        $servers = [];
+        foreach ((array) $hosts as $i => $host) {
+            $servers[] = [$host, (isset($ports[$i]) ? $ports[$i] : $ports[0]), 1];
+        }
+        $this->handler->addServers($servers);
     }
 
     /**

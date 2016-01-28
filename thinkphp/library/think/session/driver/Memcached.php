@@ -18,11 +18,10 @@ class Memcached extends SessionHandler
 {
     protected $handler = null;
     protected $config  = [
-        'host'         => '127.0.0.1', // 主机
-        'port'         => 1121, // 端口
-        'expire'       => 3600, // 有效期
-        'timeout'      => 1, // 超时时间
-        //'persistent'   => 0, // 是否长连接
+        'host'         => '127.0.0.1', // memcache主机
+        'port'         => 1121, // memcache端口
+        'expire'       => 3600, // session有效期
+        'timeout'      => 0, // 连接超时时间（单位：毫秒）
         'session_name' => '', // memcache key前缀
     ];
 
@@ -44,14 +43,22 @@ class Memcached extends SessionHandler
             throw new Exception('_NOT_SUPPERT_:memcached');
         }
         $this->handler = new \Memcached;
+        // 设置连接超时时间（单位：毫秒）
+        if ($this->config['timeout'] > 0) {
+            $this->handler->setOption(Memcached::OPT_CONNECT_TIMEOUT, $this->config['timeout']);
+        }
         // 支持集群
         $hosts = explode(',', $this->config['host']);
         $ports = explode(',', $this->config['port']);
-        // 建立连接
-        foreach ((array) $hosts as $i => $host) {
-            $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-            $this->handler->addServer($host, $port, 1);
+        if (empty($ports[0])) {
+            $ports[0] = 11211;
         }
+        // 建立连接
+        $servers = [];
+        foreach ((array) $hosts as $i => $host) {
+            $servers[] = [$host, (isset($ports[$i]) ? $ports[$i] : $ports[0]), 1];
+        }
+        $this->handler->addServers($servers);
         return true;
     }
 
