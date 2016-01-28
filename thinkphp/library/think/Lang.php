@@ -43,7 +43,7 @@ class Lang
             self::$lang[$range] = [];
         }
         if (is_array($name)) {
-            return self::$lang[$range] = array_merge(self::$lang[$range], array_change_key_case($name));
+            return self::$lang[$range] = array_change_key_case($name) + self::$lang[$range];
         } else {
             return self::$lang[$range][strtolower($name)] = $value;
         }
@@ -70,10 +70,10 @@ class Lang
             // 记录加载信息
             APP_DEBUG && Log::record('[ LANG ] ' . $file, 'info');
             $_lang = is_file($_file) ? include $_file : [];
-            $lang  = array_merge($lang, array_change_key_case($_lang));
+            $lang  = array_change_key_case($_lang) + $lang;
         }
         if (!empty($lang)) {
-            self::$lang[$range] = array_merge(self::$lang[$range], $lang);
+            self::$lang[$range] = $lang + self::$lang[$range];
         }
         return self::$lang[$range];
     }
