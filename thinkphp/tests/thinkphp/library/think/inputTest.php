@@ -129,11 +129,12 @@ class inputTest extends \PHPUnit_Framework_TestCase
 
     public function testHasValue()
     {
-        $_GET['name'] = 'value';
+        $_GET['name']           = 'value';
+        $_GET['config']['name'] = 'value';
         $this->assertEquals(true, Input::get('?name'));
         $this->assertEquals(false, Input::get('?id'));
-        $this->assertEquals(true, Input::get('?get.name'));
-        $this->assertEquals(false, Input::get('?get.id'));
+        $this->assertEquals(true, Input::get('?config.name'));
+        $this->assertEquals(false, Input::get('?config.id'));
     }
 
     public function testSuperglobals()
