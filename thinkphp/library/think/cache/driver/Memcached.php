@@ -18,19 +18,25 @@ namespace {
         class Memcached extends Memcache
         {
             const OPT_CONNECT_TIMEOUT = 14;
-            private $timeout = 1000;
+            private $timeout          = 1000;
 
             public function addServers(array $servers = [])
             {
-                if(empty($servers)) return;
+                if (empty($servers)) {
+                    return;
+                }
+
                 foreach ($servers as $key => $server) {
-                    if (empty($server[0])) continue;
+                    if (empty($server[0])) {
+                        continue;
+                    }
+
                     $this->addServer(
-                        $server[0], 
+                        $server[0],
                         !empty($server[1]) ? $server[1] : 11211,
-                        true, 
+                        true,
                         !empty($server[2]) ? $server[1] : 1,
-                        $this->timeout > 0 ? ($this->timeout/1000) : 1
+                        $this->timeout > 0 ? ($this->timeout / 1000) : 1
                     );
                 }
             }
@@ -56,7 +62,6 @@ namespace {
 
 namespace think\cache\driver {
     use think\Cache;
-    use think\Exception;
 
     class Memcached
     {
