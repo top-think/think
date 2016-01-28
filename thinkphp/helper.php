@@ -290,5 +290,5 @@ function trace($log = '[think]', $level = 'log')
  */
 function V($template, $vars)
 {
-    return \think\View::instance(Config::get())->fetch($template, $vars);
+    return \think\View::instance(\think\Config::get())->fetch($template, $vars);
 }
