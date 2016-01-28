@@ -32,7 +32,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a??'test'}
@@ -42,7 +42,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a?='test'}
@@ -52,7 +52,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a?:'test'}
@@ -62,7 +62,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a?\$name.b:'no'}
@@ -72,7 +72,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a==\$name.b?='test'}
@@ -82,7 +82,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a==\$name.b?'a':'b'}
@@ -92,7 +92,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {\$name.a|default='test'==\$name.b?'a':'b'}
@@ -102,7 +102,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {:ltrim(rtrim(\$name.a))}
@@ -112,7 +112,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {~echo(trim(\$name.a))}
@@ -122,7 +122,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {+\$name.a}
@@ -132,7 +132,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 {/*\$name*/}
@@ -140,7 +140,7 @@ EOF;
         $data = '';
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
     }
 
@@ -159,7 +159,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 <#\$info.a==\$info.b?='test'#>
@@ -169,7 +169,7 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
 
         $content = <<<EOF
 <#\$info.a|default='test'?'yes':'no'#>
@@ -179,86 +179,93 @@ EOF;
 EOF;
 
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
     }
 
     public function testTag()
     {
-        $template = new Template();
+        $config['tpl_path'] = dirname(__FILE__) . '/';
+        $config['tpl_suffix'] = '.html';
+        $template = new Template($config);
 
         $content = <<<EOF
-{if \$var.a==\$var.b}
-one
-{elseif !empty(\$var.a) /}
-two
-{else /}
-default
-{/if}
+{extend name="extend" /}
+{block name="main"}
+    {include file="include" name="\$user.name" value="\$user.account" /}
+    {\$message}{literal}{\$message}{/literal}
+{/block}
 EOF;
         $data = <<<EOF
-<?php if(\$var['a']==\$var['b']): ?>
-one
-<?php elseif(!empty(\$var['a'])): ?>
-two
-<?php else: ?>
-default
-<?php endif; ?>
+<nav>
+<div>
+    <input name="<?php echo \$info['name']; ?>" value="<?php echo \$info['value']; ?>">
+
+    <input name="<?php echo \$user['name']; ?>" value="<?php echo \$user['account']; ?>">
+    <?php echo \$message; ?>{\$message}
+
+
+    {\$name}
+
+    <?php echo 'php code'; ?>
+</div>
+</nav>
 EOF;
         $template->parse($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
+    }
+
+    public function testThinkVar()
+    {
+        $config['tpl_begin'] = '{';
+        $config['tpl_end'] = '}';
+        $template = new Template($config);
+
+        $_SERVER['SERVER_NAME'] = 'server_name';
+        $_GET['action'] = 'action';
+        $_POST['action'] = 'action';
+        \think\Cookie::set('action', ['name' => 'name']);
+        \think\Session::set('action', ['name' => 'name']);
+        define('SITE_NAME', 'site_name');
 
         $content = <<<EOF
-{switch \$var}
-{case \$a /}
-a
-{/case}
-{case b}
-b
-{/case}
-{default /}
-default
-{/switch}
+{\$Think.SERVER.SERVER_NAME}<br/>
+{\$Think.GET.action}<br/>
+{\$Think.POST.action}<br/>
+{\$Think.COOKIE.action}<br/>
+{\$Think.COOKIE.action.name}<br/>
+{\$Think.SESSION.action}<br/>
+{\$Think.SESSION.action.name}<br/>
+{\$Think.ENV.OS}<br/>
+{\$Think.REQUEST.action}<br/>
+{\$Think.CONST.SITE_NAME}<br/>
+{\$Think.LANG.action}<br/>
+{\$Think.CONFIG.action.name}<br/>
+{\$Think.NOW}<br/>
+{\$Think.VERSION}<br/>
+{\$Think.LDELIM}<br/>
+{\$Think.RDELIM}<br/>
+{\$Think.SITE_NAME}
 EOF;
         $data = <<<EOF
-<?php switch(\$var): ?>
-<?php case \$a: ?>
-a
-<?php break; ?>
-<?php case "b": ?>
-b
-<?php break; ?>
-<?php default: ?>
-default
-<?php endswitch; ?>
+<?php echo \$_SERVER['SERVER_NAME']; ?><br/>
+<?php echo \$_GET['action']; ?><br/>
+<?php echo \$_POST['action']; ?><br/>
+<?php echo \\think\\Cookie::get('action'); ?><br/>
+<?php echo \$_COOKIE['action']['name']; ?><br/>
+<?php echo \\think\\Session::get('action'); ?><br/>
+<?php echo \$_SESSION['action']['name']; ?><br/>
+<?php echo \$_ENV['OS']; ?><br/>
+<?php echo \$_REQUEST['action']; ?><br/>
+<?php echo SITE_NAME; ?><br/>
+<?php echo \\think\\Lang::get('action'); ?><br/>
+<?php echo \\think\\Config::get('action.name'); ?><br/>
+<?php echo date('Y-m-d g:i a',time()); ?><br/>
+<?php echo THINK_VERSION; ?><br/>
+<?php echo '{'; ?><br/>
+<?php echo '}'; ?><br/>
+<?php echo SITE_NAME; ?>
 EOF;
         $template->parse($content);
-        $this->assertEquals($content, $data);
-
-        $content = <<<EOF
-{foreach \$list as \$key=>\$val}
-
-{/foreach}
-EOF;
-        $data = <<<EOF
-<?php foreach(\$list as \$key=>\$val): ?>
-
-<?php endforeach; ?>
-EOF;
-        $template->parse($content);
-        $this->assertEquals($content, $data);
-
-        $content = <<<EOF
-{foreach name="list" id="val" key="key"}
-
-{/foreach}
-EOF;
-        $data = <<<EOF
-<?php if(is_array(\$list)): foreach(\$list as \$key=>\$val): ?>
-
-<?php endforeach; endif; ?>
-EOF;
-        $template->parse($content);
-        $this->assertEquals($content, $data);
-
+        $this->assertEquals($data, $content);
     }
 }
