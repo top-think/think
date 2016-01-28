@@ -25,7 +25,7 @@ class Model
     // 数据库对象池
     private $links = [];
     // 主键名称
-    protected $pk = 'id';
+    protected $pk = null;
     // 数据表前缀
     protected $tablePrefix = null;
     // 模型名称
@@ -221,7 +221,7 @@ class Model
                 }
             }
         }
-        $fields = $this->getDbFields();
+        $fields = $this->getFields();
         // 检查非数据字段
         if (!empty($fields)) {
             foreach ($data as $key => $val) {
@@ -230,7 +230,7 @@ class Model
                         throw new Exception(' fields not exists :[' . $key . '=>' . $val . ']');
                     }
                     unset($data[$key]);
-                } elseif (is_scalar($val) && empty($this->options['bind'][$key])) {
+                } elseif (is_scalar($val) && !isset($this->options['bind'][$key])) {
                     // 字段类型检查
                     $this->_parseType($data, $key, $this->options['bind']);
                 }
@@ -791,11 +791,10 @@ class Model
 
         if (isset($options['table'])) {
             // 动态指定表名
-            $fields = $this->db->getFields($options['table']);
-            $fields = $fields ? array_keys($fields) : false;
+            $fields = $this->getTableInfo($options['table'], 'fields');
         } else {
             $options['table'] = $this->getTableName();
-            $fields           = $this->getDbFields();
+            $fields           = $this->getFields();
         }
         if (!empty($options['alias'])) {
             $options['table'] .= ' ' . $options['alias'];
@@ -832,22 +831,9 @@ class Model
      */
     protected function _parseType(&$data, $key, &$bind)
     {
-        if (!isset($bind[$key]) && isset($this->fields['_type'][$key])) {
-            $fieldType = strtolower($this->fields['_type'][$key]);
-            if (false === strpos($fieldType, 'bigint') && false !== strpos($fieldType, 'int')) {
-                $bind[$key] = [$data[$key], \PDO::PARAM_INT];
-                $data[$key] = ':' . $key;
-            } elseif (false !== strpos($fieldType, 'float') || false !== strpos($fieldType, 'double')) {
-                $bind[$key] = [$data[$key], \PDO::PARAM_INT];
-                $data[$key] = ':' . $key;
-            } elseif (false !== strpos($fieldType, 'bool')) {
-                $bind[$key] = [$data[$key], \PDO::PARAM_BOOL];
-                $data[$key] = ':' . $key;
-            } else {
-                $bind[$key] = [$data[$key], \PDO::PARAM_STR];
-                $data[$key] = ':' . $key;
-            }
-        }
+        $binds      = $this->getTableInfo('', 'bind');
+        $bind[$key] = [$data[$key], isset($binds[$key]) ? $binds[$key] : \PDO::PARAM_STR];
+        $data[$key] = ':' . $key;
     }
 
     /**
@@ -1106,58 +1092,71 @@ class Model
     }
 
     /**
-     * 获取主键名称
+     * 获取当前主键名称
      * @access public
-     * @return string
+     * @return mixed
      */
     public function getPk()
     {
+        if (is_null($this->pk)) {
+            $this->pk = $this->getTableInfo('', 'pk');
+        }
         return $this->pk;
     }
 
     /**
-     * 获取数据表字段信息
+     * 获取当前字段信息
      * @access public
      * @return array
      */
-    public function getDbFields()
+    public function getFields()
     {
-        if ($this->fields) {
-            $fields = $this->fields;
-            unset($fields['_type'], $fields['_pk']);
-            return $fields;
-        } else {
-            $tableName = $this->getTableName();
-            $guid      = md5($tableName);
-            $fields    = Cache::get($guid);
-            if (!$fields) {
-                $fields       = $this->db->getFields($tableName);
-                $this->fields = array_keys($fields);
-                foreach ($fields as $key => $val) {
-                    // 记录字段类型
-                    $type[$key] = $val['type'];
-                    if (!empty($val['primary'])) {
-                        $pk[] = $key;
-                    }
-                }
-                if (isset($pk)) {
-                    // 设置主键
-                    $this->pk = count($pk) > 1 ? $pk : $pk[0];
-                } else {
-                    $this->pk = null;
-                }
-                // 记录字段类型信息
-                $this->fields['_type'] = $type;
-                $this->fields['_pk']   = $this->pk;
-                APP_DEBUG && Cache::set($guid, $this->fields);
-                $fields = $this->fields;
-            } else {
-                $this->fields = $fields;
-                $this->pk     = $fields['_pk'];
-            }
-            unset($fields['_type'], $fields['_pk']);
-            return $fields;
+        if (empty($this->fields)) {
+            $this->fields = $this->getTableInfo('', 'fields');
         }
+        return $this->fields;
+    }
+
+    /**
+     * 获取数据表信息
+     * @access public
+     * @param string $tableName  数据表名 留空自动获取
+     * @param string $fetch 获取信息类型 包括 fields type bind pk
+     * @return mixed
+     */
+    public function getTableInfo($tableName = '', $fetch = '')
+    {
+        $tableName = $tableName ?: $this->getTableName();
+        $guid      = md5($tableName);
+        $result    = Cache::get($guid);
+        if (!$result) {
+            $info   = $this->db->getFields($tableName);
+            $fields = array_keys($info);
+            foreach ($info as $key => $val) {
+                // 记录字段类型
+                $type[$key] = $val['type'];
+                if (preg_match('/(int|double|float|decimal|real|numeric|serial)/is', $val['type'])) {
+                    $bind[$key] = \PDO::PARAM_INT;
+                } elseif (preg_match('/bool/is', $val['type'])) {
+                    $bind[$key] = \PDO::PARAM_BOOL;
+                } else {
+                    $bind[$key] = \PDO::PARAM_STR;
+                }
+                if (!empty($val['primary'])) {
+                    $pk[] = $key;
+                }
+            }
+            if (isset($pk)) {
+                // 设置主键
+                $pk = count($pk) > 1 ? $pk : $pk[0];
+            } else {
+                $pk = null;
+            }
+            // 记录字段类型信息
+            $result = ['fields' => $fields, 'bind' => $bind, 'type' => $type, 'pk' => $pk];
+            APP_DEBUG && Cache::set($guid, $result);
+        }
+        return $fetch ? $result[$fetch] : $result;
     }
 
     /**
@@ -1378,14 +1377,14 @@ class Model
     {
         if (true === $field) {
             // 获取全部字段
-            $fields = $this->getDbFields();
+            $fields = $this->getFields();
             $field  = $fields ?: '*';
         } elseif ($except) {
             // 字段排除
             if (is_string($field)) {
                 $field = explode(',', $field);
             }
-            $fields = $this->getDbFields();
+            $fields = $this->getFields();
             $field  = $fields ? array_diff($fields, $field) : $field;
         }
         $this->options['field'] = $field;
