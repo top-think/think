@@ -25,10 +25,10 @@ class templateTest extends \PHPUnit_Framework_TestCase
         $template = new Template();
 
         $content = <<<EOF
-{\$name.a.b|default='test'}
+{\$name.a.b}
 EOF;
         $data = <<<EOF
-<?php echo (isset(\$name['a']['b']) && (\$name['a']['b'] !== '')?\$name['a']['b']:'test'); ?>
+<?php echo \$name['a']['b']; ?>
 EOF;
 
         $template->parse($content);
@@ -125,10 +125,10 @@ EOF;
         $this->assertEquals($data, $content);
 
         $content = <<<EOF
-{+\$name.a}
+{++\$name.a}
 EOF;
         $data = <<<EOF
-<?php echo +\$name['a']; ?>
+<?php echo ++\$name['a']; ?>
 EOF;
 
         $template->parse($content);
@@ -142,6 +142,41 @@ EOF;
         $template->parse($content);
         $this->assertEquals($data, $content);
 
+    }
+
+    public function testVarFunction()
+    {
+        $template = new Template();
+
+        $content = <<<EOF
+{\$name.a.b|default='test'}
+EOF;
+        $data    = <<<EOF
+<?php echo (isset(\$name['a']['b']) && (\$name['a']['b'] !== '')?\$name['a']['b']:'test'); ?>
+EOF;
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
+
+        $content = <<<EOF
+{\$create_time|date="y-m-d",###}
+EOF;
+        $data    = <<<EOF
+<?php echo date("y-m-d",\$create_time); ?>
+EOF;
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
+
+        $content = <<<EOF
+{\$create_time|trim|substr=0,3}
+EOF;
+        $data    = <<<EOF
+<?php echo substr(trim(\$create_time),0,3); ?>
+EOF;
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
     }
 
     public function testVarIdentify()
@@ -177,7 +212,6 @@ EOF;
         $data = <<<EOF
 <?php echo ((is_array(\$info)?\$info['a']:\$info->a) !== ''?(is_array(\$info)?\$info['a']:\$info->a):'test')?'yes':'no'; ?>
 EOF;
-
         $template->parse($content);
         $this->assertEquals($data, $content);
     }
