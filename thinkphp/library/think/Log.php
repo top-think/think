@@ -36,6 +36,8 @@ class Log
         $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\log\\driver\\') . ucwords($type);
         unset($config['type']);
         self::$driver = new $class($config);
+        // 记录初始化信息
+        APP_DEBUG && Log::record('[ LOG ] INIT ' . $type . ':' . var_export($config, true), 'info');
     }
 
     // 通知初始化
@@ -45,6 +47,8 @@ class Log
         $class = (!empty($config['namespace']) ? $config['namespace'] : '\\think\\log\\alarm\\') . ucwords($type);
         unset($config['type']);
         self::$alarm = new $class($config['alarm']);
+        // 记录初始化信息
+        APP_DEBUG && Log::record('[ CACHE ] ALARM ' . $type . ':' . var_export($config, true), 'info');
     }
 
     /**

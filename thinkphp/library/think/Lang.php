@@ -67,6 +67,8 @@ class Lang
         }
         $lang = [];
         foreach ($file as $_file) {
+            // 记录加载信息
+            APP_DEBUG && Log::record('[ LANG ] ' . $file, 'info');
             $_lang = is_file($_file) ? include $_file : [];
             $lang  = array_merge($lang, array_change_key_case($_lang));
         }

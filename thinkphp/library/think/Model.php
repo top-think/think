@@ -27,13 +27,13 @@ class Model
     // 主键名称
     protected $pk = 'id';
     // 数据表前缀
-    protected $tablePrefix = '';
+    protected $tablePrefix = null;
     // 模型名称
     protected $name = '';
     // 数据库名称
     protected $dbName = '';
     //数据库配置
-    protected $connection = '';
+    protected $connection = [];
     // 数据表名（不包含表前缀）
     protected $tableName = '';
     // 实际数据表名（包含表前缀）
@@ -74,7 +74,11 @@ class Model
             list($this->dbName, $this->name) = explode('.', $this->name);
         }
 
-        $this->tablePrefix = !empty($config['prefix']) ? $config['prefix'] : Config::get('database.prefix');
+        if (!empty($config['prefix'])) {
+            $this->tablePrefix = $config['prefix'];
+        } elseif (is_null($this->tablePrefix)) {
+            $this->tablePrefix = Config::get('database.prefix');
+        }
         if (!empty($config['connection'])) {
             $this->connection = $config['connection'];
         }

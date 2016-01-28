@@ -160,7 +160,7 @@ class View
                 throw new Exception('template file not exists:' . $template, 10700);
             }
             // 记录视图信息
-            Log::record('[ VIEW ] ' . $template . ' [ VARS : ' . var_export($vars, true) . ' ]', 'info');
+            APP_DEBUG && Log::record('[ VIEW ] ' . $template . ' [ ' . var_export($vars, true) . ' ]', 'info');
         }
         // 页面缓存
         ob_start();

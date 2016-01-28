@@ -43,6 +43,8 @@ class Db
             }
             $class                 = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\db\\driver\\') . ucwords($options['type']);
             self::$instances[$md5] = new $class($options);
+            // 记录初始化信息
+            APP_DEBUG && Log::record('[ DB ] INIT ' . $options['type'] . ':' . var_export($options, true), 'info');
         }
         self::$instance = self::$instances[$md5];
         return self::$instance;

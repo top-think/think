@@ -32,6 +32,12 @@ function C($name = '', $value = null, $range = '')
 // 获取输入数据 支持默认值和过滤
 function I($key, $default = null, $filter = '', $merge = false, $data = [])
 {
+    if (0 === strpos($key, '?')) {
+        $key = substr($key, 1);
+        $has = '?';
+    } else {
+        $has = '';
+    }
     if ($pos = strpos($key, '.')) {
         // 指定参数来源
         $method = substr($key, 0, $pos);
@@ -44,7 +50,7 @@ function I($key, $default = null, $filter = '', $merge = false, $data = [])
         // 默认为自动判断
         $method = 'param';
     }
-    return \think\Input::$method($key, $default, $filter, $merge, $data);
+    return \think\Input::$method($has . $key, $default, $filter, $merge, $data);
 }
 
 /**

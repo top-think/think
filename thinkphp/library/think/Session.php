@@ -38,6 +38,8 @@ class Session
      */
     public static function init(array $config = [])
     {
+        // 记录初始化信息
+        APP_DEBUG && Log::record('[ SESSION ] INIT ' . var_export($config, true), 'info');
         $isDoStart = false;
         if (isset($config['use_trans_sid'])) {
             ini_set('session.use_trans_sid', $config['use_trans_sid'] ? 1 : 0);

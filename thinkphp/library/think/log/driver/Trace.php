@@ -15,7 +15,7 @@ namespace think\log\driver;
  */
 class Trace
 {
-    protected $tabs   = ['base' => '基本', 'file' => '文件', 'notic|error' => '错误', 'sql' => 'SQL', 'info|debug|log' => '调试'];
+    protected $tabs   = ['base' => '基本', 'file' => '文件', 'info' => '流程', 'notic|error' => '错误', 'sql' => 'SQL', 'debug|log' => '调试'];
     protected $config = [
         'trace_file' => '',
     ];
@@ -67,13 +67,13 @@ class Trace
         foreach ($this->tabs as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
-                case 'base': // 基本信息
+                case 'base':    // 基本信息
                     $trace[$title] = $base;
                     break;
-                case 'file': // 文件信息
+                case 'file':    // 文件信息
                     $trace[$title] = $info;
                     break;
-                default: // 调试信息
+                default:    // 调试信息
                     if (strpos($name, '|')) {
                         // 多组信息
                         $names  = explode('|', $name);

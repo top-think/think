@@ -58,6 +58,8 @@ class Config
         if (!isset(self::$config[$range])) {
             self::$config[$range] = [];
         }
+        // 记录加载信息
+        APP_DEBUG && Log::record('[ CONFIG ] ' . $file, 'info');
         return is_file($file) ? self::set(include $file, $name, $range) : self::$config[$range];
     }
 

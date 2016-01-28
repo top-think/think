@@ -15,6 +15,8 @@ class Loader
 {
     // 类名映射
     protected static $map = [];
+    // 加载列表
+    protected static $load = [];
     // 命名空间
     protected static $namespace = [];
     // PSR-4
@@ -29,10 +31,14 @@ class Loader
         // 检查是否定义类库映射
         if (isset(self::$map[$class])) {
             if (is_file(self::$map[$class])) {
+                // 记录加载信息
+                APP_DEBUG && self::$load[] = self::$map[$class];
                 include self::$map[$class];
             }
         } elseif ($file = self::findFileInComposer($class)) {
             // Composer自动加载
+            // 记录加载信息
+            APP_DEBUG && self::$load[] = $file;
             include $file;
         } else {
             // 命名空间自动加载
@@ -58,6 +64,8 @@ class Loader
                 if (APP_DEBUG && IS_WIN && false === strpos(realpath($filename), $class . EXT)) {
                     return;
                 }
+                // 记录加载信息
+                APP_DEBUG && self::$load[] = $filename;
                 include $filename;
             } else {
                 Log::record('autoloader error : ' . $filename, 'notic');
@@ -347,7 +355,7 @@ class Loader
             }
             $method = new \ReflectionMethod($class, $action . Config::get('action_suffix'));
             // 记录执行信息
-            Log::record('[ RUN ] ' . $method->getFileName(), 'info');
+            APP_DEBUG && Log::record('[ RUN ] ' . $method->getFileName(), 'info');
             return $method->invokeArgs($class, $vars);
         }
     }

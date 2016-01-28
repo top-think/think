@@ -203,9 +203,12 @@ class Input
      */
     public static function data($name, $default = null, $filter = null, $merge = false, $input = null)
     {
+        if (0 === strpos($name, '?')) {
+            return self::has(substr($name, 1), $input);
+        }
         if (is_null($input) && !empty($name)) {
             $input = $name;
-            $name = '';
+            $name  = '';
         }
         if (!empty($input)) {
             $data = $input;
@@ -231,7 +234,7 @@ class Input
             if (is_array($data)) {
                 array_walk_recursive($data, 'self::filter', $filters);
             } else {
-                self::filter($data, $name?:0, $filters);
+                self::filter($data, $name ?: 0, $filters);
             }
             if (isset($type) && $data !== $default) {
                 // 强制类型转换
@@ -241,6 +244,22 @@ class Input
             $data = $default;
         }
         return $data;
+    }
+
+    /**
+     * 判断一个变量是否设置
+     * @param string $name
+     * @param array $data
+     * @return bool
+     */
+    public static function has($name, $data)
+    {
+        foreach (explode('.', $name) as $val) {
+            if (!isset($data[$val])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -288,7 +307,7 @@ class Input
                 $value = call_user_func($filter, $value);
             } else {
                 $begin = substr($filter, 0, 1);
-                if (in_array($begin, ['/','#','~']) && $begin == $end = substr($filter, -1)) {
+                if (in_array($begin, ['/', '#', '~']) && $begin == $end = substr($filter, -1)) {
                     // 正则过滤
                     if (!preg_match($filter, $value)) {
                         // 匹配不成功返回默认值
@@ -355,12 +374,11 @@ class Input
     {
         if (is_null(static::$filters)) {
             // 从配置项中读取
-            $filters = \think\Config::get('default_filter');
+            $filters         = \think\Config::get('default_filter');
             static::$filters = empty($filters) ? [] : (is_array($filters) ? $filters : explode(',', $filters));
         }
         return static::$filters;
     }
-
 
     /**
      * 强类型转换

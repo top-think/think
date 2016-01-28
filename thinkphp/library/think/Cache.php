@@ -38,6 +38,8 @@ class Cache
             $class = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\cache\\driver\\') . ucwords($type);
             unset($options['type']);
             self::$instance[$md5] = new $class($options);
+            // 记录初始化信息
+            APP_DEBUG && Log::record('[ CACHE ] INIT ' . $type . ':' . var_export($options, true), 'info');
         }
         self::$handler = self::$instance[$md5];
         return self::$handler;
