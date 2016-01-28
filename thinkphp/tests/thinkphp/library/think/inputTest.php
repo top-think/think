@@ -127,6 +127,15 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, Input::post('d/b'));
     }
 
+    public function testHasValue()
+    {
+        $_GET['name'] = 'value';
+        $this->assertEquals(true, Input::get('?name'));
+        $this->assertEquals(false, Input::get('?id'));
+        $this->assertEquals(true, Input::get('?get.name'));
+        $this->assertEquals(false, Input::get('?get.id'));
+    }
+
     public function testSuperglobals()
     {
         Input::setFilter('trim');
@@ -165,7 +174,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
         //$path = $_SERVER['PATH_INFO'] ? explode('/', $_SERVER['PATH_INFO'])[0] : '';
         //$this->assertEquals($path, Input::path('0', ''));
 
-        $_FILES = ['file'=>['name'=>'test.png', 'type'=>'image/png', 'tmp_name'=>'/tmp/php5Wx0aJ', 'error'=>0, size=>15726]];
+        $_FILES = ['file' => ['name' => 'test.png', 'type' => 'image/png', 'tmp_name' => '/tmp/php5Wx0aJ', 'error' => 0, size => 15726]];
         $this->assertEquals('image/png', Input::file('file.type'));
 
     }
@@ -173,7 +182,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
     public function testFilterMerge()
     {
         Input::setFilter('htmlspecialchars');
-        $input   = ['a' => ' test<> ', 'b' => '<b\\ar />'];
+        $input = ['a' => ' test<> ', 'b' => '<b\\ar />'];
         $this->assertEquals(' test<> ', Input::data('a', '', '', false, $input));
         $filters = ['trim'];
         $this->assertEquals('test<>', Input::data('a', '', $filters, false, $input));
