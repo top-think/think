@@ -52,7 +52,16 @@ EOF;
 <?php endforeach; endif; else: echo "" ;endif; ?>
 EOF;
         $cx->parseTag($content);
-        $this->assertEquals($content, $data);
+        $this->assertEquals($data, $content);
+
+        $content = <<<EOF
+{volist name=":explode(',','1,2,3,4,5')" id="vo" key="key" offset="1" length="3"}
+{\$vo}
+{/volist}
+EOF;
+
+        $template->fetch($content);
+        $this->expectOutputString('234');
     }
 
     public function testForeach()
@@ -74,18 +83,25 @@ EOF;
         $this->assertEquals($content, $data);
 
         $content = <<<EOF
-{foreach name="list" id="val" key="key"}
+{foreach name="list" id="val" key="key" empty="empty"}
 
 {/foreach}
 EOF;
         $data    = <<<EOF
 <?php if(is_array(\$list)): foreach(\$list as \$key=>\$val): ?>
 
-<?php endforeach; endif; ?>
+<?php endforeach; endif; ?><?php if(empty(\$list)): echo '"empty'; endif; ?>
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
 
+        $content = <<<EOF
+{foreach name=":explode(',', '1,2,3,4,5')" id="val" key="key" index="index" offset="1" length="3"}
+{\$val}
+{/foreach}
+EOF;
+        $template->fetch($content);
+        $this->expectOutputString('234');
     }
 
     public function testIf()
@@ -125,8 +141,11 @@ EOF;
 {case \$a /}
 a
 {/case}
-{case b}
+{case b|c}
 b
+{/case}
+{case d}
+d
 {/case}
 {default /}
 default
@@ -137,8 +156,11 @@ EOF;
 <?php case \$a: ?>
 a
 <?php break; ?>
-<?php case "b": ?>
+<?php case "b":case "c": ?>
 b
+<?php break; ?>
+<?php case "d": ?>
+d
 <?php break; ?>
 <?php default: ?>
 default
@@ -154,12 +176,12 @@ EOF;
         $cx       = new Cx($template);
 
         $content = <<<EOF
-{eq name="\$var.a" value="0"}
+{eq name="\$var.a" value="\$var.b"}
 default
 {/eq}
 EOF;
         $data    = <<<EOF
-<?php if(\$var['a'] == '0'): ?>
+<?php if(\$var['a'] == \$var['b']): ?>
 default
 <?php endif; ?>
 EOF;
@@ -315,6 +337,13 @@ default
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
+
+        $content = <<<EOF
+{between name=":floor(5.1)" value="1,5"}yes{/between}
+{notbetween name=":ceil(5.1)" value="1,5"}no{/notbetween}
+EOF;
+        $template->fetch($content);
+        $this->expectOutputString('yesno');
     }
 
     public function testPresent()
@@ -419,10 +448,10 @@ EOF;
         $cx       = new Cx($template);
 
         $content = <<<EOF
-{import file="base" value="\$name.a" /}
+{import file="base?ver=1.0" value="\$name.a" /}
 EOF;
         $data    = <<<EOF
-<?php if(isset(\$name['a'])): ?><script type="text/javascript" src="__ROOT__/Public/base.js"></script><?php endif; ?>
+<?php if(isset(\$name['a'])): ?><script type="text/javascript" src="__ROOT__/Public/base.js?ver=1.0"></script><?php endif; ?>
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
@@ -437,10 +466,10 @@ EOF;
         $this->assertEquals($content, $data);
 
         $content = <<<EOF
-{import file="base" type="php" /}
+{import file="base,common" type="php" /}
 EOF;
         $data    = <<<EOF
-<?php import("base"); ?>
+<?php import("base"); ?><?php import("common"); ?>
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
@@ -486,6 +515,15 @@ EOF;
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
+
+        $content = <<<EOF
+{assign name="total" value=":count(\$list)" /}
+EOF;
+        $data    = <<<EOF
+<?php \$total = count(\$list); ?>
+EOF;
+        $cx->parseTag($content);
+        $this->assertEquals($content, $data);
     }
 
     public function testDefine()
@@ -501,6 +539,15 @@ EOF;
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
+
+        $content = <<<EOF
+{define name="INFO_NAME" value="\$name" /}
+EOF;
+        $data    = <<<EOF
+<?php define('INFO_NAME', \$name); ?>
+EOF;
+        $cx->parseTag($content);
+        $this->assertEquals($content, $data);
     }
 
     public function testFor()
@@ -508,8 +555,8 @@ EOF;
         $template = new template();
 
         $content = <<<EOF
-{for start="1" end="10" comparison="lt" step="1" name="ii" }
-{\$ii}
+{for start="1" end=":strlen(1000000000)" comparison="lt" step="1" name="i" }
+{\$i}
 {/for}
 EOF;
         $template->fetch($content);
