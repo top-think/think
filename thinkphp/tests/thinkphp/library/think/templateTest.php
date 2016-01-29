@@ -105,6 +105,16 @@ EOF;
         $this->assertEquals($data, $content);
 
         $content = <<<EOF
+{\$name.a|trim==\$name.b?='eq'}
+EOF;
+        $data = <<<EOF
+<?php if(trim(\$name['a'])==\$name['b']) echo 'eq'; ?>
+EOF;
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
+
+        $content = <<<EOF
 {:ltrim(rtrim(\$name.a))}
 EOF;
         $data = <<<EOF
@@ -142,6 +152,14 @@ EOF;
         $template->parse($content);
         $this->assertEquals($data, $content);
 
+        $content = <<<EOF
+{\$0a}
+EOF;
+        $data = '{$0a}';
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
+
     }
 
     public function testVarFunction()
@@ -169,10 +187,12 @@ EOF;
         $this->assertEquals($data, $content);
 
         $content = <<<EOF
-{\$create_time|trim|substr=0,3}
+{\$name}
+{\$name|trim|substr=0,3}
 EOF;
         $data    = <<<EOF
-<?php echo substr(trim(\$create_time),0,3); ?>
+<?php echo \$name; ?>
+<?php echo substr(trim(\$name),0,3); ?>
 EOF;
 
         $template->parse($content);
@@ -189,7 +209,7 @@ EOF;
         $content = <<<EOF
 <#\$info.a??'test'#>
 EOF;
-        $data = <<<EOF
+        $data    = <<<EOF
 <?php echo (is_array(\$info)?\$info['a']:\$info->a) ? (is_array(\$info)?\$info['a']:\$info->a) : 'test'; ?>
 EOF;
 
@@ -199,7 +219,7 @@ EOF;
         $content = <<<EOF
 <#\$info.a==\$info.b?='test'#>
 EOF;
-        $data = <<<EOF
+        $data    = <<<EOF
 <?php if((is_array(\$info)?\$info['a']:\$info->a)==(is_array(\$info)?\$info['b']:\$info->b)) echo 'test'; ?>
 EOF;
 
@@ -209,10 +229,21 @@ EOF;
         $content = <<<EOF
 <#\$info.a|default='test'?'yes':'no'#>
 EOF;
-        $data = <<<EOF
+        $data    = <<<EOF
 <?php echo ((is_array(\$info)?\$info['a']:\$info->a) !== ''?(is_array(\$info)?\$info['a']:\$info->a):'test')?'yes':'no'; ?>
 EOF;
         $template->parse($content);
+        $this->assertEquals($data, $content);
+
+        $template2 = new Template();
+        $template2->tpl_var_identify = 'obj';
+        $content = <<<EOF
+{\$info2.b|trim?'yes':'no'}
+EOF;
+        $data = <<<EOF
+<?php echo trim(\$info2->b)?'yes':'no'; ?>
+EOF;
+        $template2->parse($content);
         $this->assertEquals($data, $content);
     }
 
@@ -278,7 +309,8 @@ EOF;
 {\$Think.VERSION}<br/>
 {\$Think.LDELIM}<br/>
 {\$Think.RDELIM}<br/>
-{\$Think.SITE_NAME}
+{\$Think.SITE_NAME}<br/>
+{\$Think.SITE.URL}
 EOF;
         $data = <<<EOF
 <?php echo \$_SERVER['SERVER_NAME']; ?><br/>
@@ -297,9 +329,44 @@ EOF;
 <?php echo THINK_VERSION; ?><br/>
 <?php echo '{'; ?><br/>
 <?php echo '}'; ?><br/>
-<?php echo SITE_NAME; ?>
+<?php echo SITE_NAME; ?><br/>
+<?php echo ''; ?>
 EOF;
         $template->parse($content);
         $this->assertEquals($data, $content);
+    }
+
+    public function testDisplay()
+    {
+        $template = new Template();
+        $template->assign('name', 'name');
+        $config = [
+            'strip_space' => true,
+            'tpl_path' => dirname(__FILE__) . '/',
+        ];
+        $data = ['name' => 'value'];
+        $template->display('display', $data, $config);
+        $this->expectOutputString('value');
+    }
+
+    public function testFetch()
+    {
+        $template = new Template();
+        $template->tpl_path = dirname(__FILE__) . '/';
+        $data = ['name' => 'value'];
+        $content = <<<EOF
+{\$name}
+EOF;
+
+        $template->fetch($content, $data);
+        $this->expectOutputString('value');
+    }
+
+    public function testVarAssign()
+    {
+        $template = new Template();
+        $template->assign('name', 'value');
+        $value = $template->get('name');
+        $this->assertEquals('value', $value);
     }
 }

@@ -55,12 +55,12 @@ EOF;
         $this->assertEquals($data, $content);
 
         $content = <<<EOF
-{volist name=":explode(',','1,2,3,4,5')" id="vo" key="key" offset="1" length="3"}
+{volist name="\$list" id="vo" key="key" offset="1" length="3"}
 {\$vo}
 {/volist}
 EOF;
 
-        $template->fetch($content);
+        $template->fetch($content, ['list' => [1,2,3,4,5]]);
         $this->expectOutputString('234');
     }
 
@@ -96,7 +96,7 @@ EOF;
         $this->assertEquals($content, $data);
 
         $content = <<<EOF
-{foreach name=":explode(',', '1,2,3,4,5')" id="val" key="key" index="index" offset="1" length="3"}
+{foreach name=":explode(',', '1,2,3,4,5')" id="val" key="key" index="index" mod="2" offset="1" length="3"}
 {\$val}
 {/foreach}
 EOF;
@@ -313,12 +313,12 @@ EOF;
         $cx       = new Cx($template);
 
         $content = <<<EOF
-{in name="var" value="1,2,3"}
+{in name="var" value="\$value"}
 default
 {/in}
 EOF;
         $data    = <<<EOF
-<?php if(in_array((\$var), explode(',',"1,2,3"))): ?>
+<?php if(in_array((\$var), is_array(\$value)?\$value:explode(',',\$value))): ?>
 default
 <?php endif; ?>
 EOF;
