@@ -23,7 +23,7 @@ class Redis extends SessionHandler
         'password'     => '', // 密码
         'expire'       => 3600, // 有效期
         'timeout'      => false, // 超时时间
-        'persistent'   => 0, // 是否长连接
+        'persistent'   => true, // 是否长连接
         'session_name' => '', // memcache key前缀
     ];
 
