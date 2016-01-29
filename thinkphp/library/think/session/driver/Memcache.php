@@ -14,7 +14,7 @@ namespace think\session\driver;
 use SessionHandler;
 use think\Exception;
 
-class Memcached extends SessionHandler
+class Memcache extends SessionHandler
 {
     protected $handler = null;
     protected $config  = [
@@ -22,6 +22,7 @@ class Memcached extends SessionHandler
         'port'         => 1121, // memcache端口
         'expire'       => 3600, // session有效期
         'timeout'      => 0, // 连接超时时间（单位：毫秒）
+        'persistent'   => true, // 长连接
         'session_name' => '', // memcache key前缀
     ];
 
@@ -39,14 +40,10 @@ class Memcached extends SessionHandler
     public function open($savePath, $sessName)
     {
         // 检测php环境
-        if (!extension_loaded('memcached')) {
-            throw new Exception('_NOT_SUPPERT_:memcached');
+        if (!extension_loaded('memcache')) {
+            throw new Exception('_NOT_SUPPERT_:memcache');
         }
-        $this->handler = new \Memcached;
-        // 设置连接超时时间（单位：毫秒）
-        if ($this->config['timeout'] > 0) {
-            $this->handler->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->config['timeout']);
-        }
+        $this->handler = new \Memcache;
         // 支持集群
         $hosts = explode(',', $this->config['host']);
         $ports = explode(',', $this->config['port']);
@@ -54,11 +51,12 @@ class Memcached extends SessionHandler
             $ports[0] = 11211;
         }
         // 建立连接
-        $servers = [];
         foreach ((array) $hosts as $i => $host) {
-            $servers[] = [$host, (isset($ports[$i]) ? $ports[$i] : $ports[0]), 1];
+            $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
+            $this->config['timeout'] > 0 ?
+            $this->handler->addServer($host, $port, $this->config['persistent'], 1) : 
+            $this->handler->addServer($host, $port, $this->config['persistent'], 1, $this->config['timeout']);
         }
-        $this->handler->addServers($servers);
         return true;
     }
 
@@ -92,7 +90,7 @@ class Memcached extends SessionHandler
      */
     public function write($sessID, $sessData)
     {
-        return $this->handler->set($this->config['session_name'] . $sessID, $sessData, $this->config['expire']);
+        return $this->handler->set($this->config['session_name'] . $sessID, $sessData, 0, $this->config['expire']);
     }
 
     /**
