@@ -308,7 +308,7 @@ class Model
     public function addAll($dataList, $options = [], $replace = false)
     {
         if (empty($dataList)) {
-            throw new Exception('no data to write')
+            throw new Exception('no data to write');
         }
         // 数据处理
         foreach ($dataList as $key => $data) {
@@ -415,7 +415,7 @@ class Model
             if (!empty($this->data) && isset($this->data[$pk])) {
                 return $this->delete($this->data[$pk]);
             } else {
-                throw new Exception('no data to delete without where');                
+                throw new Exception('no data to delete without where');
             }
         }
         if (is_numeric($options) || is_string($options)) {
@@ -451,7 +451,7 @@ class Model
         $options = $this->_parseOptions($options);
         if (empty($options['where'])) {
             // 如果条件为空 不进行删除操作 除非设置 1=1
-            throw new Exception('no data to delete without where');   
+            throw new Exception('no data to delete without where');
         }
         if (isset($options['where'][$pk])) {
             $pkValue = $options['where'][$pk];
