@@ -206,10 +206,6 @@ class Input
         if (0 === strpos($name, '?')) {
             return self::has(substr($name, 1), $input);
         }
-        if (is_null($input) && !empty($name)) {
-            $input = $name;
-            $name  = '';
-        }
         if (!empty($input)) {
             $data = $input;
             $name = (string) $name;
@@ -257,6 +253,8 @@ class Input
         foreach (explode('.', $name) as $val) {
             if (!isset($data[$val])) {
                 return false;
+            } else {
+                $data = $data[$val];
             }
         }
         return true;
