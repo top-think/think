@@ -22,14 +22,14 @@ class redisTest extends cacheTestCase
 
     protected function setUp()
     {
+        if (!extension_loaded("redis")) {
+            $this->markTestSkipped("Redis没有安装，已跳过测试！");
+        }
         \think\Cache::connect(array('type' => 'redis', 'expire' => 2));
     }
 
     protected function getCacheInstance()
     {
-        if (!extension_loaded("redis")) {
-            $this->markTestSkipped("Redis没有安装，已跳过测试！");
-        }
         if (null === $this->_cacheInstance) {
             $this->_cacheInstance = new \think\cache\driver\Redis();
         }
