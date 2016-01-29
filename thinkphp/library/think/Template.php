@@ -324,10 +324,8 @@ class Template
      */
     private function parsePhp(&$content)
     {
-        if (ini_get('short_open_tag')) {
-            // 开启短标签的情况要将<?标签用echo方式输出 否则无法正常输出xml标识
-            $content = preg_replace('/(<\?(?!php|=|$))/i', '<?php echo \'\\1\'; ?>' . "\n", $content);
-        }
+        // 短标签的情况要将<?标签用echo方式输出 否则无法正常输出xml标识
+        $content = preg_replace('/(<\?(?!php|=|$))/i', '<?php echo \'\\1\'; ?>' . "\n", $content);
         // PHP语法检查
         if ($this->config['tpl_deny_php'] && false !== strpos($content, '<?php')) {
             throw new Exception('not allow php tag', 11600);
@@ -855,6 +853,7 @@ class Template
                     $parseStr = '\\think\\Config::get(\'' . $vars[1] . '\')';
                     break;
                 default:
+                    $parseStr = '\'\'';
                     break;
             }
         } else {
@@ -967,18 +966,18 @@ class Template
                     $name = 'name';
                 }
                 if ($single) {
-                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\w\/\.\:@,\\\\]+)\\1(?>[^' . $end . ']*)' . $end;
+                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\w\-\/\.\:@,\\\\]+)\\1(?>[^' . $end . ']*)' . $end;
                 } else {
-                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\w\/\.\:@,\\\\]+)\\1(?>(?:(?!' . $end . ').)*)' . $end;
+                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\w\-\/\.\:@,\\\\]+)\\1(?>(?:(?!' . $end . ').)*)' . $end;
                 }
                 break;
             case 'tag':
                 $begin = $this->config['tpl_begin'];
                 $end   = $this->config['tpl_end'];
                 if (strlen(ltrim($begin, '\\')) == 1 && strlen(ltrim($end, '\\')) == 1) {
-                    $regex = $begin . '((?:(?:[\$]{1,2}|[\:\~][\$a-wA-w_]|[+]{2}[\$]|[-]{2}[\$])[\w\.\:\[\(\*\/\-\+\%_]|\/[\*\/])(?>[^' . $end . ']*))' . $end;
+                    $regex = $begin . '((?:[\$]{1,2}[a-wA-w_]|[\:\~][\$a-wA-w_]|[+]{2}[\$][a-wA-w_]|[-]{2}[\$][a-wA-w_]|\/[\*\/])(?>[^' . $end . ']*))' . $end;
                 } else {
-                    $regex = $begin . '((?:(?:[\$]{1,2}|[\:\~][\$a-wA-w_]|[+]{2}[\$]|[-]{2}[\$])[\w\.\:\[\(\*\/\-\+\%_]|\/[\*\/])(?>(?:(?!' . $end . ').)*))' . $end;
+                    $regex = $begin . '((?:[\$]{1,2}[a-wA-w_]|[\:\~][\$a-wA-w_]|[+]{2}[\$][a-wA-w_]|[-]{2}[\$][a-wA-w_]|\/[\*\/])(?>(?:(?!' . $end . ').)*))' . $end;
                 }
                 break;
         }
