@@ -24,17 +24,16 @@ class inputTest extends \PHPUnit_Framework_TestCase
     public function testInputName()
     {
         $input = ['a' => 'a', 'b' => ['c' => [' one ', 'two']]];
-        $this->assertEquals($input, Input::data('', '', '', false, $input));
-        $this->assertEquals($input['a'], Input::data('a', '', '', false, $input));
-        $this->assertEquals('one', Input::data('b.c.0/s', 'default', 'trim', false, $input));
+        $this->assertEquals($input, Input::data($input));
+        $this->assertEquals($input['a'], Input::data($input, 'a'));
+        $this->assertEquals('one', Input::data($input, 'b.c.0/s', 'default', 'trim'));
     }
 
     public function testDefaultValue()
     {
         $input   = ['a' => 'test'];
         $default = 'default';
-        $this->assertEquals($default, Input::data($input['b'], $default));
-        $this->assertEquals($default, Input::data($input, $default, '', false, $input));
+        $this->assertEquals($default, Input::data($input, 'b', $default));
         $this->assertEquals($default, Input::get('a', $default));
     }
 
@@ -42,25 +41,25 @@ class inputTest extends \PHPUnit_Framework_TestCase
     {
         $input   = ['a' => ' test ', 'b' => ' test<> '];
         $filters = 'trim';
-        $this->assertEquals('test', Input::data('a', '', $filters, false, $input));
+        $this->assertEquals('test', Input::data($input, 'a', '', $filters));
         $filters = 'trim,htmlspecialchars';
-        $this->assertEquals('test&lt;&gt;', Input::data('b', '', $filters, false, $input));
+        $this->assertEquals('test&lt;&gt;', Input::data($input, 'b', '', $filters));
     }
 
     public function testArrayFilter()
     {
         $input   = ['a' => ' test ', 'b' => ' test<> '];
         $filters = ['trim'];
-        $this->assertEquals('test', Input::data('a', '', $filters, false, $input));
+        $this->assertEquals('test', Input::data($input, 'a', '', $filters));
         $filters = ['trim', 'htmlspecialchars'];
-        $this->assertEquals('test&lt;&gt;', Input::data('b', '', $filters, false, $input));
+        $this->assertEquals('test&lt;&gt;', Input::data($input, 'b', '', $filters));
     }
 
     public function testFilterExp()
     {
         $src    = 'EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN';
         $regexs = explode('|', $src);
-        $data   = Input::data('', '', '', false, $regexs);
+        $data   = Input::data($regexs);
         foreach ($regexs as $key => $value) {
             $expected = $value . ' ';
             $this->assertEquals($expected, $data[$key]);
@@ -71,11 +70,11 @@ class inputTest extends \PHPUnit_Framework_TestCase
     {
         $input   = ['a' => 'test1', 'b' => '_test2', 'c' => ''];
         $filters = '/^test/';
-        $this->assertEquals('test1', Input::data('a', '', $filters, false, $input));
+        $this->assertEquals('test1', Input::data($input, 'a', '', $filters));
         $default = 'default value';
-        $this->assertEquals($default, Input::data('b', $default, $filters, false, $input));
+        $this->assertEquals($default, Input::data($input, 'b', $default, $filters));
         $filters = '/.+/';
-        $this->assertEquals('default value', Input::data('c', $default, $filters, false, $input));
+        $this->assertEquals('default value', Input::data($input, 'c', $default, $filters));
     }
 
     public function testFiltrateWithFilterVar()
@@ -85,10 +84,10 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $default = false;
         $input   = ['a' => $email, 'b' => $error];
         $filters = FILTER_VALIDATE_EMAIL;
-        $this->assertEquals($email, Input::data('a', '', $filters, false, $input));
-        $this->assertFalse(Input::data('b', $default, $filters, false, $input));
+        $this->assertEquals($email, Input::data($input, 'a', '', $filters));
+        $this->assertFalse(Input::data($input, 'b', $default, $filters));
         $filters = 'validate_email';
-        $this->assertFalse(Input::data('b', $default, $filters, false, $input));
+        $this->assertFalse(Input::data($input, 'b', $default, $filters));
     }
 
     public function testAllInput()
@@ -110,7 +109,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
             'e' => 'NEQ ',
             'f' => 'gt ',
         ];
-        $this->assertEquals($excepted, Input::data('', '', $filters, false, $input));
+        $this->assertEquals($excepted, Input::data($input, '', '', $filters));
     }
 
     public function testTypeCast()
@@ -184,12 +183,12 @@ class inputTest extends \PHPUnit_Framework_TestCase
     {
         Input::setFilter('htmlspecialchars');
         $input = ['a' => ' test<> ', 'b' => '<b\\ar />'];
-        $this->assertEquals(' test<> ', Input::data('a', '', '', false, $input));
+        $this->assertEquals(' test<> ', Input::data($input, 'a', '', ''));
         $filters = ['trim'];
-        $this->assertEquals('test<>', Input::data('a', '', $filters, false, $input));
-        $this->assertEquals('test&lt;&gt;', Input::data('a', '', $filters, true, $input));
+        $this->assertEquals('test<>', Input::data($input, 'a', '', $filters));
+        $this->assertEquals('test&lt;&gt;', Input::data($input, 'a', '', $filters, true));
         $filters = 'stripslashes';
-        $this->assertEquals("&lt;bar /&gt;", Input::data('b', '', $filters, true, $input));
+        $this->assertEquals("&lt;bar /&gt;", Input::data($input, 'b', '', $filters, true));
     }
 
 }

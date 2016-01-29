@@ -26,7 +26,7 @@ class Input
      */
     public static function get($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $_GET);
+        return self::data($_GET, $name, $default, $filter, $merge);
     }
 
     /**
@@ -39,7 +39,7 @@ class Input
      */
     public static function post($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $_POST);
+        return self::data($_POST, $name, $default, $filter, $merge);
     }
 
     /**
@@ -56,7 +56,7 @@ class Input
         if (is_null($_PUT)) {
             parse_str(file_get_contents('php://input'), $_PUT);
         }
-        return self::data($name, $default, $filter, $merge, $_PUT);
+        return self::data($_PUT, $name, $default, $filter, $merge);
     }
 
     /**
@@ -92,7 +92,7 @@ class Input
      */
     public static function request($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $_REQUEST);
+        return self::data($_REQUEST, $name, $default, $filter, $merge);
     }
 
     /**
@@ -105,7 +105,7 @@ class Input
      */
     public static function session($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $_SESSION);
+        return self::data($_SESSION, $name, $default, $filter, $merge);
     }
 
     /**
@@ -118,7 +118,7 @@ class Input
      */
     public static function cookie($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $_COOKIE);
+        return self::data($_COOKIE, $name, $default, $filter, $merge);
     }
 
     /**
@@ -131,7 +131,7 @@ class Input
      */
     public static function server($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data(strtoupper($name), $default, $filter, $merge, $_SERVER);
+        return self::data($_SERVER, strtoupper($name), $default, $filter, $merge);
     }
 
     /**
@@ -144,7 +144,7 @@ class Input
      */
     public static function globals($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $GLOBALS);
+        return self::data($GLOBALS, $name, $default, $filter, $merge);
     }
 
     /**
@@ -157,7 +157,7 @@ class Input
      */
     public static function env($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data(strtoupper($name), $default, $filter, $merge, $_ENV);
+        return self::data($_ENV, strtoupper($name), $default, $filter, $merge);
     }
 
     /**
@@ -173,7 +173,7 @@ class Input
         if (!empty($_SERVER['PATH_INFO'])) {
             $depr  = \think\Config::get('pathinfo_depr');
             $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
-            return self::data($name, $default, $filter, $merge, $input);
+            return self::data($input, $name, $default, $filter, $merge);
         } else {
             return $default;
         }
@@ -189,19 +189,19 @@ class Input
      */
     public static function file($name = '', $default = null, $filter = null, $merge = false)
     {
-        return self::data($name, $default, $filter, $merge, $_FILES);
+        return self::data($_FILES, $name, $default, $filter, $merge);
     }
 
     /**
-     * 获取系统变量 支持过滤和默认值
+     * 获取变量 支持过滤和默认值
+     * @param array $input 数据源
      * @param string $name 字段名
      * @param mixed $default 默认值
      * @param mixed $filter 过滤函数
      * @param boolean $merge 是否与默认的过虑方法合并
-     * @param array $input 数据源
      * @return mixed
      */
-    public static function data($name, $default = null, $filter = null, $merge = false, $input = null)
+    public static function data($input, $name, $default = null, $filter = null, $merge = false)
     {
         if (0 === strpos($name, '?')) {
             return self::has(substr($name, 1), $input);
