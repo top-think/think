@@ -24,8 +24,8 @@ class inputTest extends \PHPUnit_Framework_TestCase
     public function testInputName()
     {
         $input = ['a' => 'a', 'b' => ['c' => [' one ', 'two']]];
-        $this->assertEquals($input, Input::data($input));
-        $this->assertEquals($input['a'], Input::data($input['a']));
+        $this->assertEquals($input, Input::data('', '', '', false, $input));
+        $this->assertEquals($input['a'], Input::data('a', '', '', false, $input));
         $this->assertEquals('one', Input::data('b.c.0/s', 'default', 'trim', false, $input));
     }
 
@@ -60,7 +60,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
     {
         $src    = 'EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN';
         $regexs = explode('|', $src);
-        $data   = Input::data($regexs);
+        $data   = Input::data('', '', '', false, $regexs);
         foreach ($regexs as $key => $value) {
             $expected = $value . ' ';
             $this->assertEquals($expected, $data[$key]);
@@ -110,7 +110,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
             'e' => 'NEQ ',
             'f' => 'gt ',
         ];
-        $this->assertEquals($excepted, Input::data($input, '', $filters));
+        $this->assertEquals($excepted, Input::data('', '', $filters, false, $input));
     }
 
     public function testTypeCast()
