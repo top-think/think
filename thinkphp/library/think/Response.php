@@ -28,7 +28,7 @@ class Response
      * @param mixed $data 要返回的数据
      * @param String $type 返回数据格式
      * @param bool $return 是否返回数据
-     * @return void
+     * @return mixed
      */
     public static function send($data = '', $type = '', $return = false)
     {
@@ -95,7 +95,7 @@ class Response
      * 输出类型设置
      * @access public
      * @param string $type 输出内容的格式类型
-     * @return void
+     * @return mixed
      */
     public static function type($type = null)
     {
@@ -120,7 +120,7 @@ class Response
      * 输出是否exit设置
      * @access public
      * @param bool $exit 是否退出
-     * @return void
+     * @return mixed
      */
     public static function isExit($exit = null)
     {
@@ -137,7 +137,7 @@ class Response
      * @param integer $code 返回的code
      * @param mixed $msg 提示信息
      * @param string $type 返回数据格式
-     * @return void
+     * @return mixed
      */
     public static function result($data, $code = 0, $msg = '', $type = '')
     {
@@ -161,7 +161,7 @@ class Response
      * @param mixed $data 返回的数据
      * @param mixed $url 跳转的URL地址
      * @param mixed $wait 跳转等待时间
-     * @return void
+     * @return mixed
      */
     public static function success($msg = '', $data = '', $url = '', $wait = 3)
     {
@@ -194,7 +194,7 @@ class Response
      * @param mixed $data 返回的数据
      * @param mixed $url 跳转的URL地址
      * @param mixed $wait 跳转等待时间
-     * @return void
+     * @return mixed
      */
     public static function error($msg = '', $data = '', $url = '', $wait = 3)
     {

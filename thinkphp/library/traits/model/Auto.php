@@ -469,7 +469,7 @@ trait Auto
      * 指定自动完成
      * @access public
      * @param array $auto 自动完成设置
-     * @return Model
+     * @return Auto
      */
     public function auto($auto)
     {
@@ -481,7 +481,7 @@ trait Auto
      * 指定自动验证
      * @access public
      * @param array $validate 自动验证设置
-     * @return Model
+     * @return Auto
      */
     public function validate($validate)
     {

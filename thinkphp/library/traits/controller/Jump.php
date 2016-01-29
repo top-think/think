@@ -25,7 +25,7 @@ trait Jump
      * @param mixed $data 返回的数据
      * @param mixed $url 跳转的URL地址
      * @param mixed $wait 跳转等待时间
-     * @return void
+     * @return mixed
      */
     public function error($msg = '', $data = '', $url = '', $wait = 3)
     {
@@ -39,7 +39,7 @@ trait Jump
      * @param mixed $data 返回的数据
      * @param mixed $url 跳转的URL地址
      * @param mixed $wait 跳转等待时间
-     * @return void
+     * @return mixed
      */
     public function success($msg = '', $data = '', $url = '', $wait = 3)
     {
@@ -55,7 +55,7 @@ trait Jump
      */
     public function redirect($url, $params = [])
     {
-        return Response::redirect($url, $params);
+        Response::redirect($url, $params);
     }
 
 }

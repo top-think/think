@@ -43,7 +43,7 @@ class Hook
      * @param boolean $recursive 是否递归合并
      * @return void
      */
-    public static function import($tags, $recursive = true)
+    public static function import(array $tags, $recursive = true)
     {
         if (!$recursive) {
             // 覆盖导入
@@ -117,7 +117,7 @@ class Hook
      * @param string $class 行为类名称
      * @param string $tag 方法名（标签名）
      * @param Mixed $params 传人的参数
-     * @return void
+     * @return mixed
      */
     public static function exec($class, $tag = '', &$params = null)
     {

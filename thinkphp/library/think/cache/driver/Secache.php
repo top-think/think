@@ -225,7 +225,7 @@ class SecacheClient
 
     public function fetch($key, &$return)
     {
-
+        $locked = false;
         if ($this->lock(false)) {
             $locked = true;
         }
@@ -275,7 +275,7 @@ class SecacheClient
      *
      * @param mixed $is_block 是否阻塞
      * @access public
-     * @return void
+     * @return bool
      */
     public function lock($is_block, $whatever = false)
     {
@@ -287,7 +287,7 @@ class SecacheClient
      * 如果flock不管用，请继承本类，并重载此方法
      *
      * @access public
-     * @return void
+     * @return bool
      */
     public function unlock()
     {
@@ -400,7 +400,7 @@ class SecacheClient
      *
      * @param mixed $key
      * @access public
-     * @return void
+     * @return mixed
      */
     public function search($key, &$pos)
     {

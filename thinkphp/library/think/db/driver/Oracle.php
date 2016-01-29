@@ -46,6 +46,8 @@ class Oracle extends Driver
      * @param array $bind 参数绑定
      * @param boolean $fetch  不执行只是获取SQL
      * @return integer
+     * @throws \Exception
+     * @throws \think\Exception
      */
     public function execute($sql, $bind = [], $fetch = false)
     {
@@ -84,7 +86,7 @@ class Oracle extends Driver
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new Exception($this->getError());
+            throw new \Exception($this->getError());
         }
     }
 

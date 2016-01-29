@@ -132,7 +132,7 @@ class Debug
     /**
      * 获取文件加载信息
      * @param bool $detail 是否显示详细
-     * @return void
+     * @return integer|array
      */
     public static function getFile($detail = false)
     {
