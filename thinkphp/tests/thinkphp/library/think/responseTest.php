@@ -21,7 +21,7 @@ class responseTest extends \PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var Response
+     * @var \think\Response
      */
     protected $object;
 

@@ -42,7 +42,10 @@ class Oracle extends Driver
      * 执行语句
      * @access public
      * @param string $str  sql指令
+     * @param array $bind
      * @return integer
+     * @throws \think\Exception
+     * @throws \Exception
      */
     public function execute($str, $bind = [])
     {
@@ -78,7 +81,7 @@ class Oracle extends Driver
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 

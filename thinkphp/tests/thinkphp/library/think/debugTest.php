@@ -50,7 +50,6 @@ class debugTest extends \PHPUnit_Framework_TestCase
     public function testRemark()
     {
         $name  = "testremarkkey";
-        $value = "testremarkval";
         \think\Debug::remark($name);
     }
 

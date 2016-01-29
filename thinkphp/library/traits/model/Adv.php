@@ -123,7 +123,7 @@ trait Adv
     /**
      * 检查乐观锁
      * @access protected
-     * @param inteter $id  当前主键
+     * @param integer $id  当前主键
      * @param array $data  当前数据
      * @return mixed
      */
@@ -217,6 +217,7 @@ trait Adv
      * @param array $data 数据
      * @param string $type 返回类型 默认为数组
      * @return mixed
+     * @throws \think\Exception
      */
     public function returnResult($data, $type = 'array')
     {
@@ -240,7 +241,7 @@ trait Adv
      * @access protected
      * @param array $resultSet 数据
      * @param string $type 返回类型 默认为数组
-     * @return void
+     * @return array
      */
     protected function returnResultSet(&$resultSet, $type = '')
     {

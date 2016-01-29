@@ -150,6 +150,7 @@ class Model
      * @param string $method 方法名称
      * @param array $args 调用参数
      * @return mixed
+     * @throws \think\Exception
      */
     public function __call($method, $args)
     {
@@ -185,6 +186,7 @@ class Model
      * @param mixed $data 要操作的数据
      * @param string $type insert 或者 update
      * @return array
+     * @throws \think\Exception
      */
     protected function _write_data($data, $type)
     {
@@ -255,6 +257,7 @@ class Model
      * @param mixed $data 数据
      * @param boolean $replace 是否replace
      * @return mixed
+     * @throws \think\Exception
      */
     public function add($data = '', $replace = false)
     {
@@ -332,6 +335,7 @@ class Model
      * @access public
      * @param mixed $data 数据
      * @return boolean
+     * @throws \think\Exception
      */
     public function save($data = '')
     {
@@ -406,6 +410,7 @@ class Model
      * @access public
      * @param mixed $options 表达式
      * @return mixed
+     * @throws \think\Exception
      */
     public function delete($options = [])
     {
@@ -476,6 +481,7 @@ class Model
      * @access public
      * @param mixed $options 表达式参数
      * @return mixed
+     * @throws \think\Exception
      */
     public function select($options = [])
     {
@@ -532,7 +538,7 @@ class Model
             }
 
             // 数据列表读取后的处理
-            $resultSet = $this->_read_datalist($resultSet, $options);
+            $resultSet = $this->_read_data_list($resultSet, $options);
             // 回调
             $this->_after_select($resultSet, $options);
             if (isset($options['index'])) {
@@ -559,10 +565,10 @@ class Model
     /**
      * 数据列表读取后的处理
      * @access protected
-     * @param array $data 当前数据
+     * @param array $resultSet 当前数据
      * @return array
      */
-    protected function _read_datalist($resultSet, $options)
+    protected function _read_data_list($resultSet, $options)
     {
         $resultSet = array_map([$this, '_read_data'], $resultSet);
         return $resultSet;
@@ -574,9 +580,9 @@ class Model
     /**
      * 获取一条记录的某个字段值
      * @access public
-     * @param string $field  字段名
-     * @param string $spea  字段数据间隔符号 NULL返回数组
-     * @return mixed
+     * @param string $field 字段名
+     * @param null   $sepa  字段数据间隔符号 NULL返回数组
+     * @return array|mixed|null
      */
     public function getField($field, $sepa = null)
     {
@@ -677,6 +683,7 @@ class Model
      * @param integer $step  增长值
      * @param integer $lazyTime  延时时间(s)
      * @return boolean
+     * @throws \think\Exception
      */
     public function setInc($field, $step = 1, $lazyTime = 0)
     {
@@ -705,6 +712,7 @@ class Model
      * @param integer $step  减少值
      * @param integer $lazyTime  延时时间(s)
      * @return boolean
+     * @throws \think\Exception
      */
     public function setDec($field, $step = 1, $lazyTime = 0)
     {
@@ -835,6 +843,7 @@ class Model
      * @access public
      * @param mixed $options 表达式参数
      * @return mixed
+     * @throws \think\Exception
      */
     public function find($options = [])
     {
@@ -930,6 +939,7 @@ class Model
      * @param mixed $data 创建数据
      * @param string $type 状态
      * @return mixed
+     * @throws \think\Exception
      */
     public function create($data = '', $type = '')
     {
@@ -1198,6 +1208,7 @@ class Model
      * @access public
      * @param mixed $data 数据
      * @return Model
+     * @throws \think\Exception
      */
     public function data($data = '')
     {
@@ -1308,6 +1319,7 @@ class Model
      * @param mixed $union
      * @param boolean $all
      * @return Model
+     * @throws \think\Exception
      */
     public function union($union, $all = false)
     {

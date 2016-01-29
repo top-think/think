@@ -21,7 +21,7 @@ class Controller
 
     /**
      * 前置操作方法列表
-     * @var beforeActionList
+     * @var array $beforeActionList
      * @access protected
      */
     protected $beforeActionList = [];
