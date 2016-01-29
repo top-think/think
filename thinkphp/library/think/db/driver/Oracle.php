@@ -11,6 +11,7 @@
 
 namespace think\db\driver;
 
+use think\Config;
 use think\Db;
 use think\db\Driver;
 
@@ -41,23 +42,26 @@ class Oracle extends Driver
     /**
      * 执行语句
      * @access public
-     * @param string $str  sql指令
+     * @param string $sql  sql指令
+     * @param array $bind 参数绑定
+     * @param boolean $fetch  不执行只是获取SQL
      * @return integer
      */
-    public function execute($str, $bind = [])
+    public function execute($sql, $bind = [], $fetch = false)
     {
         $this->initConnect(true);
         if (!$this->linkID) {
             return false;
         }
 
-        $this->queryStr = $str;
-        if (!empty($bind)) {
-            $this->queryStr .= '[ ' . print_r($bind, true) . ' ]';
+        // 根据参数绑定组装最终的SQL语句
+        $this->queryStr = $this->getBindSql($sql, $bind);
+        if ($fetch) {
+            return $this->queryStr;
         }
         $flag = false;
-        if (preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $str, $match)) {
-            $this->table = C("DB_SEQUENCE_PREFIX") . str_ireplace(C("DB_PREFIX"), "", $match[2]);
+        if (preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $sql, $match)) {
+            $this->table = Config::get("db_sequence_prefix") . str_ireplace(Config::get("database.prefix"), "", $match[2]);
             $flag        = (boolean) $this->query("SELECT * FROM user_sequences WHERE sequence_name='" . strtoupper($this->table) . "'");
         }
         //释放前次的查询结果
@@ -69,16 +73,18 @@ class Oracle extends Driver
         try {
             // 记录开始执行时间
             $this->debug(true);
-            $this->PDOStatement = $this->linkID->prepare($str);
-            $result             = $this->PDOStatement->execute($bind);
+            $this->PDOStatement = $this->linkID->prepare($sql);
+            // 参数绑定操作
+            $this->bindValue($bind);
+            $result = $this->PDOStatement->execute();
             $this->debug(false);
             $this->numRows = $this->PDOStatement->rowCount();
-            if ($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
+            if ($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $sql)) {
                 $this->lastInsID = $this->linkID->lastInsertId();
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new Exception($e->getMessage());
+            throw new Exception($this->getError());
         }
     }
 

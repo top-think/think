@@ -135,7 +135,6 @@ class Sqlsrv extends Driver
         } else {
             $limitStr = '(T1.ROW_NUMBER BETWEEN 1 AND ' . $limit[0] . ")";
         }
-
         return 'WHERE ' . $limitStr;
     }
 
@@ -149,13 +148,14 @@ class Sqlsrv extends Driver
     public function update($data, $options)
     {
         $this->model = $options['model'];
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
         $sql         = 'UPDATE '
         . $this->parseTable($options['table'])
         . $this->parseSet($data)
         . $this->parseWhere(!empty($options['where']) ? $options['where'] : '')
         . $this->parseLock(isset($options['lock']) ? $options['lock'] : false)
         . $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
-        return $this->execute($sql, $this->parseBind(!empty($options['bind']) ? $options['bind'] : []));
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -167,12 +167,13 @@ class Sqlsrv extends Driver
     public function delete($options = [])
     {
         $this->model = $options['model'];
+        $this->bind  = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
         $sql         = 'DELETE FROM '
         . $this->parseTable($options['table'])
         . $this->parseWhere(!empty($options['where']) ? $options['where'] : '')
         . $this->parseLock(isset($options['lock']) ? $options['lock'] : false)
         . $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
-        return $this->execute($sql, $this->parseBind(!empty($options['bind']) ? $options['bind'] : []));
+        return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
 }
