@@ -265,8 +265,7 @@ class Model
                 // 重置数据
                 $this->data = [];
             } else {
-                $this->error = Lang::get('_DATA_TYPE_INVALID_');
-                return false;
+                throw new Exception('invalid data');
             }
         }
         // 数据处理
@@ -309,8 +308,7 @@ class Model
     public function addAll($dataList, $options = [], $replace = false)
     {
         if (empty($dataList)) {
-            $this->error = Lang::get('_DATA_TYPE_INVALID_');
-            return false;
+            throw new Exception('no data to write')
         }
         // 数据处理
         foreach ($dataList as $key => $data) {
@@ -344,16 +342,14 @@ class Model
                 // 重置数据
                 $this->data = [];
             } else {
-                $this->error = Lang::get('_DATA_TYPE_INVALID_');
-                return false;
+                throw new Exception('no data require update');
             }
         }
         // 数据处理
         $data = $this->_write_data($data, 'update');
         if (empty($data)) {
             // 没有数据则不执行
-            $this->error = Lang::get('_DATA_TYPE_INVALID_');
-            return false;
+            throw new Exception('no data require update');
         }
         // 分析表达式
         $options = $this->_parseOptions();
@@ -370,16 +366,14 @@ class Model
                         $where[$field] = $data[$field];
                     } else {
                         // 如果缺少复合主键数据则不执行
-                        $this->error = Lang::get('_OPERATION_WRONG_');
-                        return false;
+                        throw new Exception('miss complex primary data');
                     }
                     unset($data[$field]);
                 }
             }
             if (!isset($where)) {
                 // 如果没有任何更新条件则不执行
-                $this->error = Lang::get('_OPERATION_WRONG_');
-                return false;
+                throw new Exception('no data to update without where');
             } else {
                 $options['where'] = $where;
             }
@@ -421,7 +415,7 @@ class Model
             if (!empty($this->data) && isset($this->data[$pk])) {
                 return $this->delete($this->data[$pk]);
             } else {
-                return false;
+                throw new Exception('no data to delete without where');                
             }
         }
         if (is_numeric($options) || is_string($options)) {
@@ -450,14 +444,14 @@ class Model
                 }
                 $options['where'] = $where;
             } else {
-                return false;
+                throw new Exception('miss complex primary data');
             }
         }
         // 分析表达式
         $options = $this->_parseOptions($options);
         if (empty($options['where'])) {
             // 如果条件为空 不进行删除操作 除非设置 1=1
-            return false;
+            throw new Exception('no data to delete without where');   
         }
         if (isset($options['where'][$pk])) {
             $pkValue = $options['where'][$pk];
@@ -511,7 +505,7 @@ class Model
                 }
                 $options['where'] = $where;
             } else {
-                return false;
+                throw new Exception('miss complex primary data');
             }
         } elseif (false === $options) {
             // 用于子查询 不查询只返回SQL
@@ -689,7 +683,7 @@ class Model
         $condition = $this->options['where'];
         if (empty($condition)) {
             // 没有条件不做任何更新
-            return false;
+            throw new Exception('no data to update');
         }
         if ($lazyTime > 0) {
             // 延迟写入
@@ -717,7 +711,7 @@ class Model
         $condition = $this->options['where'];
         if (empty($condition)) {
             // 没有条件不做任何更新
-            return false;
+            throw new Exception('no data to update');
         }
         if ($lazyTime > 0) {
             // 延迟写入
@@ -867,7 +861,7 @@ class Model
                 }
                 $options['where'] = $where;
             } else {
-                return false;
+                throw new Exception('miss complex primary data');
             }
         }
         // 总是查找一条记录
@@ -941,14 +935,13 @@ class Model
     {
         // 如果没有传值默认取POST数据
         if (empty($data)) {
-            $data = $_POST;
+            $data = \think\Input::post();
         } elseif (is_object($data)) {
             $data = get_object_vars($data);
         }
         // 验证数据
         if (empty($data) || !is_array($data)) {
-            $this->error = Lang::get('_DATA_TYPE_INVALID_');
-            return false;
+            throw new Exception('invalid data type');
         }
 
         // 状态
