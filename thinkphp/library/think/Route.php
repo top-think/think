@@ -499,7 +499,7 @@ class Route
             if (false !== $match = self::match($url, $rule, $pattern)) {
                 // 匹配到路由规则
                 // 检测是否定义路由
-                if ($option['after_behavior']) {
+                if (!empty($option['after_behavior'])) {
                     Hook::exec($option['after_behavior'], $route);
                 }
                 if ($route instanceof \Closure) {
