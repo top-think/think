@@ -2,7 +2,7 @@
     "name": "topthink/think",
     "description": "the new thinkphp framework",
     "type": "project",
-    "keywords": ["framework","thinkphp","ORM"],
+    "keywords": ["framework", "thinkphp", "ORM"],
     "homepage": "http://thinkphp.cn/",
     "license": "Apache2",
     "authors": [
@@ -23,6 +23,6 @@
         "squizlabs/php_codesniffer": "2.*"
     },
     "config": {
-      "vendor-dir": "thinkphp/vendor"
+        "vendor-dir": "thinkphp/vendor"
     }
 }
