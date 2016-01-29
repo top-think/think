@@ -86,7 +86,7 @@ class Oracle extends Driver
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new \Exception($this->getError());
+            throw new \think\Exception($this->getError());
         }
     }
 
