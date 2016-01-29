@@ -108,6 +108,8 @@ abstract class Driver
     /**
      * 连接数据库方法
      * @access public
+     * @return resource
+     * @throws \think\Exception
      */
     public function connect($config = '', $linkNum = 0, $autoConnection = false)
     {
@@ -160,7 +162,8 @@ abstract class Driver
      * @param array $bind 参数绑定
      * @param boolean $fetch  不执行只是获取SQL
      * @param boolean $master  是否在主服务器读操作
-     * @return mixed
+     * @return array|bool|string
+     * @throws \think\Exception
      */
     public function query($sql, $bind = [], $fetch = false, $master = false)
     {
@@ -205,6 +208,7 @@ abstract class Driver
      * @param array $bind 参数绑定
      * @param boolean $fetch  不执行只是获取SQL
      * @return integer
+     * @throws \think\Exception
      */
     public function execute($sql, $bind = [], $fetch = false)
     {
@@ -275,6 +279,7 @@ abstract class Driver
      * @access public
      * @param array $bind 要绑定的参数列表
      * @return void
+     * @throws \think\Exception
      */
     protected function bindValue(array $bind = [])
     {
@@ -295,7 +300,7 @@ abstract class Driver
     /**
      * 启动事务
      * @access public
-     * @return void
+     * @return void|false
      */
     public function startTrans()
     {
@@ -315,13 +320,14 @@ abstract class Driver
     /**
      * 用于非自动提交状态下面的查询提交
      * @access public
-     * @return boolen
+     * @return boolean
+     * @throws \think\Exception
      */
     public function commit()
     {
         if ($this->transTimes > 0) {
             try {
-                $result           = $this->linkID->commit();
+                $this->linkID->commit();
                 $this->transTimes = 0;
             } catch (\PDOException $e) {
                 throw new Exception($e->getMessage());
@@ -333,13 +339,14 @@ abstract class Driver
     /**
      * 事务回滚
      * @access public
-     * @return boolen
+     * @return boolean
+     * @throws \think\Exception
      */
     public function rollback()
     {
         if ($this->transTimes > 0) {
             try {
-                $result           = $this->linkID->rollback();
+                $this->linkID->rollback();
                 $this->transTimes = 0;
             } catch (\PDOException $e) {
                 throw new Exception($e->getMessage());
@@ -394,6 +401,7 @@ abstract class Driver
     /**
      * 设置锁机制
      * @access protected
+     * @param bool $lock
      * @return string
      */
     protected function parseLock($lock = false)
@@ -957,7 +965,7 @@ abstract class Driver
      * @access public
      * @param string $fields 要插入的数据表字段名
      * @param string $table 要插入的数据表名
-     * @param array $option  查询数据参数
+     * @param array $options  查询数据参数
      * @return false | integer
      */
     public function selectInsert($fields, $table, $options = [])
@@ -1208,7 +1216,7 @@ abstract class Driver
      * 连接分布式服务器
      * @access protected
      * @param boolean $master 主服务器
-     * @return void
+     * @return resource
      */
     protected function multiConnect($master = false)
     {

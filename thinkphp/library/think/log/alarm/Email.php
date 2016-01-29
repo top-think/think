@@ -29,7 +29,7 @@ class Email
     /**
      * 通知发送接口
      * @access public
-     * @param string $log 日志信息
+     * @param string $msg 日志信息
      * @return void
      */
     public function send($msg = '')

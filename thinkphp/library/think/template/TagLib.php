@@ -39,21 +39,21 @@ class TagLib
 
     /**
      * 标签库标签列表
-     * @var string
+     * @var array
      * @access protected
      */
     protected $tagList = [];
 
     /**
      * 标签库分析数组
-     * @var string
+     * @var array
      * @access protected
      */
     protected $parse = [];
 
     /**
      * 标签库是否有效
-     * @var string
+     * @var bool
      * @access protected
      */
     protected $valid = false;
@@ -70,7 +70,7 @@ class TagLib
     /**
      * 架构函数
      * @access public
-     * @param class $template 模板引擎对象
+     * @param \stdClass $template 模板引擎对象
      */
     public function __construct($template)
     {

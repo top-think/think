@@ -34,7 +34,7 @@ class Socket
 
     /**
      * 架构函数
-     * @param array $options 缓存参数
+     * @param array $config 缓存参数
      * @access public
      */
     public function __construct($config = [])
@@ -211,8 +211,7 @@ class Socket
             "Content-Type: application/json;charset=UTF-8",
         ];
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); //设置header
-        $txt = curl_exec($ch);
-        return true;
+        return curl_exec($ch);
     }
 
 }

@@ -77,7 +77,7 @@ class Pgsql extends Driver
     /**
      * limit分析
      * @access protected
-     * @param mixed $lmit
+     * @param mixed $limit
      * @return string
      */
     public function parseLimit($limit)

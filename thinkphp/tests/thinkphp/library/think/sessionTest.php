@@ -21,7 +21,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var Session
+     * @var \think\Session
      */
     protected $object;
 

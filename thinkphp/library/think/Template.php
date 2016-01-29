@@ -321,6 +321,7 @@ class Template
      * @access private
      * @param string $content 要解析的模板内容
      * @return void
+     * @throws \think\Exception
      */
     private function parsePhp(&$content)
     {

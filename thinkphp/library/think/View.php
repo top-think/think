@@ -47,6 +47,7 @@ class View
      * 初始化视图
      * @access public
      * @param array $config  配置参数
+     * @return object
      */
     public static function instance(array $config = [])
     {
@@ -61,6 +62,7 @@ class View
      * @access public
      * @param mixed $name  变量名
      * @param mixed $value 变量值
+     * @return View
      */
     public function assign($name, $value = '')
     {

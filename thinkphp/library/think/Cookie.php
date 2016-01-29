@@ -60,7 +60,7 @@ class Cookie
      *
      * @param string $name  cookie名称
      * @param mixed  $value cookie值
-     * @param null   $option
+     * @param mixed  $option 可选参数 可能会是 null|integer|string
      *
      * @return mixed
      * @internal param mixed $options cookie参数

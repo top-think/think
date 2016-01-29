@@ -319,7 +319,7 @@ class App
     }
 
     // 分析 PATH_INFO
-    private static function parsePathinfo($config)
+    private static function parsePathinfo(array $config)
     {
         if (isset($_GET[$config['var_pathinfo']])) {
             // 判断URL里面是否有兼容模式参数
@@ -347,10 +347,10 @@ class App
     /**
      * URL路由检测（根据PATH_INFO)
      * @access public
-     * @param $config
+     * @param  array $config
      * @throws Exception
      */
-    public static function route($config)
+    public static function route(array $config)
     {
         // 解析PATH_INFO
         self::parsePathinfo($config);

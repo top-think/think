@@ -36,18 +36,18 @@ class Error
     /**
      * 自定义错误处理
      * @access public
-     * @param int $errno 错误类型
-     * @param string $errstr 错误信息
-     * @param string $errfile 错误文件
-     * @param int $errline 错误行数
+     * @param int    $error_number 错误类型
+     * @param string $error_string 错误信息
+     * @param string $error_file   错误文件
+     * @param int    $error_line   错误行数
      * @return void
      */
-    public static function appError($errno, $errstr, $errfile, $errline)
+    public static function appError($error_number, $error_string, $error_file, $error_line)
     {
-        $errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
-        switch ($errno) {
+        $errorStr = "[{$error_number}] {$error_string} {$error_file} 第 {$error_line} 行.";
+        switch ($error_number) {
             case E_USER_ERROR:
-                self::halt($errorStr, $errno);
+                self::halt($errorStr, $error_number);
                 break;
             case E_STRICT:
             case E_USER_WARNING:
