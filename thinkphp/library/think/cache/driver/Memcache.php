@@ -14,15 +14,16 @@ namespace think\cache\driver;
 use think\Cache;
 use think\Exception;
 
-class Memcached
+class Memcache
 {
     protected $handler = null;
     protected $options = [
-        'host'    => '127.0.0.1',
-        'port'    => 11211,
-        'expire'  => 0,
-        'timeout' => 0, // 超时时间（单位：毫秒）
-        'length'  => 0,
+        'host'       => '127.0.0.1',
+        'port'       => 11211,
+        'expire'     => 0,
+        'timeout'    => 0, // 超时时间（单位：毫秒）
+        'persistent' => true,
+        'length'     => 0,
     ];
 
     /**
@@ -32,17 +33,13 @@ class Memcached
      */
     public function __construct($options = [])
     {
-        if (!extension_loaded('memcached')) {
-            throw new Exception('_NOT_SUPPERT_:memcached');
+        if (!extension_loaded('memcache')) {
+            throw new Exception('_NOT_SUPPERT_:memcache');
         }
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $this->handler = new \Memcached;
-        // 设置连接超时时间（单位：毫秒）
-        if ($this->options['timeout'] > 0) {
-            $this->handler->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->options['timeout']);
-        }
+        $this->handler = new \Memcache;
         // 支持集群
         $hosts = explode(',', $this->options['host']);
         $ports = explode(',', $this->options['port']);
@@ -50,11 +47,12 @@ class Memcached
             $ports[0] = 11211;
         }
         // 建立连接
-        $servers = [];
         foreach ((array) $hosts as $i => $host) {
-            $servers[] = [$host, (isset($ports[$i]) ? $ports[$i] : $ports[0]), 1];
+            $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
+            $this->options['timeout'] > 0 ?
+            $this->handler->addServer($host, $port, $this->options['persistent'], 1) : 
+            $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']);
         }
-        $this->handler->addServers($servers);
     }
 
     /**
@@ -84,7 +82,7 @@ class Memcached
             $expire = $this->options['expire'];
         }
         $name = $this->options['prefix'] . $name;
-        if ($this->handler->set($name, $value, $expire)) {
+        if ($this->handler->set($name, $value, 0, $expire)) {
             if ($this->options['length'] > 0) {
                 // 记录缓存队列
                 $queue = $this->handler->get('__info__');

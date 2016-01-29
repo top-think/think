@@ -294,7 +294,7 @@ function trace($log = '[think]', $level = 'log')
  * @param array $vars 模板变量
  * @return string
  */
-function V($template, $vars)
+function V($template = '', $vars = [])
 {
     return \think\View::instance(\think\Config::get())->fetch($template, $vars);
 }

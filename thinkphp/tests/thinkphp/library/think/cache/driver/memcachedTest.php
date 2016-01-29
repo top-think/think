@@ -24,6 +24,9 @@ class memcachedTest extends cacheTestCase
      */
     protected function setUp()
     {
+        if (!extension_loaded("memcached") && !extension_loaded('memcache')) {
+            $this->markTestSkipped("Memcached或Memcache没有安装，已跳过测试！");
+        }
         \think\Cache::connect(array('type' => 'memcached', 'expire' => 2));
     }
     /**
@@ -31,9 +34,6 @@ class memcachedTest extends cacheTestCase
      */
     protected function getCacheInstance()
     {
-        if (!extension_loaded("memcached")) {
-            $this->markTestSkipped("Memcached没有安装，已跳过测试！");
-        }
         if (null === $this->_cacheInstance) {
             $this->_cacheInstance = new \think\cache\driver\Memcached();
         }

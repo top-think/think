@@ -24,6 +24,11 @@ class apcTest extends cacheTestCase
      */
     protected function setUp()
     {
+        if (!extension_loaded("apc")) {
+            $this->markTestSkipped("APC没有安装，已跳过测试！");
+        } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
+            $this->markTestSkipped("APC模块没有开启，已跳过测试！");
+        }
         \think\Cache::connect(array('type' => 'apc', 'expire' => 2));
     }
     /**
@@ -31,11 +36,6 @@ class apcTest extends cacheTestCase
      */
     protected function getCacheInstance()
     {
-        if (!extension_loaded("apc")) {
-            $this->markTestSkipped("APC没有安装，已跳过测试！");
-        } elseif ('cli' === PHP_SAPI && !ini_get('apc.enable_cli')) {
-            $this->markTestSkipped("APC模块没有开启，已跳过测试！");
-        }
         if (null === $this->_cacheInstance) {
             $this->_cacheInstance = new \think\cache\driver\Apc();
         }

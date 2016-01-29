@@ -56,7 +56,7 @@ class Template
      */
     public function __construct(array $config = [])
     {
-        $this->config['cache_path']   = RUNTIME_PATH . 'template' . DS;
+        $this->config['cache_path']   = RUNTIME_PATH . 'temp' . DS;
         $this->config                 = array_merge($this->config, empty($config) ? (array) Config::get('template') : $config);
         $this->config['taglib_begin'] = $this->stripPreg($this->config['taglib_begin']);
         $this->config['taglib_end']   = $this->stripPreg($this->config['taglib_end']);

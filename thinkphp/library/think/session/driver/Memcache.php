@@ -14,16 +14,15 @@ namespace think\session\driver;
 use SessionHandler;
 use think\Exception;
 
-class Redis extends SessionHandler
+class Memcache extends SessionHandler
 {
     protected $handler = null;
     protected $config  = [
-        'host'         => '127.0.0.1', // 主机
-        'port'         => 6379, // 端口
-        'password'     => '', // 密码
-        'expire'       => 3600, // 有效期
-        'timeout'      => false, // 超时时间
-        'persistent'   => true, // 是否长连接
+        'host'         => '127.0.0.1', // memcache主机
+        'port'         => 1121, // memcache端口
+        'expire'       => 3600, // session有效期
+        'timeout'      => 0, // 连接超时时间（单位：毫秒）
+        'persistent'   => true, // 长连接
         'session_name' => '', // memcache key前缀
     ];
 
@@ -41,17 +40,22 @@ class Redis extends SessionHandler
     public function open($savePath, $sessName)
     {
         // 检测php环境
-        if (!extension_loaded('redis')) {
-            throw new Exception('_NOT_SUPPERT_:redis');
+        if (!extension_loaded('memcache')) {
+            throw new Exception('_NOT_SUPPERT_:memcache');
         }
-        $this->handler = new \Redis;
+        $this->handler = new \Memcache;
+        // 支持集群
+        $hosts = explode(',', $this->config['host']);
+        $ports = explode(',', $this->config['port']);
+        if (empty($ports[0])) {
+            $ports[0] = 11211;
+        }
         // 建立连接
-        $func = $this->config['persistent'] ? 'pconnect' : 'connect';
-        false === $this->config['timeout'] ?
-        $this->handler->$func($this->config['host'], $this->config['port']) :
-        $this->handler->$func($this->config['host'], $this->config['port'], $this->config['timeout']);
-        if ('' != $this->config['password']) {
-            $this->handler->auth($this->config['password']);
+        foreach ((array) $hosts as $i => $host) {
+            $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
+            $this->config['timeout'] > 0 ?
+            $this->handler->addServer($host, $port, $this->config['persistent'], 1) : 
+            $this->handler->addServer($host, $port, $this->config['persistent'], 1, $this->config['timeout']);
         }
         return true;
     }
