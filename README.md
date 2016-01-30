@@ -1,4 +1,4 @@
-thinkphp5.0 beta
+thinkphp5.0.0 RC1
 ===============
 
 [![Build Status](https://img.shields.io/travis/top-think/think.svg)](https://travis-ci.org/top-think/think)
