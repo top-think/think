@@ -14,9 +14,6 @@ namespace traits\model;
 trait Adv
 {
     protected $optimLock = 'lock_version';
-    //protected $serializeField = [];
-    //protected $readonlyField  = [];
-    //protected $partition      = [];
 
     /**
      * 利用__call方法重载 实现一些特殊的Model方法 （魔术方法）

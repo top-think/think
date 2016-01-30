@@ -14,8 +14,6 @@ namespace traits\model;
 trait View
 {
 
-    protected $viewFields = [];
-
     /**
      * 自动检测数据表信息
      * @access protected
