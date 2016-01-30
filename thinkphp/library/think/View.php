@@ -208,6 +208,9 @@ class View
         if (is_file($template)) {
             return realpath($template);
         }
+        if (strpos($template, $this->config['view_suffix'])) {
+            return $template;
+        }
         $depr     = $this->config['view_depr'];
         $template = str_replace(['/', ':'], $depr, $template);
 
