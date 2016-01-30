@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2015 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: yunwuxin <448901948@qq.com>
+// +----------------------------------------------------------------------
+
+// 定义项目路径
+define('APP_PATH', './application/');
+
+define('APP_MODE', 'console');
+
+define('APP_DEBUG',true);
+// 加载框架引导文件
+require './thinkphp/start.php';
+
+$console = new \think\Console('Think Console', '0.1');
+
+$commands = \think\Config::get('commands');
+
+if (is_array($commands)) {
+    foreach ($commands as $command) {
+        if (class_exists($command) && $command instanceof \think\console\command\Command) {
+            $console->add(new $command());
+        }
+    }
+}
+
+$console->run();
