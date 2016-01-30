@@ -148,7 +148,7 @@ trait Relation
                         $mappingFk = !empty($val['foreign_key']) ? $val['foreign_key'] : strtolower($this->name) . '_id'; //  关联外键
                     }
                     // 获取关联模型对象
-                    $model = D($mappingClass);
+                    $model = \think\Loader::model($mappingClass);
                     switch ($mappingType) {
                         case HAS_ONE:
                             $pk = $result[$mappingKey];
@@ -262,7 +262,7 @@ trait Relation
                         $mappingCondition[$mappingFk] = $pk;
                     }
                     // 获取关联model对象
-                    $model       = D($mappingClass);
+                    $model       = \think\Loader::model($mappingClass);
                     $mappingData = isset($data[$mappingName]) ? $data[$mappingName] : false;
                     if (!empty($mappingData) || 'DEL' == $opType) {
                         switch ($mappingType) {
@@ -370,7 +370,7 @@ trait Relation
     {
         if (empty($data) && !empty($this->data)) {
             $data = $this->data;
-        } elseif(!is_array($data)) {
+        } elseif (!is_array($data)) {
             // 数据无效返回
             return false;
         }
@@ -379,22 +379,22 @@ trait Relation
             // 遍历关联定义
             foreach ($this->_link as $key => $val) {
                 // 操作制定关联类型
-                $mappingName =  !empty($val['mapping_name']) ? $val['mapping_name'] : $key; // 映射名称
-                if (empty($name) || true === $name || $mappingName == $name || (is_array($name) && in_array($mappingName,$name)) ) {
+                $mappingName = !empty($val['mapping_name']) ? $val['mapping_name'] : $key; // 映射名称
+                if (empty($name) || true === $name || $mappingName == $name || (is_array($name) && in_array($mappingName, $name))) {
                     // 操作制定的关联
-                    $mappingType = !empty($val['mapping_type']) ? $val['mapping_type'] : $val;  // 关联类型
+                    $mappingType  = !empty($val['mapping_type']) ? $val['mapping_type'] : $val; // 关联类型
                     $mappingClass = !empty($val['class_name']) ? $val['class_name'] : $key; // 关联类名
-                    $mappingKey =!empty($val['mapping_key']) ? $val['mapping_key'] : $this->getPk(); // 关联键名
+                    $mappingKey   = !empty($val['mapping_key']) ? $val['mapping_key'] : $this->getPk(); // 关联键名
                     if (strtoupper($mappingClass) == strtoupper($this->name) || !isset($data[$mappingName])) {
                         continue; // 自引用关联或提交关联数据跳过
                     }
                     // 获取关联model对象
-                    $model = D($mappingClass);
+                    $model = \think\Loader::model($mappingClass);
                     $_data = $data[$mappingName];
                     unset($data[$key]);
                     if ($_data = $model->token(false)->create($_data)) {
                         $data[$mappingName] = $_data;
-                        $fields[] = $mappingName;
+                        $fields[]           = $mappingName;
                     } else {
                         $error = $model->getError();
                         if ($this->patchValidate) {
