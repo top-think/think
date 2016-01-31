@@ -18,6 +18,12 @@ namespace think;
 class Exception extends \Exception 
 {
     /**
+     * 系统异常后发送给客户端的HTTP Status
+     * @var integer
+     */
+    protected $httpStatus = 500;
+
+    /**
      * 保存异常页面显示的额外Debug数据
      * @var array
      */
@@ -52,5 +58,14 @@ class Exception extends \Exception
     final public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * 获取要发送给客户端的HTTP Status
+     * @return integer HTTP Status
+     */
+    final public function getHttpStatus()
+    {
+        return $this->httpStatus;
     }
 }
