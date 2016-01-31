@@ -60,8 +60,6 @@ abstract class Driver
         'charset'        => 'utf8',
         // 数据库表前缀
         'prefix'         => '',
-        // 数据库调试模式
-        'debug'          => false,
         // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
         'deploy'         => 0,
         // 数据库读写是否分离 主从式有效
@@ -197,7 +195,7 @@ abstract class Driver
             $this->debug(false);
             return $this->getResult();
         } catch (\PDOException $e) {
-            throw new Exception($this->getError());
+            throw new Exception($e->getMessage() . "\n [ SQL语句 ] : " . $this->queryStr);
         }
     }
 
@@ -247,7 +245,7 @@ abstract class Driver
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new Exception($this->getError());
+            throw new Exception($e->getMessage() . "\n [ SQL语句 ] : " . $this->queryStr);
         }
     }
 
@@ -266,7 +264,7 @@ abstract class Driver
                 // 判断占位符
                 $sql = is_numeric($key) ?
                 substr_replace($sql, $val, strpos($sql, '?'), 1) :
-                str_replace(':' . $key, $val, $sql);
+                str_replace(':' . $key . ' ', $val . ' ', $sql);
             }
         }
         return $sql;
@@ -290,9 +288,6 @@ abstract class Driver
                 $result = $this->PDOStatement->bindValue($param, $val[0], $val[1]);
             } else {
                 $result = $this->PDOStatement->bindValue($param, $val);
-            }
-            if (!$result) {
-                throw new Exception('bind param error : [ ' . $param . '=>' . $val . ' ]');
             }
         }
     }
