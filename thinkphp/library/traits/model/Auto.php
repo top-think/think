@@ -77,7 +77,7 @@ trait Auto
         // 验证完成生成数据对象
         if ($this->autoCheckFields && empty($this->options['link'])) {
             // 开启字段检测并且没有关联表 则过滤非法字段数据
-            $fields = $this->getDbFields();
+            $fields = $this->getFields();
             foreach ($keys as $i => $key) {
                 if (!in_array($key, $fields)) {
                     unset($data[$key]);

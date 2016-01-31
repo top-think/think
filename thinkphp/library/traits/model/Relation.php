@@ -375,7 +375,7 @@ trait Relation
             return false;
         }
         if (!empty($this->_link)) {
-            $fields = $this->getDbFields();
+            $fields = $this->getFields();
             // 遍历关联定义
             foreach ($this->_link as $key => $val) {
                 // 操作制定关联类型

@@ -91,7 +91,7 @@ trait View
     {
         if (false !== $pos = array_search('*', $fields)) {
             // 定义所有字段
-            $fields = array_merge($fields, M($name)->getDbFields());
+            $fields = array_merge($fields, \think\Loader::model($name)->getFields());
             unset($fields[$pos]);
         }
         return $fields;
