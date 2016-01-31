@@ -27,7 +27,6 @@ class View
         'auto_detect_theme' => false,
         'var_theme'         => 't',
         'default_theme'     => 'default',
-        'http_cache_id'     => null,
         'view_path'         => '',
         'view_suffix'       => '.html',
         'view_depr'         => DS,
