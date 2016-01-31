@@ -1135,7 +1135,7 @@ abstract class Driver
      */
     public function getError()
     {
-        if ($this->linkID) {
+        if ($this->PDOStatement) {
             $error = $this->PDOStatement->errorInfo();
             $error = $error[1] . ':' . $error[2];
         } else {
