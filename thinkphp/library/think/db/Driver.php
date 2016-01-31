@@ -16,6 +16,9 @@ use think\Config;
 use think\Db;
 use think\Debug;
 use think\Exception;
+use think\exception\DbException;
+use think\exception\PDOException;
+use think\exception\DbBindParamException;
 use think\Log;
 
 abstract class Driver
@@ -128,7 +131,7 @@ abstract class Driver
                     Log::record($e->getMessage(), 'error');
                     return $this->connect($autoConnection, $linkNum);
                 } else {
-                    throw new Exception($e->getMessage());
+                    throw new PDOException($e, $this->config, $queryStr);
                 }
             }
         }
@@ -195,7 +198,7 @@ abstract class Driver
             $this->debug(false);
             return $this->getResult();
         } catch (\PDOException $e) {
-            throw new Exception($e->getMessage() . "\n [ SQL语句 ] : " . $this->queryStr);
+            throw new PDOException($e, $this->config, $this->queryStr);
         }
     }
 
@@ -245,7 +248,7 @@ abstract class Driver
             }
             return $this->numRows;
         } catch (\PDOException $e) {
-            throw new Exception($e->getMessage() . "\n [ SQL语句 ] : " . $this->queryStr);
+            throw new PDOException($e, $this->config, $this->queryStr);
         }
     }
 
@@ -289,6 +292,14 @@ abstract class Driver
             } else {
                 $result = $this->PDOStatement->bindValue($param, $val);
             }
+            if (!$result) {
+                throw new DbBindParamException(
+                    "Error occurred  when binding parameters '{$param}'",
+                    $this->config, 
+                    $this->queryStr, 
+                    $bind
+                );
+            }
         }
     }
 
@@ -325,7 +336,7 @@ abstract class Driver
                 $this->linkID->commit();
                 $this->transTimes = 0;
             } catch (\PDOException $e) {
-                throw new Exception($e->getMessage());
+                throw new PDOException($e, $this->config, $this->queryStr);
             }
         }
         return true;
@@ -344,7 +355,7 @@ abstract class Driver
                 $this->linkID->rollback();
                 $this->transTimes = 0;
             } catch (\PDOException $e) {
-                throw new Exception($e->getMessage());
+                throw new PDOException($e, $this->config, $this->queryStr);
             }
         }
         return true;
@@ -652,7 +663,7 @@ abstract class Driver
                     $data = is_string($val[1]) ? explode(',', $val[1]) : $val[1];
                     $whereStr .= $key . ' ' . $this->exp[$exp] . ' ' . $this->parseValue($data[0]) . ' AND ' . $this->parseValue($data[1]);
                 } else {
-                    throw new Exception('where express error:' . $val[0]);
+                    throw new DbException("The WHERE express error: {$val[0]}", $this->config, '', 10503);
                 }
             } else {
                 $count = count($val);
@@ -1124,15 +1135,17 @@ abstract class Driver
      */
     public function getError()
     {
-        if ($this->PDOStatement) {
+        if ($this->linkID) {
             $error = $this->PDOStatement->errorInfo();
             $error = $error[1] . ':' . $error[2];
         } else {
             $error = '';
         }
+
         if ('' != $this->queryStr) {
             $error .= "\n [ SQL语句 ] : " . $this->queryStr;
         }
+
         return $error;
     }
 
