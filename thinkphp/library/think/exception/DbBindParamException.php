@@ -11,26 +11,16 @@
 
 namespace think\exception;
 
-use think\Exception;
+use think\exception\DbException;
 
 /**
- * Database相关异常处理类
+ * PDO参数绑定异常
  */
-class DbException extends Exception 
+class DbBindParamException extends DbException 
 {
-    public function __construct($message, Array $config, $sql, $code = 10500)
+    public function __construct($message, $config, $sql, $bind, $code = 10502)
     {
-        $this->message  = $message;
-        $this->code     = $code;
-
-        $this->setData('Database Status', [
-            'Error Code'    => $code,
-            'Error Message' => $message,
-            'Error SQL'     => $sql
-        ]);
-
-        $this->setData('Database Config', $config);
+        $this->setData('Bind Param', $bind);
+        parent::__construct($message, $config, $sql, $code);
     }
-
-
 }

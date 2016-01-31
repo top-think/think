@@ -11,26 +11,24 @@
 
 namespace think\exception;
 
-use think\Exception;
+use think\exception\DbException;
 
 /**
- * Database相关异常处理类
+ * PDO异常处理类
+ * 重新封装了系统的\PDOException类
  */
-class DbException extends Exception 
+class PDOException extends DbException 
 {
-    public function __construct($message, Array $config, $sql, $code = 10500)
+    public function __construct(\PDOException $exception, Array $config, $sql, $code = 10501)
     {
-        $this->message  = $message;
-        $this->code     = $code;
+        $error = $exception->errorInfo;
 
-        $this->setData('Database Status', [
-            'Error Code'    => $code,
-            'Error Message' => $message,
-            'Error SQL'     => $sql
+        $this->setData('PDO Error Info', [
+            'SQLSTATE'             => $error[0],
+            'Driver Error Code'    => $error[1],
+            'Driver Error Message' => isset($error[2]) ? $error[2] : ''
         ]);
 
-        $this->setData('Database Config', $config);
+        parent::__construct($exception->getMessage(), $config, $sql, $code);
     }
-
-
 }
