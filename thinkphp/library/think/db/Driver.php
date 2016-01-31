@@ -131,7 +131,7 @@ abstract class Driver
                     Log::record($e->getMessage(), 'error');
                     return $this->connect($autoConnection, $linkNum);
                 } else {
-                    throw new PDOException($e, $this->config, $queryStr);
+                    throw new PDOException($e, $this->config, $this->queryStr);
                 }
             }
         }
