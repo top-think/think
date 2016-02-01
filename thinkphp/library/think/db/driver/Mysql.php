@@ -125,7 +125,7 @@ class Mysql extends Driver
     protected function getExplain($sql)
     {
         $pdo    = $this->linkID->query("EXPLAIN " . $sql);
-        $result = $pdo->fetch(PDO::FETCH_ASSOC);
+        $result = $pdo->fetch(\PDO::FETCH_ASSOC);
         $result = array_change_key_case($result);
         if (strpos($result['extra'], 'filesort') || strpos($result['extra'], 'temporary')) {
             Log::record('SQL:' . $this->queryStr . '[' . $result['extra'] . ']', 'warn');
