@@ -68,7 +68,10 @@ class File
         foreach ($log as $line) {
             $info .= '[' . $line['type'] . '] ' . $line['msg'] . "\r\n";
         }
-        error_log("[{$now}] {$_SERVER['SERVER_ADDR']} {$_SERVER['REMOTE_ADDR']} {$_SERVER['REQUEST_URI']}\r\n{$info}\r\n", 3, $destination);
+
+        $server = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '0.0.0.0';
+        $remote = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+        error_log("[{$now}] {$server} {$remote} {$_SERVER['REQUEST_URI']}\r\n{$info}\r\n", 3, $destination);
     }
 
 }
