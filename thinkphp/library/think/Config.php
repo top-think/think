@@ -142,10 +142,14 @@ class Config
             return;
         } elseif (is_array($name)) {
             // 批量设置
+            $config = array_change_key_case($name);
             if (!empty($value)) {
-                return self::$config[$range][$value] = array_change_key_case($name);
+                self::$config[$range][$value] = isset(self::$config[$range][$value]) ?
+                array_merge(self::$config[$range][$value], $config) :
+                self::$config[$range][$value] = $config;
+                return self::$config[$range][$value];
             } else {
-                return self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
+                return self::$config[$range] = array_merge(self::$config[$range], $config);
             }
         } else {
             // 为空直接返回 已有配置
@@ -158,7 +162,7 @@ class Config
      */
     public static function reset($range = '')
     {
-        $range = $range ?: self::$range;
+        $range                          = $range ?: self::$range;
         true === $range ? self::$config = [] : self::$config[$range] = [];
     }
 }
