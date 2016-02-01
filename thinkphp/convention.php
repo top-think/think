@@ -105,6 +105,9 @@ return [
 
     // 异常页面的模板文件
     'exception_tmpl'        => THINK_PATH . 'tpl' . DS . 'think_exception.tpl',
+    // 异常处理忽略的错误类型，支持PHP所有的错误级别常量，多个级别可以用|运算法
+    // 参考：http://php.net/manual/en/errorfunc.constants.php
+    'exception_ignore_type' => 0,
     // 错误显示信息,非调试模式有效
     'error_message'         => '页面错误！请稍后再试～',
     // 错误定向页面

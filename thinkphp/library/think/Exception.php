@@ -15,7 +15,7 @@ namespace think;
  * ThinkPHP核心异常类
  * 所有系统异常必须继承该类
  */
-class Exception extends \Exception 
+class Exception extends \Exception
 {
     /**
      * 系统异常后发送给客户端的HTTP Status
@@ -32,7 +32,7 @@ class Exception extends \Exception
     /**
      * 设置异常额外的Debug数据
      * 数据将会显示为下面的格式
-     * 
+     *
      * Exception Data
      * --------------------------------------------------
      * Label 1
@@ -41,11 +41,11 @@ class Exception extends \Exception
      * Label 2
      *   key1      value1
      *   key2      value2
-     * 
+     *
      * @param string $label 数据分类，用于异常页面显示
      * @param Array  $data  需要显示的数据，必须为关联数组
      */
-    final protected function setData($label, Array $data)
+    final protected function setData($label, array $data)
     {
         $this->data[$label] = $data;
     }
