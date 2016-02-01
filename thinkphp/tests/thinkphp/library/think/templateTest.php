@@ -255,7 +255,7 @@ EOF;
 
         $content = <<<EOF
 {extend name="extend" /}
-{block name="main"}
+{block name="side"}
     {include file="include" name="\$user.name" value="\$user.account" /}
     {\$message}{literal}{\$message}{/literal}
 {/block}
@@ -263,10 +263,15 @@ EOF;
         $data = <<<EOF
 <nav>
 <div>
-    <input name="<?php echo \$info['name']; ?>" value="<?php echo \$info['value']; ?>">
+    <input name="info" value="<?php echo \$info['value']; ?>">
+
 
     <input name="<?php echo \$user['name']; ?>" value="<?php echo \$user['account']; ?>">
     <?php echo \$message; ?>{\$message}
+
+
+    mainbody
+
 
 
     {\$name}
@@ -288,7 +293,7 @@ EOF;
         $_SERVER['SERVER_NAME'] = 'server_name';
         $_GET['action'] = 'action';
         $_POST['action'] = 'action';
-        \think\Cookie::set('action', ['name' => 'name']);
+        $_COOKIE['name'] = 'name';
         \think\Session::set('action', ['name' => 'name']);
         define('SITE_NAME', 'site_name');
 

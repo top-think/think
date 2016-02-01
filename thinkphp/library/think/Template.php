@@ -22,7 +22,7 @@ class Template
     protected $data = [];
     // 引擎配置
     protected $config = [
-        'tpl_path'           => VIEW_PATH, // 模板路径
+        'tpl_path'           => '', // 模板路径
         'tpl_suffix'         => '.html', // 默认模板文件后缀
         'cache_suffix'       => '.php', // 默认模板缓存后缀
         'tpl_deny_func_list' => 'echo,exit', // 模板引擎禁用函数
@@ -62,6 +62,9 @@ class Template
         $this->config['taglib_end']   = $this->stripPreg($this->config['taglib_end']);
         $this->config['tpl_begin']    = $this->stripPreg($this->config['tpl_begin']);
         $this->config['tpl_end']      = $this->stripPreg($this->config['tpl_end']);
+        if (empty($this->config['tpl_path']) && defined('VIEW_PATH')) {
+            $this->config['tpl_path'] = VIEW_PATH;
+        }
 
         // 初始化模板编译存储器
         $type          = $this->config['compile_type'] ? $this->config['compile_type'] : 'File';
@@ -382,7 +385,8 @@ class Template
                     $parseStr = $this->parseTemplateName($file);
                     // 替换变量
                     foreach ($array as $k => $v) {
-                        if (0 == strpos($v, '$')) {
+                        // 以$开头字符串转换成模板变量
+                        if (0 === strpos($v, '$')) {
                             $v = ltrim($this->config['tpl_begin'], '\\') . $v . ltrim($this->config['tpl_end'], '\\');
                         }
                         $parseStr = str_replace('[' . $k . ']', $v, $parseStr);
@@ -488,7 +492,7 @@ class Template
         $regex = $this->getRegex('block');
         $array = [];
         if (preg_match_all($regex, $content, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
-            $right = [];
+            $right = $keys = [];
             foreach ($matches as $match) {
                 if (empty($match['name'][0])) {
                     if (!empty($right)) {
@@ -501,6 +505,7 @@ class Template
                             'content' => substr($content, $start, $len),
                             'end'     => $end,
                         ];
+                        $keys[] = $begin['offset'];
                     } else {
                         continue;
                     }
@@ -513,6 +518,8 @@ class Template
                 }
             }
             unset($right, $matches);
+            // 按blocks标签在模板中的位置排序
+            array_multisort($keys, $array);
         }
         return $array;
     }
@@ -670,9 +677,8 @@ class Template
                         break;
                     case '-':
                     case '+':    // 输出计算
-                        $str = substr($str, 1);
                         $this->parseVar($str);
-                        $str = '<?php echo ' . $flag .  $str . '; ?>';
+                        $str = '<?php echo ' .  $str . '; ?>';
                         break;
                     case '/':    // 注释标签
                         $flag2 = substr($str, 1, 1);
