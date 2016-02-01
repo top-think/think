@@ -94,13 +94,28 @@ class Lang
         }
         $key   = strtolower($name);
         $value = isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
-        if (is_array($vars) && !empty($vars)) {
-            // 支持变量
-            $replace = array_keys($vars);
-            foreach ($replace as &$v) {
-                $v = '{$' . $v . '}';
+        
+        // 变量解析
+        if (!empty($vars) && is_array($vars)) {
+            /**
+             * Notes:
+             * 为了检测的方便，数字索引的判断仅仅是参数数组的第一个元素的key为数字0
+             * 数字索引采用的是系统的 sprintf 函数替换，用法请参考 sprintf 函数
+             */
+            if (key($vars) === 0) {
+                // 数字索引解析
+                array_unshift($vars, $name);
+                $value = call_user_func_array('sprintf', $vars);
+            } else {
+                // 关联索引解析
+                $replace = array_keys($vars);
+                foreach ($replace as &$v) {
+                    $v = "{:{$v}}";
+                }
+                $value = str_replace($replace, $vars, $value);
             }
-            $value = str_replace($replace, $vars, $value);
+            
+            
         }
         return $value;
     }
