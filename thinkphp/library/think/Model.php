@@ -1102,7 +1102,8 @@ class Model
     public function getPk()
     {
         if (is_null($this->pk)) {
-            $this->pk = $this->getTableInfo('', 'pk');
+            $tableName = isset($this->options['table']) ? $this->options['table'] : $this->getTableName();
+            $this->pk  = $this->getTableInfo($tableName, 'pk');
         }
         return $this->pk;
     }
