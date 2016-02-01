@@ -251,6 +251,8 @@ class Url
                     $route = $route[0];
                     if (is_array($route)) {
                         $route = implode('\\', $route);
+                    } elseif ($route instanceof \Closure) {
+                        continue;
                     } elseif (strpos($route, '?')) {
                         $route = strstr($route, '?', true);
                     }
@@ -261,6 +263,8 @@ class Url
                 $route = $val['route'];
                 if (is_array($route)) {
                     $route = implode('\\', $route);
+                } elseif ($route instanceof \Closure) {
+                    continue;
                 } elseif (strpos($route, '?')) {
                     $route = strstr($route, '?', true);
                 }
