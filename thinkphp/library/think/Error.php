@@ -18,14 +18,10 @@ class Error
 {
     /**
      * 注册异常处理
-     * @return null
+     * @return void
      */
     public static function register()
     {
-        // Workaround PHP bug 42098
-        // https://bugs.php.net/bug.php?id=42098
-        // class_exists(think\exception\ErrorException::class);
-
         set_error_handler([__CLASS__, 'appError']);
         set_exception_handler([__CLASS__, 'appException']);
         register_shutdown_function([__CLASS__, 'appShutdown']);
@@ -34,7 +30,7 @@ class Error
     /**
      * Exception Handler
      * @param  \Exception $exception
-     * @return Boolean  true  禁止往下传播已处理过的异常
+     * @return bool  true-禁止往下传播已处理过的异常
      */
     public static function appException(\Exception $exception)
     {
@@ -46,9 +42,9 @@ class Error
             }
         }
 
-        /* 收集异常数据 */
+        // 收集异常数据
         if (APP_DEBUG) {
-            /* 调试模式，获取详细的错误信息 */
+            // 调试模式，获取详细的错误信息
             $data = [
                 'name'    => get_class($exception),
                 'file'    => $exception->getFile(),
@@ -71,16 +67,14 @@ class Error
                 ],
             ];
         } else {
-            /* 部署模式仅显示 Code 和 Message */
+            // 部署模式仅显示 Code 和 Message
             $data = [
                 'code'    => $exception->getCode(),
                 'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message'),
             ];
         }
-
-        /* 输出错误信息 */
+        // 输出错误信息
         self::output($exception, $data);
-
         // 禁止往下传播已处理过的异常
         return true;
     }
@@ -91,20 +85,19 @@ class Error
      * @param  integer $errstr  详细错误信息
      * @param  string  $errfile 出错的文件
      * @param  integer $errline 出错行号
-     * @return boolean  true    禁止往下传播已处理过的异常
+     * @return bool  true-禁止往下传播已处理过的异常
      */
     public static function appError($errno, $errstr, $errfile, $errline)
     {
         // 将错误信息托管至 think\exception\ErrorException
         throw new ErrorException($errno, $errstr, $errfile, $errline);
-
         // 禁止往下传播已处理过的异常
         return true;
     }
 
     /**
      * Shutdown Handler
-     * @return boolean true-禁止往下传播已处理过的异常; false-未处理的异常继续传播
+     * @return bool true-禁止往下传播已处理过的异常; false-未处理的异常继续传播
      */
     public static function appShutdown()
     {
@@ -122,11 +115,9 @@ class Error
              * 所以，这里我们必须手动传播而不能像 Error handler 中那样 throw
              */
             self::appException($exception);
-
             // 禁止往下传播已处理过的异常
             return true;
         }
-
         return false;
     }
 
@@ -134,7 +125,7 @@ class Error
      * 输出异常信息
      * @param  \Exception $exception
      * @param  Array      $vars      异常信息
-     * @return null
+     * @return void
      */
     public static function output(\Exception $exception, array $vars)
     {
@@ -143,9 +134,6 @@ class Error
         } else {
             http_response_code(500);
         }
-
-        // header('Content-Type: application/json');
-        // echo json_encode($vars);exit;
 
         $type = Config::get('default_return_type');
         if (IS_API && 'html' != $type) {
@@ -169,11 +157,9 @@ class Error
     private static function getCode(\Exception $exception)
     {
         $code = $exception->getCode();
-
         if (!$code && $exception instanceof ErrorException) {
             $code = $exception->getSeverity();
         }
-
         return $code;
     }
 
@@ -191,15 +177,13 @@ class Error
 
         try {
             $contents = file($exception->getFile());
-
-            $source = [
+            $source   = [
                 'first'  => $first,
                 'source' => array_slice($contents, $first - 1, 19),
             ];
         } catch (Exception $e) {
             $source = [];
         }
-
         return $source;
     }
 
@@ -212,11 +196,9 @@ class Error
     private static function getExtendData(\Exception $exception)
     {
         $data = [];
-
         if ($exception instanceof Exception) {
             $data = $exception->getData();
         }
-
         return $data;
     }
 
