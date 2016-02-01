@@ -12,6 +12,7 @@
 namespace think\db\driver;
 
 use think\db\Driver;
+use think\Log;
 
 /**
  * mysql数据库驱动
@@ -53,6 +54,7 @@ class Mysql extends Driver
         $result          = $this->query($sql);
         $info            = [];
         if ($result) {
+            $result = array_change_key_case($result);
             foreach ($result as $key => $val) {
                 $info[$val['field']] = [
                     'name'    => $val['field'],
@@ -112,5 +114,22 @@ class Mysql extends Driver
     protected function parseRand()
     {
         return 'rand()';
+    }
+
+    /**
+     * SQL性能分析
+     * @access protected
+     * @param string $sql
+     * @return array
+     */
+    protected function getExplain($sql)
+    {
+        $pdo    = $this->linkID->query("EXPLAIN " . $sql);
+        $result = $pdo->fetch(PDO::FETCH_ASSOC);
+        $result = array_change_key_case($result);
+        if (strpos($result['extra'], 'filesort') || strpos($result['extra'], 'temporary')) {
+            Log::record('SQL:' . $this->queryStr . '[' . $result['extra'] . ']', 'warn');
+        }
+        return $result;
     }
 }

@@ -198,4 +198,15 @@ class Oracle extends Driver
     {
         return 'DBMS_RANDOM.value';
     }
+
+    /**
+     * SQL性能分析
+     * @access protected
+     * @param string $sql
+     * @return array
+     */
+    protected function getExplain($sql)
+    {
+
+    }
 }

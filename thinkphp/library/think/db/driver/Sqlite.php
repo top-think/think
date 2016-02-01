@@ -42,6 +42,7 @@ class Sqlite extends Driver
         $result          = $this->query('PRAGMA table_info( ' . $tableName . ' )');
         $info            = [];
         if ($result) {
+            $result = array_change_key_case($result);
             foreach ($result as $key => $val) {
                 $info[$val['name']] = [
                     'name'    => $val['name'],
@@ -100,5 +101,16 @@ class Sqlite extends Driver
     protected function parseRand()
     {
         return 'RANDOM()';
+    }
+
+    /**
+     * SQL性能分析
+     * @access protected
+     * @param string $sql
+     * @return array
+     */
+    protected function getExplain($sql)
+    {
+
     }
 }

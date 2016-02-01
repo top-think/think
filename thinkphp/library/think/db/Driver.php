@@ -16,9 +16,9 @@ use think\Config;
 use think\Db;
 use think\Debug;
 use think\Exception;
+use think\exception\DbBindParamException;
 use think\exception\DbException;
 use think\exception\PDOException;
-use think\exception\DbBindParamException;
 use think\Log;
 
 abstract class Driver
@@ -295,8 +295,8 @@ abstract class Driver
             if (!$result) {
                 throw new DbBindParamException(
                     "Error occurred  when binding parameters '{$param}'",
-                    $this->config, 
-                    $this->queryStr, 
+                    $this->config,
+                    $this->queryStr,
                     $bind
                 );
             }
@@ -1190,12 +1190,8 @@ abstract class Driver
                 $log = $this->queryStr . ' [ RunTime:' . Debug::getRangeTime('queryStartTime', 'queryEndTime') . 's ]';
                 // SQL性能分析
                 if (0 === stripos(trim($this->queryStr), 'select')) {
-                    $pdo    = $this->linkID->query("EXPLAIN " . $this->queryStr);
-                    $result = $pdo->fetch(PDO::FETCH_ASSOC);
-                    if (strpos($result['extra'], 'filesort') || strpos($result['extra'], 'temporary')) {
-                        Log::record('SQL:' . $this->queryStr . '[' . $result['extra'] . ']', 'warn');
-                    }
-                    $log .= '[ EXPLAIN : ' . var_export($result, true) . ' ]';
+                    $result = $this->getExplain($this->queryStr);
+                    Log::record('[ EXPLAIN : ' . var_export($result, true) . ' ]', 'sql');
                 }
                 Log::record('[ SQL ] ' . $log, 'sql');
             }

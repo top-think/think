@@ -176,4 +176,14 @@ class Sqlsrv extends Driver
         return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
 
+    /**
+     * SQL性能分析
+     * @access protected
+     * @param string $sql
+     * @return array
+     */
+    protected function getExplain($sql)
+    {
+
+    }
 }
