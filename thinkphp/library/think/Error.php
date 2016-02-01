@@ -13,7 +13,6 @@ namespace think;
 
 use think\Exception;
 use think\exception\ErrorException;
-use think\exception\NotFoundException;
 
 class Error
 {
@@ -40,7 +39,7 @@ class Error
     public static function appException(\Exception $exception)
     {
         /* 非API模式下的部署模式，跳转到指定的 Error Page */
-        if(!(APP_DEBUG || IS_API)){
+        if (!(APP_DEBUG || IS_API)) {
             $error_page = Config::get('error_page');
             if (!empty($error_page)) {
                 header("Location: {$error_page}");
@@ -48,7 +47,7 @@ class Error
         }
 
         /* 收集异常数据 */
-        if(APP_DEBUG){ 
+        if (APP_DEBUG) {
             /* 调试模式，获取详细的错误信息 */
             $data = [
                 'name'    => get_class($exception),
@@ -60,7 +59,7 @@ class Error
                 'source'  => self::getSourceCode($exception),
                 'datas'   => self::getExtendData($exception),
 
-                'tables' => [
+                'tables'  => [
                     'GET Data'              => $_GET,
                     'POST Data'             => $_POST,
                     'Files'                 => $_FILES,
@@ -69,19 +68,19 @@ class Error
                     'Server/Request Data'   => $_SERVER,
                     'Environment Variables' => $_ENV,
                     'ThinkPHP Constants'    => self::getTPConst(),
-                ]
+                ],
             ];
         } else {
             /* 部署模式仅显示 Code 和 Message */
             $data = [
                 'code'    => $exception->getCode(),
-                'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message')
+                'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message'),
             ];
         }
 
-        /* 输出错误信息 */ 
+        /* 输出错误信息 */
         self::output($exception, $data);
-        
+
         // 禁止往下传播已处理过的异常
         return true;
     }
@@ -95,7 +94,7 @@ class Error
      * @return boolean  true    禁止往下传播已处理过的异常
      */
     public static function appError($errno, $errstr, $errfile, $errline)
-    {   
+    {
         // 将错误信息托管至 think\exception\ErrorException
         throw new ErrorException($errno, $errstr, $errfile, $errline);
 
@@ -109,7 +108,7 @@ class Error
      */
     public static function appShutdown()
     {
-        if($error = error_get_last()){
+        if ($error = error_get_last()) {
             // 将错误信息托管至think\ErrorException
             $exception = new ErrorException(
                 $error['type'],
@@ -133,13 +132,13 @@ class Error
 
     /**
      * 输出异常信息
-     * @param  \Exception $exception 
+     * @param  \Exception $exception
      * @param  Array      $vars      异常信息
      * @return null
      */
-    public static function output(\Exception $exception, Array $vars)
-    {   
-        if($exception instanceof Exception){
+    public static function output(\Exception $exception, array $vars)
+    {
+        if ($exception instanceof Exception) {
             http_response_code($exception->getHttpStatus());
         } else {
             http_response_code(500);
@@ -147,7 +146,7 @@ class Error
 
         // header('Content-Type: application/json');
         // echo json_encode($vars);exit;
-        
+
         $type = Config::get('default_return_type');
         if (IS_API && 'html' != $type) {
             // 异常信息输出监听
@@ -155,7 +154,7 @@ class Error
             // 输出异常内容
             Response::send($data, $type, Config::get('response_return'));
         } else {
-            ob_end_clean();
+            //ob_end_clean();
             extract($vars);
             include Config::get('exception_tmpl');
         }
@@ -164,16 +163,16 @@ class Error
     /**
      * 获取错误编码
      * ErrorException则使用错误级别作为错误编码
-     * @param  \Exception $exception 
+     * @param  \Exception $exception
      * @return integer                错误编码
      */
     private static function getCode(\Exception $exception)
     {
         $code = $exception->getCode();
-        
-        if(!$code && $exception instanceof ErrorException){
+
+        if (!$code && $exception instanceof ErrorException) {
             $code = $exception->getSeverity();
-        } 
+        }
 
         return $code;
     }
@@ -181,11 +180,11 @@ class Error
     /**
      * 获取出错文件内容
      * 获取错误的前9行和后9行
-     * @param  \Exception $exception 
+     * @param  \Exception $exception
      * @return array                 错误文件内容
      */
     private static function getSourceCode(\Exception $exception)
-    {   
+    {
         // 读取前9行和后9行
         $line  = $exception->getLine();
         $first = ($line - 9 > 0) ? $line - 9 : 1;
@@ -194,10 +193,10 @@ class Error
             $contents = file($exception->getFile());
 
             $source = [
-                'first'  => $first, 
-                'source' => array_slice($contents, $first - 1, 19)
+                'first'  => $first,
+                'source' => array_slice($contents, $first - 1, 19),
             ];
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $source = [];
         }
 
@@ -207,14 +206,14 @@ class Error
     /**
      * 获取异常扩展信息
      * 用于非调试模式html返回类型显示
-     * @param  \Exception $exception 
+     * @param  \Exception $exception
      * @return array                 异常类定义的扩展数据
      */
     private static function getExtendData(\Exception $exception)
     {
         $data = [];
 
-        if($exception instanceof Exception){
+        if ($exception instanceof Exception) {
             $data = $exception->getData();
         }
 
