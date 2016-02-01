@@ -668,7 +668,7 @@ abstract class Driver
                 $count = count($val);
                 $rule  = isset($val[$count - 1]) ? (is_array($val[$count - 1]) ? strtoupper($val[$count - 1][0]) : strtoupper($val[$count - 1])) : '';
                 if (in_array($rule, ['AND', 'OR', 'XOR'])) {
-                    $count = $count - 1;
+                    --$count;
                 } else {
                     $rule = 'AND';
                 }
