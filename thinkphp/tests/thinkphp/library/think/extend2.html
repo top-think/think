@@ -1,0 +1,16 @@
+{layout name="layout" replace="[__REPLACE__]" /}
+<div>
+    {include file="include" name="info" value="$info.value" /}
+{block name="main"}
+{block name="side"}
+    side
+{/block}
+{block name="mainbody"}
+
+{/block}
+{/block}
+{literal}
+    {$name}
+{/literal}
+    <?php echo 'php code'; ?>
+</div>
