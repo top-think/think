@@ -11,7 +11,6 @@
 
 namespace think;
 
-use think\Exception;
 use think\exception\ErrorException;
 
 class Error
@@ -73,6 +72,9 @@ class Error
                 'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message'),
             ];
         }
+
+        // 记录异常日志
+        Log::write("[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]", 'error');
         // 输出错误信息
         self::output($exception, $data);
         // 禁止往下传播已处理过的异常
@@ -89,10 +91,15 @@ class Error
      */
     public static function appError($errno, $errstr, $errfile, $errline)
     {
-        // 将错误信息托管至 think\exception\ErrorException
-        throw new ErrorException($errno, $errstr, $errfile, $errline);
-        // 禁止往下传播已处理过的异常
-        return true;
+        if ($errno & Config::get('exception_ignore_type')) {
+            // 忽略的异常记录到日志
+            Log::record("[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]", 'notic');
+        } else {
+            // 将错误信息托管至 think\exception\ErrorException
+            throw new ErrorException($errno, $errstr, $errfile, $errline);
+            // 禁止往下传播已处理过的异常
+            return true;
+        }
     }
 
     /**
@@ -101,6 +108,9 @@ class Error
      */
     public static function appShutdown()
     {
+        // 写入日志
+        Log::save();
+        
         if ($error = error_get_last()) {
             // 将错误信息托管至think\ErrorException
             $exception = new ErrorException(
