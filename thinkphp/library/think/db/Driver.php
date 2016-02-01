@@ -15,10 +15,9 @@ use PDO;
 use think\Config;
 use think\Db;
 use think\Debug;
-use think\Exception;
-use think\exception\DbBindParamException;
 use think\exception\DbException;
 use think\exception\PDOException;
+use think\exception\DbBindParamException;
 use think\Log;
 
 abstract class Driver
