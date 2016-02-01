@@ -182,7 +182,7 @@ trait Auto
         } elseif (is_array($auto[2])) {
             $flags = 0;
             foreach ($auto[2] as $v) {
-                $flags = $flags | 1 << ($v - 1);
+                $flags |= 1 << ($v - 1);
             }
         } else {
             $flags = 3 == $auto[2] ? 3 : 1 << ($auto[2] - 1);
@@ -302,7 +302,7 @@ trait Auto
         } elseif (is_array($val[5])) {
             $flags = 0;
             foreach ($val[5] as $v) {
-                $flags = $flags | 1 << ($v - 1);
+                $flags |= 1 << ($v - 1);
             }
         } else {
             $flags = 3 == $val[5] ? 3 : 1 << ($val[5] - 1);

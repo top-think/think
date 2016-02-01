@@ -158,7 +158,7 @@ class Url
                     }
                 }
             } else {
-                $domain = $domain . (strpos($domain, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
+                $domain .= strpos($domain, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.');
             }
             $domain = (self::isSsl() ? 'https://' : 'http://') . $domain;
         } else {
