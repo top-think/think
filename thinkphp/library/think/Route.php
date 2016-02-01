@@ -392,8 +392,9 @@ class Route
                             }
                             $pattern = array_merge($pattern, isset($route[2]) ? $route[2] : []);
                             $route   = $route[0];
+                            $option  = array_merge($option, $option1);
                         }
-                        $result = self::checkRule($key, $route, $url1, $pattern, $option1);
+                        $result = self::checkRule($key, $route, $url1, $pattern, $option);
                         if (false !== $result) {
                             return $result;
                         }
