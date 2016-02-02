@@ -201,7 +201,7 @@ class Input
      * @param boolean $merge 是否与默认的过虑方法合并
      * @return mixed
      */
-    public static function data($input, $name, $default = null, $filter = null, $merge = false)
+    public static function data($input, $name = '', $default = null, $filter = null, $merge = false)
     {
         if (0 === strpos($name, '?')) {
             return self::has(substr($name, 1), $input);

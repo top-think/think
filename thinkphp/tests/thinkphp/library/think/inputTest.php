@@ -154,7 +154,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
         $_REQUEST = array_merge($_GET, $_POST);
         $this->assertEquals('get value', Input::request('get'));
 
-        session_start();
+        //session_start();
         $_SESSION['test'] = 'session value ';
         $this->assertEquals('session value', Input::session('test'));
         session_destroy();

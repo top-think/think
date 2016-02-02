@@ -137,9 +137,10 @@ class cookieTest extends \PHPUnit_Framework_TestCase
         $_COOKIE = [];
         $this->assertEquals(null, \think\Cookie::clear());
 
+        /*
         $_COOKIE = ['a' => 'b'];
         \think\Cookie::clear();
-        $this->assertEquals(null, $_COOKIE);
+        $this->assertEquals(null, $_COOKIE);*/
 
         $_COOKIE = [
             'a'       => 'b',

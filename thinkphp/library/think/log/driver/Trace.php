@@ -21,7 +21,7 @@ class Trace
     ];
 
     // 实例化并传入参数
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         $this->config['trace_file'] = THINK_PATH . 'tpl/page_trace.tpl';
         $this->config               = array_merge($this->config, $config);
@@ -33,7 +33,7 @@ class Trace
      * @param array $log 日志信息
      * @return void
      */
-    public function save($log = [])
+    public function save(array $log = [])
     {
         if (IS_AJAX || IS_CLI || IS_API) {
             // ajax cli api方式下不输出

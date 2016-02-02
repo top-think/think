@@ -78,7 +78,7 @@ class responseTest extends \PHPUnit_Framework_TestCase
     {
         $dataArr        = array();
         $dataArr["key"] = "value";
-        $dataArr->key   = "val";
+        //$dataArr->key   = "val";
 
         $result = \think\Response::send($dataArr, "", true);
         $this->assertArrayHasKey("key", $result);
@@ -111,8 +111,8 @@ class responseTest extends \PHPUnit_Framework_TestCase
 
             return "callbackreturndata";
         });
-
-        $result = \think\Response::send($dataArr, "", true);
+        $dataArr = [];
+        $result  = \think\Response::send($dataArr, "", true);
         $this->assertEquals("callbackreturndata", $result);
 
         \think\Response::tramsform(null);
@@ -186,8 +186,10 @@ class responseTest extends \PHPUnit_Framework_TestCase
         $msg  = 1001;
         $data = "data";
 
-        $url                     = "www.HTTP_REFERER.com";
-        $HTTP_REFERER            = $_SERVER["HTTP_REFERER"];
+        $url = "www.HTTP_REFERER.com";
+        if (isset($_SERVER["HTTP_REFERER"])) {
+            $HTTP_REFERER = $_SERVER["HTTP_REFERER"];
+        }
         $_SERVER["HTTP_REFERER"] = $url;
         \think\Config::set('default_return_type', "json");
 
@@ -223,8 +225,10 @@ class responseTest extends \PHPUnit_Framework_TestCase
 
         // FIXME 静态方法mock
         // $this->assertEquals('content', $result);
+        if (isset($HTTP_REFERER)) {
+            $_SERVER["HTTP_REFERER"] = $HTTP_REFERER;
+        }
 
-        $_SERVER["HTTP_REFERER"] = $HTTP_REFERER;
     }
 
     /**

@@ -37,7 +37,7 @@ class Socket
      * @param array $config 缓存参数
      * @access public
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         if (!empty($config)) {
             $this->config = array_merge($this->config, $config);
@@ -48,7 +48,7 @@ class Socket
         }
     }
 
-    public function save($logs = [])
+    public function save(array $logs = [])
     {
         if (!$this->check()) {
             return;

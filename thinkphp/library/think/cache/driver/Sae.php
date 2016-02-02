@@ -28,6 +28,7 @@ class Sae
         'timeout'    => false,
         'persistent' => false,
         'length'     => 0,
+        'prefix'     => '',
     ];
 
     /**

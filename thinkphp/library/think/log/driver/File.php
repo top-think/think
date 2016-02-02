@@ -15,7 +15,6 @@ namespace think\log\driver;
  */
 class File
 {
-
     protected $config = [
         'time_format' => ' c ',
         'file_size'   => 2097152,
@@ -23,7 +22,7 @@ class File
     ];
 
     // 实例化并传入参数
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         $this->config = array_merge($this->config, $config);
     }
@@ -34,7 +33,7 @@ class File
      * @param array $log 日志信息
      * @return void
      */
-    public function save($log = [])
+    public function save(array $log = [])
     {
         $now         = date($this->config['time_format']);
         $destination = $this->config['path'] . date('y_m_d') . '.log';
