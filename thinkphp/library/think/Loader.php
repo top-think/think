@@ -87,9 +87,13 @@ class Loader
     }
 
     // 注册命名空间
-    public static function addNamespace($namespace, $path)
+    public static function addNamespace($namespace, $path = '')
     {
-        self::$namespace[$namespace] = $path;
+        if (is_array($namespace)) {
+            self::$namespace = array_merge(self::$namespace, $namespace);
+        } else {
+            self::$namespace[$namespace] = $path;
+        }
     }
 
     // 注册自动加载机制

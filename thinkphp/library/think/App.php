@@ -42,6 +42,11 @@ class App
         // 获取配置参数
         $config = Config::get();
 
+        // 注册根命名空间
+        if (!empty($config['root_namespace'])) {
+            Loader::addNamespace($config['root_namespace']);
+        }
+
         // 加载额外文件
         if (!empty($config['extra_file_list'])) {
             foreach ($config['extra_file_list'] as $file) {

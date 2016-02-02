@@ -7,6 +7,8 @@ return [
 
     // 应用模式状态
     'app_status'            => '',
+    // 注册的根命名空间
+    'root_namespace'        => [],
     // 扩展配置文件
     'extra_config_list'     => ['database', 'route'],
     // 扩展函数文件
