@@ -22,7 +22,7 @@ class Redis extends SessionHandler
         'port'         => 6379, // 端口
         'password'     => '', // 密码
         'expire'       => 3600, // 有效期
-        'timeout'      => false, // 超时时间
+        'timeout'      => 0, // 超时时间
         'persistent'   => true, // 是否长连接
         'session_name' => '', // memcache key前缀
     ];
@@ -47,9 +47,9 @@ class Redis extends SessionHandler
         $this->handler = new \Redis;
         // 建立连接
         $func = $this->config['persistent'] ? 'pconnect' : 'connect';
-        false === $this->config['timeout'] ?
-        $this->handler->$func($this->config['host'], $this->config['port']) :
-        $this->handler->$func($this->config['host'], $this->config['port'], $this->config['timeout']);
+        $this->config['timeout'] > 0 ?
+        $this->handler->$func($this->config['host'], $this->config['port'], $this->config['timeout']) :
+        $this->handler->$func($this->config['host'], $this->config['port']);
         if ('' != $this->config['password']) {
             $this->handler->auth($this->config['password']);
         }
@@ -86,7 +86,11 @@ class Redis extends SessionHandler
      */
     public function write($sessID, $sessData)
     {
-        return $this->handler->set($this->config['session_name'] . $sessID, $sessData, 0, $this->config['expire']);
+        if($this->handler->set($this->config['session_name'] . $sessID, $sessData)){
+            $this->handler->expire($this->config['session_name'] . $sessID, $this->config['expire']);
+            return true;
+        }
+        return false;
     }
 
     /**
