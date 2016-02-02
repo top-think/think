@@ -272,7 +272,7 @@ class View
      * @param  string $module 模块名
      * @return string
      */
-    protected function getThemePath($module)
+    protected function getThemePath($module = '')
     {
         // 获取当前主题名称
         $theme = $this->getTemplateTheme($module);
