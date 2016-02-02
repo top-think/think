@@ -268,8 +268,6 @@ class Error
             'DS'               => defined('DS') ? DS : 'undefined',
             '__INFO__'         => defined('__INFO__') ? __INFO__ : 'undefined',
             '__EXT__'          => defined('__EXT__') ? __EXT__ : 'undefined',
-            '__INFO__'         => defined('__INFO__') ? __INFO__ : 'undefined',
-            '__EXT__'          => defined('__EXT__') ? __EXT__ : 'undefined',
         ];
     }
 }
