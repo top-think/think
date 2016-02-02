@@ -51,8 +51,8 @@ class Memcache
         foreach ((array) $hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
             $this->options['timeout'] > 0 ?
-            $this->handler->addServer($host, $port, $this->options['persistent'], 1) : 
-            $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']);
+            $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']) : 
+            $this->handler->addServer($host, $port, $this->options['persistent'], 1);
         }
     }
 
