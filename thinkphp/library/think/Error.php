@@ -31,7 +31,7 @@ class Error
      * @param  \Exception $exception
      * @return bool  true-禁止往下传播已处理过的异常
      */
-    public static function appException(\Exception $exception)
+    public static function appException($exception)
     {
         /* 非API模式下的部署模式，跳转到指定的 Error Page */
         if (!(APP_DEBUG || IS_API)) {
@@ -137,7 +137,7 @@ class Error
      * @param  Array      $vars      异常信息
      * @return void
      */
-    public static function output(\Exception $exception, array $vars)
+    public static function output($exception, array $vars)
     {
         if ($exception instanceof Exception) {
             http_response_code($exception->getHttpStatus());
@@ -164,7 +164,7 @@ class Error
      * @param  \Exception $exception
      * @return integer                错误编码
      */
-    private static function getCode(\Exception $exception)
+    private static function getCode($exception)
     {
         $code = $exception->getCode();
         if (!$code && $exception instanceof ErrorException) {
@@ -179,7 +179,7 @@ class Error
      * @param  \Exception $exception
      * @return array                 错误文件内容
      */
-    private static function getSourceCode(\Exception $exception)
+    private static function getSourceCode($exception)
     {
         // 读取前9行和后9行
         $line  = $exception->getLine();
@@ -203,7 +203,7 @@ class Error
      * @param  \Exception $exception
      * @return array                 异常类定义的扩展数据
      */
-    private static function getExtendData(\Exception $exception)
+    private static function getExtendData($exception)
     {
         $data = [];
         if ($exception instanceof Exception) {
