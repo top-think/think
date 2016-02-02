@@ -93,7 +93,7 @@ class Error
     {
         if ($errno & Config::get('exception_ignore_type')) {
             // 忽略的异常记录到日志
-            Log::record("[{$errno}]{$errstr}[{$errfile}:{$errline}]", 'notic');
+            Log::record("[{$errno}]{$errstr}[{$errfile}:{$errline}]", 'notice');
         } else {
             // 将错误信息托管至 think\exception\ErrorException
             throw new ErrorException($errno, $errstr, $errfile, $errline, $errcontext);
@@ -266,8 +266,6 @@ class Error
             'LANG_SET'         => defined('LANG_SET') ? LANG_SET : 'undefined',
             'EXT'              => defined('EXT') ? EXT : 'undefined',
             'DS'               => defined('DS') ? DS : 'undefined',
-            '__INFO__'         => defined('__INFO__') ? __INFO__ : 'undefined',
-            '__EXT__'          => defined('__EXT__') ? __EXT__ : 'undefined',
             '__INFO__'         => defined('__INFO__') ? __INFO__ : 'undefined',
             '__EXT__'          => defined('__EXT__') ? __EXT__ : 'undefined',
         ];

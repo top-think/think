@@ -13,17 +13,17 @@ namespace think;
 
 class Log
 {
-    const LOG   = 'log';
-    const ERROR = 'error';
-    const INFO  = 'info';
-    const SQL   = 'sql';
-    const NOTIC = 'notic';
-    const ALERT = 'alert';
+    const LOG    = 'log';
+    const ERROR  = 'error';
+    const INFO   = 'info';
+    const SQL    = 'sql';
+    const NOTICE = 'notice';
+    const ALERT  = 'alert';
 
     // 日志信息
     protected static $log = [];
     // 日志类型
-    protected static $type = ['log', 'error', 'info', 'sql', 'notic', 'alert'];
+    protected static $type = ['log', 'error', 'info', 'sql', 'notice', 'alert'];
     // 日志写入驱动
     protected static $driver = null;
     // 通知发送驱动
@@ -37,7 +37,7 @@ class Log
         unset($config['type']);
         self::$driver = new $class($config);
         // 记录初始化信息
-        APP_DEBUG && Log::record('[ LOG ] INIT ' . $type . ':' . var_export($config, true), 'info');
+        APP_DEBUG && Log::record('[ LOG ] INIT ' . $type . ': ' . var_export($config, true), 'info');
     }
 
     // 通知初始化
@@ -48,7 +48,7 @@ class Log
         unset($config['type']);
         self::$alarm = new $class($config['alarm']);
         // 记录初始化信息
-        APP_DEBUG && Log::record('[ CACHE ] ALARM ' . $type . ':' . var_export($config, true), 'info');
+        APP_DEBUG && Log::record('[ CACHE ] ALARM ' . $type . ': ' . var_export($config, true), 'info');
     }
 
     /**
@@ -111,6 +111,7 @@ class Log
 
     /**
      * 发送预警通知
+     * @param mixed $msg 调试信息
      * @return void
      */
     public static function send($msg)

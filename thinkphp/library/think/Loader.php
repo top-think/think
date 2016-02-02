@@ -71,7 +71,7 @@ class Loader
                 APP_DEBUG && self::$load[] = $filename;
                 include $filename;
             } else {
-                Log::record('autoloader error : ' . $filename, 'notic');
+                Log::record('autoloader error : ' . $filename, 'notice');
             }
         }
     }
@@ -294,7 +294,7 @@ class Loader
             if (class_exists($class)) {
                 $model = new $class($name);
             } else {
-                Log::record('实例化不存在的类：' . $class, 'notic');
+                Log::record('实例化不存在的类：' . $class, 'notice');
                 $model = new Model($name);
             }
         }
