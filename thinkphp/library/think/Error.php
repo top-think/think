@@ -74,7 +74,7 @@ class Error
         }
 
         // 记录异常日志
-        Log::write("[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]", 'error');
+        Log::record("[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]", 'error');
         // 输出错误信息
         self::output($exception, $data);
         // 禁止往下传播已处理过的异常
@@ -110,7 +110,7 @@ class Error
     {
         // 写入日志
         Log::save();
-        
+
         if ($error = error_get_last()) {
             // 将错误信息托管至think\ErrorException
             $exception = new ErrorException(
