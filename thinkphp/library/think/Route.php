@@ -327,6 +327,11 @@ class Route
     // 检测URL路由
     public static function check($url, $depr = '/', $checkDomain = false)
     {
+        // 检测域名部署
+        if ($checkDomain) {
+            self::checkDomain();
+        }
+
         // 分隔符替换 确保路由定义使用统一的分隔符
         if ('/' != $depr) {
             $url = str_replace($depr, '/', $url);
@@ -348,11 +353,6 @@ class Route
         if (!empty(self::$rules['*'])) {
             // 合并任意请求的路由规则
             $rules = array_merge(self::$rules['*'], $rules);
-        }
-
-        // 检测域名部署
-        if ($checkDomain) {
-            self::checkDomain();
         }
 
         // 检测URL绑定

@@ -18,13 +18,13 @@ class Redis extends SessionHandler
 {
     protected $handler = null;
     protected $config  = [
-        'host'         => '127.0.0.1', // 主机
-        'port'         => 6379, // 端口
-        'password'     => '', // 密码
-        'expire'       => 3600, // 有效期
-        'timeout'      => 0, // 超时时间
-        'persistent'   => true, // 是否长连接
-        'session_name' => '', // memcache key前缀
+        'host'         => '127.0.0.1',  // redis主机
+        'port'         => 6379,         // redis端口
+        'password'     => '',           // 密码
+        'expire'       => 3600,         // 有效期(秒)
+        'timeout'      => 0,            // 超时时间(秒)
+        'persistent'   => true,         // 是否长连接
+        'session_name' => '',           // sessionkey前缀
     ];
 
     public function __construct($config = [])
@@ -86,11 +86,11 @@ class Redis extends SessionHandler
      */
     public function write($sessID, $sessData)
     {
-        if($this->handler->set($this->config['session_name'] . $sessID, $sessData)){
-            $this->handler->expire($this->config['session_name'] . $sessID, $this->config['expire']);
-            return true;
+        if ($this->config['expire'] > 0) {
+            return $this->handler->setex($this->config['session_name'] . $sessID, $this->config['expire'], $sessData);
+        } else {
+            return $this->handler->set($this->config['session_name'] . $sessID, $sessData);
         }
-        return false;
     }
 
     /**
