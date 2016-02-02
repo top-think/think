@@ -74,6 +74,9 @@ class App
             Session::init($config['session']);
         }
 
+        // 日志初始化
+        Log::init($config['log']);
+
         if (empty(self::$dispatch['type'])) {
             // 未指定调度类型 则进行URL路由检测
             self::route($config);
