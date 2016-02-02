@@ -42,6 +42,9 @@ class Loader
             include $file;
         } else {
             // 命名空间自动加载
+            if (!strpos($class, '\\')) {
+                return;
+            }
             list($name, $class) = explode('\\', $class, 2);
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
