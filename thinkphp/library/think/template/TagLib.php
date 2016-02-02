@@ -95,7 +95,7 @@ class TagLib
                 // 别名设置
                 foreach (explode(',', $val['alias']) as $v) {
                     $_key                = $lib ? $lib . ':' . $v : $v;
-                    $tags[$close][$_key] = $name;
+                    $tags[$close][$_key] = $v;
                 }
             }
         }
@@ -136,7 +136,7 @@ class TagLib
                 // 标签替换 从后向前
                 foreach ($nodes as $pos => $node) {
                     // 对应的标签名
-                    $name = $node['name'];
+                    $name = $tags[1][$node['name']];
                     // 解析标签属性
                     $attrs  = $this->parseAttr($node['begin'][0], $name);
                     $method = '_' . $name;
@@ -173,7 +173,7 @@ class TagLib
             $regex   = $this->getRegex(array_keys($tags[0]), 0);
             $content = preg_replace_callback($regex, function ($matches) use (&$tags) {
                 // 对应的标签名
-                $name = $matches[1];
+                $name = $tags[0][$matches[1]];
                 // 解析标签属性
                 $attrs = $this->parseAttr($matches[0], $name);
                 $method = '_' . $name;
