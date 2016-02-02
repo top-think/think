@@ -22,9 +22,11 @@ class File
     ];
 
     // 实例化并传入参数
-    public function __construct(array $config = [])
+    public function __construct($config = [])
     {
-        $this->config = array_merge($this->config, $config);
+        if (is_array($config)) {
+            $this->config = array_merge($this->config, $config);
+        }
     }
 
     /**
