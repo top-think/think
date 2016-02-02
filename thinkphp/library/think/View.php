@@ -214,7 +214,7 @@ class View
         $template = str_replace(['/', ':'], $depr, $template);
 
         // 获取当前模块
-        $module = MODULE_NAME;
+        $module = defined('MODULE_NAME') ? MODULE_NAME : '';
         if (strpos($template, '@')) {
             // 跨模块调用模版文件
             list($module, $template) = explode('@', $template);
@@ -223,11 +223,13 @@ class View
         defined('THEME_PATH') || define('THEME_PATH', $this->getThemePath($module));
 
         // 分析模板文件规则
-        if ('' == $template) {
-            // 如果模板文件名为空 按照默认规则定位
-            $template = CONTROLLER_NAME . $depr . ACTION_NAME;
-        } elseif (false === strpos($template, $depr)) {
-            $template = CONTROLLER_NAME . $depr . $template;
+        if (defined('CONTROLLER_NAME')) {
+            if ('' == $template) {
+                // 如果模板文件名为空 按照默认规则定位
+                $template = CONTROLLER_NAME . $depr . ACTION_NAME;
+            } elseif (false === strpos($template, $depr)) {
+                $template = CONTROLLER_NAME . $depr . $template;
+            }
         }
         return THEME_PATH . $template . $this->config['view_suffix'];
     }
@@ -270,7 +272,7 @@ class View
      * @param  string $module 模块名
      * @return string
      */
-    protected function getThemePath($module = MODULE_NAME)
+    protected function getThemePath($module)
     {
         // 获取当前主题名称
         $theme = $this->getTemplateTheme($module);
