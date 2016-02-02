@@ -124,7 +124,7 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $view_instance = \think\View::instance();
         $method        = new \ReflectionMethod('\think\View', 'ParseTemplate');
         $method->setAccessible(true);
-        $this->assertEquals('/theme_name/index/template_name.html', $method->invoke($view_instance, 'template_name'));
+        $this->assertEquals('/theme_name/template_name.html', $method->invokearg($view_instance, 'template_name'));
     }
 
     /**
