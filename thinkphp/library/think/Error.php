@@ -89,14 +89,14 @@ class Error
      * @param  integer $errline 出错行号
      * @return bool  true-禁止往下传播已处理过的异常
      */
-    public static function appError($errno, $errstr, $errfile, $errline)
+    public static function appError($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = [])
     {
         if ($errno & Config::get('exception_ignore_type')) {
             // 忽略的异常记录到日志
             Log::record("[{$errno}]{$errstr}[{$errfile}:{$errline}]", 'notic');
         } else {
             // 将错误信息托管至 think\exception\ErrorException
-            throw new ErrorException($errno, $errstr, $errfile, $errline);
+            throw new ErrorException($errno, $errstr, $errfile, $errline, $errcontext);
             // 禁止往下传播已处理过的异常
             return true;
         }
