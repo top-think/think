@@ -234,7 +234,7 @@ class Model
                     unset($data[$key]);
                 } elseif (is_scalar($val) && !isset($this->options['bind'][$key])) {
                     // 字段类型检查
-                    $this->_parseType($data, $key, $this->options['bind']);
+                    $this->_parseType($this->getTableName(), $data, $key, $this->options['bind']);
                 }
             }
         }
@@ -808,7 +808,7 @@ class Model
                 $key = trim($key);
                 if (in_array($key, $fields, true)) {
                     if (is_scalar($val) && empty($options['bind'][$key])) {
-                        $this->_parseType($options['where'], $key, $options['bind']);
+                        $this->_parseType($options['table'], $options['where'], $key, $options['bind']);
                     }
                 }
             }
@@ -826,14 +826,15 @@ class Model
     /**
      * 数据类型检测
      * @access protected
+     * @param string $table 表名
      * @param array $data 数据
      * @param string $key 字段名
      * @param array $bind 参数绑定列表
      * @return void
      */
-    protected function _parseType(&$data, $key, &$bind)
+    protected function _parseType($table, &$data, $key, &$bind)
     {
-        $binds      = $this->getTableInfo('', 'bind');
+        $binds      = $this->getTableInfo($table, 'bind');
         $bind[$key] = [$data[$key], isset($binds[$key]) ? $binds[$key] : \PDO::PARAM_STR];
         $data[$key] = ':' . $key;
     }

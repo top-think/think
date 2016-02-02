@@ -1114,7 +1114,7 @@ abstract class Driver
      */
     public function getLastSql($model = '')
     {
-        return $model ? $this->modelSql[$model] : $this->queryStr;
+        return ($model && isset($this->modelSql[$model])) ? $this->modelSql[$model] : $this->queryStr;
     }
 
     /**
