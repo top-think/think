@@ -157,7 +157,7 @@ class inputTest extends \PHPUnit_Framework_TestCase
         //session_start();
         $_SESSION['test'] = 'session value ';
         $this->assertEquals('session value', Input::session('test'));
-        session_destroy();
+        //session_destroy();
 
         $_COOKIE['cookie'] = 'cookie value ';
         $this->assertEquals('cookie value', Input::cookie('cookie'));

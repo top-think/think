@@ -29,7 +29,7 @@ class templateTest extends \PHPUnit_Framework_TestCase
         $content = <<<EOF
 {php}echo \$a;{/php}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo \$a; ?>
 EOF;
         $cx->parseTag($content);
@@ -46,7 +46,7 @@ EOF;
 
 {/volist}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(is_array(\$list)): \$key = 0; \$__LIST__ = \$list;if( count(\$__LIST__)==0 ) : echo "" ;else: foreach(\$__LIST__ as \$key=>\$vo): \$mod = (\$key % 2 );++\$key;?>
 
 <?php endforeach; endif; else: echo "" ;endif; ?>
@@ -60,7 +60,7 @@ EOF;
 {/volist}
 EOF;
 
-        $template->fetch($content, ['list' => [1,2,3,4,5]]);
+        $template->fetch($content, ['list' => [1, 2, 3, 4, 5]]);
         $this->expectOutputString('234');
     }
 
@@ -74,7 +74,7 @@ EOF;
 
 {/foreach}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php foreach(\$list as \$key=>\$val): ?>
 
 <?php endforeach; ?>
@@ -87,7 +87,7 @@ EOF;
 
 {/foreach}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(is_array(\$list)): foreach(\$list as \$key=>\$val): ?>
 
 <?php endforeach; endif; ?><?php if(empty(\$list)): echo '"empty'; endif; ?>
@@ -118,7 +118,7 @@ two
 default
 {/if}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a']==\$var['b']): ?>
 one
 <?php elseif(!empty(\$var['a'])): ?>
@@ -151,7 +151,7 @@ d
 default
 {/switch}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php switch(\$var): ?>
 <?php case \$a: ?>
 a
@@ -180,7 +180,7 @@ EOF;
 default
 {/eq}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] == \$var['b']): ?>
 default
 <?php endif; ?>
@@ -193,7 +193,7 @@ EOF;
 default
 {/equal}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] == '0'): ?>
 default
 <?php endif; ?>
@@ -206,7 +206,7 @@ EOF;
 default
 {/neq}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] != '0'): ?>
 default
 <?php endif; ?>
@@ -219,7 +219,7 @@ EOF;
 default
 {/notequal}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] != '0'): ?>
 default
 <?php endif; ?>
@@ -232,7 +232,7 @@ EOF;
 default
 {/gt}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] > '0'): ?>
 default
 <?php endif; ?>
@@ -245,7 +245,7 @@ EOF;
 default
 {/egt}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] >= '0'): ?>
 default
 <?php endif; ?>
@@ -258,7 +258,7 @@ EOF;
 default
 {/lt}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] < '0'): ?>
 default
 <?php endif; ?>
@@ -271,7 +271,7 @@ EOF;
 default
 {/elt}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] <= '0'): ?>
 default
 <?php endif; ?>
@@ -284,7 +284,7 @@ EOF;
 default
 {/heq}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] === '0'): ?>
 default
 <?php endif; ?>
@@ -297,7 +297,7 @@ EOF;
 default
 {/nheq}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$var['a'] !== '0'): ?>
 default
 <?php endif; ?>
@@ -317,7 +317,7 @@ EOF;
 default
 {/in}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(in_array((\$var), is_array(\$value)?\$value:explode(',',\$value))): ?>
 default
 <?php endif; ?>
@@ -330,7 +330,7 @@ EOF;
 default
 {/notin}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(!in_array((\$var), explode(',',"1,2,3"))): ?>
 default
 <?php endif; ?>
@@ -356,7 +356,7 @@ EOF;
 default
 {/present}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(isset(\$var)): ?>
 default
 <?php endif; ?>
@@ -369,7 +369,7 @@ EOF;
 default
 {/notpresent}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(!isset(\$var)): ?>
 default
 <?php endif; ?>
@@ -388,7 +388,7 @@ EOF;
 default
 {/empty}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(empty(\$var)): ?>
 default
 <?php endif; ?>
@@ -401,7 +401,7 @@ EOF;
 default
 {/notempty}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(!empty(\$var)): ?>
 default
 <?php endif; ?>
@@ -420,7 +420,7 @@ EOF;
 default
 {/defined}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(defined("URL")): ?>
 default
 <?php endif; ?>
@@ -433,7 +433,7 @@ EOF;
 default
 {/notdefined}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(!defined("URL")): ?>
 default
 <?php endif; ?>
@@ -450,8 +450,8 @@ EOF;
         $content = <<<EOF
 {import file="base?ver=1.0" value="\$name.a" /}
 EOF;
-        $data    = <<<EOF
-<?php if(isset(\$name['a'])): ?><script type="text/javascript" src="__ROOT__/Public/base.js?ver=1.0"></script><?php endif; ?>
+        $data = <<<EOF
+<?php if(isset(\$name['a'])): ?><script type="text/javascript" src="/Public/base.js?ver=1.0"></script><?php endif; ?>
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
@@ -459,8 +459,8 @@ EOF;
         $content = <<<EOF
 {import file="base" type="css" /}
 EOF;
-        $data    = <<<EOF
-<link rel="stylesheet" type="text/css" href="__ROOT__/Public/base.css" />
+        $data = <<<EOF
+<link rel="stylesheet" type="text/css" href="/Public/base.css" />
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
@@ -468,7 +468,7 @@ EOF;
         $content = <<<EOF
 {import file="base,common" type="php" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php import("base"); ?><?php import("common"); ?>
 EOF;
         $cx->parseTag($content);
@@ -477,7 +477,7 @@ EOF;
         $content = <<<EOF
 {load file="base.php" value="\$name.a" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(isset(\$name['a'])): ?><?php require_cache("base.php"); ?><?php endif; ?>
 EOF;
         $cx->parseTag($content);
@@ -486,7 +486,7 @@ EOF;
         $content = <<<EOF
 {js file="base.js" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <script type="text/javascript" src="base.js"></script>
 EOF;
         $cx->parseTag($content);
@@ -495,7 +495,7 @@ EOF;
         $content = <<<EOF
 {css file="base.css" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <link rel="stylesheet" type="text/css" href="base.css" />
 EOF;
         $cx->parseTag($content);
@@ -510,7 +510,7 @@ EOF;
         $content = <<<EOF
 {assign name="total" value="0" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php \$total = '0'; ?>
 EOF;
         $cx->parseTag($content);
@@ -519,7 +519,7 @@ EOF;
         $content = <<<EOF
 {assign name="total" value=":count(\$list)" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php \$total = count(\$list); ?>
 EOF;
         $cx->parseTag($content);
@@ -534,7 +534,7 @@ EOF;
         $content = <<<EOF
 {define name="INFO_NAME" value="test" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php define('INFO_NAME', 'test'); ?>
 EOF;
         $cx->parseTag($content);
@@ -543,7 +543,7 @@ EOF;
         $content = <<<EOF
 {define name="INFO_NAME" value="\$name" /}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php define('INFO_NAME', \$name); ?>
 EOF;
         $cx->parseTag($content);

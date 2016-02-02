@@ -76,11 +76,11 @@ class Cx extends Taglib
      */
     public function _volist($tag, $content)
     {
-        $name  = $tag['name'];
-        $id    = $tag['id'];
-        $empty = isset($tag['empty']) ? $tag['empty'] : '';
-        $key   = !empty($tag['key']) ? $tag['key'] : 'i';
-        $mod   = isset($tag['mod']) ? $tag['mod'] : '2';
+        $name   = $tag['name'];
+        $id     = $tag['id'];
+        $empty  = isset($tag['empty']) ? $tag['empty'] : '';
+        $key    = !empty($tag['key']) ? $tag['key'] : 'i';
+        $mod    = isset($tag['mod']) ? $tag['mod'] : '2';
         $offset = !empty($tag['offset']) && is_numeric($tag['offset']) ? intval($tag['offset']) : 0;
         $length = !empty($tag['length']) && is_numeric($tag['length']) ? intval($tag['length']) : 'null';
         // 允许使用函数设定数据集 <volist name=":fun('arg')" id="vo">{$vo.name}</volist>
@@ -96,7 +96,7 @@ class Cx extends Taglib
         $parseStr .= 'if(is_array(' . $name . ')): $' . $key . ' = 0;';
         // 设置了输出数组长度
         if (0 != $offset || 'null' != $length) {
-            $parseStr .=  '$__LIST__ = array_slice(' . $name . ',' . $offset . ',' . $length . ', true); ';
+            $parseStr .= '$__LIST__ = array_slice(' . $name . ',' . $offset . ',' . $length . ', true); ';
         } else {
             $parseStr .= ' $__LIST__ = ' . $name . ';';
         }
@@ -566,7 +566,7 @@ class Cx extends Taglib
         } else {
             // 命名空间导入模式 默认是js
             $type     = $type ? $type : (!empty($tag['type']) ? strtolower($tag['type']) : 'js');
-            $basepath = !empty($tag['basepath']) ? $tag['basepath'] : __ROOT__ . '/Public';
+            $basepath = !empty($tag['basepath']) ? $tag['basepath'] : '/Public';
             // 命名空间方式导入外部文件
             $array = explode(',', $file);
             foreach ($array as $val) {
