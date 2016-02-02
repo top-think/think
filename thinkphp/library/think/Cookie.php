@@ -16,17 +16,19 @@ class Cookie
 
     protected static $config = [
         // cookie 名称前缀
-        'prefix'   => '',
+        'prefix'    => '',
         // cookie 保存时间
-        'expire'   => 0,
+        'expire'    => 0,
         // cookie 保存路径
-        'path'     => '/',
+        'path'      => '/',
         // cookie 有效域名
-        'domain'   => '',
+        'domain'    => '',
         //  cookie 启用安全传输
-        'secure'   => false,
+        'secure'    => false,
         // httponly设置
-        'httponly' => '',
+        'httponly'  => '',
+        // 是否使用 setcookie
+        'setcookie' => true,
     ];
 
     /**
@@ -86,7 +88,9 @@ class Cookie
             $value = 'think:' . json_encode($value);
         }
         $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
-        setcookie($name, $value, $expire, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+        if (self::$config['setcookie']) {
+            setcookie($name, $value, $expire, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+        }
         $_COOKIE[$name] = $value;
     }
 
@@ -124,7 +128,9 @@ class Cookie
         $config = self::$config;
         $prefix = $prefix ? $prefix : $config['prefix'];
         $name   = $prefix . $name;
-        setcookie($name, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+        if (self::$config['setcookie']) {
+            setcookie($name, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+        }
         // 删除指定cookie
         unset($_COOKIE[$name]);
     }
@@ -148,7 +154,9 @@ class Cookie
             // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === strpos($key, $prefix)) {
-                    setcookie($key, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+                    if (self::$config['setcookie']) {
+                        setcookie($key, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+                    }
                     unset($_COOKIE[$key]);
                 }
             }
