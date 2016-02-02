@@ -93,7 +93,7 @@ class Error
     {
         if ($errno & Config::get('exception_ignore_type')) {
             // 忽略的异常记录到日志
-            Log::record("[{$errno}]{$errstr}[{$errfile}:{$errline}]", 'notic');
+            Log::record("[{$errno}]{$errstr}[{$errfile}:{$errline}]", 'notice');
         } else {
             // 将错误信息托管至 think\exception\ErrorException
             throw new ErrorException($errno, $errstr, $errfile, $errline, $errcontext);

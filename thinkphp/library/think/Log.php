@@ -13,17 +13,17 @@ namespace think;
 
 class Log
 {
-    const LOG   = 'log';
-    const ERROR = 'error';
-    const INFO  = 'info';
-    const SQL   = 'sql';
-    const NOTIC = 'notic';
-    const ALERT = 'alert';
+    const LOG    = 'log';
+    const ERROR  = 'error';
+    const INFO   = 'info';
+    const SQL    = 'sql';
+    const NOTICE = 'notice';
+    const ALERT  = 'alert';
 
     // 日志信息
     protected static $log = [];
     // 日志类型
-    protected static $type = ['log', 'error', 'info', 'sql', 'notic', 'alert'];
+    protected static $type = ['log', 'error', 'info', 'sql', 'notice', 'alert'];
     // 日志写入驱动
     protected static $driver = null;
     // 通知发送驱动
