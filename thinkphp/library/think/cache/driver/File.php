@@ -187,7 +187,7 @@ class File
      */
     public function clear()
     {
-        $path = $this->options['temp'];
+        $path = $this->options['path'];
         if ($dir = opendir($path)) {
             while ($file = readdir($dir)) {
                 $check = is_dir($file);
