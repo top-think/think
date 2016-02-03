@@ -190,6 +190,16 @@ class Model
      */
     protected function _write_data($data, $type)
     {
+        if (empty($data)) {
+            // 没有传递数据，获取当前数据对象的值
+            if (!empty($this->data)) {
+                $data = $this->data;
+                // 重置数据
+                $this->data = [];
+            } else {
+                throw new Exception('invalid data');
+            }
+        }
         if (!empty($this->duplicate)) {
             // 存在数据副本
             $data = array_diff_assoc($data, $this->duplicate);
@@ -245,6 +255,10 @@ class Model
         }
         // 回调方法
         $this->_before_write($data);
+        if (empty($data)) {
+            // 没有数据则不执行
+            throw new Exception('no data to write');
+        }
         return $data;
     }
     // 写入数据前的回调方法 包括新增和更新
@@ -261,16 +275,6 @@ class Model
      */
     public function add($data = '', $replace = false)
     {
-        if (empty($data)) {
-            // 没有传递数据，获取当前数据对象的值
-            if (!empty($this->data)) {
-                $data = $this->data;
-                // 重置数据
-                $this->data = [];
-            } else {
-                throw new Exception('invalid data');
-            }
-        }
         // 数据处理
         $data = $this->_write_data($data, 'insert');
         // 分析表达式
@@ -290,16 +294,12 @@ class Model
             if ($insertId) {
                 // 自增主键返回插入ID
                 $data[$pk] = $insertId;
-                if (false === $this->_after_insert($data, $options)) {
-                    return false;
-                }
-                return $insertId;
             }
             if (false === $this->_after_insert($data, $options)) {
                 return false;
             }
         }
-        return $result;
+        return !empty($insertId) ? $insertId : $result;
     }
     // 插入数据前的回调方法
     protected function _before_insert(&$data, $options = [])
@@ -323,11 +323,8 @@ class Model
         $result = $this->db->insertAll($dataList, $options, $replace);
         if (false !== $result) {
             $insertId = $this->getLastInsID();
-            if ($insertId) {
-                return $insertId;
-            }
         }
-        return $result;
+        return !empty($insertId) ? $insertId : $result;
     }
 
     /**
@@ -339,22 +336,8 @@ class Model
      */
     public function save($data = '')
     {
-        if (empty($data)) {
-            // 没有传递数据，获取当前数据对象的值
-            if (!empty($this->data)) {
-                $data = $this->data;
-                // 重置数据
-                $this->data = [];
-            } else {
-                throw new Exception('no data require update');
-            }
-        }
         // 数据处理
         $data = $this->_write_data($data, 'update');
-        if (empty($data)) {
-            // 没有数据则不执行
-            throw new Exception('no data require update');
-        }
         // 分析表达式
         $options = $this->_parseOptions();
         $pk      = $this->getPk();
@@ -382,7 +365,7 @@ class Model
                 $options['where'] = $where;
             }
         }
-        if (isset($options['where'][$pk])) {
+        if (is_string($pk) && isset($options['where'][$pk])) {
             $pkValue = $options['where'][$pk];
         }
         if (false === $this->_before_update($data, $options)) {
@@ -393,7 +376,6 @@ class Model
             if (isset($pkValue)) {
                 $data[$pk] = $pkValue;
             }
-
             $this->_after_update($data, $options);
         }
         return $result;
@@ -417,48 +399,24 @@ class Model
         $pk = $this->getPk();
         if (empty($options) && empty($this->options['where'])) {
             // 如果删除条件为空 则删除当前数据对象所对应的记录
-            if (!empty($this->data) && isset($this->data[$pk])) {
+            if (!empty($this->data) && is_string($pk) && isset($this->data[$pk])) {
                 return $this->delete($this->data[$pk]);
             } else {
                 throw new Exception('no data to delete without where');
             }
         }
-        if (is_numeric($options) || is_string($options)) {
-            // 根据主键删除记录
-            if (strpos($options, ',')) {
-                $where[$pk] = ['IN', $options];
-            } else {
-                $where[$pk] = $options;
-            }
-            $options          = [];
-            $options['where'] = $where;
+        if (!empty($options) && empty($options['where'])) {
+            // AR模式分析主键条件
+            $this->parsePkWhere($options);
         }
-        // 根据复合主键删除记录
-        if (is_array($options) && (count($options) > 0) && is_array($pk)) {
-            $count = 0;
-            foreach (array_keys($options) as $key) {
-                if (is_int($key)) {
-                    $count++;
-                }
-            }
-            if (count($pk) == $count) {
-                $i = 0;
-                foreach ($pk as $field) {
-                    $where[$field] = $options[$i];
-                    unset($options[$i++]);
-                }
-                $options['where'] = $where;
-            } else {
-                throw new Exception('miss complex primary data');
-            }
-        }
+
         // 分析表达式
         $options = $this->_parseOptions($options);
         if (empty($options['where'])) {
             // 如果条件为空 不进行删除操作 除非设置 1=1
             throw new Exception('no data to delete without where');
         }
-        if (isset($options['where'][$pk])) {
+        if (is_string($pk) && isset($options['where'][$pk])) {
             $pkValue = $options['where'][$pk];
         }
         $result = $this->db->delete($options);
@@ -485,37 +443,12 @@ class Model
      */
     public function select($options = [])
     {
-        $pk = $this->getPk();
-        if (is_string($options) || is_numeric($options)) {
-            // 根据主键查询
-            if (strpos($options, ',')) {
-                $where[$pk] = ['IN', $options];
-            } else {
-                $where[$pk] = $options;
-            }
-            $options          = [];
-            $options['where'] = $where;
-        } elseif (is_array($options) && (count($options) > 0) && is_array($pk)) {
-            // 根据复合主键查询
-            $count = 0;
-            foreach (array_keys($options) as $key) {
-                if (is_int($key)) {
-                    $count++;
-                }
-            }
-            if (count($pk) == $count) {
-                $i = 0;
-                foreach ($pk as $field) {
-                    $where[$field] = $options[$i];
-                    unset($options[$i++]);
-                }
-                $options['where'] = $where;
-            } else {
-                throw new Exception('miss complex primary data');
-            }
-        } elseif (false === $options) {
+        if (false === $options) {
             // 用于子查询 不查询只返回SQL
             $options['fetch_sql'] = true;
+        } elseif (!empty($options) && empty($options['where'])) {
+            // AR模式主键条件分析
+            $this->parsePkWhere($options);
         }
 
         // 分析表达式
@@ -560,6 +493,53 @@ class Model
             Cache::set($key, $resultSet, $cache['expire']);
         }
         return $resultSet;
+    }
+
+    /**
+     * 把主键值转换为查询条件 支持复合主键
+     * @access public
+     * @param mixed $options 表达式参数
+     * @return void
+     * @throws \think\Exception
+     */
+    protected function parsePkWhere(&$options)
+    {
+        $pk = $this->getPk();
+        if (is_string($pk)) {
+            // 根据主键查询
+            if (is_array($options)) {
+                // 判断是否索引数组
+                $keys = array_keys($options);
+                if (array_keys($keys) === $keys) {
+                    $where[$pk] = ['in', $options];
+                } else {
+                    return;
+                }
+            } else {
+                $where[$pk] = strpos($options, ',') ? ['IN', $options] : $options;
+            }
+            $options          = [];
+            $options['where'] = $where;
+        } elseif (is_array($pk) && is_array($options) && !empty($options)) {
+            // 根据复合主键查询
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) {
+                    $count++;
+                }
+            }
+            if (count($pk) == $count) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where'] = $where;
+            } else {
+                throw new Exception('miss complex primary data');
+            }
+        }
+        return;
     }
 
     /**
@@ -848,31 +828,9 @@ class Model
      */
     public function find($options = [])
     {
-        $pk = $this->getPk();
-        if (is_numeric($options) || is_string($options)) {
-            $where[$pk]       = $options;
-            $options          = [];
-            $options['where'] = $where;
-        }
-        // 根据复合主键查找记录
-        if (is_array($options) && is_array($pk) && (count($options) > 0)) {
-            // 根据复合主键查询
-            $count = 0;
-            foreach (array_keys($options) as $key) {
-                if (is_int($key)) {
-                    $count++;
-                }
-            }
-            if (count($pk) == $count) {
-                $i = 0;
-                foreach ($pk as $field) {
-                    $where[$field] = $options[$i];
-                    unset($options[$i++]);
-                }
-                $options['where'] = $where;
-            } else {
-                throw new Exception('miss complex primary data');
-            }
+        if (!empty($options) && empty($options['where'])) {
+            // AR模式主键条件分析
+            $this->parsePkWhere($options);
         }
         // 总是查找一条记录
         $options['limit'] = 1;
