@@ -234,7 +234,7 @@ class Model
                     unset($data[$key]);
                 } elseif (is_scalar($val) && !isset($this->options['bind'][$key])) {
                     // 字段类型检查
-                    $this->_parseType($this->getTableName(), $data, $key, $this->options['bind']);
+                    $this->_parseType($data, $key, $this->options['bind']);
                 }
             }
         }
@@ -793,7 +793,7 @@ class Model
 
         if (isset($options['table'])) {
             // 动态指定表名
-            $fields = $this->getTableInfo($options['table'], 'fields');
+            $fields = $this->getTableInfo('fields', $options['table']);
         } else {
             $options['table'] = $this->getTableName();
             $fields           = $this->getFields();
@@ -808,7 +808,7 @@ class Model
                 $key = trim($key);
                 if (in_array($key, $fields, true)) {
                     if (is_scalar($val) && empty($options['bind'][$key])) {
-                        $this->_parseType($options['table'], $options['where'], $key, $options['bind']);
+                        $this->_parseType($options['where'], $key, $options['bind'], $options['table']);
                     }
                 }
             }
@@ -826,15 +826,15 @@ class Model
     /**
      * 数据类型检测
      * @access protected
-     * @param string $table 表名
      * @param array $data 数据
      * @param string $key 字段名
      * @param array $bind 参数绑定列表
+     * @param string $tableName 表名
      * @return void
      */
-    protected function _parseType($table, &$data, $key, &$bind)
+    protected function _parseType(&$data, $key, &$bind, $tableName = '')
     {
-        $binds      = $this->getTableInfo($table, 'bind');
+        $binds      = $this->getTableInfo('bind', $tableName);
         $bind[$key] = [$data[$key], isset($binds[$key]) ? $binds[$key] : \PDO::PARAM_STR];
         $data[$key] = ':' . $key;
     }
@@ -1098,13 +1098,13 @@ class Model
     /**
      * 获取当前主键名称
      * @access public
+     * @param string $tableName  数据表名 留空自动获取
      * @return mixed
      */
-    public function getPk()
+    public function getPk($tableName = '')
     {
         if (is_null($this->pk)) {
-            $tableName = isset($this->options['table']) ? $this->options['table'] : $this->getTableName();
-            $this->pk  = $this->getTableInfo($tableName, 'pk');
+            $this->pk = $this->getTableInfo('pk', $tableName);
         }
         return $this->pk;
     }
@@ -1112,12 +1112,13 @@ class Model
     /**
      * 获取当前字段信息
      * @access public
+     * @param string $tableName  数据表名 留空自动获取
      * @return array
      */
-    public function getFields()
+    public function getFields($tableName = '')
     {
         if (empty($this->fields)) {
-            $this->fields = $this->getTableInfo('', 'fields');
+            $this->fields = $this->getTableInfo('fields', $tableName);
         }
         return $this->fields;
     }
@@ -1125,15 +1126,17 @@ class Model
     /**
      * 获取数据表信息
      * @access public
-     * @param string $tableName  数据表名 留空自动获取
      * @param string $fetch 获取信息类型 包括 fields type bind pk
+     * @param string $tableName  数据表名 留空自动获取
      * @return mixed
      */
-    public function getTableInfo($tableName = '', $fetch = '')
+    public function getTableInfo($fetch = '', $tableName = '')
     {
-        $tableName = $tableName ?: $this->getTableName();
-        $guid      = md5($tableName);
-        $result    = Cache::get($guid);
+        if (!$tableName) {
+            $tableName = isset($this->options['table']) ? $this->options['table'] : $this->getTableName();
+        }
+        $guid   = md5($tableName);
+        $result = Cache::get($guid);
         if (!$result) {
             $info   = $this->db->getFields($tableName);
             $fields = array_keys($info);
