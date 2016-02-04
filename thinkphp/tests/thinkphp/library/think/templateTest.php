@@ -252,11 +252,13 @@ EOF;
         $config['tpl_path'] = dirname(__FILE__) . '/';
         $config['tpl_suffix'] = '.html';
         $template = new Template($config);
+        $files = ['extend' => 'extend', 'include' => 'include'];
+        $template->assign('files', $files);
 
         $content = <<<EOF
-{extend name="extend" /}
+{extend name="\$files.extend" /}
 {block name="side"}
-    {include file="include" name="\$user.name" value="\$user.account" /}
+    {include file="\$files.include" name="\$user.name" value="\$user.account" /}
     {\$message}{literal}{\$message}{/literal}
 {/block}
 EOF;
@@ -373,5 +375,13 @@ EOF;
         $template->assign('name', 'value');
         $value = $template->get('name');
         $this->assertEquals('value', $value);
+    }
+
+    public function testVarGet()
+    {
+        $template = new Template();
+        $data = ['a' => 'a', 'b' => 'b'];
+        $template->assign($data);
+        $this->assertEquals($data, $template->get());
     }
 }
