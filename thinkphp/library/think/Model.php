@@ -1094,6 +1094,10 @@ class Model
         if (!$tableName) {
             $tableName = isset($this->options['table']) ? $this->options['table'] : $this->getTableName();
         }
+        if (strpos($tableName, ',')) {
+            // 多表不获取字段信息
+            return false;
+        }
         $guid   = md5($tableName);
         $result = Cache::get($guid);
         if (!$result) {
