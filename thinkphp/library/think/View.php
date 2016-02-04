@@ -176,6 +176,8 @@ class View
         }
         // 获取并清空缓存
         $content = ob_get_clean();
+        // 内容过滤标签
+        APP_HOOK && Hook::listen('view_filter', $content);
         // 允许用户自定义模板的字符串替换
         if (!empty($this->config['parse_str'])) {
             $replace = $this->config['parse_str'];
