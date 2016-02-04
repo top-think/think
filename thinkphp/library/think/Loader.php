@@ -283,7 +283,7 @@ class Loader
         if (strpos($name, '/')) {
             list($module, $name) = explode('/', $name, 2);
         } else {
-            $module = MODULE_NAME;
+            $module = APP_MULTI_MODULE ? MODULE_NAME : '';
         }
         $class = self::parseClass($module, $layer, $name);
         $name  = basename($name);
@@ -319,7 +319,7 @@ class Loader
         if (strpos($name, '/')) {
             list($module, $name) = explode('/', $name);
         } else {
-            $module = MODULE_NAME;
+            $module = APP_MULTI_MODULE ? MODULE_NAME : '';
         }
         $class = self::parseClass($module, $layer, $name);
         if (class_exists($class)) {
