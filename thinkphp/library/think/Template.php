@@ -132,11 +132,24 @@ class Template
      * 模板变量获取
      * @access public
      * @param  string $name 变量名
-     * @return string|false
+     * @return mixed
      */
-    public function get($name)
+    public function get($name = '')
     {
-        return isset($this->data[$name]) ? $this->data[$name] : false;
+        if ('' == $name) {
+            return $this->data;
+        } else {
+            $data = $this->data;
+            foreach (explode('.', $name) as $key => $val) {
+                if (isset($data[$val])) {
+                    $data = $data[$val];
+                } else {
+                    $data = false;
+                    break;
+                }
+            }
+            return $data;
+        }
     }
 
     /**
@@ -896,19 +909,21 @@ class Template
      */
     private function parseTemplateName($templateName)
     {
-        if ('$' == substr($templateName, 0, 1)) {
-            //支持加载变量文件名
-            $templateName = $this->get(substr($templateName, 1));
-        }
         $array    = explode(',', $templateName);
         $parseStr = '';
         foreach ($array as $templateName) {
             if (empty($templateName)) {
                 continue;
             }
+            if (0 === strpos($templateName, '$')) {
+                //支持加载变量文件名
+                $templateName = $this->get(substr($templateName, 1));
+            }
             $template = $this->parseTemplateFile($templateName);
-            // 获取模板文件内容
-            $parseStr .= file_get_contents($template);
+            if (is_file($template)) {
+                // 获取模板文件内容
+                $parseStr .= file_get_contents($template);
+            }
         }
         return $parseStr;
     }
@@ -973,9 +988,9 @@ class Template
                     $name = 'name';
                 }
                 if ($single) {
-                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\w\-\/\.\:@,\\\\]+)\\1(?>[^' . $end . ']*)' . $end;
+                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\$\w\-\/\.\:@,\\\\]+)\\1(?>[^' . $end . ']*)' . $end;
                 } else {
-                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\w\-\/\.\:@,\\\\]+)\\1(?>(?:(?!' . $end . ').)*)' . $end;
+                    $regex = $begin . $tagName . '\b(?>(?:(?!' . $name . '=).)*)\b' . $name . '=([\'\"])(?<name>[\$\w\-\/\.\:@,\\\\]+)\\1(?>(?:(?!' . $end . ').)*)' . $end;
                 }
                 break;
             case 'tag':
