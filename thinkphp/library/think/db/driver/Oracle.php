@@ -64,7 +64,7 @@ class Oracle extends Driver
         $flag = false;
         if (preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $sql, $match)) {
             $this->table = Config::get("db_sequence_prefix") . str_ireplace(Config::get("database.prefix"), "", $match[2]);
-            $flag        = (boolean) $this->query("SELECT * FROM user_sequences WHERE sequence_name='" . strtoupper($this->table) . "'");
+            $flag        = (boolean) $this->query("SELECT * FROM all_sequences WHERE sequence_name='" . strtoupper($this->table) . "'");
         }
         //释放前次的查询结果
         if (!empty($this->PDOStatement)) {
@@ -101,16 +101,17 @@ class Oracle extends Driver
     public function getFields($tableName)
     {
         list($tableName) = explode(' ', $tableName);
-        $result          = $this->query("select a.column_name,data_type,decode(nullable,'Y',0,1) notnull,data_default,decode(a.column_name,b.column_name,1,0) pk "
-            . "from user_tab_columns a,(select column_name from user_constraints c,user_cons_columns col "
-            . "where c.constraint_name=col.constraint_name and c.constraint_type='P'and c.table_name='" . strtoupper($tableName)
-            . "') b where table_name='" . strtoupper($tableName) . "' and a.column_name=b.column_name(+)");
+        $result          = $this->query("select a.column_name,data_type,decode(nullable,'Y',0,1) notnull,data_default,decode(a.column_name,b.column_name,1,0) pk "
+            . "from all_tab_columns a,(select column_name from all_constraints c,all_cons_columns col "
+            . "where c.constraint_name=col.constraint_name and c.constraint_type='P'and c.table_name='" . strtoupper($tableName)
+            . "') b where table_name='" . strtoupper($tableName) . "' and a.column_name=b.column_name(+)");
         $info = [];
         if ($result) {
             foreach ($result as $key => $val) {
-                $info[strtolower($val['column_name'])] = [
-                    'name'    => strtolower($val['column_name']),
-                    'type'    => strtolower($val['data_type']),
+                $val                 = array_change_key_case($val);
+                $info[$val['column_name']] = [
+                    'name'    => $val['column_name'],
+                    'type'    => $val['data_type'],
                     'notnull' => $val['notnull'],
                     'default' => $val['data_default'],
                     'primary' => $val['pk'],
@@ -129,7 +130,7 @@ class Oracle extends Driver
      */
     public function getTables()
     {
-        $result = $this->query("select table_name from user_tables");
+        $result = $this->query("select table_name from all_tables");
         $info   = [];
         foreach ($result as $key => $val) {
             $info[$key] = current($val);
