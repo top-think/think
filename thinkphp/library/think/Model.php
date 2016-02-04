@@ -285,7 +285,7 @@ class Model
         // 写入数据到数据库
         $result = $this->db->insert($data, $options, $replace);
         if (false !== $result && is_numeric($result)) {
-            $pk = $this->getPk();
+            $pk = $this->getPk($options['table']);
             // 增加复合主键支持
             if (is_array($pk)) {
                 return $result;
@@ -340,7 +340,7 @@ class Model
         $data = $this->_write_data($data, 'update');
         // 分析表达式
         $options = $this->_parseOptions();
-        $pk      = $this->getPk();
+        $pk      = $this->getPk($options['table']);
         if (!isset($options['where'])) {
             // 如果存在主键数据 则自动作为更新条件
             if (is_string($pk) && isset($data[$pk])) {
@@ -914,7 +914,8 @@ class Model
         }
 
         // 状态
-        $type = $type ? $type : (!empty($data[$this->getPk()]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
+        $pk   = $this->getPk();
+        $type = $type ? $type : (is_string($pk) && !empty($data[$pk]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
 
         // 检测提交字段的合法性
         if (isset($this->options['field'])) {
