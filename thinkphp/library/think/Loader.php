@@ -357,13 +357,14 @@ class Loader
         $module = '.' != $info['dirname'] ? $info['dirname'] : CONTROLLER_NAME;
         $class  = self::controller($module, $layer);
         if ($class) {
-            if (is_string($vars)) {
-                parse_str($vars, $vars);
+            if (is_scalar($vars)) {
+                if (strpos($vars, '=')) {
+                    parse_str($vars, $vars);
+                } else {
+                    $vars = [$vars];
+                }
             }
-            $method = new \ReflectionMethod($class, $action . Config::get('action_suffix'));
-            // 记录执行信息
-            APP_DEBUG && Log::record('[ RUN ] ' . $method->getFileName(), 'info');
-            return $method->invokeArgs($class, $vars);
+            return App::invokeMethod([$class, $action . Config::get('action_suffix')], $vars);
         }
     }
     /**

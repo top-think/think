@@ -120,7 +120,7 @@ class App
     }
 
     // 执行函数或者闭包方法 支持参数调用
-    private static function invokeFunction($function, $vars = [])
+    public static function invokeFunction($function, $vars = [])
     {
         $reflect = new \ReflectionFunction($function);
         $args    = self::bindParams($reflect, $vars);
@@ -130,7 +130,7 @@ class App
     }
 
     // 调用反射执行类的方法 支持参数绑定
-    private static function invokeMethod($method, $vars = [])
+    public static function invokeMethod($method, $vars = [])
     {
         if (empty($vars)) {
             // 自动获取请求变量
@@ -162,11 +162,16 @@ class App
     private static function bindParams($reflect, $vars)
     {
         $args = [];
+        // 判断数组类型 数字数组时按顺序绑定参数
+        $keys = array_keys($vars);
+        $type = array_keys($keys) === $keys ? 1 : 0;
         if ($reflect->getNumberOfParameters() > 0) {
             $params = $reflect->getParameters();
             foreach ($params as $param) {
                 $name = $param->getName();
-                if (isset($vars[$name])) {
+                if (1 == $type && !empty($vars)) {
+                    $args[] = array_shift($vars);
+                } elseif (0 == $type && isset($vars[$name])) {
                     $args[] = $vars[$name];
                 } elseif ($param->isDefaultValueAvailable()) {
                     $args[] = $param->getDefaultValue();
