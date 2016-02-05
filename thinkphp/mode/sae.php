@@ -96,4 +96,12 @@ return [
         'think\template\driver\Sae'  => CORE_PATH . 'template' . DS . 'driver' . DS . 'Sae' . EXT,
     ],
 
+    // 命名空间
+    'namespace' => [
+            'think'         => LIB_PATH . 'think' . DS,
+            'behavior'      => LIB_PATH . 'behavior' . DS,
+            'traits'        => LIB_PATH . 'traits' . DS,
+            APP_NAMESPACE   => APP_PATH,
+    ],
+
 ];

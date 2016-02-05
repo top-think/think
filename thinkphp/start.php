@@ -19,16 +19,21 @@ require CORE_PATH . 'Loader.php';
 // 注册自动加载
 Loader::register();
 
-// 注册错误和异常处理机制
-Error::register();
-
 // 加载模式定义文件
 $mode = require MODE_PATH . APP_MODE . EXT;
+
+// 加载空间别名定义
+if (isset($mode['namespace'])) {
+    Loader::addNamespace(is_array($mode['namespace']) ? $mode['namespace'] : include $mode['namespace']);
+}
 
 // 加载模式别名定义
 if (isset($mode['alias'])) {
     Loader::addMap(is_array($mode['alias']) ? $mode['alias'] : include $mode['alias']);
 }
+
+// 注册错误和异常处理机制
+Error::register();
 
 // 加载模式配置文件
 if (isset($mode['config'])) {

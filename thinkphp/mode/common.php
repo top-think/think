@@ -47,4 +47,12 @@ return [
         'think\cache\driver\File'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'File' . EXT,
     ],
 
+    // 命名空间
+    'namespace' => [
+            'think'         => LIB_PATH . 'think' . DS,
+            'behavior'      => LIB_PATH . 'behavior' . DS,
+            'traits'        => LIB_PATH . 'traits' . DS,
+            APP_NAMESPACE   => APP_PATH,
+    ],
+
 ];

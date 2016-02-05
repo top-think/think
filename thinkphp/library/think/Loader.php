@@ -49,12 +49,6 @@ class Loader
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $path = self::$namespace[$name];
-            } elseif (in_array($name, ['think', 'behavior', 'traits']) || is_dir(LIB_PATH . $name)) {
-                // 核心类库命名空间
-                $path = LIB_PATH . $name . DS;
-            } elseif (APP_NAMESPACE == $name) {
-                // 项目命名空间
-                $path = APP_PATH;
             } elseif (is_dir(EXTEND_PATH . $name)) {
                 // 扩展类库命名空间
                 $path = EXTEND_PATH . $name . DS;
