@@ -10,6 +10,9 @@
 // +----------------------------------------------------------------------
 namespace think\log\driver;
 
+use think\Config;
+use think\Debug;
+
 /**
  * 页面Trace调试 需要设置 'response_exit' => false 才能生效
  */
@@ -35,7 +38,7 @@ class Trace
      */
     public function save(array $log = [])
     {
-        if (IS_AJAX || IS_CLI || IS_API) {
+        if (IS_AJAX || IS_CLI || IS_API || 'html' != Config::get('default_return_type')) {
             // ajax cli api方式下不输出
             return;
         }
@@ -50,11 +53,11 @@ class Trace
             '运行时间' => "{$runtime}s [ 吞吐率：{$reqs}req/s ] 内存消耗：{$mem}kb 文件加载：" . count(get_included_files()),
             '查询信息' => \think\Db::$queryTimes . ' queries ' . \think\Db::$executeTimes . ' writes ',
             '缓存信息' => \think\Cache::$readTimes . ' reads,' . \think\Cache::$writeTimes . ' writes',
-            '配置加载' => count(\think\Config::get()),
+            '配置加载' => count(Config::get()),
             '会话信息' => 'SESSION_ID=' . session_id(),
         ];
 
-        $info = \think\Debug::getFile(true);
+        $info = Debug::getFile(true);
 
         // 获取调试日志
         $debug = [];
@@ -67,13 +70,13 @@ class Trace
         foreach ($this->tabs as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
-                case 'base':    // 基本信息
+                case 'base': // 基本信息
                     $trace[$title] = $base;
                     break;
-                case 'file':    // 文件信息
+                case 'file': // 文件信息
                     $trace[$title] = $info;
                     break;
-                default:    // 调试信息
+                default: // 调试信息
                     if (strpos($name, '|')) {
                         // 多组信息
                         $names  = explode('|', $name);
