@@ -947,7 +947,7 @@ abstract class Driver
             }
             $values[] = 'SELECT ' . implode(',', $value);
         }
-        $sql = 'INSERT INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') ' . implode(' UNION ALL ', $values);
+        $sql = (true === $replace ? 'REPLACE' : 'INSERT') . ' INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') ' . implode(' UNION ALL ', $values);
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
         return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
