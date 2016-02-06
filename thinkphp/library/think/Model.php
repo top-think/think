@@ -76,6 +76,8 @@ class Model
 
         if (!empty($config['prefix'])) {
             $this->tablePrefix = $config['prefix'];
+        } elseif ('' === $config['prefix']) {
+            $this->tablePrefix = '';
         } elseif (is_null($this->tablePrefix)) {
             $this->tablePrefix = Config::get('database.prefix');
         }

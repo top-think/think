@@ -72,11 +72,11 @@ function G($start, $end = '', $dec = 6)
 /**
  * 实例化一个没有模型文件的Model
  * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
- * @param string $tablePrefix 表前缀
+ * @param string|null $tablePrefix 表前缀 null表示自动获取配置
  * @param mixed $connection 数据库连接信息
  * @return \Think\Model
  */
-function M($name = '', $tablePrefix = '', $connection = '')
+function M($name = '', $tablePrefix = null, $connection = '')
 {
     return \think\Loader::table($name, ['prefix' => $tablePrefix, 'connection' => $connection]);
 }
