@@ -86,6 +86,7 @@ GitHub 提供了 Issue 功能，该功能可以用于：
 - MySQL / MariaDB
 
 *Windows 用户推荐添加 PHP bin 目录到 PATH，方便使用 composer*
+
 *Linux 用户自行配置环境， Mac 用户推荐使用内嵌 Apache 配合 Homebrew 安装 PHP 和 MariaDB*
 
 ### 编辑器
