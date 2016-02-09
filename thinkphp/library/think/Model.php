@@ -967,6 +967,9 @@ class Model
                 if ($val instanceof \Closure) {
                     // 匿名函数验证 支持传入当前字段和所有字段两个数据
                     $result = App::invokeFunction($val, [$value, $data]);
+                } elseif (is_string($val)) {
+                    // 行为验证
+                    $result = Hook::exec($rule, '', $data);
                 } else {
                     // 验证字段规则
                     $result = $this->checkValidate($key, $val, $data);
@@ -1072,6 +1075,7 @@ class Model
                 $result = call_user_func_array($rule, [$value, &$data]);
                 break;
             case 'behavior':
+                // 行为验证
                 $result = Hook::exec($rule, '', $data);
                 break;
             case 'filter': // 使用filter_var验证
