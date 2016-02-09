@@ -1014,7 +1014,7 @@ class Model
                     Hook::exec($rule, '', $data);
                     break;
                 case 'callback':
-                    $data[$key] = call_user_func_array($rule, [$value]);
+                    $data[$key] = call_user_func_array($rule, [$value, &$data]);
                     break;
                 case 'ignore':
                     if ($rule === $value) {
@@ -1046,7 +1046,7 @@ class Model
         $options = isset($val[3]) ? $val[3] : [];
         switch ($type) {
             case 'callback':
-                $result = call_user_func_array($rule, [$value]);
+                $result = call_user_func_array($rule, [$value, &$data]);
                 break;
             case 'behavior':
                 $result = Hook::exec($rule, '', $data);
@@ -1072,9 +1072,7 @@ class Model
                 break;
             case 'regex':
             default:
-                if (isset($options['rule'])) {
-                    $rule = $options['rule'];
-                } elseif (isset($this->rule[$rule])) {
+                if (isset($this->rule[$rule])) {
                     $rule = $this->rule[$rule];
                 }
                 $result = 1 === preg_match('/^' . $rule . '$/', (string) $value);
