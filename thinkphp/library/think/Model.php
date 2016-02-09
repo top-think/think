@@ -948,8 +948,23 @@ class Model
             } else {
                 $rules = $this->options['validate'];
             }
+            if (isset($rules['__option__'])) {
+                // 验证参数设置
+                $options = $rules['__option__'];
+                unset($rules['__option__']);
+            } else {
+                $options = [];
+            }
+            $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
+            $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
             foreach ($rules as $key => $val) {
                 $value = isset($data[$key]) ? $data[$key] : null;
+                if (in_array($key, $options['value_validate']) && '' == $value) {
+                    continue;
+                } elseif (in_array($key, $options['exists_validate']) && !isset($data[$key])) {
+                    continue;
+                }
+                $result = true;
                 if ($val instanceof \Closure) {
                     // 匿名函数验证 支持传入当前字段和所有字段两个数据
                     $result = App::invokeFunction($val, [$value, $data]);
@@ -959,9 +974,18 @@ class Model
                 }
                 if (true !== $result) {
                     // 没有返回true 则表示验证失败
-                    $this->error = $result;
-                    return false;
+                    if (!empty($options['patch'])) {
+                        // 批量验证
+                        $this->error[$key] = $result;
+                    } else {
+                        $this->error = $result;
+                        return false;
+                    }
                 }
+            }
+            // 批量验证的时候最后返回错误
+            if (!empty($this->error)) {
+                return false;
             }
         }
 
