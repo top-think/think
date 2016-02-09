@@ -52,6 +52,8 @@ class Model
     protected $scope = [];
     // 字段映射定义
     protected $map = [];
+    // 字段验证规则定义
+    protected $rule = [];
 
     /**
      * 架构函数
@@ -193,8 +195,8 @@ class Model
     protected function _write_data($data, $type)
     {
         if (empty($data)) {
-            // 没有传递数据，获取当前数据对象的值
             if (!empty($this->data)) {
+                // 没有传递数据，获取当前数据对象的值
                 $data = $this->data;
                 // 重置数据
                 $this->data = [];
@@ -915,21 +917,11 @@ class Model
             throw new Exception('invalid data type');
         }
 
-        // 状态
-        $pk   = $this->getPk();
-        $type = $type ? $type : (is_string($pk) && !empty($data[$pk]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
-
         // 检测提交字段的合法性
         if (isset($this->options['field'])) {
             // $this->field('field1,field2...')->create()
             $fields = $this->options['field'];
             unset($this->options['field']);
-        } elseif (self::MODEL_INSERT == $type && isset($this->insertFields)) {
-            $fields = $this->insertFields;
-        } elseif (self::MODEL_UPDATE == $type && isset($this->updateFields)) {
-            $fields = $this->updateFields;
-        }
-        if (isset($fields)) {
             if (is_string($fields)) {
                 $fields = explode(',', $fields);
             }
@@ -939,8 +931,59 @@ class Model
                 }
             }
         }
+
+        // 数据自动验证
+        if (!empty($this->options['validate'])) {
+            if (is_string($this->options['validate'])) {
+                // 读取配置文件中的自动验证定义
+                $validate = Config::get('validate');
+                if (isset($validate['__pattern__'])) {
+                    // 全局字段规则
+                    $this->rule = $validate['__pattern__'];
+                }
+                $rules = $validate[$this->options['validate']];
+                if (isset($validate['__all__'])) {
+                    $rules = array_merge($validate['__all__'], $rules);
+                }
+            } else {
+                $rules = $this->options['validate'];
+            }
+            foreach ($rules as $key => $val) {
+                $value = isset($data[$key]) ? $data[$key] : null;
+                if ($val instanceof \Closure) {
+                    // 匿名函数验证 支持传入当前字段和所有字段两个数据
+                    $result = App::invokeFunction($val, [$value, $data]);
+                } else {
+                    // 验证字段规则
+                    $result = $this->checkValidate($key, $val, $data);
+                }
+                if (true !== $result) {
+                    // 没有返回true 则表示验证失败
+                    $this->error = $result;
+                    return false;
+                }
+            }
+        }
+
+        // 数据自动填充
+        if (!empty($this->options['auto'])) {
+            if (is_string($this->options['auto'])) {
+                // 读取配置文件中的自动验证定义
+                $auto  = Config::get('auto');
+                $rules = $auto[$this->options['auto']];
+                if (isset($auto['__all__'])) {
+                    $rules = array_merge($auto['__all__'], $rules);
+                }
+            } else {
+                $rules = $this->options['auto'];
+            }
+            foreach ($rules as $key => $val) {
+                // 数据自动填充
+                $this->autoOperation($key, $val, $data);
+            }
+        }
         // 过滤创建的数据
-        $this->_create_filter($data);
+        $this->_create_filter($data, $type);
         // 赋值当前数据对象
         $this->data = $data;
         // 返回创建的数据以供其他调用
@@ -949,6 +992,97 @@ class Model
     // 数据对象创建后的回调方法
     protected function _create_filter(&$data)
     {}
+
+    /**
+     * 数据自动填充
+     * @access public
+     * @param string $key  字段名
+     * @param mixed $val  填充规则
+     * @param array $data  数据
+     * @return void
+     */
+    protected function autoOperation($key, $val, &$data)
+    {
+        $value = isset($data[$key]) ? $data[$key] : null;
+        if ($val instanceof \Closure) {
+            $data[$key] = App::invokeFunction($val, [$value, $data]);
+        } else {
+            $rule = isset($val[0]) ? $val[0] : $val;
+            $type = isset($val[1]) ? $val[1] : 'string';
+            switch ($type) {
+                case 'behavior':
+                    Hook::exec($rule, '', $data);
+                    break;
+                case 'callback':
+                    $data[$key] = call_user_func_array($rule, [$value]);
+                    break;
+                case 'ignore':
+                    if ($rule === $value) {
+                        unset($data[$key]);
+                    }
+                    break;
+                case 'string':
+                default:
+                    $data[$key] = $rule;
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 验证字段规则
+     * @access public
+     * @param string $key  字段名
+     * @param mixed $val  验证规则
+     * @param array $data  数据
+     * @return string|true
+     */
+    protected function checkValidate($key, $val, &$data)
+    {
+        $value   = isset($data[$key]) ? $data[$key] : null;
+        $rule    = $val[0];
+        $msg     = isset($val[1]) ? $val[1] : 'data validate error : [ ' . $key . ' ]';
+        $type    = isset($val[2]) ? $val[2] : 'regex';
+        $options = isset($val[3]) ? $val[3] : [];
+        switch ($type) {
+            case 'callback':
+                $result = call_user_func_array($rule, [$value]);
+                break;
+            case 'behavior':
+                $result = Hook::exec($rule, '', $data);
+                break;
+            case 'filter': // 使用filter_var验证
+                $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
+                break;
+            case 'confirm':
+                $result = $value == $data[$rule];
+                break;
+            case 'in':
+            case 'notin':
+                $range  = is_array($rule) ? $rule : explode(',', $rule);
+                $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
+                break;
+            case 'between': // 验证是否在某个范围
+            case 'notbetween': // 验证是否不在某个范围
+                if (is_string($rule)) {
+                    $rule = explode(',', $rule);
+                }
+                list($min, $max) = $rule;
+                $result          = 'between' == $type ? $value >= $min && $value <= $max : $value < $min || $value > $max;
+                break;
+            case 'regex':
+            default:
+                if (isset($options['rule'])) {
+                    $rule = $options['rule'];
+                } elseif (isset($this->rule[$rule])) {
+                    $rule = $this->rule[$rule];
+                }
+                $result = 1 === preg_match('/^' . $rule . '$/', (string) $value);
+                break;
+        }
+        // 验证失败返回错误信息
+        return false === $result ? $msg : true;
+    }
 
     /**
      * 切换当前的数据库连接
@@ -1667,6 +1801,40 @@ class Model
             $this->map = array_merge($this->map, $map);
         } else {
             $this->map[$map] = $name;
+        }
+        return $this;
+    }
+
+    /**
+     * 设置字段验证
+     * @access public
+     * @param mixed $field 字段名或者验证规则
+     * @param array|null $rule 验证规则
+     * @return Model
+     */
+    public function validate($field, $rule = null)
+    {
+        if (is_array($field) || is_null($rule)) {
+            $this->options['validate'] = $field;
+        } else {
+            $this->options['validate'][$field] = $rule;
+        }
+        return $this;
+    }
+
+    /**
+     * 设置字段完成
+     * @access public
+     * @param mixed $field 字段名或者自动完成规则
+     * @param array|null $rule 完成规则
+     * @return Model
+     */
+    public function auto($field, $rule = null)
+    {
+        if (is_array($field) || is_null($rule)) {
+            $this->options['auto'] = $field;
+        } else {
+            $this->options['auto'][$field] = $rule;
         }
         return $this;
     }
