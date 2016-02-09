@@ -70,12 +70,12 @@ trait Auto
         }
 
         // 数据自动验证
-        if (!$this->autoValidation($data, $type)) {
+        if (!$this->_autoValidation($data, $type)) {
             return false;
         }
 
         // 验证完成生成数据对象
-        if ($this->autoCheckFields && empty($this->options['link'])) {
+        if (empty($this->options['link'])) {
             // 开启字段检测并且没有关联表 则过滤非法字段数据
             $fields = $this->getFields();
             foreach ($keys as $i => $key) {
@@ -86,7 +86,7 @@ trait Auto
         }
 
         // 创建完成对数据进行自动处理
-        $this->autoOperation($data, $type);
+        $this->_autoOperation($data, $type);
         // 验证后的回调方法
         $this->_after_create($data, $this->options);
         // 赋值当前数据对象
@@ -134,7 +134,7 @@ trait Auto
      * @param string $type 创建类型
      * @return mixed
      */
-    private function autoOperation(&$data, $type)
+    protected function _autoOperation(&$data, $type)
     {
         if (isset($this->options['auto'])) {
             if (false === $this->options['auto']) {
@@ -239,7 +239,7 @@ trait Auto
      * @param string $type 创建类型
      * @return boolean
      */
-    protected function autoValidation(&$data, $type)
+    protected function _autoValidation(&$data, $type)
     {
         if (isset($this->options['validate'])) {
             if (false === $this->options['validate']) {

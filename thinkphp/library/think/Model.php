@@ -900,11 +900,10 @@ class Model
      * 创建数据对象 但不保存到数据库
      * @access public
      * @param mixed $data 创建数据
-     * @param string $type 状态
      * @return mixed
      * @throws \think\Exception
      */
-    public function create($data = '', $type = '')
+    public function create($data = '')
     {
         // 如果没有传值默认取POST数据
         if (empty($data)) {
@@ -1007,7 +1006,7 @@ class Model
             }
         }
         // 过滤创建的数据
-        $this->_create_filter($data, $type);
+        $this->_create_filter($data);
         // 赋值当前数据对象
         $this->data = $data;
         // 返回创建的数据以供其他调用
