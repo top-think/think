@@ -969,7 +969,7 @@ class Model
                     $result = App::invokeFunction($val, [$value, $data]);
                 } elseif (is_string($val)) {
                     // 行为验证
-                    $result = Hook::exec($rule, '', $data);
+                    $result = Hook::exec($val, '', $data);
                 } else {
                     // 验证字段规则
                     $result = $this->checkValidate($key, $val, $data);
