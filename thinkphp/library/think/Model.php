@@ -291,7 +291,7 @@ class Model
     {
         // 数据处理
         $data = $this->_write_data($data, 'insert');
-        if(false === $data){
+        if (false === $data) {
             return false;
         }
         // 分析表达式
@@ -333,7 +333,7 @@ class Model
         // 数据处理
         foreach ($dataList as $key => $data) {
             $data = $this->_write_data($data, 'insert');
-            if(false === $data){
+            if (false === $data) {
                 return false;
             }
             $dataList[$key] = $data;
@@ -359,7 +359,7 @@ class Model
     {
         // 数据处理
         $data = $this->_write_data($data, 'update');
-        if(false === $data){
+        if (false === $data) {
             return false;
         }
         // 分析表达式
@@ -971,7 +971,8 @@ class Model
     protected function _create_filter(&$data)
     {}
 
-    protected function dataValidate(&$data){
+    protected function dataValidate(&$data)
+    {
         if (!empty($this->options['validate'])) {
             if (is_string($this->options['validate'])) {
                 // 读取配置文件中的自动验证定义
@@ -1027,10 +1028,11 @@ class Model
             }
             $this->options['validate'] = null;
         }
-        return ;
+        return;
     }
 
-    protected function dataFill(&$data){
+    protected function dataFill(&$data)
+    {
         if (!empty($this->options['auto'])) {
             if (is_string($this->options['auto'])) {
                 // 读取配置文件中的自动验证定义
@@ -1065,7 +1067,7 @@ class Model
             $data[$key] = App::invokeFunction($val, [$value, $data]);
         } else {
             $rule = isset($val[0]) ? $val[0] : $val;
-            $type = isset($val[1]) ? $val[1] : 'string';
+            $type = isset($val[1]) ? $val[1] : 'value';
             switch ($type) {
                 case 'behavior':
                     Hook::exec($rule, '', $data);
@@ -1078,7 +1080,7 @@ class Model
                         unset($data[$key]);
                     }
                     break;
-                case 'string':
+                case 'value':
                 default:
                     $data[$key] = $rule;
                     break;

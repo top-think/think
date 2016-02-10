@@ -50,9 +50,12 @@ class Mysql extends Driver
     {
         $this->initConnect(true);
         list($tableName) = explode(' ', $tableName);
-        $sql             = 'SHOW COLUMNS FROM `' . $tableName . '`';
-        $result          = $this->query($sql);
-        $info            = [];
+        if (strpos($tableName, '.')) {
+            $tableName = str_replace('.', '`.`', $tableName);
+        }
+        $sql    = 'SHOW COLUMNS FROM `' . $tableName . '`';
+        $result = $this->query($sql);
+        $info   = [];
         if ($result) {
             foreach ($result as $key => $val) {
                 $val                 = array_change_key_case($val);
