@@ -237,6 +237,16 @@ class Model
                 }
             }
         }
+
+        // 数据自动验证
+        $this->dataValidate($data);
+        if (!empty($this->error)) {
+            return false;
+        }
+
+        // 数据自动填充
+        $this->dataFill($data);
+
         $fields = $this->getFields();
         // 检查非数据字段
         if (!empty($fields)) {
@@ -281,6 +291,9 @@ class Model
     {
         // 数据处理
         $data = $this->_write_data($data, 'insert');
+        if(false === $data){
+            return false;
+        }
         // 分析表达式
         $options = $this->_parseOptions();
         if (false === $this->_before_insert($data, $options)) {
@@ -319,7 +332,11 @@ class Model
         }
         // 数据处理
         foreach ($dataList as $key => $data) {
-            $dataList[$key] = $this->_write_data($data, 'insert');
+            $data = $this->_write_data($data, 'insert');
+            if(false === $data){
+                return false;
+            }
+            $dataList[$key] = $data;
         }
         // 分析表达式
         $options = $this->_parseOptions($options);
@@ -342,6 +359,9 @@ class Model
     {
         // 数据处理
         $data = $this->_write_data($data, 'update');
+        if(false === $data){
+            return false;
+        }
         // 分析表达式
         $options = $this->_parseOptions();
         $pk      = $this->getPk($options['table']);
@@ -932,6 +952,26 @@ class Model
         }
 
         // 数据自动验证
+        $this->dataValidate($data);
+        if (!empty($this->error)) {
+            return false;
+        }
+
+        // 数据自动填充
+        $this->dataFill($data);
+
+        // 过滤创建的数据
+        $this->_create_filter($data);
+        // 赋值当前数据对象
+        $this->data = $data;
+        // 返回创建的数据以供其他调用
+        return $data;
+    }
+    // 数据对象创建后的回调方法
+    protected function _create_filter(&$data)
+    {}
+
+    protected function dataValidate(&$data){
         if (!empty($this->options['validate'])) {
             if (is_string($this->options['validate'])) {
                 // 读取配置文件中的自动验证定义
@@ -981,17 +1021,16 @@ class Model
                         $this->error[$key] = $result;
                     } else {
                         $this->error = $result;
-                        return false;
+                        return;
                     }
                 }
             }
-            // 批量验证的时候最后返回错误
-            if (!empty($this->error)) {
-                return false;
-            }
+            $this->options['validate'] = null;
         }
+        return ;
+    }
 
-        // 数据自动填充
+    protected function dataFill(&$data){
         if (!empty($this->options['auto'])) {
             if (is_string($this->options['auto'])) {
                 // 读取配置文件中的自动验证定义
@@ -1007,17 +1046,9 @@ class Model
                 // 数据自动填充
                 $this->autoOperation($key, $val, $data);
             }
+            $this->options['auto'] = null;
         }
-        // 过滤创建的数据
-        $this->_create_filter($data);
-        // 赋值当前数据对象
-        $this->data = $data;
-        // 返回创建的数据以供其他调用
-        return $data;
     }
-    // 数据对象创建后的回调方法
-    protected function _create_filter(&$data)
-    {}
 
     /**
      * 数据自动填充
