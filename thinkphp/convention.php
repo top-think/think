@@ -52,8 +52,6 @@ return [
     'empty_controller'      => 'Error',
     // 操作方法后缀
     'action_suffix'         => '',
-    // 操作绑定到类
-    'action_bind_class'     => false,
 
     // +----------------------------------------------------------------------
     // | URL设置
@@ -73,10 +71,6 @@ return [
     'url_html_suffix'       => '.html',
     // URL普通方式参数 用于自动生成
     'url_common_param'      => false,
-    // url变量绑定
-    'url_params_bind'       => true,
-    // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
-    'url_parmas_bind_type'  => 0,
     //url禁止访问的后缀
     'url_deny_suffix'       => 'ico|png|gif|jpg',
     // 是否开启路由
@@ -89,8 +83,6 @@ return [
     'url_domain_deploy'     => false,
     // 域名根，如.thinkphp.cn
     'url_domain_root'       => '',
-    // 是否开启 rest 操作方法
-    'url_rest_action'       => false,
 
     // +----------------------------------------------------------------------
     // | 视图及模板设置
