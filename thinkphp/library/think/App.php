@@ -224,16 +224,9 @@ class App
             // 安全检测
             throw new Exception('illegal controller name:' . CONTROLLER_NAME, 10000);
         }
-        if (Config::get('action_bind_class')) {
-            $class    = self::bindActionClass(Config::get('empty_controller'));
-            $instance = new $class;
-            // 操作绑定到类后 固定执行run入口
-            $action = 'run';
-        } else {
-            $instance = Loader::controller(CONTROLLER_NAME, '', Config::get('empty_controller'));
-            // 获取当前操作名
-            $action = ACTION_NAME . Config::get('action_suffix');
-        }
+        $instance = Loader::controller(CONTROLLER_NAME, '', Config::get('empty_controller'));
+        // 获取当前操作名
+        $action = ACTION_NAME . Config::get('action_suffix');
 
         try {
             // 操作方法开始监听
@@ -241,7 +234,7 @@ class App
             APP_HOOK && Hook::listen('action_begin', $call);
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 // 非法操作
-                throw new \ReflectionException();
+                throw new Exception('illegal action name :' . ACTION_NAME, 10001);
             }
             // 执行操作方法
             $data = self::invokeMethod($call);
@@ -256,27 +249,6 @@ class App
             }
         }
         return $data;
-    }
-
-    // 操作绑定到类：模块\controller\控制器\操作类
-    private static function bindActionClass($emptyController)
-    {
-        if (is_dir(MODULE_PATH . CONTROLLER_LAYER . DS . str_replace('.', DS, CONTROLLER_NAME))) {
-            $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . str_replace('.', '\\', CONTROLLER_NAME) . '\\';
-        } else {
-            // 空控制器
-            $namespace = MODULE_NAME . '\\' . CONTROLLER_LAYER . '\\' . $emptyController . '\\';
-        }
-        $actionName = strtolower(ACTION_NAME);
-        if (class_exists($namespace . $actionName)) {
-            $class = $namespace . $actionName;
-        } elseif (class_exists($namespace . '_empty')) {
-            // 空操作
-            $class = $namespace . '_empty';
-        } else {
-            throw new Exception('bind action class not exists :' . ACTION_NAME, 10003);
-        }
-        return $class;
     }
 
     // 初始化模块
@@ -382,7 +354,8 @@ class App
             $_SERVER['PATH_INFO'] = preg_replace($config['url_html_suffix'] ? '/\.(' . trim($config['url_html_suffix'], '.') . ')$/i' : '/\.' . __EXT__ . '$/i', '', __INFO__);
         }
 
-        $depr = $config['pathinfo_depr'];
+        $depr   = $config['pathinfo_depr'];
+        $result = false;
         // 路由检测
         if (!empty($config['url_route_on'])) {
             // 开启路由
@@ -392,17 +365,13 @@ class App
             }
             // 路由检测（根据路由定义返回不同的URL调度）
             $result = Route::check($_SERVER['PATH_INFO'], $depr, $config['url_domain_deploy']);
-            if (false === $result) {
+            if (false === $result && $config['url_route_must']) {
                 // 路由无效
-                if ($config['url_route_must']) {
-                    throw new Exception('route not define ');
-                } else {
-                    // 继续分析为模块/控制器/操作/参数...方式URL
-                    $result = Route::parseUrl($_SERVER['PATH_INFO'], $depr);
-                }
+                throw new Exception('route not define ');
             }
-        } else {
-            // 分析URL地址 采用 模块/控制器/操作/参数...
+        }
+        if (false === $result) {
+            // 路由无效默认分析为模块/控制器/操作/参数...方式URL
             $result = Route::parseUrl($_SERVER['PATH_INFO'], $depr);
         }
         // 注册调度机制
