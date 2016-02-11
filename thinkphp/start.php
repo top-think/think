@@ -24,7 +24,7 @@ $mode = require MODE_PATH . APP_MODE . EXT;
 
 // 加载空间别名定义
 if (isset($mode['namespace'])) {
-    Loader::addNamespace(is_array($mode['namespace']) ? $mode['namespace'] : include $mode['namespace']);
+    Loader::addNamespace($mode['namespace']);
 }
 
 // 加载模式别名定义

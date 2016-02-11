@@ -12,13 +12,20 @@
 /**
  * ThinkPHP 普通模式定义
  */
-
 return [
+    // 命名空间
+    'namespace' => [
+        'think'       => LIB_PATH . 'think' . DS,
+        'behavior'    => LIB_PATH . 'behavior' . DS,
+        'traits'      => LIB_PATH . 'traits' . DS,
+        APP_NAMESPACE => APP_PATH,
+    ],
+
     // 配置文件
-    'config' => THINK_PATH . 'convention' . EXT,
+    'config'    => THINK_PATH . 'convention' . EXT,
 
     // 别名定义
-    'alias'  => [
+    'alias'     => [
         'think\App'                  => CORE_PATH . 'App' . EXT,
         'think\Build'                => CORE_PATH . 'Build' . EXT,
         'think\Cache'                => CORE_PATH . 'Cache' . EXT,
@@ -46,13 +53,4 @@ return [
         'think\log\driver\File'      => CORE_PATH . 'log' . DS . 'driver' . DS . 'File' . EXT,
         'think\cache\driver\File'    => CORE_PATH . 'cache' . DS . 'driver' . DS . 'File' . EXT,
     ],
-
-    // 命名空间
-    'namespace' => [
-            'think'         => LIB_PATH . 'think' . DS,
-            'behavior'      => LIB_PATH . 'behavior' . DS,
-            'traits'        => LIB_PATH . 'traits' . DS,
-            APP_NAMESPACE   => APP_PATH,
-    ],
-
 ];

@@ -12,19 +12,18 @@
 /**
  * ThinkPHP CLI模式定义
  */
-
 return [
-
-    'config' => [
-        'commands' => []
-    ],
 
     // 命名空间
     'namespace' => [
-            'think'         => LIB_PATH . 'think' . DS,
-            'behavior'      => LIB_PATH . 'behavior' . DS,
-            'traits'        => LIB_PATH . 'traits' . DS,
-            APP_NAMESPACE   => APP_PATH,
+        'think'       => LIB_PATH . 'think' . DS,
+        'behavior'    => LIB_PATH . 'behavior' . DS,
+        'traits'      => LIB_PATH . 'traits' . DS,
+        APP_NAMESPACE => APP_PATH,
+    ],
+
+    'config'    => [
+        'commands' => [],
     ],
 
 ];

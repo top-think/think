@@ -13,8 +13,16 @@
  * ThinkPHP SAE应用模式定义文件
  */
 return [
+    // 命名空间
+    'namespace' => [
+        'think'       => LIB_PATH . 'think' . DS,
+        'behavior'    => LIB_PATH . 'behavior' . DS,
+        'traits'      => LIB_PATH . 'traits' . DS,
+        APP_NAMESPACE => APP_PATH,
+    ],
+
     // 配置文件
-    'config' => array_merge(include THINK_PATH . 'convention' . EXT, [
+    'config'    => array_merge(include THINK_PATH . 'convention' . EXT, [
         /* 数据库设置 */
         'database'         => [
             // 数据库类型
@@ -64,7 +72,7 @@ return [
     ]),
 
     // 别名定义
-    'alias'  => [
+    'alias'     => [
         'think\App'                  => CORE_PATH . 'App' . EXT,
         'think\Build'                => CORE_PATH . 'Build' . EXT,
         'think\Cache'                => CORE_PATH . 'Cache' . EXT,
@@ -94,14 +102,6 @@ return [
         'think\log\driver\Sae'       => CORE_PATH . 'log' . DS . 'driver' . DS . 'Sae' . EXT,
         'think\cache\driver\Sae'     => CORE_PATH . 'cache' . DS . 'driver' . DS . 'Sae' . EXT,
         'think\template\driver\Sae'  => CORE_PATH . 'template' . DS . 'driver' . DS . 'Sae' . EXT,
-    ],
-
-    // 命名空间
-    'namespace' => [
-            'think'         => LIB_PATH . 'think' . DS,
-            'behavior'      => LIB_PATH . 'behavior' . DS,
-            'traits'        => LIB_PATH . 'traits' . DS,
-            APP_NAMESPACE   => APP_PATH,
     ],
 
 ];
