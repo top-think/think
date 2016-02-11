@@ -66,7 +66,7 @@ class Lite
         if (is_file($filename)) {
             // 判断是否过期
             $mtime = filemtime($filename);
-            if ($mtime<time()) {
+            if ($mtime < time()) {
                 // 清除已经过期的文件
                 unlink($filename);
                 return false;
@@ -80,22 +80,20 @@ class Lite
     /**
      * 写入缓存
      * @access   public
-     *
      * @param string $name  缓存变量名
      * @param mixed  $value 存储数据
      * @internal param int $expire 有效时间 0为永久
-     *
      * @return bool
      */
-    public function set($name, $value, $expire=null)
+    public function set($name, $value, $expire = null)
     {
         Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
         // 模拟永久
-        if (0===$expire) {
-            $expire = 10*365*24*3600;
+        if (0 === $expire) {
+            $expire = 10 * 365 * 24 * 3600;
         }
         $filename = $this->filename($name);
         // 缓存数据
@@ -103,12 +101,12 @@ class Lite
         $dir = dirname($filename);
         // 目录不存在则创建
         if (!is_dir($dir))
-            mkdir($dir,0755,true);
-        */
+        mkdir($dir,0755,true);
+         */
         $ret = file_put_contents($filename, ("<?php return " . var_export($value, true) . ";"));
         // 通过设置修改时间实现有效期
         if ($ret) {
-            touch($filename, time()+$expire);
+            touch($filename, time() + $expire);
         }
         return $ret;
     }

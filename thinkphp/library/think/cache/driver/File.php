@@ -182,7 +182,6 @@ class File
     /**
      * 清除缓存
      * @access public
-     * @param string $name 缓存变量名
      * @return boolean
      */
     public function clear()
