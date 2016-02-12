@@ -35,6 +35,8 @@ return [
     'lang_detect_var'       => 'lang',
     // 语言cookie变量
     'lang_cookie_var'       => 'think_lang',
+    // 默认全局过滤方法 用逗号分隔多个
+    'default_filter'        => '',
 
     // +----------------------------------------------------------------------
     // | 模块设置
