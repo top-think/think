@@ -211,13 +211,13 @@ class Loader
             } elseif ('@' == $name || MODULE_NAME == $name) {
                 //加载当前模块应用类库
                 $baseUrl = MODULE_PATH;
-            } elseif (in_array($name, ['traits', 'think', 'behavior']) || is_dir(LIB_PATH . $name)) {
+            } elseif (in_array($name, ['traits', 'think', 'behavior'])) {
                 $baseUrl = LIB_PATH;
-            } elseif (is_dir(EXTEND_PATH . $name)) {
-                $baseUrl = EXTEND_PATH;
             } elseif (APP_NAMESPACE == $name) {
                 // 项目命名空间
                 $baseUrl = APP_PATH;
+            } elseif (is_dir(EXTEND_PATH . $name)) {
+                $baseUrl = EXTEND_PATH;
             } else {
                 // 加载其他模块应用类库
                 $baseUrl = APP_PATH . $name . DS;

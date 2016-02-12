@@ -1068,12 +1068,19 @@ class Model
         } else {
             $rule = isset($val[0]) ? $val[0] : $val;
             $type = isset($val[1]) ? $val[1] : 'value';
+            if ($rule instanceof \Closure) {
+                $type = 'callback';
+            }
             switch ($type) {
                 case 'behavior':
                     Hook::exec($rule, '', $data);
                     break;
                 case 'callback':
-                    $data[$key] = call_user_func_array($rule, [$value, &$data]);
+                    if (is_array($rule) || (is_string($rule) && strpos($rule, '::'))) {
+                        $data[$key] = App::invokeMethod($rule, [$value, &$data]);
+                    } else {
+                        $data[$key] = App::invokeFunction($rule, [$value, &$data]);
+                    }
                     break;
                 case 'ignore':
                     if ($rule === $value) {
@@ -1103,9 +1110,16 @@ class Model
         $msg     = isset($val[1]) ? $val[1] : 'data validate error : [ ' . $key . ' ]';
         $type    = isset($val[2]) ? $val[2] : 'regex';
         $options = isset($val[3]) ? $val[3] : [];
+        if ($rule instanceof \Closure) {
+            $type = 'callback';
+        }
         switch ($type) {
             case 'callback':
-                $result = call_user_func_array($rule, [$value, &$data]);
+                if (is_array($rule) || (is_string($rule) && strpos($rule, '::'))) {
+                    $result = App::invokeMethod($rule, [$value, &$data]);
+                } else {
+                    $result = App::invokeFunction($rule, [$value, &$data]);
+                }
                 break;
             case 'behavior':
                 // 行为验证
