@@ -41,7 +41,7 @@ function I($key, $default = null, $filter = '', $merge = false)
     if ($pos = strpos($key, '.')) {
         // 指定参数来源
         $method = substr($key, 0, $pos);
-        if (in_array($method, ['get', 'post', 'put', 'param', 'request', 'session', 'cookie', 'server', 'globals', 'env', 'path', 'file'])) {
+        if (in_array($method, ['get', 'post', 'put', 'delete', 'param', 'request', 'session', 'cookie', 'server', 'globals', 'env', 'path', 'file'])) {
             $key = substr($key, $pos + 1);
         } else {
             $method = 'param';
