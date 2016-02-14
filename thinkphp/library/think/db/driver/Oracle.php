@@ -32,7 +32,12 @@ class Oracle extends Driver
      */
     protected function parseDsn($config)
     {
-        $dsn = 'oci:dbname=' . $config['database'];
+        $dsn = 'oci:dbname=';
+        if (!empty($config['hostname'])) {
+            //  Oracle Instant Client
+            $dsn .= '//' . $config['hostname'] . ($config['hostport'] ? ':' . $config['hostport'] : '') . '/';
+        }
+        $dsn .= $config['database'];
         if (!empty($config['charset'])) {
             $dsn .= ';charset=' . $config['charset'];
         }
