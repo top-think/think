@@ -230,7 +230,7 @@ class Response
     public static function redirect($url, $params = [])
     {
         $http_response_code = 301;
-        if (in_array($params, [301, 302])) {
+        if (is_int($params) && in_array($params, [301, 302])) {
             $http_response_code = $params;
             $params             = [];
         }
