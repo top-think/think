@@ -253,7 +253,7 @@ class Model
             foreach ($data as $key => $val) {
                 if (!in_array($key, $fields, true)) {
                     if (Config::get('db_fields_strict')) {
-                        throw new Exception(' fields not exists :[' . $key . '=>' . $val . ']');
+                        throw new Exception(' fields not exists :[ ' . $key . ' ]');
                     }
                     unset($data[$key]);
                 } elseif (is_scalar($val) && !isset($this->options['bind'][$key])) {
@@ -1125,7 +1125,7 @@ class Model
                 // 行为验证
                 $result = Hook::exec($rule, '', $data);
                 break;
-            case 'filter': // 使用filter_var验证
+            case 'filter':    // 使用filter_var验证
                 $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                 break;
             case 'confirm':
@@ -1136,8 +1136,8 @@ class Model
                 $range  = is_array($rule) ? $rule : explode(',', $rule);
                 $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                 break;
-            case 'between': // 验证是否在某个范围
-            case 'notbetween': // 验证是否不在某个范围
+            case 'between':// 验证是否在某个范围
+            case 'notbetween':    // 验证是否不在某个范围
                 if (is_string($rule)) {
                     $rule = explode(',', $rule);
                 }
