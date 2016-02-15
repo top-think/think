@@ -706,6 +706,7 @@ class Model
                 $step = '-' . $step;
             }
         }
+        $this->duplicate = [];
         return $this->setField($field, ['exp', $field . '+' . $step]);
     }
 
@@ -735,6 +736,7 @@ class Model
                 $step = '-' . $step;
             }
         }
+        $this->duplicate = [];
         return $this->setField($field, ['exp', $field . '-' . $step]);
     }
 
