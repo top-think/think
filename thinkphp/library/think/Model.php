@@ -1090,7 +1090,7 @@ class Model
             $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
         } else {
             $value = isset($data[$key]) ? $data[$key] : null;
-        }        
+        }
         if ($val instanceof \Closure) {
             $result = App::invokeFunction($val, [$value, $data]);
         } else {
@@ -1112,7 +1112,11 @@ class Model
                     break;
                 case 'ignore':
                     if ($rule === $value) {
-                        unset(strpos($key,'.')?$data[$name1][$name2]:$data[$key]);
+                        if (strpos($key, '.')) {
+                            unset($data[$name1][$name2]);
+                        } else {
+                            unset($data[$key]);
+                        }
                     }
                     return;
                 case 'value':
@@ -1121,9 +1125,9 @@ class Model
                     break;
             }
         }
-        if(strpos($key,'.')){
+        if (strpos($key, '.')) {
             $data[$name1][$name2] = $result;
-        }else{
+        } else {
             $data[$key] = $result;
         }
     }
