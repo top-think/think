@@ -1002,9 +1002,9 @@ class Model
             } else {
                 $options = [];
             }
-            if (isset($group) && isset($options['on'][$group])) {
+            if (isset($group) && isset($options['scene'][$group])) {
                 // 如果设置了验证适用场景
-                $scene = $options['on'][$group];
+                $scene = $options['scene'][$group];
                 if (is_string($scene)) {
                     $scene = explode(',', $scene);
                 }
@@ -1015,10 +1015,17 @@ class Model
                 if (isset($scene) && !in_array($key, $scene)) {
                     continue;
                 }
-                $value = isset($data[$key]) ? $data[$key] : null;
+                if (strpos($key, '.')) {
+                    // 支持二维数组验证
+                    list($name1, $name2) = explode('.', $key);
+                    $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
+                } else {
+                    $value = isset($data[$key]) ? $data[$key] : null;
+                }
+
                 if (in_array($key, $options['value_validate']) && '' == $value) {
                     continue;
-                } elseif (in_array($key, $options['exists_validate']) && !isset($data[$key])) {
+                } elseif (in_array($key, $options['exists_validate']) && is_null($value)) {
                     continue;
                 }
                 $result = true;
@@ -1030,15 +1037,13 @@ class Model
                     $result = Hook::exec($val, '', $data);
                 } else {
                     // 验证字段规则
-                    $result = $this->checkValidate($key, $val, $data);
+                    $result = $this->checkValidate($value, $val, $data);
                 }
                 if (true !== $result) {
                     // 没有返回true 则表示验证失败
-                    if (!empty($options['patch'])) {
-                        // 批量验证
-                        $this->error[$key] = $result;
-                    } else {
-                        $this->error = $result;
+                    $this->error[$key] = $result;
+                    if (empty($options['patch'])) {
+                        // 不是批量验证则返回
                         return;
                     }
                 }
@@ -1079,9 +1084,15 @@ class Model
      */
     protected function autoOperation($key, $val, &$data)
     {
-        $value = isset($data[$key]) ? $data[$key] : null;
+        if (strpos($key, '.')) {
+            // 支持二维数组
+            list($name1, $name2) = explode('.', $key);
+            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
+        } else {
+            $value = isset($data[$key]) ? $data[$key] : null;
+        }        
         if ($val instanceof \Closure) {
-            $data[$key] = App::invokeFunction($val, [$value, $data]);
+            $result = App::invokeFunction($val, [$value, $data]);
         } else {
             $rule = isset($val[0]) ? $val[0] : $val;
             $type = isset($val[1]) ? $val[1] : 'value';
@@ -1091,40 +1102,44 @@ class Model
             switch ($type) {
                 case 'behavior':
                     Hook::exec($rule, '', $data);
-                    break;
+                    return;
                 case 'callback':
                     if (is_array($rule) || (is_string($rule) && strpos($rule, '::'))) {
-                        $data[$key] = App::invokeMethod($rule, [$value, &$data]);
+                        $result = App::invokeMethod($rule, [$value, &$data]);
                     } else {
-                        $data[$key] = App::invokeFunction($rule, [$value, &$data]);
+                        $result = App::invokeFunction($rule, [$value, &$data]);
                     }
                     break;
                 case 'ignore':
                     if ($rule === $value) {
-                        unset($data[$key]);
+                        unset(strpos($key,'.')?$data[$name1][$name2]:$data[$key]);
                     }
-                    break;
+                    return;
                 case 'value':
                 default:
-                    $data[$key] = $rule;
+                    $result = $rule;
                     break;
             }
+        }
+        if(strpos($key,'.')){
+            $data[$name1][$name2] = $result;
+        }else{
+            $data[$key] = $result;
         }
     }
 
     /**
      * 验证字段规则
      * @access public
-     * @param string $key  字段名
+     * @param mixed $value  字段值
      * @param mixed $val  验证规则
      * @param array $data  数据
      * @return string|true
      */
-    protected function checkValidate($key, $val, &$data)
+    protected function checkValidate($value, $val, &$data)
     {
-        $value   = isset($data[$key]) ? $data[$key] : null;
         $rule    = $val[0];
-        $msg     = isset($val[1]) ? $val[1] : 'data validate error : [ ' . $key . ' ]';
+        $msg     = $val[1];
         $type    = isset($val[2]) ? $val[2] : 'regex';
         $options = isset($val[3]) ? $val[3] : [];
         if ($rule instanceof \Closure) {
