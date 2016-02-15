@@ -199,7 +199,6 @@ class App
 
             // 模块初始化
             if (MODULE_NAME && !in_array(MODULE_NAME, $config['deny_module_list']) && is_dir(APP_PATH . MODULE_NAME)) {
-                APP_HOOK && Hook::listen('app_begin');
                 define('MODULE_PATH', APP_PATH . MODULE_NAME . DS);
                 define('VIEW_PATH', MODULE_PATH . VIEW_LAYER . DS);
                 // 初始化模块
