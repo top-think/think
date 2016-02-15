@@ -981,7 +981,12 @@ class Model
                     // 全局字段规则
                     $this->rule = $validate['__pattern__'];
                 }
-                $rules = $validate[$this->options['validate']];
+                if (strpos($this->options['validate'], '.')) {
+                    list($name, $group) = explode('.', $this->options['validate']);
+                } else {
+                    $name = $this->options['validate'];
+                }
+                $rules = $validate[$name];
                 if (isset($validate['__all__'])) {
                     $rules = array_merge($validate['__all__'], $rules);
                 }
@@ -995,9 +1000,19 @@ class Model
             } else {
                 $options = [];
             }
+            if (isset($group) && isset($options['on'][$group])) {
+                // 如果设置了验证适用场景
+                $scene = $options['on'][$group];
+                if (is_string($scene)) {
+                    $scene = explode(',', $scene);
+                }
+            }
             $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
             $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
             foreach ($rules as $key => $val) {
+                if (isset($scene) && !in_array($key, $scene)) {
+                    continue;
+                }
                 $value = isset($data[$key]) ? $data[$key] : null;
                 if (in_array($key, $options['value_validate']) && '' == $value) {
                     continue;
