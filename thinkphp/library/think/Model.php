@@ -1198,7 +1198,8 @@ class Model
     public function getModelName()
     {
         if (empty($this->name)) {
-            $this->name = basename(get_class($this));
+            // 解决非windows环境下获取不到basename的bug(xiaobo.sun modify 20160215)
+            $this->name = basename(str_replace('\\', '/', get_class($this)));
         }
         return $this->name;
     }
