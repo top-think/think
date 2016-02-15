@@ -126,7 +126,7 @@ class App
     {
         if (empty($vars)) {
             // 自动获取请求变量
-            switch ($_SERVER['REQUEST_METHOD']) {
+            switch (REQUEST_METHOD) {
                 case 'POST':
                     $vars = array_merge($_GET, $_POST);
                     break;
@@ -363,7 +363,7 @@ class App
                 Route::register($config['route']);
             }
             // 路由检测（根据路由定义返回不同的URL调度）
-            $result = Route::check($_SERVER['PATH_INFO'], $depr, $config['url_domain_deploy']);
+            $result = Route::check($_SERVER['PATH_INFO'], $depr, !IS_CLI ? $config['url_domain_deploy'] : false);
             if (false === $result && $config['url_route_must']) {
                 // 路由无效
                 throw new Exception('route not define ');
