@@ -135,7 +135,7 @@ class Response
      * @access public
      * @param mixed $data 要返回的数据
      * @param integer $code 返回的code
-     * @param mixed $msg 提示信息
+     * @param string $msg 提示信息
      * @param string $type 返回数据格式
      * @return mixed
      */
@@ -159,11 +159,11 @@ class Response
      * @access public
      * @param mixed $msg 提示信息
      * @param mixed $data 返回的数据
-     * @param mixed $url 跳转的URL地址
-     * @param mixed $wait 跳转等待时间
+     * @param string $url 跳转的URL地址
+     * @param integer $wait 跳转等待时间
      * @return mixed
      */
-    public static function success($msg = '', $data = '', $url = '', $wait = 3)
+    public static function success($msg = '', $data = '', $url = null, $wait = 3)
     {
         $code = 1;
         if (is_numeric($msg)) {
@@ -174,7 +174,7 @@ class Response
             'code' => $code,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => $url ?: $_SERVER["HTTP_REFERER"],
+            'url'  => is_null($url) ? $_SERVER["HTTP_REFERER"] : $url,
             'wait' => $wait,
         ];
 
@@ -192,11 +192,11 @@ class Response
      * @access public
      * @param mixed $msg 提示信息
      * @param mixed $data 返回的数据
-     * @param mixed $url 跳转的URL地址
-     * @param mixed $wait 跳转等待时间
+     * @param string $url 跳转的URL地址
+     * @param integer $wait 跳转等待时间
      * @return mixed
      */
-    public static function error($msg = '', $data = '', $url = '', $wait = 3)
+    public static function error($msg = '', $data = '', $url = null, $wait = 3)
     {
         $code = 0;
         if (is_numeric($msg)) {
@@ -207,7 +207,7 @@ class Response
             'code' => $code,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => $url ?: 'javascript:history.back(-1);',
+            'url'  => is_null($url) ? 'javascript:history.back(-1);' : $url,
             'wait' => $wait,
         ];
 
