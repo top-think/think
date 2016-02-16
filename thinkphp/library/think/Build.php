@@ -101,10 +101,10 @@ class Build
                     $namespace = APP_NAMESPACE . '\\' . ($module ? $module . '\\' : '') . $path;
                     switch ($path) {
                         case CONTROLLER_LAYER:    // 控制器
-                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val} {\n\n}";
+                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val}\n{\n\n}";
                             break;
                         case MODEL_LAYER:    // 模型
-                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val} extends \Think\Model{\n\n}";
+                            $content = "<?php\nnamespace {$namespace};\n\nuse think\Model;\n\nclass {$val} extends Model\n{\n\n}";
                             break;
                         case VIEW_LAYER:    // 视图
                             $filename = $modulePath . $path . DS . $val . '.html';
@@ -116,7 +116,7 @@ class Build
                             break;
                         default:
                             // 其他文件
-                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val} {\n\n}";
+                            $content = "<?php\nnamespace {$namespace};\n\nclass {$val}\n{\n\n}";
                     }
 
                     if (!is_file($filename)) {
