@@ -812,10 +812,8 @@ class Model
             // 对数组查询条件进行字段类型检查
             foreach ($options['where'] as $key => $val) {
                 $key = trim($key);
-                if (in_array($key, $fields, true)) {
-                    if (is_scalar($val) && empty($options['bind'][$key])) {
-                        $this->_parseType($options['where'], $key, $options['bind'], $options['table']);
-                    }
+                if (in_array($key, $fields, true) && is_scalar($val) && empty($options['bind'][$key])) {
+                    $this->_parseType($options['where'], $key, $options['bind'], $options['table']);
                 }
             }
         }
@@ -830,7 +828,7 @@ class Model
     {}
 
     /**
-     * 数据类型检测
+     * 数据类型检测和自动转换
      * @access protected
      * @param array $data 数据
      * @param string $key 字段名
@@ -840,7 +838,20 @@ class Model
      */
     protected function _parseType(&$data, $key, &$bind, $tableName = '')
     {
-        $binds      = $this->getTableInfo('bind', $tableName);
+        $binds = $this->getTableInfo('bind', $tableName);
+        $type  = $this->getTableInfo('type', $tableName);
+        // 强制类型转换
+        if (false !== strpos($type[$key], 'int')) {
+            $data[$key] = (int) $data[$key];
+        } elseif (false !== strpos($type[$key], 'float') || false !== strpos($type[$key], 'double')) {
+            $data[$key] = (float) $data[$key];
+        } elseif (false !== strpos($type[$key], 'bool')) {
+            $data[$key] = (bool) $data[$key];
+        }
+        if (':' == substr($data[$key], 0, 1) && isset($bind[substr($data[$key], 1)])) {
+            // 已经绑定 无需再次绑定 请确保bind方法优先执行
+            return;
+        }
         $bind[$key] = [$data[$key], isset($binds[$key]) ? $binds[$key] : \PDO::PARAM_STR];
         $data[$key] = ':' . $key;
     }
