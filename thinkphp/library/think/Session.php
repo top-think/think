@@ -134,7 +134,7 @@ class Session
         $prefix = $prefix ? $prefix : self::$prefix;
         if ('' == $name) {
             // 获取全部的session
-            $value = $prefix ? $_SESSION[$prefix] : $_SESSION;
+            $value = $prefix ? (!empty($_SESSION[$prefix]) ? $_SESSION[$prefix] : []) : $_SESSION;
         } elseif ($prefix) {
             // 获取session
             if (strpos($name, '.')) {
