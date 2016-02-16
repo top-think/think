@@ -1042,7 +1042,7 @@ class Model
                 $result = true;
                 if ($val instanceof \Closure) {
                     // 匿名函数验证 支持传入当前字段和所有字段两个数据
-                    $result = App::invokeFunction($val, [$value, $data]);
+                    $result = call_user_func_array($val, [$value, &$data]);
                 } elseif (is_string($val)) {
                     // 行为验证
                     $result = Hook::exec($val, '', $data);
@@ -1052,7 +1052,12 @@ class Model
                 }
                 if (true !== $result) {
                     // 没有返回true 则表示验证失败
-                    $this->error[$key] = $result;
+                    if (is_array($result)) {
+                        // 返回组装的错误信息
+                        $this->error = $result;
+                    } else {
+                        $this->error[] = ['key' => $key, 'error' => $result];
+                    }
                     if (empty($options['patch'])) {
                         // 不是批量验证则返回
                         return;
@@ -1118,10 +1123,11 @@ class Model
             return;
         }
         if ($val instanceof \Closure) {
-            $result = App::invokeFunction($val, [$value, $data]);
+            $result = call_user_func_array($val, [$value, &$data]);
         } else {
-            $rule = isset($val[0]) ? $val[0] : $val;
-            $type = isset($val[1]) ? $val[1] : 'value';
+            $rule   = isset($val[0]) ? $val[0] : $val;
+            $type   = isset($val[1]) ? $val[1] : 'value';
+            $params = isset($val[2]) ? $val[2] : [];
             if ($rule instanceof \Closure) {
                 $type = 'callback';
             }
@@ -1130,11 +1136,8 @@ class Model
                     Hook::exec($rule, '', $data);
                     return;
                 case 'callback':
-                    if (is_array($rule) || (is_string($rule) && strpos($rule, '::'))) {
-                        $result = App::invokeMethod($rule, [$value, &$data]);
-                    } else {
-                        $result = App::invokeFunction($rule, [$value, &$data]);
-                    }
+                    array_unshift($params, $value);
+                    $result = call_user_func_array($rule, $params);
                     break;
                 case 'ignore':
                     if ($rule === $value) {
@@ -1177,17 +1180,14 @@ class Model
         }
         switch ($type) {
             case 'callback':
-                if (is_array($rule) || (is_string($rule) && strpos($rule, '::'))) {
-                    $result = App::invokeMethod($rule, [$value, &$data]);
-                } else {
-                    $result = App::invokeFunction($rule, [$value, &$data]);
-                }
+                array_unshift($options, $value);
+                $result = call_user_func_array($rule, $options);
                 break;
             case 'behavior':
                 // 行为验证
                 $result = Hook::exec($rule, '', $data);
                 break;
-            case 'filter': // 使用filter_var验证
+            case 'filter':    // 使用filter_var验证
                 $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                 break;
             case 'confirm':
@@ -1198,8 +1198,8 @@ class Model
                 $range  = is_array($rule) ? $rule : explode(',', $rule);
                 $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                 break;
-            case 'between': // 验证是否在某个范围
-            case 'notbetween': // 验证是否不在某个范围
+            case 'between':// 验证是否在某个范围
+            case 'notbetween':    // 验证是否不在某个范围
                 if (is_string($rule)) {
                     $rule = explode(',', $rule);
                 }
