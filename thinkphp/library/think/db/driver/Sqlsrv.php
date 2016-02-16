@@ -36,7 +36,7 @@ class Sqlsrv extends Driver
      */
     protected function parseDsn($config)
     {
-        $dsn = 'sqlsrv:dbname=' . $config['database'] . ';Server=' . $config['hostname'];
+        $dsn = 'sqlsrv:Database=' . $config['database'] . ';Server=' . $config['hostname'];
         if (!empty($config['hostport'])) {
             $dsn .= ',' . $config['hostport'];
         }
