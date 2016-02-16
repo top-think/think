@@ -1088,7 +1088,7 @@ class Model
             $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
             foreach ($rules as $key => $val) {
                 // 数据自动填充
-                $this->autoOperation($key, $val, $data);
+                $this->autoOperation($key, $val, $data, $options);
             }
             $this->options['auto'] = null;
         }
