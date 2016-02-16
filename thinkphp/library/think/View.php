@@ -228,9 +228,9 @@ class View
         if (defined('CONTROLLER_NAME')) {
             if ('' == $template) {
                 // 如果模板文件名为空 按照默认规则定位
-                $template = CONTROLLER_NAME . $depr . ACTION_NAME;
+                $template = str_replace('.', DS, CONTROLLER_NAME) . $depr . ACTION_NAME;
             } elseif (false === strpos($template, $depr)) {
-                $template = CONTROLLER_NAME . $depr . $template;
+                $template = str_replace('.', DS, CONTROLLER_NAME) . $depr . $template;
             }
         }
         return THEME_PATH . $template . $this->config['view_suffix'];
