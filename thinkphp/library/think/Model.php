@@ -1023,9 +1023,9 @@ class Model
                     $value = isset($data[$key]) ? $data[$key] : null;
                 }
 
-                if (in_array($key, $options['value_validate']) && '' == $value) {
-                    continue;
-                } elseif (in_array($key, $options['exists_validate']) && is_null($value)) {
+                if ((in_array($key, $options['value_validate']) && '' == $value)
+                    || (in_array($key, $options['exists_validate']) && is_null($value))) {
+                    // 不满足自动验证条件
                     continue;
                 }
                 $result = true;
@@ -1066,6 +1066,15 @@ class Model
             } else {
                 $rules = $this->options['auto'];
             }
+            if (isset($rules['__option__'])) {
+                // 验证参数设置
+                $options = $rules['__option__'];
+                unset($rules['__option__']);
+            } else {
+                $options = [];
+            }
+            $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
+            $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
             foreach ($rules as $key => $val) {
                 // 数据自动填充
                 $this->autoOperation($key, $val, $data);
@@ -1080,9 +1089,10 @@ class Model
      * @param string $key  字段名
      * @param mixed $val  填充规则
      * @param array $data  数据
+     * @param array $options  参数
      * @return void
      */
-    protected function autoOperation($key, $val, &$data)
+    protected function autoOperation($key, $val, &$data, $options = [])
     {
         if (strpos($key, '.')) {
             // 支持二维数组
@@ -1090,6 +1100,11 @@ class Model
             $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
         } else {
             $value = isset($data[$key]) ? $data[$key] : null;
+        }
+        if ((in_array($key, $options['value_fill']) && '' == $value)
+            || (in_array($key, $options['exists_fill']) && is_null($value))) {
+            // 不满足自动填充条件
+            return;
         }
         if ($val instanceof \Closure) {
             $result = App::invokeFunction($val, [$value, $data]);
@@ -1161,7 +1176,7 @@ class Model
                 // 行为验证
                 $result = Hook::exec($rule, '', $data);
                 break;
-            case 'filter':    // 使用filter_var验证
+            case 'filter': // 使用filter_var验证
                 $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                 break;
             case 'confirm':
@@ -1172,8 +1187,8 @@ class Model
                 $range  = is_array($rule) ? $rule : explode(',', $rule);
                 $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                 break;
-            case 'between':// 验证是否在某个范围
-            case 'notbetween':    // 验证是否不在某个范围
+            case 'between': // 验证是否在某个范围
+            case 'notbetween': // 验证是否不在某个范围
                 if (is_string($rule)) {
                     $rule = explode(',', $rule);
                 }
