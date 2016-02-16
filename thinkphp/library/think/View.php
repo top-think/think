@@ -31,6 +31,7 @@ class View
         'view_suffix'       => '.html',
         'view_depr'         => DS,
         'view_layer'        => VIEW_LAYER,
+        'controller_depr'   => DS,
         'parse_str'         => [],
         'engine_type'       => 'think',
         'namespace'         => '\\think\\view\\driver\\',
@@ -226,11 +227,13 @@ class View
 
         // 分析模板文件规则
         if (defined('CONTROLLER_NAME')) {
+            // 控制器分层模板文件分隔符
+            $controller_depr = $this->config('controller_depr');
             if ('' == $template) {
                 // 如果模板文件名为空 按照默认规则定位
-                $template = CONTROLLER_NAME . $depr . ACTION_NAME;
+                $template = str_replace('.',$controller_depr,CONTROLLER_NAME) . $depr . ACTION_NAME;
             } elseif (false === strpos($template, $depr)) {
-                $template = CONTROLLER_NAME . $depr . $template;
+                $template = str_replace('.',$controller_depr,CONTROLLER_NAME) . $depr . $template;
             }
         }
         return THEME_PATH . $template . $this->config['view_suffix'];
