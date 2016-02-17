@@ -1044,7 +1044,7 @@ class Model
                     // 匿名函数验证 支持传入当前字段和所有字段两个数据
                     $result = call_user_func_array($val, [$value, &$data]);
                 } elseif (is_string($val)) {
-                    // 行为验证
+                    // 行为验证 用于一次性批量验证
                     $result = Hook::exec($val, '', $data);
                 } else {
                     // 验证字段规则
@@ -1052,14 +1052,11 @@ class Model
                 }
                 if (true !== $result) {
                     // 没有返回true 则表示验证失败
-                    if (is_array($result)) {
-                        // 返回组装的错误信息
-                        $this->error = $result;
+                    if (!empty($options['patch'])) {
+                        // 批量验证
+                        $this->error[] = $result;
                     } else {
-                        $this->error[] = ['key' => $key, 'error' => $result];
-                    }
-                    if (empty($options['patch'])) {
-                        // 不是批量验证则返回
+                        $this->error = $result;
                         return;
                     }
                 }
@@ -1187,7 +1184,7 @@ class Model
                 // 行为验证
                 $result = Hook::exec($rule, '', $data);
                 break;
-            case 'filter':    // 使用filter_var验证
+            case 'filter': // 使用filter_var验证
                 $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                 break;
             case 'confirm':
@@ -1198,8 +1195,8 @@ class Model
                 $range  = is_array($rule) ? $rule : explode(',', $rule);
                 $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                 break;
-            case 'between':// 验证是否在某个范围
-            case 'notbetween':    // 验证是否不在某个范围
+            case 'between': // 验证是否在某个范围
+            case 'notbetween': // 验证是否不在某个范围
                 if (is_string($rule)) {
                     $rule = explode(',', $rule);
                 }
@@ -1215,7 +1212,7 @@ class Model
                 break;
         }
         // 验证失败返回错误信息
-        return false === $result ? $msg : true;
+        return (is_array($result) || true === $result) ? $result : $msg;
     }
 
     /**
