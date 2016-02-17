@@ -356,7 +356,7 @@ class App
         $depr   = $config['pathinfo_depr'];
         $result = false;
         // 路由检测
-        if (!empty($config['url_route_on'])) {
+        if (APP_ROUTE_ON && !empty($config['url_route_on'])) {
             // 开启路由
             if (!empty($config['route'])) {
                 // 注册路由定义文件
@@ -364,7 +364,7 @@ class App
             }
             // 路由检测（根据路由定义返回不同的URL调度）
             $result = Route::check($_SERVER['PATH_INFO'], $depr, !IS_CLI ? $config['url_domain_deploy'] : false);
-            if (false === $result && $config['url_route_must']) {
+            if (APP_ROUTE_MUST && false === $result && $config['url_route_must']) {
                 // 路由无效
                 throw new Exception('route not define ');
             }
