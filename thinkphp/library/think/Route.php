@@ -666,6 +666,9 @@ class Route
             self::parseUrlParams(implode('/', $paths), $var);
             // 路由到模块/控制器/操作
             $result = ['type' => 'module', 'module' => $result['route']];
+            // 路由地址中的控制器和操作关闭自动转换
+            Config::set('url_controller_convert', false);
+            Config::set('url_action_convert', false);
         }
         return $result;
     }
