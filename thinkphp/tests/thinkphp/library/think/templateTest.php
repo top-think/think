@@ -266,9 +266,11 @@ EOF;
 <nav>
 <div>
     <input name="info" value="<?php echo \$info['value']; ?>">
+include2
 
 
     <input name="<?php echo \$user['name']; ?>" value="<?php echo \$user['account']; ?>">
+include2
     <?php echo \$message; ?>{\$message}
 
 

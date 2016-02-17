@@ -404,9 +404,9 @@ class Template
                         }
                         $parseStr = str_replace('[' . $k . ']', $v, $parseStr);
                     }
+                    $content = str_replace($match[0], $parseStr, $content);
                     // 再次对包含文件进行模板分析
                     $funReplace($parseStr);
-                    $content = str_replace($match[0], $parseStr, $content);
                 }
                 unset($matches);
             }
