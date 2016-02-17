@@ -214,9 +214,12 @@ class App
         }
 
         // 获取控制器名
-        define('CONTROLLER_NAME', strtolower(strip_tags($result[1] ?: Config::get('default_controller'))));
+        $controllerName = strip_tags($result[1] ?: Config::get('default_controller'));
+        define('CONTROLLER_NAME', $config['url_controller_convert'] ? strtolower($controllerName) : $controllerName);
+
         // 获取操作名
-        define('ACTION_NAME', strtolower(strip_tags($result[2] ?: Config::get('default_action'))));
+        $actionName = strip_tags($result[2] ?: Config::get('default_action'));
+        define('ACTION_NAME', $config['url_action_convert'] ? strtolower($actionName) : $actionName);
 
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {
