@@ -81,7 +81,7 @@ class Url
         $url  = str_replace('/', $depr, $url);
 
         // URL后缀
-        $suffix = self::parseSuffix($suffix);
+        $suffix = ('/' == $url) ? '' : self::parseSuffix($suffix);
         // 锚点
         $anchor = !empty($anchor) ? '#' . $anchor : '';
         // 参数组装
