@@ -996,7 +996,7 @@ class Model
             $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
             $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
             foreach ($rules as $key => $val) {
-                if (is_numeric($key)) {
+                if (is_numeric($key) && is_array($val)) {
                     $key = array_shift($val);
                 }
                 if (!empty($scene) && !in_array($key, $scene)) {
@@ -1051,7 +1051,7 @@ class Model
             $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
             $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
             foreach ($rules as $key => $val) {
-                if (is_numeric($key)) {
+                if (is_numeric($key) && is_array($val)) {
                     $key = array_shift($val);
                 }
                 if (!empty($scene) && !in_array($key, $scene)) {
@@ -1129,13 +1129,12 @@ class Model
         }
         if ($val instanceof \Closure) {
             $result = call_user_func_array($val, [$value, &$data]);
+        } elseif (isset($val[0]) && $val[0] instanceof \Closure) {
+            $result = call_user_func_array($rule, [$value, &$data]);
         } else {
             $rule   = isset($val[0]) ? $val[0] : $val;
             $type   = isset($val[1]) ? $val[1] : 'value';
             $params = isset($val[2]) ? $val[2] : [];
-            if ($rule instanceof \Closure) {
-                $type = 'callback';
-            }
             switch ($type) {
                 case 'behavior':
                     Hook::exec($rule, '', $data);
@@ -1181,43 +1180,45 @@ class Model
         $type    = isset($val[2]) ? $val[2] : 'regex';
         $options = isset($val[3]) ? $val[3] : [];
         if ($rule instanceof \Closure) {
-            $type = 'callback';
-        }
-        switch ($type) {
-            case 'callback':
-                array_unshift($options, $value);
-                $result = call_user_func_array($rule, $options);
-                break;
-            case 'behavior':
-                // 行为验证
-                $result = Hook::exec($rule, '', $data);
-                break;
-            case 'filter': // 使用filter_var验证
-                $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
-                break;
-            case 'confirm':
-                $result = $value == $data[$rule];
-                break;
-            case 'in':
-            case 'notin':
-                $range  = is_array($rule) ? $rule : explode(',', $rule);
-                $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
-                break;
-            case 'between': // 验证是否在某个范围
-            case 'notbetween': // 验证是否不在某个范围
-                if (is_string($rule)) {
-                    $rule = explode(',', $rule);
-                }
-                list($min, $max) = $rule;
-                $result          = 'between' == $type ? $value >= $min && $value <= $max : $value < $min || $value > $max;
-                break;
-            case 'regex':
-            default:
-                if (isset($this->rule[$rule])) {
-                    $rule = $this->rule[$rule];
-                }
-                $result = 1 === preg_match('/^' . $rule . '$/', (string) $value);
-                break;
+            // 匿名函数验证 支持传入当前字段和所有字段两个数据
+            $result = call_user_func_array($rule, [$value, &$data]);
+        } else {
+            switch ($type) {
+                case 'callback':
+                    array_unshift($options, $value);
+                    $result = call_user_func_array($rule, $options);
+                    break;
+                case 'behavior':
+                    // 行为验证
+                    $result = Hook::exec($rule, '', $data);
+                    break;
+                case 'filter': // 使用filter_var验证
+                    $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
+                    break;
+                case 'confirm':
+                    $result = $value == $data[$rule];
+                    break;
+                case 'in':
+                case 'notin':
+                    $range  = is_array($rule) ? $rule : explode(',', $rule);
+                    $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
+                    break;
+                case 'between': // 验证是否在某个范围
+                case 'notbetween': // 验证是否不在某个范围
+                    if (is_string($rule)) {
+                        $rule = explode(',', $rule);
+                    }
+                    list($min, $max) = $rule;
+                    $result          = 'between' == $type ? $value >= $min && $value <= $max : $value < $min || $value > $max;
+                    break;
+                case 'regex':
+                default:
+                    if (isset($this->rule[$rule])) {
+                        $rule = $this->rule[$rule];
+                    }
+                    $result = 1 === preg_match('/^' . $rule . '$/', (string) $value);
+                    break;
+            }
         }
         // 验证失败返回错误信息
         return (is_array($result) || true === $result) ? $result : $msg;
