@@ -996,6 +996,9 @@ class Model
             $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
             $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
             foreach ($rules as $key => $val) {
+                if (is_numeric($key)) {
+                    $key = array_shift($val);
+                }
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
@@ -1048,6 +1051,9 @@ class Model
             $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
             $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
             foreach ($rules as $key => $val) {
+                if (is_numeric($key)) {
+                    $key = array_shift($val);
+                }
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
