@@ -35,7 +35,12 @@ class Sae
         }
     }
 
-    // 写入编译缓存
+    /**
+     * 写入编译缓存
+     * @string $cacheFile 缓存的文件名
+     * @string $content 缓存的内容
+     * @return void|array
+     */
     public function write($cacheFile, $content)
     {
         // 添加写入时间
@@ -48,23 +53,42 @@ class Sae
         }
     }
 
-    // 读取编译编译
-    public function read($cacheFile, $vars)
+    /**
+     * 读取编译编译
+     * @string $cacheFile 缓存的文件名
+     * @array $vars 变量数组
+     * @boolean $isReturn 是否返回内容
+     * @return void|array
+     */
+    public function read($cacheFile, $vars = [], $isReturn = false)
     {
-        if (!is_null($vars)) {
+        if (!empty($vars) && is_array($vars)) {
             extract($vars, EXTR_OVERWRITE);
         }
-        eval('?>' . $this->get($cacheFile, 'content'));
+        if ($isReturn) {
+            return $this->get($cacheFile, 'content');
+        } else {
+            eval('?>' . $this->get($cacheFile, 'content'));
+        }
     }
 
-    // 检查编译缓存是否有效
+    /**
+     * 检查编译缓存是否有效
+     * @array $template 用到的模板更新时间列表
+     * @string $cacheFile 缓存的文件名
+     * @int $cacheTime 缓存时间
+     * @return boolean
+     */
     public function check($template, $cacheFile, $cacheTime)
     {
+        foreach($template as $time => $path) {
+            if (is_file($path) && filemtime($path) > $time) {
+                // 模板文件如果有更新则缓存需要更新
+                return false;
+            }
+        }
         $mtime = $this->get($cacheFile, 'mtime');
-        if (!$this->get($cacheFile, 'content') || (is_file($template) && filemtime($template) > $mtime)) {
-            // 模板文件如果有更新则缓存需要更新
-            return false;
-        }if (0 != $cacheTime && time() > $mtime + $cacheTime) {
+        if (0 != $cacheTime && time() > $mtime + $cacheTime) {
             // 缓存是否在有效期
             return false;
         } else {
