@@ -169,7 +169,7 @@ EOF;
         $content = <<<EOF
 {\$name.a.b|default='test'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo (isset(\$name['a']['b']) && (\$name['a']['b'] !== '')?\$name['a']['b']:'test'); ?>
 EOF;
 
@@ -179,7 +179,7 @@ EOF;
         $content = <<<EOF
 {\$create_time|date="y-m-d",###}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo date("y-m-d",\$create_time); ?>
 EOF;
 
@@ -190,7 +190,7 @@ EOF;
 {\$name}
 {\$name|trim|substr=0,3}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo \$name; ?>
 <?php echo substr(trim(\$name),0,3); ?>
 EOF;
@@ -209,7 +209,7 @@ EOF;
         $content = <<<EOF
 <#\$info.a??'test'#>
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo (is_array(\$info)?\$info['a']:\$info->a) ? (is_array(\$info)?\$info['a']:\$info->a) : 'test'; ?>
 EOF;
 
@@ -219,7 +219,7 @@ EOF;
         $content = <<<EOF
 <#\$info.a==\$info.b?='test'#>
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if((is_array(\$info)?\$info['a']:\$info->a)==(is_array(\$info)?\$info['b']:\$info->b)) echo 'test'; ?>
 EOF;
 
@@ -229,15 +229,15 @@ EOF;
         $content = <<<EOF
 <#\$info.a|default='test'?'yes':'no'#>
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo ((is_array(\$info)?\$info['a']:\$info->a) !== ''?(is_array(\$info)?\$info['a']:\$info->a):'test')?'yes':'no'; ?>
 EOF;
         $template->parse($content);
         $this->assertEquals($data, $content);
 
-        $template2 = new Template();
+        $template2                   = new Template();
         $template2->tpl_var_identify = 'obj';
-        $content = <<<EOF
+        $content                     = <<<EOF
 {\$info2.b|trim?'yes':'no'}
 EOF;
         $data = <<<EOF
@@ -249,10 +249,10 @@ EOF;
 
     public function testTag()
     {
-        $config['tpl_path'] = dirname(__FILE__) . '/';
-        $config['tpl_suffix'] = '.html';
-        $template = new Template($config);
-        $files = ['extend' => 'extend', 'include' => 'include'];
+        $config['view_path']   = dirname(__FILE__) . '/';
+        $config['view_suffix'] = '.html';
+        $template              = new Template($config);
+        $files                 = ['extend' => 'extend', 'include' => 'include'];
         $template->assign('files', $files);
 
         $content = <<<EOF
@@ -291,13 +291,13 @@ EOF;
     public function testThinkVar()
     {
         $config['tpl_begin'] = '{';
-        $config['tpl_end'] = '}';
-        $template = new Template($config);
+        $config['tpl_end']   = '}';
+        $template            = new Template($config);
 
         $_SERVER['SERVER_NAME'] = 'server_name';
-        $_GET['action'] = 'action';
-        $_POST['action'] = 'action';
-        $_COOKIE['name'] = 'name';
+        $_GET['action']         = 'action';
+        $_POST['action']        = 'action';
+        $_COOKIE['name']        = 'name';
         \think\Session::set('action', ['name' => 'name']);
         define('SITE_NAME', 'site_name');
 
@@ -351,7 +351,7 @@ EOF;
         $template->assign('name', 'name');
         $config = [
             'strip_space' => true,
-            'tpl_path' => dirname(__FILE__) . '/',
+            'view_path'   => dirname(__FILE__) . '/',
         ];
         $data = ['name' => 'value'];
         $template->display('display', $data, $config);
@@ -360,10 +360,10 @@ EOF;
 
     public function testFetch()
     {
-        $template = new Template();
-        $template->tpl_path = dirname(__FILE__) . '/';
-        $data = ['name' => 'value'];
-        $content = <<<EOF
+        $template            = new Template();
+        $template->view_path = dirname(__FILE__) . '/';
+        $data                = ['name' => 'value'];
+        $content             = <<<EOF
 {\$name}
 EOF;
 
@@ -382,7 +382,7 @@ EOF;
     public function testVarGet()
     {
         $template = new Template();
-        $data = ['a' => 'a', 'b' => 'b'];
+        $data     = ['a' => 'a', 'b' => 'b'];
         $template->assign($data);
         $this->assertEquals($data, $template->get());
     }
