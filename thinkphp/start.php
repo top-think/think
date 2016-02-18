@@ -22,7 +22,7 @@ Loader::register();
 // 加载模式定义文件
 $mode = require MODE_PATH . APP_MODE . EXT;
 
-// 加载空间别名定义
+// 加载模式命名空间定义
 if (isset($mode['namespace'])) {
     Loader::addNamespace($mode['namespace']);
 }

@@ -990,43 +990,13 @@ class Model
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
-            if (is_string($this->options['validate'])) {
-                // 读取配置文件中的自动验证定义
-                $validate = Config::get('validate');
-                if (isset($validate['__pattern__'])) {
-                    // 全局字段规则
-                    $this->rule = $validate['__pattern__'];
-                }
-                if (strpos($this->options['validate'], '.')) {
-                    list($name, $group) = explode('.', $this->options['validate']);
-                } else {
-                    $name = $this->options['validate'];
-                }
-                $rules = $validate[$name];
-                if (isset($validate['__all__'])) {
-                    $rules = array_merge($validate['__all__'], $rules);
-                }
-            } else {
-                $rules = $this->options['validate'];
-            }
-            if (isset($rules['__option__'])) {
-                // 验证参数设置
-                $options = $rules['__option__'];
-                unset($rules['__option__']);
-            } else {
-                $options = [];
-            }
-            if (isset($group) && isset($options['scene'][$group])) {
-                // 如果设置了验证适用场景
-                $scene = $options['scene'][$group];
-                if (is_string($scene)) {
-                    $scene = explode(',', $scene);
-                }
-            }
+            // 获取自动验证规则
+            list($rules, $options, $scene) = $this->getDataRule($this->options['validate'], 'validate');
+
             $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
             $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
             foreach ($rules as $key => $val) {
-                if (isset($scene) && !in_array($key, $scene)) {
+                if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
                 if (strpos($key, '.')) {
@@ -1072,31 +1042,60 @@ class Model
     protected function dataFill(&$data)
     {
         if (!empty($this->options['auto'])) {
-            if (is_string($this->options['auto'])) {
-                // 读取配置文件中的自动验证定义
-                $auto  = Config::get('auto');
-                $rules = $auto[$this->options['auto']];
-                if (isset($auto['__all__'])) {
-                    $rules = array_merge($auto['__all__'], $rules);
-                }
-            } else {
-                $rules = $this->options['auto'];
-            }
-            if (isset($rules['__option__'])) {
-                // 验证参数设置
-                $options = $rules['__option__'];
-                unset($rules['__option__']);
-            } else {
-                $options = [];
-            }
+            // 获取自动完成规则
+            list($rules, $options, $scene) = $this->getDataRule($this->options['auto'], 'auto');
+
             $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
             $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
             foreach ($rules as $key => $val) {
+                if (!empty($scene) && !in_array($key, $scene)) {
+                    continue;
+                }
                 // 数据自动填充
                 $this->autoOperation($key, $val, $data, $options);
             }
             $this->options['auto'] = null;
         }
+    }
+
+    protected function getDataRule($data, $type)
+    {
+        if (is_string($data)) {
+            // 读取配置文件中的自动验证定义
+            $config = Config::get($type);
+            if ('validate' == $type && isset($config['__pattern__'])) {
+                // 全局字段规则
+                $this->rule = $config['__pattern__'];
+            }
+            if (strpos($data, '.')) {
+                list($name, $group) = explode('.', $data);
+            } else {
+                $name = $data;
+            }
+            $rules = $config[$name];
+            if (isset($config['__all__'])) {
+                $rules = array_merge($config['__all__'], $rules);
+            }
+        } else {
+            $rules = $data;
+        }
+        if (isset($rules['__option__'])) {
+            // 参数设置
+            $options = $rules['__option__'];
+            unset($rules['__option__']);
+        } else {
+            $options = [];
+        }
+        if (isset($group) && isset($options['scene'][$group])) {
+            // 如果设置了验证适用场景
+            $scene = $options['scene'][$group];
+            if (is_string($scene)) {
+                $scene = explode(',', $scene);
+            }
+        } else {
+            $scene = [];
+        }
+        return [$rules, $options, $scene];
     }
 
     /**
