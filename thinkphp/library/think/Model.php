@@ -206,14 +206,17 @@ class Model
         }
         if (!empty($this->duplicate)) {
             // 存在数据副本
-            $data = array_diff_assoc($data, $this->duplicate);
+            foreach ($data as $key => $val) {
+                // 去除相同数据
+                if (isset($this->duplicate[$key]) && $val == $this->duplicate[$key]) {
+                    unset($data[$key]);
+                }
+            }
             if (empty($data)) {
                 // 没有数据变化
                 return [];
-            }
-
-            if ('update' == $type) {
-                // 保留主键信息
+            } elseif ('update' == $type) {
+                // 更新操作保留主键信息
                 $pk = $this->getPk();
                 if (is_array($pk)) {
                     foreach ($pk as $key) {
