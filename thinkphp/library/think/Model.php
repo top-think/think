@@ -1177,7 +1177,7 @@ class Model
     protected function checkValidate($value, $val, &$data)
     {
         $rule    = $val[0];
-        $msg     = $val[1];
+        $msg     = isset($val[1]) ? $val[1] : '';
         $type    = isset($val[2]) ? $val[2] : 'regex';
         $options = isset($val[3]) ? $val[3] : [];
         if ($rule instanceof \Closure) {
