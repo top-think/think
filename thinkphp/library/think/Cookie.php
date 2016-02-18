@@ -97,12 +97,12 @@ class Cookie
     /**
      * Cookie获取
      * @param string $name cookie名称
-     * @param string $prefix cookie前缀
+     * @param string|null $prefix cookie前缀
      * @return mixed
      */
-    public static function get($name, $prefix = '')
+    public static function get($name, $prefix = null)
     {
-        $prefix = $prefix ? $prefix : self::$config['prefix'];
+        $prefix = !is_null($prefix) ? $prefix : self::$config['prefix'];
         $name   = $prefix . $name;
         if (isset($_COOKIE[$name])) {
             $value = $_COOKIE[$name];
@@ -120,13 +120,13 @@ class Cookie
     /**
      * Cookie删除
      * @param string $name cookie名称
-     * @param string $prefix cookie前缀
+     * @param string|null $prefix cookie前缀
      * @return mixed
      */
-    public static function delete($name, $prefix = '')
+    public static function delete($name, $prefix = null)
     {
         $config = self::$config;
-        $prefix = $prefix ? $prefix : $config['prefix'];
+        $prefix = !is_null($prefix) ? $prefix : $config['prefix'];
         $name   = $prefix . $name;
         if (self::$config['setcookie']) {
             setcookie($name, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
@@ -137,10 +137,10 @@ class Cookie
 
     /**
      * Cookie清空
-     * @param string $prefix cookie前缀
+     * @param string|null $prefix cookie前缀
      * @return mixed
      */
-    public static function clear($prefix = '')
+    public static function clear($prefix = null)
     {
         // 清除指定前缀的所有cookie
         if (empty($_COOKIE)) {
@@ -149,7 +149,7 @@ class Cookie
 
         // 要删除的cookie前缀，不指定则删除config设置的指定前缀
         $config = self::$config;
-        $prefix = $prefix ? $prefix : $config['prefix'];
+        $prefix = !is_null($prefix) ? $prefix : $config['prefix'];
         if ($prefix) {
             // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {

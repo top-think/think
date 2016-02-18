@@ -101,12 +101,12 @@ class Session
      *
      * @param string $name session名称
      * @param mixed $value session值
-     * @param string $prefix 作用域（前缀）
+     * @param string|null $prefix 作用域（前缀）
      * @return void
      */
-    public static function set($name, $value = '', $prefix = '')
+    public static function set($name, $value = '', $prefix = null)
     {
-        $prefix = $prefix ? $prefix : self::$prefix;
+        $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 二维数组赋值
             list($name1, $name2) = explode('.', $name);
@@ -126,12 +126,12 @@ class Session
      * session获取
      *
      * @param string $name session名称
-     * @param string $prefix 作用域（前缀）
+     * @param string|null $prefix 作用域（前缀）
      * @return mixed
      */
-    public static function get($name = '', $prefix = '')
+    public static function get($name = '', $prefix = null)
     {
-        $prefix = $prefix ? $prefix : self::$prefix;
+        $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if ('' == $name) {
             // 获取全部的session
             $value = $prefix ? (!empty($_SESSION[$prefix]) ? $_SESSION[$prefix] : []) : $_SESSION;
@@ -158,12 +158,12 @@ class Session
      * 删除session数据
      *
      * @param string $name session名称
-     * @param string $prefix 作用域（前缀）
+     * @param string|null $prefix 作用域（前缀）
      * @return void
      */
-    public static function delete($name, $prefix = '')
+    public static function delete($name, $prefix = null)
     {
-        $prefix = $prefix ? $prefix : self::$prefix;
+        $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             list($name1, $name2) = explode('.', $name);
             if ($prefix) {
@@ -183,12 +183,12 @@ class Session
     /**
      * 清空session数据
      *
-     * @param string $prefix 作用域（前缀）
+     * @param string|null $prefix 作用域（前缀）
      * @return void
      */
-    public static function clear($prefix = '')
+    public static function clear($prefix = null)
     {
-        $prefix = $prefix ? $prefix : self::$prefix;
+        $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if ($prefix) {
             unset($_SESSION[$prefix]);
         } else {
@@ -200,14 +200,14 @@ class Session
      * 判断session数据
      *
      * @param string $name session名称
-     * @param string $prefix
+     * @param string|null $prefix
      *
      * @return bool
      * @internal param mixed $value session值
      */
-    public static function has($name, $prefix = '')
+    public static function has($name, $prefix = null)
     {
-        $prefix = $prefix ? $prefix : self::$prefix;
+        $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 支持数组
             list($name1, $name2) = explode('.', $name);
