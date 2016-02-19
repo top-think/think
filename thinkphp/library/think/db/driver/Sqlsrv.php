@@ -93,6 +93,17 @@ class Sqlsrv extends Driver
     }
 
     /**
+     * order分析
+     * @access protected
+     * @param mixed $order
+     * @return string
+     */
+    protected function parseOrder($order)
+    {
+        return !empty($order) ? ' ORDER BY ' . $order[0] : ' ORDER BY rand()';
+    }
+
+    /**
      * 随机排序
      * @access protected
      * @return string
@@ -111,7 +122,7 @@ class Sqlsrv extends Driver
     protected function parseKey($key)
     {
         $key = trim($key);
-        if (!preg_match('/[,\'\"\*\(\)\[.\s]/', $key)) {
+        if (!is_numeric($key) && !preg_match('/[,\'\"\*\(\)\[.\s]/', $key)) {
             $key = '[' . $key . ']';
         }
         return $key;

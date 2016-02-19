@@ -987,7 +987,12 @@ class Model
     protected function _create_filter(&$data)
     {}
 
-    // 数据自动验证
+    /**
+     * 数据自动验证
+     * @access protected
+     * @param array $data  数据
+     * @return void
+     */
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
@@ -1038,7 +1043,12 @@ class Model
         return;
     }
 
-    // 数据自动填充
+    /**
+     * 数据自动填充
+     * @access protected
+     * @param array $data  数据
+     * @return void
+     */
     protected function dataFill(&$data)
     {
         if (!empty($this->options['auto'])) {
@@ -1061,7 +1071,13 @@ class Model
         }
     }
 
-    // 获取数据值
+    /**
+     * 获取数据值
+     * @access protected
+     * @param array $data  数据
+     * @param string $key  数据标识 支持二维
+     * @return mixed
+     */
     protected function getDataValue($data, $key)
     {
         if (strpos($key, '.')) {
@@ -1074,7 +1090,13 @@ class Model
         return $value;
     }
 
-    // 获取数据自动验证或者完成的规则定义
+    /**
+     * 获取数据自动验证或者完成的规则定义
+     * @access protected
+     * @param array $data  数据
+     * @param string $type  数据类型 支持 validate auto
+     * @return array
+     */
     protected function getDataRule($data, $type)
     {
         if (is_string($data)) {
@@ -1117,7 +1139,7 @@ class Model
 
     /**
      * 数据自动填充
-     * @access public
+     * @access protected
      * @param string $key  字段名
      * @param mixed $val  填充规则
      * @param array $data  数据
@@ -1176,7 +1198,7 @@ class Model
 
     /**
      * 验证字段规则
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $val  验证规则
      * @param array $data  数据
