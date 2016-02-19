@@ -1093,30 +1093,30 @@ class Model
     /**
      * 获取数据自动验证或者完成的规则定义
      * @access protected
-     * @param array $data  数据
+     * @param mixed $rules  数据规则
      * @param string $type  数据类型 支持 validate auto
      * @return array
      */
-    protected function getDataRule($data, $type)
+    protected function getDataRule($rules, $type)
     {
-        if (is_string($data)) {
-            // 读取配置文件中的自动验证定义
+        if (!is_array($rules)) {
+            // 读取配置文件中的数据类型定义
             $config = Config::get($type);
             if ('validate' == $type && isset($config['__pattern__'])) {
                 // 全局字段规则
                 $this->rule = $config['__pattern__'];
             }
-            if (strpos($data, '.')) {
-                list($name, $group) = explode('.', $data);
+            if (true === $rules) {
+                $name = strtolower($this->name);
+            } elseif (strpos($rules, '.')) {
+                list($name, $group) = explode('.', $rules);
             } else {
-                $name = $data;
+                $name = $rules;
             }
             $rules = $config[$name];
             if (isset($config['__all__'])) {
                 $rules = array_merge($config['__all__'], $rules);
             }
-        } else {
-            $rules = $data;
         }
         if (isset($rules['__option__'])) {
             // 参数设置
@@ -1980,11 +1980,11 @@ class Model
     /**
      * 设置字段验证
      * @access public
-     * @param mixed $field 字段名或者验证规则
+     * @param mixed $field 字段名或者验证规则 true表示自动读取
      * @param array|null $rule 验证规则
      * @return Model
      */
-    public function validate($field, $rule = null)
+    public function validate($field = true, $rule = null)
     {
         if (is_array($field) || is_null($rule)) {
             $this->options['validate'] = $field;
@@ -1997,11 +1997,11 @@ class Model
     /**
      * 设置字段完成
      * @access public
-     * @param mixed $field 字段名或者自动完成规则
+     * @param mixed $field 字段名或者自动完成规则 true 表示自动读取
      * @param array|null $rule 完成规则
      * @return Model
      */
-    public function auto($field, $rule = null)
+    public function auto($field = true, $rule = null)
     {
         if (is_array($field) || is_null($rule)) {
             $this->options['auto'] = $field;
