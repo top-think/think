@@ -1230,7 +1230,7 @@ class Model
             }
         }
         // 验证失败返回错误信息
-        return (is_array($result) || true === $result) ? $result : $msg;
+        return (false !== $result) ? $result : $msg;
     }
 
     /**
