@@ -61,10 +61,6 @@ class Db
     {
         if (empty($config)) {
             $config = Config::get('database');
-            if (Config::get('use_db_switch')) {
-                $status = Config::get('app_status');
-                $config = $config[$status ?: 'default'];
-            }
         } elseif (is_string($config) && false === strpos($config, '/')) {
             // 支持读取配置参数
             $config = Config::get($config);
