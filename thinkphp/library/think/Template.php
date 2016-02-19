@@ -34,6 +34,9 @@ class Template
         'compile_type'       => 'file', // 模板编译类型
         'cache_prefix'       => '', // 模板缓存前缀标识，可以动态改变
         'cache_time'         => 0, // 模板缓存有效期 0 为永久，(以数字为值，单位:秒)
+        'cache_record_file'  => 'cache_record_file', // 记录模板更新时间的文件
+        'layout_on'          => false, // 布局模板开关
+        'layout_name'        => 'layout', // 布局模板入口文件
         'layout_item'        => '{__CONTENT__}', // 布局模板的内容替换标识
         'taglib_begin'       => '{', // 标签库标签开始标记
         'taglib_end'         => '}', // 标签库标签结束标记
@@ -47,8 +50,10 @@ class Template
         'namespace'          => '\\think\\template\\driver\\',
     ];
 
-    private $literal   = [];
-    protected $storage = null;
+    private   $literal     = [];
+    private   $includeFile = []; // 记录所有模板包含的文件路径及更新时间
+    private   $md5Key      = ''; // 保存当前模板的md5码
+    protected $storage     = null;
 
     /**
      * 架构函数
@@ -153,7 +158,7 @@ class Template
      * 渲染模板文件
      * @access public
      * @param string $template 模板文件
-     * @param array  $vars 模板变量
+     * @param array $vars 模板变量
      * @param array $config 模板参数
      * @return void
      */
@@ -190,7 +195,7 @@ class Template
      * 渲染模板内容
      * @access public
      * @param string $content 模板内容
-     * @param array  $vars 模板变量
+     * @param array $vars 模板变量
      * @return void
      */
     public function fetch($content, $vars = [])
@@ -211,7 +216,7 @@ class Template
      * 检查编译缓存是否有效
      * 如果无效则需要重新编译
      * @access private
-     * @param string $template  模板文件名
+     * @param string $template 模板文件名
      * @param string $cacheFile 缓存文件名
      * @return boolean
      */
@@ -221,8 +226,20 @@ class Template
             // 优先对配置设定检测
             return false;
         }
-        // 检查编译存储是否有效
-        return $this->storage->check($template, $cacheFile, $this->config['cache_time']);
+        $this->md5Key = md5($template);
+        $recordFile   = $this->config['cache_path'] . md5($this->config['cache_record_file']) . $this->config['cache_suffix'];
+        if (!is_file($recordFile)) {
+            return false;
+        } else {
+            $this->includeFile = $this->storage->read($recordFile, [], true);
+            if (!isset($this->includeFile[$this->md5Key])) {
+                // 缓存记录中无此模板
+                return false;
+            } else {
+                // 检查编译存储是否有效
+                return $this->storage->check($this->includeFile[$this->md5Key], $cacheFile, $this->config['cache_time']);
+            }
+        }
     }
 
     /**
@@ -249,6 +266,26 @@ class Template
      */
     private function compiler(&$content, $cacheFile)
     {
+        // 判断是否启用布局
+        if ($this->config['layout_on']) {
+            if (false !== strpos($content, '{__NOLAYOUT__}')) {
+                // 可以单独定义不使用布局
+                $content = str_replace('{__NOLAYOUT__}', '', $content);
+            } else {
+                // 读取布局模板
+                $layoutFile = $this->parseTemplateFile($this->config['layout_name']);
+                // 检查布局文件
+                if (is_file($layoutFile)) {
+                    // 替换布局的主体内容
+                    $content = str_replace($this->config['layout_item'], $content, file_get_contents($layoutFile));
+                    // 记录布局文件的更新时间
+                    $this->includeFile[$this->md5Key][filemtime($layoutFile)] = $layoutFile;
+                } else {
+                    throw new Exception('template not exist:' . $layoutFile, 10700);
+                }
+            }
+        }
+
         // 模板解析
         $this->parse($content);
         // 添加安全代码
@@ -266,6 +303,10 @@ class Template
         $content = str_replace(array_keys($replace), array_values($replace), $content);
         // 编译存储
         $this->storage->write($cacheFile, $content);
+        // 保存模板更新记录
+        $string = "<?php\nreturn " . var_export($this->includeFile, true) . ';';
+        $this->storage->write($this->config['cache_path'] . md5($this->config['cache_record_file']) . $this->config['cache_suffix'], $string);
+        $this->includeFile = [];
         return;
     }
 
@@ -361,15 +402,17 @@ class Template
             $content = str_replace($matches[0], '', $content);
             // 解析Layout标签
             $array = $this->parseAttr($matches[0]);
-            //if (!C('LAYOUT_ON') || C('LAYOUT_NAME') != $array['name']) {
-            // 读取布局模板
-            $layoutFile = (defined('THEME_PATH') && substr_count($array['name'], '/') < 2 ? THEME_PATH : $this->config['view_path']) . $array['name'] . $this->config['view_suffix'];
-            if (is_file($layoutFile)) {
-                $replace = isset($array['replace']) ? $array['replace'] : $this->config['layout_item'];
-                // 替换布局的主体内容
-                $content = str_replace($replace, $content, file_get_contents($layoutFile));
+            if (!$this->config['layout_on'] || $this->config['layout_name'] != $array['name']) {
+                // 读取布局模板
+                $layoutFile = $this->parseTemplateFile($array['name']);
+                if (is_file($layoutFile)) {
+                    $replace = isset($array['replace']) ? $array['replace'] : $this->config['layout_item'];
+                    // 替换布局的主体内容
+                    $content = str_replace($replace, $content, file_get_contents($layoutFile));
+                    // 记录布局文件的更新时间
+                    $this->includeFile[$this->md5Key][filemtime($layoutFile)] = $layoutFile;
+                }
             }
-            //}
         } else {
             $content = str_replace('{__NOLAYOUT__}', '', $content);
         }
@@ -397,7 +440,7 @@ class Template
                     foreach ($array as $k => $v) {
                         // 以$开头字符串转换成模板变量
                         if (0 === strpos($v, '$')) {
-                            $v = ltrim($this->config['tpl_begin'], '\\') . $v . ltrim($this->config['tpl_end'], '\\');
+                            $v = $this->get(substr($v, 1));
                         }
                         $parseStr = str_replace('[' . $k . ']', $v, $parseStr);
                     }
@@ -422,7 +465,7 @@ class Template
     private function parseExtend(&$content)
     {
         $regex  = $this->getRegex('extend');
-        $array  = $blocks  = $extBlocks  = [];
+        $array  = $blocks = $extBlocks = [];
         $extend = '';
         $fun    = function ($template) use (&$fun, &$regex, &$array, &$extend, &$blocks, &$extBlocks) {
             if (preg_match($regex, $template, $matches)) {
@@ -515,7 +558,7 @@ class Template
                             'content' => substr($content, $start, $len),
                             'end'     => $end,
                         ];
-                        $keys[] = $begin['offset'];
+                        $keys[]                = $begin['offset'];
                     } else {
                         continue;
                     }
@@ -920,6 +963,8 @@ class Template
             if (is_file($template)) {
                 // 获取模板文件内容
                 $parseStr .= file_get_contents($template);
+                // 记录模板文件的更新时间
+                $this->includeFile[$this->md5Key][filemtime($template)] = $template;
             }
         }
         return $parseStr;
