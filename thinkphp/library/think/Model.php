@@ -1128,7 +1128,9 @@ class Model
     {
         // 获取数据 支持二维数组
         $value = $this->getDataValue($data, $key);
-
+        if (strpos($key, '.')) {
+            list($name1, $name2) = explode('.', $key);
+        }
         if ((in_array($key, $options['value_fill']) && '' == $value)
             || (in_array($key, $options['exists_fill']) && is_null($value))) {
             // 不满足自动填充条件
@@ -1166,7 +1168,6 @@ class Model
             }
         }
         if (strpos($key, '.')) {
-            list($name1, $name2)  = explode('.', $key);
             $data[$name1][$name2] = $result;
         } else {
             $data[$key] = $result;
