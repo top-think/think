@@ -66,11 +66,6 @@ class App
             }
         }
 
-        // 启动session CLI 不开启
-        if (!IS_CLI && $config['use_session']) {
-            Session::init($config['session']);
-        }
-
         if (empty(self::$dispatch['type'])) {
             // 未指定调度类型 则进行URL路由检测
             self::route($config);

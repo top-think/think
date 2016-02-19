@@ -14,10 +14,10 @@ class Session
 {
 
     protected static $prefix = '';
+    protected static $active = false;
 
     /**
      * 设置或者获取session作用域（前缀）
-     *
      * @param string $prefix
      * @return string|void
      */
@@ -38,6 +38,9 @@ class Session
      */
     public static function init(array $config = [])
     {
+        if (empty($config)) {
+            $config = Config::get('session');
+        }
         // 记录初始化信息
         APP_DEBUG && Log::record('[ SESSION ] INIT ' . var_export($config, true), 'info');
         $isDoStart = false;
@@ -93,12 +96,12 @@ class Session
         }
         if ($isDoStart) {
             session_start();
+            self::$active = true;
         }
     }
 
     /**
      * session设置
-     *
      * @param string $name session名称
      * @param mixed $value session值
      * @param string|null $prefix 作用域（前缀）
@@ -106,6 +109,9 @@ class Session
      */
     public static function set($name, $value = '', $prefix = null)
     {
+        if (!self::$active) {
+            self::init();
+        }
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 二维数组赋值
@@ -124,13 +130,15 @@ class Session
 
     /**
      * session获取
-     *
      * @param string $name session名称
      * @param string|null $prefix 作用域（前缀）
      * @return mixed
      */
     public static function get($name = '', $prefix = null)
     {
+        if (!self::$active) {
+            self::init();
+        }
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if ('' == $name) {
             // 获取全部的session
@@ -156,7 +164,6 @@ class Session
 
     /**
      * 删除session数据
-     *
      * @param string $name session名称
      * @param string|null $prefix 作用域（前缀）
      * @return void
@@ -182,7 +189,6 @@ class Session
 
     /**
      * 清空session数据
-     *
      * @param string|null $prefix 作用域（前缀）
      * @return void
      */
@@ -198,15 +204,16 @@ class Session
 
     /**
      * 判断session数据
-     *
      * @param string $name session名称
      * @param string|null $prefix
-     *
      * @return bool
      * @internal param mixed $value session值
      */
     public static function has($name, $prefix = null)
     {
+        if (!self::$active) {
+            self::init();
+        }
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 支持数组
@@ -219,7 +226,6 @@ class Session
 
     /**
      * 暂停session
-     *
      * @return void
      */
     public static function pause()
@@ -230,17 +236,16 @@ class Session
 
     /**
      * 启动session
-     *
      * @return void
      */
     public static function start()
     {
         session_start();
+        self::$active = true;
     }
 
     /**
      * 销毁session
-     *
      * @return void
      */
     public static function destroy()
@@ -252,7 +257,6 @@ class Session
 
     /**
      * 重新生成session_id
-     *
      * @return void
      */
     private static function regenerate()
