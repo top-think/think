@@ -987,6 +987,7 @@ class Model
     protected function _create_filter(&$data)
     {}
 
+    // 数据自动验证
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
@@ -1002,13 +1003,8 @@ class Model
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
-                if (strpos($key, '.')) {
-                    // 支持二维数组验证
-                    list($name1, $name2) = explode('.', $key);
-                    $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
-                } else {
-                    $value = isset($data[$key]) ? $data[$key] : null;
-                }
+                // 获取数据 支持二维数组
+                $value = $this->getDataValue($data, $key);
 
                 if ((in_array($key, $options['value_validate']) && '' == $value)
                     || (in_array($key, $options['exists_validate']) && is_null($value))) {
@@ -1042,6 +1038,7 @@ class Model
         return;
     }
 
+    // 数据自动填充
     protected function dataFill(&$data)
     {
         if (!empty($this->options['auto'])) {
@@ -1064,6 +1061,20 @@ class Model
         }
     }
 
+    // 获取数据值
+    protected function getDataValue($data, $key)
+    {
+        if (strpos($key, '.')) {
+            // 支持二维数组验证
+            list($name1, $name2) = explode('.', $key);
+            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
+        } else {
+            $value = isset($data[$key]) ? $data[$key] : null;
+        }
+        return $value;
+    }
+
+    // 获取数据自动验证或者完成的规则定义
     protected function getDataRule($data, $type)
     {
         if (is_string($data)) {
@@ -1115,13 +1126,9 @@ class Model
      */
     protected function autoOperation($key, $val, &$data, $options = [])
     {
-        if (strpos($key, '.')) {
-            // 支持二维数组
-            list($name1, $name2) = explode('.', $key);
-            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
-        } else {
-            $value = isset($data[$key]) ? $data[$key] : null;
-        }
+        // 获取数据 支持二维数组
+        $value = $this->getDataValue($data, $key);
+
         if ((in_array($key, $options['value_fill']) && '' == $value)
             || (in_array($key, $options['exists_fill']) && is_null($value))) {
             // 不满足自动填充条件
@@ -1130,7 +1137,7 @@ class Model
         if ($val instanceof \Closure) {
             $result = call_user_func_array($val, [$value, &$data]);
         } elseif (isset($val[0]) && $val[0] instanceof \Closure) {
-            $result = call_user_func_array($rule, [$value, &$data]);
+            $result = call_user_func_array($val[0], [$value, &$data]);
         } else {
             $rule   = isset($val[0]) ? $val[0] : $val;
             $type   = isset($val[1]) ? $val[1] : 'value';
@@ -1159,6 +1166,7 @@ class Model
             }
         }
         if (strpos($key, '.')) {
+            list($name1, $name2)  = explode('.', $key);
             $data[$name1][$name2] = $result;
         } else {
             $data[$key] = $result;
