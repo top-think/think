@@ -16,7 +16,7 @@ class View
     // 视图实例
     protected static $instance = null;
     // 模板引擎实例
-    protected $engine = null;
+    public $engine = null;
     // 模板主题名称
     protected $theme = '';
     // 模板变量
