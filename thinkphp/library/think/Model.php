@@ -1162,6 +1162,8 @@ class Model
             $result = call_user_func_array($val, [$value, &$data]);
         } elseif (isset($val[0]) && $val[0] instanceof \Closure) {
             $result = call_user_func_array($val[0], [$value, &$data]);
+        } elseif (!is_array($val)) {
+            $result = $val;
         } else {
             $rule   = isset($val[0]) ? $val[0] : $val;
             $type   = isset($val[1]) ? $val[1] : 'value';
@@ -1223,7 +1225,7 @@ class Model
                     // 行为验证
                     $result = Hook::exec($rule, '', $data);
                     break;
-                case 'filter': // 使用filter_var验证
+                case 'filter':    // 使用filter_var验证
                     $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                     break;
                 case 'confirm':
@@ -1234,8 +1236,8 @@ class Model
                     $range  = is_array($rule) ? $rule : explode(',', $rule);
                     $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                     break;
-                case 'between': // 验证是否在某个范围
-                case 'notbetween': // 验证是否不在某个范围
+                case 'between':// 验证是否在某个范围
+                case 'notbetween':    // 验证是否不在某个范围
                     if (is_string($rule)) {
                         $rule = explode(',', $rule);
                     }

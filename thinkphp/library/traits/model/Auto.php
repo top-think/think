@@ -193,8 +193,8 @@ trait Auto
                 $auto[3] = 'string';
             }
             switch (trim($auto[3])) {
-                case 'function': //  使用函数进行填充 字段的值作为参数
-                case 'callback': // 使用回调方法
+                case 'function'://  使用函数进行填充 字段的值作为参数
+                case 'callback':    // 使用回调方法
                     $args = isset($auto[4]) ? (array) $auto[4] : [];
                     if (is_string($auto[0]) && strpos($auto[0], ',')) {
                         $auto[0] = explode(',', $auto[0]);
@@ -214,16 +214,16 @@ trait Auto
                         $data[$auto[0]] = call_user_func_array([ & $this, $auto[1]], $args);
                     }
                     break;
-                case 'field': // 用其它字段的值进行填充
+                case 'field':    // 用其它字段的值进行填充
                     $data[$auto[0]] = $data[$auto[1]];
                     break;
-                case 'ignore': // 为空忽略
+                case 'ignore':    // 为空忽略
                     if ($auto[1] === $data[$auto[0]]) {
                         unset($data[$auto[0]]);
                     }
                     break;
                 case 'string':
-                default: // 默认作为字符串填充
+                default:    // 默认作为字符串填充
                     $data[$auto[0]] = $auto[1];
             }
             if (isset($data[$auto[0]]) && false === $data[$auto[0]]) {
@@ -321,15 +321,15 @@ trait Auto
             $status = true;
             // 判断验证条件
             switch ($val[3]) {
-                case self::MUST_VALIDATE: // 必须验证 不管表单是否有设置该字段
+                case self::MUST_VALIDATE:    // 必须验证 不管表单是否有设置该字段
                     $status = $this->_validationFieldItem($data, $val);
                     break;
-                case self::VALUE_VALIDATE: // 值不为空的时候才验证
+                case self::VALUE_VALIDATE:    // 值不为空的时候才验证
                     if ('' != trim($data[$val[0]])) {
                         $status = $this->_validationFieldItem($data, $val);
                     }
                     break;
-                default: // 默认表单存在该字段就验证
+                default:    // 默认表单存在该字段就验证
                     if (isset($data[$val[0]])) {
                         $status = $this->_validationFieldItem($data, $val);
                     }
@@ -356,8 +356,8 @@ trait Auto
     protected function _validationFieldItem($data, $val)
     {
         switch (strtolower(trim($val[4]))) {
-            case 'function': // 使用函数进行验证
-            case 'callback': // 调用方法进行验证
+            case 'function':// 使用函数进行验证
+            case 'callback':    // 调用方法进行验证
                 $args = isset($val[6]) ? (array) $val[6] : [];
                 if (is_string($val[0]) && strpos($val[0], ',')) {
                     $val[0] = explode(',', $val[0]);
@@ -372,9 +372,9 @@ trait Auto
                     array_unshift($args, isset($data[$val[0]]) ? $data[$val[0]] : null);
                 }
                 return call_user_func_array('function' == $val[4] ? $val[1] : [ & $this, $val[1]], $args);
-            case 'confirm': // 验证两个字段是否相同
+            case 'confirm':    // 验证两个字段是否相同
                 return $data[$val[0]] == $data[$val[1]];
-            case 'unique': // 验证某个值是否唯一
+            case 'unique':    // 验证某个值是否唯一
                 if (is_string($val[0])) {
                     $val[0] = explode(',', $val[0]);
                 }
@@ -399,7 +399,7 @@ trait Auto
                 }
                 $this->options = $options;
                 return true;
-            default: // 检查附加规则
+            default:    // 检查附加规则
                 return $this->check($data[$val[0]], $val[1], $val[4]);
         }
     }
@@ -416,12 +416,12 @@ trait Auto
     {
         $type = strtolower(trim($type));
         switch ($type) {
-            case 'in': // 验证是否在某个指定范围之内 逗号分隔字符串或者数组
+            case 'in':// 验证是否在某个指定范围之内 逗号分隔字符串或者数组
             case 'notin':
                 $range = is_array($rule) ? $rule : explode(',', $rule);
                 return 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
-            case 'between': // 验证是否在某个范围
-            case 'notbetween': // 验证是否不在某个范围
+            case 'between':// 验证是否在某个范围
+            case 'notbetween':    // 验证是否不在某个范围
                 if (is_array($rule)) {
                     $min = $rule[0];
                     $max = $rule[1];
@@ -429,11 +429,11 @@ trait Auto
                     list($min, $max) = explode(',', $rule);
                 }
                 return 'between' == $type ? $value >= $min && $value <= $max : $value < $min || $value > $max;
-            case 'equal': // 验证是否等于某个值
-            case 'notequal': // 验证是否等于某个值
+            case 'equal':// 验证是否等于某个值
+            case 'notequal':    // 验证是否等于某个值
                 return 'equal' == $type ? $value == $rule : $value != $rule;
-            case 'length': // 验证长度
-                $length = mb_strlen($value, 'utf-8'); // 当前数据长度
+            case 'length':    // 验证长度
+                $length = mb_strlen($value, 'utf-8');     // 当前数据长度
                 if (strpos($rule, ',')) {
                     // 长度区间
                     list($min, $max) = explode(',', $rule);
@@ -451,15 +451,15 @@ trait Auto
                     $end = strtotime($end);
                 }
                 return NOW_TIME >= $start && NOW_TIME <= $end;
-            case 'ip_allow': // IP 操作许可验证
+            case 'ip_allow':    // IP 操作许可验证
                 return in_array($_SERVER['REMOTE_ADDR'], explode(',', $rule));
-            case 'ip_deny': // IP 操作禁止验证
+            case 'ip_deny':    // IP 操作禁止验证
                 return !in_array($_SERVER['REMOTE_ADDR'], explode(',', $rule));
-            case 'filter': // 使用filter_var验证
+            case 'filter':    // 使用filter_var验证
                 $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule));
                 return false === $result ? false : true;
             case 'regex':
-            default: // 默认使用正则验证 可以使用验证类中定义的验证名称
+            default:    // 默认使用正则验证 可以使用验证类中定义的验证名称
                 // 检查附加规则
                 return $this->regex($value, $rule);
         }
@@ -471,7 +471,7 @@ trait Auto
      * @param array $auto 自动完成设置
      * @return Auto
      */
-    public function auto($auto)
+    public function auto($auto, $rule = null)
     {
         $this->options['auto'] = $auto;
         return $this;
@@ -483,7 +483,7 @@ trait Auto
      * @param array $validate 自动验证设置
      * @return Auto
      */
-    public function validate($validate)
+    public function validate($validate, $rule = null)
     {
         $this->options['validate'] = $validate;
         return $this;
