@@ -29,4 +29,20 @@ class Think
             $this->template->fetch($template, $data);
         }
     }
+    
+    /**
+     * 修改模板引擎配置项
+     * @access public
+     * @param array|string $config
+     * @return string|array
+     */
+    public function config($config)
+    {
+        if(is_array($config)){
+            $this->template->config($config);
+            return $this;
+        }else{
+            return $this->template->config($config);
+        }
+    }
 }
