@@ -471,7 +471,7 @@ trait Auto
      * @param array $auto 自动完成设置
      * @return Auto
      */
-    public function auto($auto, $rule = null)
+    public function auto($auto = [], $rule = null)
     {
         $this->options['auto'] = $auto;
         return $this;
@@ -483,7 +483,7 @@ trait Auto
      * @param array $validate 自动验证设置
      * @return Auto
      */
-    public function validate($validate, $rule = null)
+    public function validate($validate = [], $rule = null)
     {
         $this->options['validate'] = $validate;
         return $this;
