@@ -81,7 +81,7 @@ class View
      * @param string $value 值
      * @return View
      */
-    public function config($config = '', $value = '')
+    public function config($config = '', $value = null)
     {
         if (is_array($config)) {
             foreach ($this->config as $key => $val) {
@@ -89,6 +89,9 @@ class View
                     $this->config[$key] = $config[$key];
                 }
             }
+        } elseif (is_null($value)) {
+            // 获取配置参数
+            return $this->config[$config];
         } else {
             $this->config[$config] = $value;
         }
