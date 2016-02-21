@@ -208,18 +208,13 @@ class Loader
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $baseUrl = self::$namespace[$name];
-            } elseif ('@' == $name || MODULE_NAME == $name) {
+            } elseif ('@' == $name) {
                 //加载当前模块应用类库
                 $baseUrl = MODULE_PATH;
-            } elseif (in_array($name, ['traits', 'think', 'behavior'])) {
-                $baseUrl = LIB_PATH;
-            } elseif (APP_NAMESPACE == $name) {
-                // 项目命名空间
-                $baseUrl = APP_PATH;
             } elseif (is_dir(EXTEND_PATH . $name)) {
                 $baseUrl = EXTEND_PATH;
             } else {
-                // 加载其他模块应用类库
+                // 加载其它模块的类库
                 $baseUrl = APP_PATH . $name . DS;
             }
         } elseif (substr($baseUrl, -1) != DS) {
