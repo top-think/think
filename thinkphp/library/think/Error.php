@@ -252,7 +252,6 @@ class Error
             'APP_HOOK'         => defined('APP_HOOK') ? APP_HOOK : 'undefined',
             'ENV_PREFIX'       => defined('ENV_PREFIX') ? ENV_PREFIX : 'undefined',
             'IS_API'           => defined('IS_API') ? IS_API : 'undefined',
-            'APP_AUTO_BUILD'   => defined('APP_AUTO_BUILD') ? APP_AUTO_BUILD : 'undefined',
             'APP_AUTO_RUN'     => defined('APP_AUTO_RUN') ? APP_AUTO_RUN : 'undefined',
             'APP_MODE'         => defined('APP_MODE') ? APP_MODE : 'undefined',
             'REQUEST_METHOD'   => defined('REQUEST_METHOD') ? REQUEST_METHOD : 'undefined',

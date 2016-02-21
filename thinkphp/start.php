@@ -45,11 +45,6 @@ if (APP_HOOK && isset($mode['tags'])) {
     Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
 }
 
-// 自动生成
-if (APP_AUTO_BUILD && is_file(APP_PATH . 'build.php')) {
-    Build::run(include APP_PATH . 'build.php');
-}
-
 // 是否自动运行
 if (APP_AUTO_RUN) {
     App::run();

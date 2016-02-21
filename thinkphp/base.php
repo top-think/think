@@ -41,8 +41,7 @@ defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
 defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'T_'); // 环境变量的配置前缀
 defined('IS_API') or define('IS_API', false); // 是否API接口
-defined('APP_AUTO_BUILD') or define('APP_AUTO_BUILD', false); // 是否自动生成应用模块
-defined('APP_AUTO_RUN') or define('APP_AUTO_RUN', false); // 是否自动运行
+defined('APP_AUTO_RUN') or define('APP_AUTO_RUN', true); // 是否自动运行
 defined('APP_ROUTE_ON') or define('APP_ROUTE_ON', true); // 是否允许路由
 defined('APP_ROUTE_MUST') or define('APP_ROUTE_MUST', true); // 是否严格检查路由
 
