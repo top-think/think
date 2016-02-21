@@ -680,6 +680,8 @@ class Model
         } else {
             $data[$field] = $value;
         }
+        // 更新某个字段的时候 忽略数据副本
+        $this->duplicate = [];
         return $this->save($data);
     }
 
@@ -709,7 +711,6 @@ class Model
                 $step = '-' . $step;
             }
         }
-        $this->duplicate = [];
         return $this->setField($field, ['exp', $field . '+' . $step]);
     }
 
@@ -739,7 +740,6 @@ class Model
                 $step = '-' . $step;
             }
         }
-        $this->duplicate = [];
         return $this->setField($field, ['exp', $field . '-' . $step]);
     }
 

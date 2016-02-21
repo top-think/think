@@ -145,13 +145,13 @@ class View
      *
      * @param string $template 模板文件名或者内容
      * @param array  $vars     模板输出变量
-     * @param array  $cache     模板缓存参数
+     * @param array  $config     模板参数
      * @param bool   $renderContent 是否渲染内容
      *
      * @return string
      * @throws Exception
      */
-    public function fetch($template = '', $vars = [], $cache = [], $renderContent = false)
+    public function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
         // 模板变量
         $vars = $vars ? $vars : $this->data;
@@ -175,7 +175,7 @@ class View
             is_file($template) ? include $template : eval('?>' . $template);
         } else {
             // 指定模板引擎
-            $this->engine->fetch($template, $vars, $cache);
+            $this->engine->fetch($template, $vars, $config);
         }
         // 获取并清空缓存
         $content = ob_get_clean();
