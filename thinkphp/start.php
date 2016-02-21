@@ -29,7 +29,7 @@ if (isset($mode['namespace'])) {
 
 // 加载模式别名定义
 if (isset($mode['alias'])) {
-    Loader::addMap(is_array($mode['alias']) ? $mode['alias'] : include $mode['alias']);
+    Loader::addMap($mode['alias']);
 }
 
 // 注册错误和异常处理机制
@@ -42,7 +42,7 @@ if (isset($mode['config'])) {
 
 // 加载模式行为定义
 if (APP_HOOK && isset($mode['tags'])) {
-    Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
+    Hook::import($mode['tags']);
 }
 
 // 是否自动运行
