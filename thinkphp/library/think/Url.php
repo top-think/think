@@ -272,7 +272,7 @@ class Url
                 $alias[$route][] = [$rule, $var];
             }
         }
-        Cache::set('think_route_alias', $alias);
+        !APP_DEBUG && Cache::set('think_route_alias', $alias);
         return $alias;
     }
 

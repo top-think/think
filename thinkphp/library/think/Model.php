@@ -1435,7 +1435,7 @@ class Model
             }
             // 记录字段类型信息
             $result = ['fields' => $fields, 'bind' => $bind, 'type' => $type, 'pk' => $pk];
-            APP_DEBUG && Cache::set($guid, $result);
+            !APP_DEBUG && Cache::set($guid, $result, 0);
         }
         return $fetch ? $result[$fetch] : $result;
     }
