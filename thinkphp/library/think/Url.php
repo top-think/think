@@ -129,11 +129,11 @@ class Url
                 // 空字符串输出当前的 模块/控制器/操作
                 $url = $module . CONTROLLER_NAME . '/' . ACTION_NAME;
             } else {
-                $path = explode('/', $url);
-                $len  = count($path);
-                if ($len < 3) {
-                    $url = $module . (1 == $len ? CONTROLLER_NAME . '/' : '') . $url;
-                }
+                $path       = explode('/', $url);
+                $action     = array_pop($path);
+                $controller = empty($path) ? CONTROLLER_NAME : (Config::get('url_controller_convert') ? Loader::parseName(array_pop($path)) : array_pop($path));
+                $module     = empty($path) ? $module : array_pop($path);
+                $url        = ($module ? $module . '/' : '') . $controller . '/' . $action;
             }
         }
         return $url;
