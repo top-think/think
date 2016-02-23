@@ -106,7 +106,7 @@ class Url
         $domain = self::parseDomain($url, $domain);
 
         // URL组装
-        $url = $domain . Config::get('base_url') . '/' . $url;
+        $url = $domain . Config::get('base_url') . '/' . ltrim($url, '/');
         return $url;
     }
 
