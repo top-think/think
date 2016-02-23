@@ -195,7 +195,7 @@ function W($name, $data = [])
     return \think\Loader::action($name, $data, 'Widget');
 }
 
-function U($url, $vars = '', $suffix = true, $domain = false)
+function U($url='', $vars = '', $suffix = true, $domain = false)
 {
     return \think\Url::build($url, $vars, $suffix, $domain);
 }
