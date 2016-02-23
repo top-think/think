@@ -124,7 +124,7 @@ class Url
             $url = substr($url, 1);
         } else {
             // 解析到 模块/控制器/操作
-            $module = MODULE_NAME ? : '';
+            $module = MODULE_NAME ?: '';
             if ('' == $url) {
                 // 空字符串输出当前的 模块/控制器/操作
                 $url = ($module ? $module . '/' : '') . CONTROLLER_NAME . '/' . ACTION_NAME;
