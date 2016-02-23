@@ -413,6 +413,6 @@ class Loader
         $array = explode('\\', $name);
         $class = self::parseName(array_pop($array), 1);
         $path  = $array ? implode('\\', $array) . '\\' : '';
-        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . $path . $class;
+        return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . (empty($layer) ? '' : $layer . '\\') . $path . $class;
     }
 }
