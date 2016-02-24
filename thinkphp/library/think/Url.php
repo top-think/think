@@ -106,7 +106,7 @@ class Url
         $domain = self::parseDomain($url, $domain);
 
         // URL组装
-        $url = $domain . Config::get('base_url') . '/' . ltrim($url, '/');
+        $url = $domain . Config::get('base_url') . '/' . $url;
         return $url;
     }
 
@@ -124,10 +124,10 @@ class Url
             $url = substr($url, 1);
         } else {
             // 解析到 模块/控制器/操作
-            $module = MODULE_NAME ? MODULE_NAME . '/' : '';
+            $module = MODULE_NAME ?: '';
             if ('' == $url) {
                 // 空字符串输出当前的 模块/控制器/操作
-                $url = $module . CONTROLLER_NAME . '/' . ACTION_NAME;
+                $url = ($module ? $module . '/' : '') . CONTROLLER_NAME . '/' . ACTION_NAME;
             } else {
                 $path       = explode('/', $url);
                 $action     = array_pop($path);
