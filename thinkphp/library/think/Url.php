@@ -132,8 +132,8 @@ class Url
                 $path       = explode('/', $url);
                 $action     = array_pop($path);
                 $controller = empty($path) ? CONTROLLER_NAME : (Config::get('url_controller_convert') ? Loader::parseName(array_pop($path)) : array_pop($path));
-                $module     = empty($path) ? $module : array_pop($path);
-                $url        = ($module ? $module . '/' : '') . $controller . '/' . $action;
+                $module     = empty($path) ? $module : array_pop($path) . '/';
+                $url        = $module . $controller . '/' . $action;
             }
         }
         return $url;
