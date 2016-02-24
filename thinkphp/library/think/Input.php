@@ -72,6 +72,7 @@ class Input
         static $_DELETE = null;
         if (is_null($_DELETE)) {
             parse_str(file_get_contents('php://input'), $_DELETE);
+            $_DELETE = array_merge($_DELETE, $_GET);
         }
         return self::data($_DELETE, $name, $default, $filter, $merge);
     }
