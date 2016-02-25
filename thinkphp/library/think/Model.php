@@ -204,7 +204,7 @@ class Model
                 throw new Exception('invalid data');
             }
         }
-        if (!empty($this->duplicate)) {
+        if (!empty($this->duplicate) && 'update' == $type) {
             // 存在数据副本
             foreach ($data as $key => $val) {
                 // 去除相同数据
@@ -215,7 +215,7 @@ class Model
             if (empty($data)) {
                 // 没有数据变化
                 return [];
-            } elseif ('update' == $type) {
+            } else {
                 // 更新操作保留主键信息
                 $pk = $this->getPk();
                 if (is_array($pk)) {
@@ -1225,7 +1225,7 @@ class Model
                     // 行为验证
                     $result = Hook::exec($rule, '', $data);
                     break;
-                case 'filter':    // 使用filter_var验证
+                case 'filter': // 使用filter_var验证
                     $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                     break;
                 case 'confirm':
@@ -1236,8 +1236,8 @@ class Model
                     $range  = is_array($rule) ? $rule : explode(',', $rule);
                     $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                     break;
-                case 'between':// 验证是否在某个范围
-                case 'notbetween':    // 验证是否不在某个范围
+                case 'between': // 验证是否在某个范围
+                case 'notbetween': // 验证是否不在某个范围
                     if (is_string($rule)) {
                         $rule = explode(',', $rule);
                     }
