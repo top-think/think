@@ -1,7 +1,7 @@
 <?php
 namespace {$app}\{$module}{layer};
 
-class Index
+class Index{$suffix}
 {
     public function index()
     {
