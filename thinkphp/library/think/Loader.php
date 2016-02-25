@@ -411,7 +411,7 @@ class Loader
     {
         $name  = str_replace(['/', '.'], '\\', $name);
         $array = explode('\\', $name);
-        $class = self::parseName(array_pop($array), 1);
+        $class = self::parseName(array_pop($array), 1) . (CLASS_APPEND_SUFFIX ? ucfirst($layer) : '');
         $path  = $array ? implode('\\', $array) . '\\' : '';
         return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . $path . $class;
     }
