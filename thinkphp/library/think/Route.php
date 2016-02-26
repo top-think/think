@@ -20,6 +20,7 @@ class Route
         'PUT'    => [],
         'DELETE' => [],
         'HEAD'   => [],
+        'OPTIONS'=> [],
         '*'      => [],
     ];
 
