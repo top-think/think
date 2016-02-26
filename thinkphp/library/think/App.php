@@ -103,7 +103,10 @@ class App
         // 监听app_end
         APP_HOOK && Hook::listen('app_end', $data);
         // 输出数据到客户端
-        return Response::send($data, Response::type(), Config::get('response_return'));
+        if (Config::get('response_auto_output')) {
+            // 自动响应输出
+            return Response::send($data, Response::type(), Config::get('response_return'));
+        }
     }
 
     // 执行函数或者闭包方法 支持参数调用

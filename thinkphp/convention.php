@@ -37,6 +37,8 @@ return [
     'lang_cookie_var'        => 'think_lang',
     // 默认全局过滤方法 用逗号分隔多个
     'default_filter'         => '',
+    // 自动Response输出
+    'response_auto_output'   => true,
 
     // +----------------------------------------------------------------------
     // | 模块设置
