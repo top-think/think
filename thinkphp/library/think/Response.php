@@ -43,7 +43,7 @@ class Response
             'text'   => 'text/plain',
         ];
 
-        if (!headers_sent() && isset($headers[$type])) {
+        if (!headers_sent() && !headers_list() && isset($headers[$type])) {
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
 
