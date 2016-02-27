@@ -1031,7 +1031,11 @@ class Model
                     // 没有返回true 则表示验证失败
                     if (!empty($options['patch'])) {
                         // 批量验证
-                        $this->error[] = $result;
+                        if (is_array($result)) {
+                            $this->error[] = $result;
+                        } else {
+                            $this->error[$key] = $result;
+                        }
                     } else {
                         $this->error = $result;
                         return;
