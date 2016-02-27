@@ -33,7 +33,10 @@ trait Adv
             return parent::__call($method, $args);
         }
     }
-
+    protected function _write_data($data, $type){
+		$this->_before_write($data);
+		return $data;
+	}
     /**
      * 对保存到数据库的数据进行处理
      * @access protected

@@ -75,13 +75,15 @@ class Model
             // 支持 数据库名.模型名的 定义
             list($this->dbName, $this->name) = explode('.', $this->name);
         }
-
         if (!empty($config['prefix'])) {
             $this->tablePrefix = $config['prefix'];
-        } elseif (isset($config['prefix']) && '' === $config['prefix']) {
-            $this->tablePrefix = '';
         } elseif (is_null($this->tablePrefix)) {
-            $this->tablePrefix = Config::get('database.prefix');
+            if(Config::get('use_db_switch')){
+                $status = Config::get('app_status') ? : 'default';
+                $this->tablePrefix = Config::get('database.' . $status)['prefix'];//不支持3级啊
+            }else{
+                $this->tablePrefix = Config::get('database.prefix');
+            }
         }
         if (!empty($config['connection'])) {
             $this->connection = $config['connection'];
