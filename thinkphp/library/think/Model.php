@@ -254,7 +254,7 @@ class Model
         // 检查非数据字段
         if (!empty($fields)) {
             foreach ($data as $key => $val) {
-                if (!in_array($key, $fields, true)) {
+                if (!in_array(strtolower($key), $fields, true)) {
                     if (Config::get('db_fields_strict')) {
                         throw new Exception(' fields not exists :[ ' . $key . ' ]');
                     }
@@ -1180,6 +1180,20 @@ class Model
                     array_unshift($params, $value);
                     $result = call_user_func_array($rule, $params);
                     break;
+                case 'serialize':
+                    if (is_string($rule)) {
+                        $rule = explode(',', $rule);
+                    }
+                    $serialize = [];
+                    foreach ($rule as $name) {
+                        if (isset($data[$name])) {
+                            $serialize[$name] = $data[$name];
+                            unset($data[$name]);
+                        }
+                    }
+                    $fun    = !empty($params['type']) ? $params['type'] : 'serialize';
+                    $result = $fun($serialize);
+                    break;
                 case 'ignore':
                     if ($rule === $value) {
                         if (strpos($key, '.')) {
@@ -1415,7 +1429,7 @@ class Model
         $guid   = md5($tableName);
         $result = Cache::get($guid);
         if (!$result) {
-            $info   = $this->db->getFields($tableName);
+            $info   = array_change_key_case($this->db->getFields($tableName));
             $fields = array_keys($info);
             foreach ($info as $key => $val) {
                 // 记录字段类型
