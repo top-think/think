@@ -34,18 +34,6 @@ trait Adv
         }
     }
 
-    /**
-     * 对保存到数据库的数据进行处理
-     * @access protected
-     * @param mixed $data 要操作的数据
-     * @return boolean
-     */
-    protected function _before_write(&$data)
-    {
-        // 检查序列化字段
-        $data = $this->serializeField($data);
-    }
-
     // 查询成功后的回调方法
     protected function _after_find(&$result, $options = [])
     {
@@ -246,35 +234,6 @@ trait Adv
             $resultSet[$key] = $this->returnResult($data, $type);
         }
         return $resultSet;
-    }
-
-    /**
-     * 检查序列化数据字段
-     * @access protected
-     * @param array $data 数据
-     * @return array
-     */
-    protected function serializeField(&$data)
-    {
-        // 检查序列化字段
-        if (!empty($this->serializeField)) {
-            // 定义方式  $this->serializeField = ['ser'=>['name','email']];
-            foreach ($this->serializeField as $key => $val) {
-                if (empty($data[$key])) {
-                    $serialize = [];
-                    foreach ($val as $name) {
-                        if (isset($data[$name])) {
-                            $serialize[$name] = $data[$name];
-                            unset($data[$name]);
-                        }
-                    }
-                    if (!empty($serialize)) {
-                        $data[$key] = serialize($serialize);
-                    }
-                }
-            }
-        }
-        return $data;
     }
 
     // 检查返回数据的序列化字段
