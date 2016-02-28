@@ -114,10 +114,10 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
     public function testExpire()
     {
         $cache = $this->getCacheInstance();
-        $this->assertTrue($cache->set('expire_test', 'expire_test', 2));
-        usleep(500000);
+        $this->assertTrue($cache->set('expire_test', 'expire_test', 1));
+        usleep(600000);
         $this->assertEquals('expire_test', $cache->get('expire_test'));
-        usleep(2500000);
+        usleep(800000);
         $this->assertFalse($cache->get('expire_test'));
     }
     /**
