@@ -35,7 +35,7 @@ class memcachedTest extends cacheTestCase
     protected function getCacheInstance()
     {
         if (null === $this->_cacheInstance) {
-            $this->_cacheInstance = new \think\cache\driver\Memcached();
+            $this->_cacheInstance = new \think\cache\driver\Memcached(['length' => 3]);
         }
         return $this->_cacheInstance;
     }

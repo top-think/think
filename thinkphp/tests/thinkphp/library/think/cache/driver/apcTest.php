@@ -50,14 +50,4 @@ class apcTest extends cacheTestCase
     {
     }
 
-    public function testQueue()
-    {
-        $cache = $this->getCacheInstance();
-        $this->assertTrue($cache->set('1', '1'));
-        $this->assertTrue($cache->set('2', '2'));
-        $this->assertTrue($cache->set('3', '3'));
-        $this->assertEquals(1, $cache->get('1'));
-        $this->assertTrue($cache->set('4', '4'));
-        $this->assertFalse($cache->get('1'));
-    }
 }
