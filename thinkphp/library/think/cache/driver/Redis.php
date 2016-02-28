@@ -92,9 +92,7 @@ class Redis
             if ($this->options['length'] > 0) {
                 // 记录缓存队列
                 $queue = $this->handler->get('__info__');
-                if (!$queue) {
-                    $queue = [];
-                }
+                $queue = explode(',', $queue);
                 if (false === array_search($name, $queue)) {
                     array_push($queue, $name);
                 }
@@ -105,7 +103,7 @@ class Redis
                     // 删除缓存
                     $this->handler->delete($key);
                 }
-                $this->handler->set('__info__', $queue);
+                $this->handler->set('__info__', implode(',', $queue));
             }
         }
         return $result;
