@@ -536,8 +536,7 @@ class Model
             // 根据主键查询
             if (is_array($options)) {
                 // 判断是否索引数组
-                $keys = array_keys($options);
-                if (array_keys($keys) === $keys) {
+                if (key($options) === 0) {
                     $where[$pk] = ['in', $options];
                 } else {
                     return;

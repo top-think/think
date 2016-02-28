@@ -153,8 +153,7 @@ class App
     {
         $args = [];
         // 判断数组类型 数字数组时按顺序绑定参数
-        $keys = array_keys($vars);
-        $type = array_keys($keys) === $keys ? 1 : 0;
+        $type = key($vars) === 0 ? 1 : 0;
         if ($reflect->getNumberOfParameters() > 0) {
             $params = $reflect->getParameters();
             foreach ($params as $param) {
