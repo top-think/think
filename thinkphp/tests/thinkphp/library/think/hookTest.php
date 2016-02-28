@@ -24,7 +24,7 @@ class hookTest extends \PHPUnit_Framework_TestCase
     public function testRun()
     {
         Hook::add('my_pos', '\tests\thinkphp\library\think\behavior\One');
-        Hook::add('my_pos', '\tests\thinkphp\library\think\behavior\Two');
+        Hook::add('my_pos', ['\tests\thinkphp\library\think\behavior\Two']);
         Hook::add('my_pos', '\tests\thinkphp\library\think\behavior\Three', true);
         $data['id']   = 0;
         $data['name'] = 'thinkphp';
@@ -44,10 +44,13 @@ class hookTest extends \PHPUnit_Framework_TestCase
             '\tests\thinkphp\library\think\behavior\One',
             '\tests\thinkphp\library\think\behavior\Three'],
         ]);
+        Hook::import(['my_pos' => ['\tests\thinkphp\library\think\behavior\Two']], false);
+        Hook::import(['my_pos' => ['\tests\thinkphp\library\think\behavior\Three', '_overlay' => true]]);
         $data['id']   = 0;
         $data['name'] = 'thinkphp';
         Hook::listen('my_pos', $data);
         $this->assertEquals(3, $data['id']);
+
     }
 
     public function testExec()
