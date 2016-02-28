@@ -23,6 +23,7 @@ class routeTest extends \PHPUnit_Framework_TestCase
 
     public function testRegister()
     {
+
         Route::get('hello/:name', 'index/hello');
         Route::get(['hello/:name' => 'index/hello']);
         Route::post('hello/:name', 'index/post');
@@ -31,15 +32,34 @@ class routeTest extends \PHPUnit_Framework_TestCase
         Route::any('user/:id', 'index/user');
         $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'hello']], Route::check('hello/thinkphp'));
         $this->assertEquals(['hello/:name' => ['route' => 'index/hello', 'option' => [], 'pattern' => []]], Route::getRules('GET'));
+        Route::register('type/:name', 'index/type', 'PUT|POST');
     }
 
     public function testResource()
     {
         Route::resource('res', 'index/blog');
+        Route::resource(['res' => ['index/blog']]);
+
         $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'index']], Route::check('res'));
         $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'create']], Route::check('res/create'));
         $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'read']], Route::check('res/8'));
         $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'edit']], Route::check('res/8/edit'));
+
+        Route::resource('blog.comment', 'index/comment');
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'comment', 'read']], Route::check('blog/8/comment/10'));
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'comment', 'edit']], Route::check('blog/8/comment/10/edit'));
+    }
+
+    public function testRest()
+    {
+        Route::rest('read', ['GET', '/:id', 'look']);
+        Route::rest('create', ['GET', '/create', 'add']);
+        Route::rest(['read' => ['GET', '/:id', 'look'], 'create' => ['GET', '/create', 'add']]);
+        Route::resource('res', 'index/blog');
+
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'add']], Route::check('res/create'));
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'look']], Route::check('res/8'));
+
     }
 
     public function testRouteMap()
@@ -107,4 +127,23 @@ class routeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['type' => 'redirect', 'url' => '/article/read/id/8', 'status' => 301], Route::check('art/8'));
     }
 
+    public function testBind()
+    {
+        Route::bind('module', 'index/blog');
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'read']], Route::parseUrl('read/10'));
+
+        Route::get('index/blog/:id', 'index/blog/read');
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'read']], Route::check('10'));
+
+        Route::bind('namespace', '\app\index\controller');
+        $this->assertEquals(['type' => 'method', 'method' => ['\app\index\controller\blog', 'read'], 'params' => []], Route::check('blog/read'));
+
+        Route::bind('class', '\app\index\controller\blog');
+        $this->assertEquals(['type' => 'method', 'method' => ['\app\index\controller\blog', 'read'], 'params' => []], Route::check('read'));
+    }
+
+    public function testSsl()
+    {
+        $this->assertEquals(false, Route::isSsl());
+    }
 }
