@@ -135,10 +135,7 @@ class debugTest extends \PHPUnit_Framework_TestCase
             $str .= "mem";
         }
         $memPeak = \think\Debug::getMemPeak($start, $end);
-
-        // echo "\r\n" . $memPeak . "\r\n";
-
-        $this->assertLessThan(238, explode(" ", $memPeak)[0]);
+        $this->assertLessThan(355, explode(" ", $memPeak)[0]);
     }
 
     /**
@@ -168,7 +165,7 @@ class debugTest extends \PHPUnit_Framework_TestCase
         $output     = \think\Debug::dump($var, false, $label = "label");
         $array      = explode("array", json_encode($output));
         if (IS_WIN) {
-            $this->assertEquals("(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\r\\n\"", end($array));
+            $this->assertEquals("(1) {\\n  [\\\"key\\\"] => string(3) \\\"val\\\"\\n}\\n\\r\\n\"", end($array));
         } else {
             $this->assertEquals("(1) {\\n  'key' =>\\n  string(3) \\\"val\\\"\\n}\\n\\n\"", end($array));
         }
