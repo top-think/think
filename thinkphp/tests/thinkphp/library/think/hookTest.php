@@ -17,23 +17,20 @@
 namespace tests\thinkphp\library\think;
 
 use think\Hook;
+
 class hookTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-
-    }
 
     public function testRun()
     {
-        Hook::add('my_pos','\tests\thinkphp\library\think\behavior\One');
-        Hook::add('my_pos','\tests\thinkphp\library\think\behavior\Two');
-        Hook::add('my_pos','\tests\thinkphp\library\think\behavior\Three',true);
-        $data['id'] = 0;
+        Hook::add('my_pos', '\tests\thinkphp\library\think\behavior\One');
+        Hook::add('my_pos', '\tests\thinkphp\library\think\behavior\Two');
+        Hook::add('my_pos', '\tests\thinkphp\library\think\behavior\Three', true);
+        $data['id']   = 0;
         $data['name'] = 'thinkphp';
-        Hook::listen('my_pos',$data);
-        $this->assertEquals(2,$data['id']);
-        $this->assertEquals('thinkphp',$data['name']);
+        Hook::listen('my_pos', $data);
+        $this->assertEquals(2, $data['id']);
+        $this->assertEquals('thinkphp', $data['name']);
         $this->assertEquals([
             '\tests\thinkphp\library\think\behavior\Three',
             '\tests\thinkphp\library\think\behavior\One',
@@ -41,23 +38,27 @@ class hookTest extends \PHPUnit_Framework_TestCase
             Hook::get('my_pos'));
     }
 
-    public function testImport(){
-        Hook::import(['my_pos'=>[
+    public function testImport()
+    {
+        Hook::import(['my_pos' => [
             '\tests\thinkphp\library\think\behavior\One',
-            '\tests\thinkphp\library\think\behavior\Three']
-            ]);
-        $data['id'] = 0;
+            '\tests\thinkphp\library\think\behavior\Three'],
+        ]);
+        $data['id']   = 0;
         $data['name'] = 'thinkphp';
-        Hook::listen('my_pos',$data);
-        $this->assertEquals(3,$data['id']);
+        Hook::listen('my_pos', $data);
+        $this->assertEquals(3, $data['id']);
     }
 
-    public function testExec(){
-        $data['id'] = 0;
+    public function testExec()
+    {
+        $data['id']   = 0;
         $data['name'] = 'thinkphp';
-        $this->assertEquals(true,Hook::exec('\tests\thinkphp\library\think\behavior\One'));
-        $this->assertEquals(false,Hook::exec('\tests\thinkphp\library\think\behavior\One','test',$data));
-        $this->assertEquals('test',$data['name']);
+        $this->assertEquals(true, Hook::exec('\tests\thinkphp\library\think\behavior\One'));
+        $this->assertEquals(false, Hook::exec('\tests\thinkphp\library\think\behavior\One', 'test', $data));
+        $this->assertEquals('test', $data['name']);
+        $this->assertEquals('Closure', Hook::exec(function (&$data) {$data['name'] = 'Closure';return 'Closure';}));
+
     }
 
 }
