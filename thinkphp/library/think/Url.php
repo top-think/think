@@ -40,9 +40,9 @@ class Url
                 // 解析域名
                 list($anchor, $domain) = explode('@', $anchor, 2);
             }
-        } elseif (false !== strpos($url, '@')) {
+        } elseif (strpos($url, '@')) {
             // 解析域名
-            list($url, $domain) = explode('@', $info['path'], 2);
+            list($url, $domain) = explode('@', $url, 2);
         }
 
         // 解析参数
