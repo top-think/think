@@ -25,8 +25,21 @@ class routeTest extends \PHPUnit_Framework_TestCase
     {
         Route::get('hello/:name', 'index/hello');
         Route::get(['hello/:name' => 'index/hello']);
+        Route::post('hello/:name', 'index/post');
+        Route::put('hello/:name', 'index/put');
+        Route::delete('hello/:name', 'index/delete');
+        Route::any('user/:id', 'index/user');
         $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'hello']], Route::check('hello/thinkphp'));
         $this->assertEquals(['hello/:name' => ['route' => 'index/hello', 'option' => [], 'pattern' => []]], Route::getRules('GET'));
+    }
+
+    public function testResource()
+    {
+        Route::resource('res', 'index/blog');
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'index']], Route::check('res'));
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'create']], Route::check('res/create'));
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'read']], Route::check('res/8'));
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'blog', 'edit']], Route::check('res/8/edit'));
     }
 
     public function testRouteMap()
@@ -52,7 +65,7 @@ class routeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(false, Route::check('test/thinkphp'));
         $this->assertEquals(false, Route::check('blog/thinkphp'));
         $this->assertEquals(['type' => 'module', 'module' => [null, 'blog', 'read']], Route::check('blog/5'));
-        $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'hello']], Route::check('hello/thinkphp'));
+        $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'hello']], Route::check('hello/thinkphp/abc/test'));
     }
 
     public function testCheckRouteGroup()
