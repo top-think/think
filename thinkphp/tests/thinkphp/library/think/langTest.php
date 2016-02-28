@@ -16,35 +16,42 @@
 
 namespace tests\thinkphp\library\think;
 
-use think\Lang;
 use think\Config;
+use think\Lang;
 
 class langTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testSetAndGet(){
-        Lang::set('hello,%s','欢迎,%s');
-        $this->assertEquals('欢迎,ThinkPHP',Lang::get('hello,%s',['ThinkPHP']) );
-        Lang::set('hello,%s','歡迎,%s','zh-tw');
-        $this->assertEquals('歡迎,ThinkPHP',Lang::get('hello,%s',['ThinkPHP'],'zh-tw') );
-        Lang::set(['hello'=>'欢迎','use'=>'使用']);
-        $this->assertEquals('欢迎',Lang::get('hello') );
-        $this->assertEquals('欢迎',Lang::get('HELLO') );
-        $this->assertEquals('使用',Lang::get('use') );
+    public function testSetAndGet()
+    {
+        Lang::set('hello,%s', '欢迎,%s');
+        $this->assertEquals('欢迎,ThinkPHP', Lang::get('hello,%s', ['ThinkPHP']));
+        Lang::set('hello,%s', '歡迎,%s', 'zh-tw');
+        $this->assertEquals('歡迎,ThinkPHP', Lang::get('hello,%s', ['ThinkPHP'], 'zh-tw'));
+        Lang::set(['hello' => '欢迎', 'use' => '使用']);
+        $this->assertEquals('欢迎', Lang::get('hello'));
+        $this->assertEquals('欢迎', Lang::get('HELLO'));
+        $this->assertEquals('使用', Lang::get('use'));
+        $this->assertEquals(['hello' => '欢迎', 'hello,%s' => '欢迎,%s', 'use' => '使用'], Lang::get());
+
+        Lang::set('hello,{:name}', '欢迎,{:name}');
+        $this->assertEquals('欢迎,liu21st', Lang::get('hello,{:name}', ['name' => 'liu21st']));
     }
 
-    public function testLoad(){
-        Lang::load(__DIR__.DS.'lang'.DS.'lang.php');
-        $this->assertEquals('加载',Lang::get('load') );
-        Lang::load(__DIR__.DS.'lang'.DS.'lang.php','test');
-        $this->assertEquals('加载',Lang::get('load',[],'test') );
+    public function testLoad()
+    {
+        Lang::load(__DIR__ . DS . 'lang' . DS . 'lang.php');
+        $this->assertEquals('加载', Lang::get('load'));
+        Lang::load(__DIR__ . DS . 'lang' . DS . 'lang.php', 'test');
+        $this->assertEquals('加载', Lang::get('load', [], 'test'));
     }
 
-    public function testDetect(){
-        
-        Config::set('lang_list',['zh-cn','zh-tw']);
-        Lang::set('hello','欢迎','zh-cn');
-        Lang::set('hello','歡迎','zh-tw');
+    public function testDetect()
+    {
+
+        Config::set('lang_list', ['zh-cn', 'zh-tw']);
+        Lang::set('hello', '欢迎', 'zh-cn');
+        Lang::set('hello', '歡迎', 'zh-tw');
         /*
         $_GET['lang'] = 'zh-tw';
         Lang::detect();
@@ -52,13 +59,16 @@ class langTest extends \PHPUnit_Framework_TestCase
 
         $_GET['lang'] = 'zh-cn';
         Lang::detect();
-        $this->assertEquals('欢迎',Lang::get('hello') );
+        $this->assertEquals('欢迎', Lang::get('hello'));
 
     }
 
-    public function testRange(){
-        Lang::set('hello','欢迎','test');
+    public function testRange()
+    {
+        $this->assertEquals('zh-cn', Lang::range());
+        Lang::set('hello', '欢迎', 'test');
         Lang::range('test');
-        $this->assertEquals('欢迎',Lang::get('hello') );
+        $this->assertEquals('test', Lang::range());
+        $this->assertEquals('欢迎', Lang::get('hello'));
     }
 }

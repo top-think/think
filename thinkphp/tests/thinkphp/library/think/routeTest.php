@@ -26,6 +26,14 @@ class routeTest extends \PHPUnit_Framework_TestCase
         Route::get('hello/:name', 'index/hello');
         Route::get(['hello/:name' => 'index/hello']);
         $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'hello']], Route::check('hello/thinkphp'));
+        $this->assertEquals(['hello/:name' => ['route' => 'index/hello', 'option' => [], 'pattern' => []]], Route::getRules('GET'));
+    }
+
+    public function testRouteMap()
+    {
+        Route::map('hello', 'index/hello');
+        //$this->assertEquals('index/hello',Route::map('hello'));
+        $this->assertEquals(['type' => 'module', 'module' => ['index', 'hello', null]], Route::check('hello'));
     }
 
     public function testParseUrl()
