@@ -157,6 +157,6 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(Cache::set('a', 'a'));
         $this->assertEquals('a', Cache::get('a'));
-        $this->assertTrue(Cache::rm('a'));
+        $this->assertNotNull(Cache::rm('a'));
     }
 }
