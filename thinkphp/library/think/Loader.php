@@ -34,6 +34,8 @@ class Loader
                 // 记录加载信息
                 APP_DEBUG && self::$load[] = self::$map[$class];
                 include self::$map[$class];
+            } else {
+                return false;
             }
         } elseif ($file = self::findFileInComposer($class)) {
             // Composer自动加载
@@ -43,7 +45,7 @@ class Loader
         } else {
             // 命名空间自动加载
             if (!strpos($class, '\\')) {
-                return;
+                return false;
             }
             list($name, $class) = explode('\\', $class, 2);
             if (isset(self::$namespace[$name])) {
@@ -53,7 +55,7 @@ class Loader
                 // 扩展类库命名空间
                 $path = EXTEND_PATH . $name . DS;
             } else {
-                return;
+                return false;
             }
             $filename = $path . str_replace('\\', DS, $class) . EXT;
             if (is_file($filename)) {
@@ -66,8 +68,10 @@ class Loader
                 include $filename;
             } else {
                 Log::record('autoloader error : ' . $filename, 'notice');
+                return false;
             }
         }
+        return true;
     }
 
     // 注册classmap
@@ -199,8 +203,6 @@ class Loader
         $class        = str_replace(['.', '#'], [DS, '.'], $class);
         if (isset($_file[$class . $baseUrl])) {
             return true;
-        } else {
-            $_file[$class . $baseUrl] = true;
         }
 
         if (empty($baseUrl)) {
@@ -228,6 +230,7 @@ class Loader
                 return false;
             }
             include $filename;
+            $_file[$class . $baseUrl] = true;
             return true;
         }
         return false;
