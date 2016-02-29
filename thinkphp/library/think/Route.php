@@ -69,8 +69,8 @@ class Route
     {
         if (is_array($name)) {
             self::${$var} = self::${$var}+$name;
-        } elseif (empty($name)) {
-            return self::${$var};
+        } elseif (empty($value)) {
+            return empty($name) ? self::${$var} : self::${$var}[$name];
         } else {
             self::${$var}[$name] = $value;
         }

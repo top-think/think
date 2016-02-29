@@ -65,7 +65,7 @@ class routeTest extends \PHPUnit_Framework_TestCase
     public function testRouteMap()
     {
         Route::map('hello', 'index/hello');
-        //$this->assertEquals('index/hello',Route::map('hello'));
+        $this->assertEquals('index/hello', Route::map('hello'));
         $this->assertEquals(['type' => 'module', 'module' => ['index', 'hello', null]], Route::check('hello'));
     }
 
