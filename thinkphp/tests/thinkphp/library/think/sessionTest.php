@@ -16,6 +16,8 @@
 
 namespace tests\thinkphp\library\think;
 
+use think\Session;
+
 class sessionTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -56,10 +58,10 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPrefix()
     {
-        \think\Session::prefix(null);
-        \think\Session::prefix('think_');
+        Session::prefix(null);
+        Session::prefix('think_');
 
-        $this->assertEquals('think_', \think\Session::prefix());
+        $this->assertEquals('think_', Session::prefix());
     }
 
     /**
@@ -69,7 +71,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testInit()
     {
-        \think\Session::prefix(null);
+        Session::prefix(null);
         $config = [
             // cookie 名称前缀
             'prefix'         => 'think_',
@@ -92,10 +94,10 @@ class sessionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $_REQUEST[$config['var_session_id']] = $config['id'];
-        \think\Session::init($config);
+        Session::init($config);
 
         // 开始断言
-        $this->assertEquals($config['prefix'], \think\Session::prefix());
+        $this->assertEquals($config['prefix'], Session::prefix());
         $this->assertEquals($config['id'], $_REQUEST[$config['var_session_id']]);
         $this->assertEquals($config['name'], session_name());
 
@@ -113,7 +115,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
         session_write_close();
         session_destroy();
 
-        \think\Session::init($config);
+        Session::init($config);
 
         // 测试auto_start
         // PHP_SESSION_DISABLED
@@ -124,7 +126,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($config['use_trans_sid'], ini_get('session.use_trans_sid'));
 
-        \think\Session::init($config);
+        Session::init($config);
         $this->assertEquals($config['id'], session_id());
     }
 
@@ -159,7 +161,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
         // @expectedException 异常类名
         $this->setExpectedException('\think\Exception', 'error session handler', 11700);
 
-        \think\Session::init($config);
+        Session::init($config);
     }
 
     /**
@@ -169,17 +171,17 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSet()
     {
-        \think\Session::prefix(null);
-        \think\Session::set('sessionname', 'sessionvalue');
+        Session::prefix(null);
+        Session::set('sessionname', 'sessionvalue');
         $this->assertEquals('sessionvalue', $_SESSION['sessionname']);
 
-        \think\Session::set('sessionnamearr.subname', 'sessionvalue');
+        Session::set('sessionnamearr.subname', 'sessionvalue');
         $this->assertEquals('sessionvalue', $_SESSION['sessionnamearr']['subname']);
 
-        \think\Session::set('sessionnameper', 'sessionvalue', 'think_');
+        Session::set('sessionnameper', 'sessionvalue', 'think_');
         $this->assertEquals('sessionvalue', $_SESSION['think_']['sessionnameper']);
 
-        \think\Session::set('sessionnamearrper.subname', 'sessionvalue', 'think_');
+        Session::set('sessionnamearrper.subname', 'sessionvalue', 'think_');
         $this->assertEquals('sessionvalue', $_SESSION['think_']['sessionnamearrper']['subname']);
     }
 
@@ -190,22 +192,22 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        \think\Session::prefix(null);
+        Session::prefix(null);
 
-        \think\Session::set('sessionnameget', 'sessionvalue');
-        $this->assertEquals(\think\Session::get('sessionnameget'), $_SESSION['sessionnameget']);
+        Session::set('sessionnameget', 'sessionvalue');
+        $this->assertEquals(Session::get('sessionnameget'), $_SESSION['sessionnameget']);
 
-        \think\Session::set('sessionnamegetarr.subname', 'sessionvalue');
-        $this->assertEquals(\think\Session::get('sessionnamegetarr.subname'), $_SESSION['sessionnamegetarr']['subname']);
+        Session::set('sessionnamegetarr.subname', 'sessionvalue');
+        $this->assertEquals(Session::get('sessionnamegetarr.subname'), $_SESSION['sessionnamegetarr']['subname']);
 
-        \think\Session::set('sessionnamegetarrperall', 'sessionvalue', 'think_');
-        $this->assertEquals(\think\Session::get('', 'think_')['sessionnamegetarrperall'], $_SESSION['think_']['sessionnamegetarrperall']);
+        Session::set('sessionnamegetarrperall', 'sessionvalue', 'think_');
+        $this->assertEquals(Session::get('', 'think_')['sessionnamegetarrperall'], $_SESSION['think_']['sessionnamegetarrperall']);
 
-        \think\Session::set('sessionnamegetper', 'sessionvalue', 'think_');
-        $this->assertEquals(\think\Session::get('sessionnamegetper', 'think_'), $_SESSION['think_']['sessionnamegetper']);
+        Session::set('sessionnamegetper', 'sessionvalue', 'think_');
+        $this->assertEquals(Session::get('sessionnamegetper', 'think_'), $_SESSION['think_']['sessionnamegetper']);
 
-        \think\Session::set('sessionnamegetarrper.subname', 'sessionvalue', 'think_');
-        $this->assertEquals(\think\Session::get('sessionnamegetarrper.subname', 'think_'), $_SESSION['think_']['sessionnamegetarrper']['subname']);
+        Session::set('sessionnamegetarrper.subname', 'sessionvalue', 'think_');
+        $this->assertEquals(Session::get('sessionnamegetarrper.subname', 'think_'), $_SESSION['think_']['sessionnamegetarrper']['subname']);
     }
 
     /**
@@ -215,21 +217,21 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testDelete()
     {
-        \think\Session::prefix(null);
-        \think\Session::set('sessionnamedel', 'sessionvalue');
-        \think\Session::delete('sessionnamedel');
+        Session::prefix(null);
+        Session::set('sessionnamedel', 'sessionvalue');
+        Session::delete('sessionnamedel');
         $this->assertEmpty($_SESSION['sessionnamedel']);
 
-        \think\Session::set('sessionnamedelarr.subname', 'sessionvalue');
-        \think\Session::delete('sessionnamedelarr.subname');
+        Session::set('sessionnamedelarr.subname', 'sessionvalue');
+        Session::delete('sessionnamedelarr.subname');
         $this->assertEmpty($_SESSION['sessionnamedelarr']['subname']);
 
-        \think\Session::set('sessionnamedelper', 'sessionvalue', 'think_');
-        \think\Session::delete('sessionnamedelper', 'think_');
+        Session::set('sessionnamedelper', 'sessionvalue', 'think_');
+        Session::delete('sessionnamedelper', 'think_');
         $this->assertEmpty($_SESSION['think_']['sessionnamedelper']);
 
-        \think\Session::set('sessionnamedelperarr.subname', 'sessionvalue', 'think_');
-        \think\Session::delete('sessionnamedelperarr.subname', 'think_');
+        Session::set('sessionnamedelperarr.subname', 'sessionvalue', 'think_');
+        Session::delete('sessionnamedelperarr.subname', 'think_');
         $this->assertEmpty($_SESSION['think_']['sessionnamedelperarr']['subname']);
     }
 
@@ -240,14 +242,14 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        \think\Session::prefix(null);
+        Session::prefix(null);
 
-        \think\Session::set('sessionnameclsper', 'sessionvalue1', 'think_');
-        \think\Session::clear('think_');
+        Session::set('sessionnameclsper', 'sessionvalue1', 'think_');
+        Session::clear('think_');
         $this->assertNull($_SESSION['think_']);
 
-        \think\Session::set('sessionnameclsper', 'sessionvalue1', 'think_');
-        \think\Session::clear();
+        Session::set('sessionnameclsper', 'sessionvalue1', 'think_');
+        Session::clear();
         $this->assertEmpty($_SESSION);
     }
 
@@ -258,18 +260,18 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testHas()
     {
-        \think\Session::prefix(null);
-        \think\Session::set('sessionnamehas', 'sessionvalue');
-        $this->assertTrue(\think\Session::has('sessionnamehas'));
+        Session::prefix(null);
+        Session::set('sessionnamehas', 'sessionvalue');
+        $this->assertTrue(Session::has('sessionnamehas'));
 
-        \think\Session::set('sessionnamehasarr.subname', 'sessionvalue');
-        $this->assertTrue(\think\Session::has('sessionnamehasarr.subname'));
+        Session::set('sessionnamehasarr.subname', 'sessionvalue');
+        $this->assertTrue(Session::has('sessionnamehasarr.subname'));
 
-        \think\Session::set('sessionnamehasper', 'sessionvalue', 'think_');
-        $this->assertTrue(\think\Session::has('sessionnamehasper', 'think_'));
+        Session::set('sessionnamehasper', 'sessionvalue', 'think_');
+        $this->assertTrue(Session::has('sessionnamehasper', 'think_'));
 
-        \think\Session::set('sessionnamehasarrper.subname', 'sessionvalue', 'think_');
-        $this->assertTrue(\think\Session::has('sessionnamehasarrper.subname', 'think_'));
+        Session::set('sessionnamehasarrper.subname', 'sessionvalue', 'think_');
+        $this->assertTrue(Session::has('sessionnamehasarrper.subname', 'think_'));
     }
 
     /**
@@ -279,7 +281,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPause()
     {
-        \think\Session::pause();
+        Session::pause();
     }
 
     /**
@@ -289,7 +291,7 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testStart()
     {
-        \think\Session::start();
+        Session::start();
     }
 
     /**
@@ -299,8 +301,8 @@ class sessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testDestroy()
     {
-        \think\Session::set('sessionnamedestroy', 'sessionvalue');
-        \think\Session::destroy();
+        Session::set('sessionnamedestroy', 'sessionvalue');
+        Session::destroy();
         $this->assertEmpty($_SESSION['sessionnamedestroy']);
     }
 }

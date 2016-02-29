@@ -17,6 +17,7 @@
 namespace tests\thinkphp\library\think;
 
 use ReflectionClass;
+use think\Cookie;
 
 class cookieTest extends \PHPUnit_Framework_TestCase
 {
@@ -64,7 +65,7 @@ class cookieTest extends \PHPUnit_Framework_TestCase
             // httponly设置
             'httponly' => '1',
         ];
-        \think\Cookie::init($config);
+        Cookie::init($config);
 
         $this->assertEquals(
             array_merge($this->default, array_change_key_case($config)),
@@ -74,11 +75,11 @@ class cookieTest extends \PHPUnit_Framework_TestCase
 
     public function testPrefix()
     {
-        $this->assertEquals($this->default['prefix'], \think\Cookie::prefix());
+        $this->assertEquals($this->default['prefix'], Cookie::prefix());
 
         $prefix = '_test_';
-        $this->assertNotEquals($prefix, \think\Cookie::prefix());
-        \think\Cookie::prefix($prefix);
+        $this->assertNotEquals($prefix, Cookie::prefix());
+        Cookie::prefix($prefix);
 
         $config = $this->ref->getValue();
         $this->assertEquals($prefix, $config['prefix']);
@@ -89,20 +90,20 @@ class cookieTest extends \PHPUnit_Framework_TestCase
         $value = 'value';
 
         $name = 'name1';
-        \think\Cookie::set($name, $value, 10);
+        Cookie::set($name, $value, 10);
         $this->assertEquals($value, $_COOKIE[$this->default['prefix'] . $name]);
 
         $name = 'name2';
-        \think\Cookie::set($name, $value, null);
+        Cookie::set($name, $value, null);
         $this->assertEquals($value, $_COOKIE[$this->default['prefix'] . $name]);
 
         $name = 'name3';
-        \think\Cookie::set($name, $value, 'expire=100&prefix=pre_');
+        Cookie::set($name, $value, 'expire=100&prefix=pre_');
         $this->assertEquals($value, $_COOKIE['pre_' . $name]);
 
         $name  = 'name4';
         $value = ['_test_中文_'];
-        \think\Cookie::set($name, $value);
+        Cookie::set($name, $value);
         $this->assertEquals('think:' . json_encode([urlencode('_test_中文_')]), $_COOKIE[$name]);
     }
 
@@ -113,10 +114,10 @@ class cookieTest extends \PHPUnit_Framework_TestCase
             'pre_abc' => 'c',
             'd'       => 'think:' . json_encode([urlencode('_test_中文_')]),
         ];
-        $this->assertEquals('b', \think\Cookie::get('a'));
-        $this->assertEquals(null, \think\Cookie::get('does_not_exist'));
-        $this->assertEquals('c', \think\Cookie::get('abc', 'pre_'));
-        $this->assertEquals(['_test_中文_'], \think\Cookie::get('d'));
+        $this->assertEquals('b', Cookie::get('a'));
+        $this->assertEquals(null, Cookie::get('does_not_exist'));
+        $this->assertEquals('c', Cookie::get('abc', 'pre_'));
+        $this->assertEquals(['_test_中文_'], Cookie::get('d'));
     }
 
     public function testDelete()
@@ -125,30 +126,25 @@ class cookieTest extends \PHPUnit_Framework_TestCase
             'a'       => 'b',
             'pre_abc' => 'c',
         ];
-        $this->assertEquals('b', \think\Cookie::get('a'));
-        \think\Cookie::delete('a');
-        $this->assertEquals(null, \think\Cookie::get('a'));
+        $this->assertEquals('b', Cookie::get('a'));
+        Cookie::delete('a');
+        $this->assertEquals(null, Cookie::get('a'));
 
-        $this->assertEquals('c', \think\Cookie::get('abc', 'pre_'));
-        \think\Cookie::delete('abc', 'pre_');
-        $this->assertEquals(null, \think\Cookie::get('abc', 'pre_'));
+        $this->assertEquals('c', Cookie::get('abc', 'pre_'));
+        Cookie::delete('abc', 'pre_');
+        $this->assertEquals(null, Cookie::get('abc', 'pre_'));
     }
 
     public function testClear()
     {
         $_COOKIE = [];
-        $this->assertEquals(null, \think\Cookie::clear());
-
-        /*
-        $_COOKIE = ['a' => 'b'];
-        \think\Cookie::clear();
-        $this->assertEquals(null, $_COOKIE);*/
+        $this->assertEquals(null, Cookie::clear());
 
         $_COOKIE = [
             'a'       => 'b',
             'pre_abc' => 'c',
         ];
-        \think\Cookie::clear('pre_');
+        Cookie::clear('pre_');
         $this->assertEquals(['a' => 'b'], $_COOKIE);
     }
 }

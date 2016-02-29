@@ -27,7 +27,7 @@ class templateTest extends \PHPUnit_Framework_TestCase
         $content = <<<EOF
 {\$name.a.b}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo \$name['a']['b']; ?>
 EOF;
 
@@ -37,7 +37,7 @@ EOF;
         $content = <<<EOF
 {\$name.a??'test'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo isset(\$name['a']) ? \$name['a'] : 'test'; ?>
 EOF;
 
@@ -47,7 +47,7 @@ EOF;
         $content = <<<EOF
 {\$name.a?='test'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(!empty(\$name['a'])) echo 'test'; ?>
 EOF;
 
@@ -57,7 +57,7 @@ EOF;
         $content = <<<EOF
 {\$name.a?:'test'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo !empty(\$name['a'])?\$name['a']:'test'; ?>
 EOF;
 
@@ -67,7 +67,7 @@ EOF;
         $content = <<<EOF
 {\$name.a?\$name.b:'no'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo !empty(\$name['a'])?\$name['b']:'no'; ?>
 EOF;
 
@@ -77,7 +77,7 @@ EOF;
         $content = <<<EOF
 {\$name.a==\$name.b?='test'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(\$name['a']==\$name['b']) echo 'test'; ?>
 EOF;
 
@@ -87,7 +87,7 @@ EOF;
         $content = <<<EOF
 {\$name.a==\$name.b?'a':'b'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo (\$name['a']==\$name['b'])?'a':'b'; ?>
 EOF;
 
@@ -97,7 +97,7 @@ EOF;
         $content = <<<EOF
 {\$name.a|default='test'==\$name.b?'a':'b'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo ((isset(\$name['a']) && (\$name['a'] !== '')?\$name['a']:'test')==\$name['b'])?'a':'b'; ?>
 EOF;
 
@@ -107,7 +107,7 @@ EOF;
         $content = <<<EOF
 {\$name.a|trim==\$name.b?='eq'}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php if(trim(\$name['a'])==\$name['b']) echo 'eq'; ?>
 EOF;
 
@@ -117,7 +117,7 @@ EOF;
         $content = <<<EOF
 {:ltrim(rtrim(\$name.a))}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo ltrim(rtrim(\$name['a'])); ?>
 EOF;
 
@@ -127,7 +127,7 @@ EOF;
         $content = <<<EOF
 {~echo(trim(\$name.a))}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo(trim(\$name['a'])); ?>
 EOF;
 
@@ -137,7 +137,7 @@ EOF;
         $content = <<<EOF
 {++\$name.a}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo ++\$name['a']; ?>
 EOF;
 
@@ -147,7 +147,7 @@ EOF;
         $content = <<<EOF
 {/*\$name*/}
 EOF;
-        $data    = '';
+        $data = '';
 
         $template->parse($content);
         $this->assertEquals($data, $content);
@@ -155,7 +155,7 @@ EOF;
         $content = <<<EOF
 {\$0a}
 EOF;
-        $data    = '{$0a}';
+        $data = '{$0a}';
 
         $template->parse($content);
         $this->assertEquals($data, $content);
@@ -240,7 +240,7 @@ EOF;
         $content                     = <<<EOF
 {\$info2.b|trim?'yes':'no'}
 EOF;
-        $data                        = <<<EOF
+        $data = <<<EOF
 <?php echo trim(\$info2->b)?'yes':'no'; ?>
 EOF;
         $template2->parse($content);
@@ -280,7 +280,7 @@ EOF;
 {\$Think.SITE_NAME}<br/>
 {\$Think.SITE.URL}
 EOF;
-        $data    = <<<EOF
+        $data = <<<EOF
 <?php echo \$_SERVER['SERVER_NAME']; ?><br/>
 <?php echo \$_GET['action']; ?><br/>
 <?php echo \$_POST['action']; ?><br/>
@@ -312,15 +312,15 @@ EOF;
             'strip_space' => true,
             'view_path'   => dirname(__FILE__) . '/',
         ];
-        $data   = ['name' => 'value'];
+        $data = ['name' => 'value'];
         $template->display('display', $data, $config);
         $this->expectOutputString('value');
     }
 
     public function testFetch()
     {
-        $config['view_path']    = dirname(__FILE__) . '/';
-        $config['view_suffix']  = '.html';
+        $config['view_path']   = dirname(__FILE__) . '/';
+        $config['view_suffix'] = '.html';
         $config['layout_on']   = true;
         $config['layout_name'] = 'layout';
         $template              = new Template($config);
@@ -330,7 +330,7 @@ EOF;
         $template->assign('message', 'message');
         $template->assign('info', ['value' => 'value']);
 
-        $content  = <<<EOF
+        $content = <<<EOF
 {extend name="\$files.extend" /}
 {block name="side"}
     {include file="\$files.include" name="\$user.name" value="\$user.account" /}
