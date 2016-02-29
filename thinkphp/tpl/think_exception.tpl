@@ -177,13 +177,13 @@
             </div>
         </h1>
         <div class="source-code">
-            <pre class="prettyprint lang-php"><ol start="<?php echo $source['first']; ?>"><?php foreach ($source['source'] as $key => $value) { ?><li class="line-<?php echo $key + $source['first']; ?>"><code><?php echo htmlentities($value); ?></code></li><?php } ?></ol></pre>
+            <pre class="prettyprint lang-php"><ol start="<?php echo $source['first']; ?>"><?php foreach ((array) $source['source'] as $key => $value) { ?><li class="line-<?php echo $key + $source['first']; ?>"><code><?php echo htmlentities($value); ?></code></li><?php } ?></ol></pre>
         </div>
         <div class="trace">
             <h3>Call Stack</h3>
             <ol>
                 <li><?php echo sprintf('in %s', parse_file($file, $line)); ?></li>
-                <?php foreach ($trace as $value) { ?>
+                <?php foreach ((array) $trace as $value) { ?>
                 <li>
                 <?php 
                     // Show Function
@@ -211,14 +211,14 @@
     <?php if(!empty($datas)){ ?>
     <div class="exception-var">
         <h2>Exception Datas</h2>
-        <?php foreach ($datas as $label => $value) { ?>
+        <?php foreach ((array) $datas as $label => $value) { ?>
         <table>
             <?php if(empty($value)){ ?>
             <caption><?php echo $label; ?><small>empty</small></caption>
             <?php } else { ?>
             <caption><?php echo $label; ?></caption>
             <tbody>
-                <?php foreach ($value as $key => $val) { ?>
+                <?php foreach ((array) $value as $key => $val) { ?>
                 <tr>
                     <td><?php echo htmlentities($key); ?></td>
                     <td>
@@ -243,14 +243,14 @@
 
     <div class="exception-var">
         <h2>Environment Variables</h2>
-        <?php foreach ($tables as $label => $value) { ?>
+        <?php foreach ((array) $tables as $label => $value) { ?>
         <table>
             <?php if(empty($value)){ ?>
             <caption><?php echo $label; ?><small>empty</small></caption>
             <?php } else { ?>
             <caption><?php echo $label; ?></caption>
             <tbody>
-                <?php foreach ($value as $key => $val) { ?>
+                <?php foreach ((array) $value as $key => $val) { ?>
                 <tr>
                     <td><?php echo htmlentities($key); ?></td>
                     <td>
@@ -369,23 +369,27 @@
 </body>
 </html>
 <?php
+if (!function_exists('parse_padding')) {
     function parse_padding($source)
     {
         $length  = strlen(strval(count($source['source']) + $source['first']));
         return 40 + ($length - 1) * 8;
     }
-
+}
+if (!function_exists('parse_class')) {
     function parse_class($name)
     {
         $names = explode('\\', $name);
         return '<abbr title="'.$name.'">'.end($names).'</abbr>';
     }
-
+}
+if (!function_exists('parse_file')) {
     function parse_file($file, $line)
     {
         return '<a class="toggle" title="'."{$file} line {$line}".'">'.basename($file)." line {$line}".'</a>';
     }
-
+}
+if (!function_exists('parse_args')) {
     function parse_args($args)
     {
         $result = [];
@@ -436,3 +440,4 @@
 
         return implode(', ', $result);
     }
+}
