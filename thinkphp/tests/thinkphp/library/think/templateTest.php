@@ -257,7 +257,7 @@ EOF;
         $_GET['action']         = 'action';
         $_POST['action']        = 'action';
         $_COOKIE['name']        = 'name';
-        \think\Session::set('action', ['name' => 'name']);
+        $_SESSION['action']     = ['name' => 'name'];
         define('SITE_NAME', 'site_name');
 
         $content = <<<EOF
