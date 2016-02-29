@@ -33,7 +33,7 @@ class File
      * 日志写入接口
      * @access public
      * @param array $log 日志信息
-     * @return void
+     * @return bool
      */
     public function save(array $log = [])
     {
@@ -74,6 +74,7 @@ class File
         $remote = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
         $uri    = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         error_log("[{$now}] {$server} {$remote} {$uri}\r\n{$info}\r\n", 3, $destination);
+        return true;
     }
 
 }

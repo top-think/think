@@ -34,13 +34,13 @@ class Trace
      * 日志写入接口
      * @access public
      * @param array $log 日志信息
-     * @return void
+     * @return bool
      */
     public function save(array $log = [])
     {
         if (IS_AJAX || IS_CLI || IS_API || 'html' != Config::get('default_return_type')) {
             // ajax cli api方式下不输出
-            return;
+            return false;
         }
         // 获取基本信息
         $runtime = number_format(microtime(true) - START_TIME, 6);
@@ -94,6 +94,7 @@ class Trace
         ob_start();
         include $this->config['trace_file'];
         echo ob_get_clean();
+        return true;
     }
 
 }

@@ -48,10 +48,16 @@ class Socket
         }
     }
 
+    /**
+     * 日志写入接口
+     * @access public
+     * @param array $logs 日志信息
+     * @return bool
+     */
     public function save(array $logs = [])
     {
         if (!$this->check()) {
-            return;
+            return false;
         }
         $runtime    = number_format(microtime(true) - START_TIME, 6);
         $reqs       = number_format(1 / $runtime, 2);
@@ -112,7 +118,7 @@ class Socket
         } else {
             $this->sendToClient($tabid, $client_id, $logs, '');
         }
-
+        return true;
     }
 
     /**
