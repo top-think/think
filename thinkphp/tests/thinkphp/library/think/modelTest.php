@@ -17,7 +17,7 @@ namespace tests\thinkphp\library\think;
 
 use think\Model;
 
-class templateTest extends \PHPUnit_Framework_TestCase
+class modelTest extends \PHPUnit_Framework_TestCase
 {
     public function testValidate()
     {
