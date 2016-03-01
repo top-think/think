@@ -1004,8 +1004,16 @@ class Model
             // 获取自动验证规则
             list($rules, $options, $scene) = $this->getDataRule($this->options['validate'], 'validate');
 
-            $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
-            $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
+            if (!isset($options['value_validate'])) {
+                $options['value_validate'] = [];
+            } elseif(is_string($options['value_validate'])) {
+                $options['value_validate'] = explode(',', $options['value_validate']);
+            }
+            if (!isset($options['exists_validate'])) {
+                $options['exists_validate'] = [];
+            } elseif(is_string($options['exists_validate'])) {
+                $options['exists_validate'] = explode(',', $options['exists_validate']);
+            }
             foreach ($rules as $key => $rule) {
                 if (is_numeric($key) && is_array($rule)) {
                     $key = array_shift($rule);
@@ -1013,10 +1021,10 @@ class Model
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
-                if (!$this->fieldValidate($key, $rule, $data, $options)) {
-                    break;
+                $flag = $this->fieldValidate($key, $rule, $data, $options);
+                if (!$flag) {
+                   break;
                 }
-
             }
             $this->options['validate'] = null;
         }
@@ -1047,8 +1055,7 @@ class Model
                 $key = substr($key, strlen($_key . '.*'));
                 foreach ($value as $i => $val) {
                     // 对数组中每一项进行验证
-                    $flag = $this->fieldValidate($name, $rule, $data, $options, $i . $key, $val);
-                    if (!$flag) {
+                    if (!$this->fieldValidate($name, $rule, $data, $options, $_key . '.' . $i . $key, $val)) {
                         return false;
                     }
                 }
@@ -1056,15 +1063,8 @@ class Model
                 return false;
             }
         } else {
-            if ($key == $name) {
-                // 取得对应的键值
-                $value = $this->getDataValue($data, $name);
-            } elseif ($pos = strpos($key, '.')) {
-                // 移除$key中的第一项才能与$value对应
-                $key = substr($key, $pos + 1);
-                // 取得对应的键值
-                $value = $this->getDataValue($value, $key);
-            }
+            // 取得对应的键值
+            $value = $this->getDataValue($data, $key);
             if ((in_array($name, $options['value_validate']) && '' == $value)
                 || (in_array($name, $options['exists_validate']) && is_null($value))) {
                 // 不满足自动验证条件
@@ -1085,7 +1085,11 @@ class Model
                 if (!empty($options['patch'])) {
                     // 批量验证
                     if (is_array($result)) {
-                        $this->error[] = array_merge($this->error, $result);
+                        if (empty($this->error)) {
+                            $this->error = $result;
+                        } else {
+                            $this->error[] = array_merge($this->error, $result);
+                        }
                     } else {
                         $this->error[$key] = $result;
                     }
@@ -1094,8 +1098,8 @@ class Model
                     return false;
                 }
             }
-            return true;
         }
+        return true;
     }
 
     /**
@@ -1110,17 +1114,25 @@ class Model
             // 获取自动完成规则
             list($rules, $options, $scene) = $this->getDataRule($this->options['auto'], 'auto');
 
-            $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
-            $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
-            foreach ($rules as $key => $val) {
-                if (is_numeric($key) && is_array($val)) {
-                    $key = array_shift($val);
+            if (!isset($options['value_fill'])) {
+                $options['value_fill'] = [];
+            } elseif(is_string($options['value_fill'])) {
+                $options['value_fill'] = explode(',', $options['value_fill']);
+            }
+            if (!isset($options['exists_fill'])) {
+                $options['exists_fill'] = [];
+            } elseif(is_string($options['exists_fill'])) {
+                $options['exists_fill'] = explode(',', $options['exists_fill']);
+            }
+            foreach ($rules as $key => $rule) {
+                if (is_numeric($key) && is_array($rule)) {
+                    $key = array_shift($rule);
                 }
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
                 // 数据自动填充
-                $this->autoOperation($key, $val, $data, $options);
+                $this->autoOperation($key, $rule, $data, $options);
             }
             $this->options['auto'] = null;
         }
@@ -1176,7 +1188,7 @@ class Model
             } else {
                 $name = $rules;
             }
-            $rules = $config[$name];
+            $rules = isset($config[$name]) ? $config[$name] : [];
             if (isset($config['__all__'])) {
                 $rules = array_merge($config['__all__'], $rules);
             }
@@ -1229,20 +1241,18 @@ class Model
                 }
             }
         } else {
-            // 取得键值
+            // 取得对应的键值
             $value = $this->getDataValue($data, $key);
             if ((in_array($name, $options['value_fill']) && '' == $value)
                 || (in_array($name, $options['exists_fill']) && is_null($value))) {
                 // 不满足自动填充条件
                 return;
             }
+            // 匿名函数 用于设置或删除表单中字段的值
             $dataField = function($key, $val = null) use (&$data) {
                 $str = '$data';
                 foreach (explode('.', $key) as $k) {
-                    if (!is_numeric($k)) {
-                        $k =  '\'' . $k . '\'';
-                    }
-                    $str .=  '[' . $k . ']';
+                    $str .=  '[\'' . $k . '\']';
                 }
                 if (isset($val)) {
                     eval($str . "=\$val;");
@@ -1260,7 +1270,7 @@ class Model
             } else {
                 $val    = isset($rule[0]) ? $rule[0] : $rule;
                 $type   = isset($rule[1]) ? $rule[1] : 'value';
-                $params = isset($rule[2]) ? $rule[2] : [];
+                $params = isset($rule[2]) ? (array) $rule[2] : [];
                 switch ($type) {
                     case 'behavior':
                         Hook::exec($val, '', $data);
@@ -1270,14 +1280,20 @@ class Model
                         $result = call_user_func_array($val, $params);
                         break;
                     case 'serialize':
-                        if (is_string($val)) {
-                            $val = explode(',', $val);
-                        }
-                        $serialize = [];
-                        foreach ($val as $name) {
-                            if (isset($data[$name])) {
-                                $serialize[$name] = $data[$name];
-                                unset($data[$name]);
+                        if (empty($val)) {
+                            // 为空则序列化自身
+                            $serialize = (array) $this->getDataValue($data, $key);
+                        } else {
+                            // 把$data中指定的字段序列化到当前字段
+                            if (is_string($val)) {
+                                $val = explode(',', $val);
+                            }
+                            $serialize = [];
+                            foreach ($val as $name) {
+                                if (isset($data[$name])) {
+                                    $serialize[$name] = $data[$name];
+                                    unset($data[$name]);
+                                }
                             }
                         }
                         $fun    = !empty($params['type']) ? $params['type'] : 'serialize';
@@ -1313,7 +1329,7 @@ class Model
         $rule    = $val[0];
         $msg     = isset($val[1]) ? $val[1] : '';
         $type    = isset($val[2]) ? $val[2] : 'regex';
-        $options = isset($val[3]) ? $val[3] : [];
+        $options = isset($val[3]) ? (array) $val[3] : [];
         if ($rule instanceof \Closure) {
             // 匿名函数验证 支持传入当前字段和所有字段两个数据
             $result = call_user_func_array($rule, [$value, &$data]);
@@ -1328,7 +1344,7 @@ class Model
                     $result = Hook::exec($rule, '', $data);
                     break;
                 case 'filter':    // 使用filter_var验证
-                    $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
+                    $result = false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                     break;
                 case 'confirm':
                     $result = $value == $this->getDataValue($data, $rule);
@@ -1338,7 +1354,7 @@ class Model
                     $range  = is_array($rule) ? $rule : explode(',', $rule);
                     $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                     break;
-                case 'between':// 验证是否在某个范围
+                case 'between':    // 验证是否在某个范围
                 case 'notbetween':    // 验证是否不在某个范围
                     if (is_string($rule)) {
                         $rule = explode(',', $rule);
@@ -1352,7 +1368,8 @@ class Model
                         $rule = $this->rule[$rule];
                     }
                     if (!(0 === strpos($rule, '/') && preg_match('/\/[imsU]{0,4}$/', $rule))) {
-                        $rule = '/' . $rule . '/';
+                        // 不是正则表达式则两端补上/
+                        $rule = '/^' . $rule . '$/';
                     }
                     $result = 1 === preg_match($rule, (string) $value);
                     break;
