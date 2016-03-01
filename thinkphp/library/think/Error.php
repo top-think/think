@@ -65,18 +65,18 @@ class Error
                     'ThinkPHP Constants'    => self::getTPConst(),
                 ],
             ];
-            $err_msg = "[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]";
+            $log = "[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]";
         } else {
             // 部署模式仅显示 Code 和 Message
             $data = [
                 'code'    => $exception->getCode(),
                 'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message'),
             ];
-            $err_msg = "[{$data['code']}]{$data['message']}";
+            $log = "[{$data['code']}]{$data['message']}";
         }
 
         // 记录异常日志
-        Log::record($err_msg, 'error');
+        Log::record($log, 'error');
         // 输出错误信息
         self::output($exception, $data);
         // 禁止往下传播已处理过的异常
