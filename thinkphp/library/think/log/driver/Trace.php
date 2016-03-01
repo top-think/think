@@ -54,8 +54,11 @@ class Trace
             '查询信息' => \think\Db::$queryTimes . ' queries ' . \think\Db::$executeTimes . ' writes ',
             '缓存信息' => \think\Cache::$readTimes . ' reads,' . \think\Cache::$writeTimes . ' writes',
             '配置加载' => count(Config::get()),
-            '会话信息' => 'SESSION_ID=' . session_id(),
         ];
+
+        if (session_id()) {
+            $base['会话信息'] = 'SESSION_ID=' . session_id();
+        }
 
         $info = Debug::getFile(true);
 
@@ -70,13 +73,13 @@ class Trace
         foreach ($this->tabs as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
-                case 'base':    // 基本信息
+                case 'base': // 基本信息
                     $trace[$title] = $base;
                     break;
-                case 'file':    // 文件信息
+                case 'file': // 文件信息
                     $trace[$title] = $info;
                     break;
-                default:    // 调试信息
+                default: // 调试信息
                     if (strpos($name, '|')) {
                         // 多组信息
                         $names  = explode('|', $name);

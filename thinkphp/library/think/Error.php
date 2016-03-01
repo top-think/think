@@ -141,13 +141,10 @@ class Error
      */
     public static function output($exception, array $vars)
     {
-        if ($exception instanceof Exception) {
-            http_response_code($exception->getHttpStatus());
-        } else {
-            http_response_code(500);
-        }
+        http_response_code($exception instanceof \Exception ? $exception->getHttpStatus() : 500);
 
         $type = Config::get('default_return_type');
+
         if (IS_API && 'html' != $type) {
             // 异常信息输出监听
             APP_HOOK && Hook::listen('error_output', $data);
