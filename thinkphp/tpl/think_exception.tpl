@@ -1,78 +1,4 @@
-
-<?php
-if (!function_exists('parse_padding')) {
-    function parse_padding($source)
-    {
-        $length  = strlen(strval(count($source['source']) + $source['first']));
-        return 40 + ($length - 1) * 8;
-    }
-}
-if (!function_exists('parse_class')) {
-    function parse_class($name)
-    {
-        $names = explode('\\', $name);
-        return '<abbr title="'.$name.'">'.end($names).'</abbr>';
-    }
-}
-if (!function_exists('parse_file')) {
-    function parse_file($file, $line)
-    {
-        return '<a class="toggle" title="'."{$file} line {$line}".'">'.basename($file)." line {$line}".'</a>';
-    }
-}
-if (!function_exists('parse_args')) {
-    function parse_args($args)
-    {
-        $result = [];
-
-        foreach ($args as $key => $item) {
-            switch (true) {
-                case is_object($item):
-                    $value = sprintf('<em>object</em>(%s)', parse_class(get_class($item)));
-                    break;
-                case is_array($item):
-                    if(count($item) > 3){
-                        $value = sprintf('[%s, ...]', parse_args(array_slice($item, 0, 3)));
-                    } else {
-                        $value = sprintf('[%s]', parse_args($item));
-                    }
-                    break;
-                case is_string($item):
-                    if(strlen($item) > 20){
-                        $value = sprintf(
-                            '\'<a class="toggle" title="%s">%s...</a>\'', 
-                            htmlentities($item), 
-                            htmlentities(substr($item, 0, 20))
-                        );
-                    } else {
-                        $value = sprintf("'%s'", htmlentities($item));
-                    }
-                    break;
-                case is_int($item):
-                case is_float($item):
-                    $value = $item;
-                    break;
-                case is_null($item):
-                    $value = '<em>null</em>';
-                    break;
-                case is_bool($item):
-                    $value = '<em>' . ($item ? 'true' : 'false') . '</em>';
-                    break;
-                case is_resource($item):
-                    $value = '<em>resource</em>';
-                    break;
-                default:
-                    $value = htmlentities(str_replace("\n", '', var_export(strval($item), true)));
-                    break;
-            }
-
-            $result[] = is_int($key) ? $value : "'{$key}' => {$value}";
-        }
-
-        return implode(', ', $result);
-    }
-}
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -150,7 +76,7 @@ if (!function_exists('parse_args')) {
             display: inline-block;
             min-width: 100%;
             box-sizing: border-box;
-            padding-left: <?php echo parse_padding($source); ?>px;
+            padding-left: <?php echo isset($source) ? parse_padding($source) : 40; ?>px;
         }
         .exception .source-code pre li{
             border-left: 1px solid #ddd;
@@ -240,6 +166,7 @@ if (!function_exists('parse_args')) {
     </style>
 </head>
 <body>
+    <?php if(APP_DEBUG) { ?>
     <div class="exception">
         <h1>
             <span class="code"><?php echo $code; ?></span>
@@ -281,6 +208,13 @@ if (!function_exists('parse_args')) {
             </ol>
         </div>
     </div>
+    <?php } else { ?>
+    <div class="exception">
+        <h1>
+            <div class="info"><?php echo htmlentities($message); ?></div>
+        </h1>
+    </div>
+    <?php } ?>
     
     <?php if(!empty($datas)){ ?>
     <div class="exception-var">
@@ -315,6 +249,7 @@ if (!function_exists('parse_args')) {
     </div>
     <?php } ?>
 
+    <?php if(!empty($tables)){ ?>
     <div class="exception-var">
         <h2>Environment Variables</h2>
         <?php foreach ((array) $tables as $label => $value) { ?>
@@ -345,13 +280,14 @@ if (!function_exists('parse_args')) {
         </table>
         <?php } ?>
     </div>
+    <?php } ?>
 
     <div class="copyright">
         <a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> 
         <span>V<?php echo THINK_VERSION; ?></span> 
         <span>{ 十年磨一剑-为API开发设计的高性能框架 }</span>
     </div>
-
+    <?php if(APP_DEBUG) { ?>
     <script>
         var LINE = <?php echo $line; ?>;
 
@@ -438,7 +374,75 @@ if (!function_exists('parse_args')) {
             });
 
         })();
-
     </script>
+    <?php } ?>
 </body>
 </html>
+<?php
+    function parse_padding($source)
+    {
+        $length  = strlen(strval(count($source['source']) + $source['first']));
+        return 40 + ($length - 1) * 8;
+    }
+
+    function parse_class($name)
+    {
+        $names = explode('\\', $name);
+        return '<abbr title="'.$name.'">'.end($names).'</abbr>';
+    }
+
+    function parse_file($file, $line)
+    {
+        return '<a class="toggle" title="'."{$file} line {$line}".'">'.basename($file)." line {$line}".'</a>';
+    }
+
+    function parse_args($args)
+    {
+        $result = [];
+
+        foreach ($args as $key => $item) {
+            switch (true) {
+                case is_object($item):
+                    $value = sprintf('<em>object</em>(%s)', parse_class(get_class($item)));
+                    break;
+                case is_array($item):
+                    if(count($item) > 3){
+                        $value = sprintf('[%s, ...]', parse_args(array_slice($item, 0, 3)));
+                    } else {
+                        $value = sprintf('[%s]', parse_args($item));
+                    }
+                    break;
+                case is_string($item):
+                    if(strlen($item) > 20){
+                        $value = sprintf(
+                            '\'<a class="toggle" title="%s">%s...</a>\'', 
+                            htmlentities($item), 
+                            htmlentities(substr($item, 0, 20))
+                        );
+                    } else {
+                        $value = sprintf("'%s'", htmlentities($item));
+                    }
+                    break;
+                case is_int($item):
+                case is_float($item):
+                    $value = $item;
+                    break;
+                case is_null($item):
+                    $value = '<em>null</em>';
+                    break;
+                case is_bool($item):
+                    $value = '<em>' . ($item ? 'true' : 'false') . '</em>';
+                    break;
+                case is_resource($item):
+                    $value = '<em>resource</em>';
+                    break;
+                default:
+                    $value = htmlentities(str_replace("\n", '', var_export(strval($item), true)));
+                    break;
+            }
+
+            $result[] = is_int($key) ? $value : "'{$key}' => {$value}";
+        }
+
+        return implode(', ', $result);
+    }
