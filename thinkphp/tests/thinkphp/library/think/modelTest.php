@@ -19,9 +19,21 @@ use think\Model;
 
 class modelTest extends \PHPUnit_Framework_TestCase
 {
+    public function getConfig()
+    {
+        static $config;
+        if (!isset($config)) {
+            $config = \think\Input::get('database');
+            $config['database'] = 'test';
+            $config['username'] = 'root';
+            $config['password'] = '';
+        }
+        return $config;
+    }
+
     public function testValidate()
     {
-        $model = new Model();
+        $model = new Model('', $this->getConfig());
         $data = [
             'username' => 'username',
             'nickname' => 'nickname',
@@ -34,7 +46,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
             'code' => '1234',
         ];
 
-        $config = [
+        $validate = [
             '__pattern__' => [
                 'mobile' => '/^1(?:[358]\d|7[6-8])\d{8}$/',
                 'require' => '/.+/',
@@ -61,7 +73,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        \think\Config::set('validate', $config);
+        \think\Config::set('validate', $validate);
         $result = $model->validate('user.add')->create($data);
         $this->assertEquals('', $model->getError());
 
@@ -117,7 +129,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
 
     public function testFill()
     {
-        $model = new Model();
+        $model = new Model('', $this->getConfig());
         $data = [
             'username' => '',
             'nickname' => 'nickname',
@@ -125,7 +137,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
             'hobby' => ['1', '2'],
             'cityid' => '1',
         ];
-        $config = [
+        $auto = [
             'user' => [
                 '__option__' => [
                     'value_fill' => ['username', 'password', 'phone'],
@@ -143,7 +155,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
                 ['login_time', function($value, $data) {return $data['reg_time'];}],
             ],
         ];
-        \think\Config::set('auto', $config);
+        \think\Config::set('auto', $auto);
         $result = $model->auto('user')->create($data);
         $data['nickname'] = 'cn_nickname';
         $data['phone'] = '123456';
@@ -171,11 +183,11 @@ class modelTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $auto = [
+        $test = [
             'name.*' => 'name',
             'goods.*.*.price' => 100,
         ];
-        $result = $model->auto($auto)->create($data);
+        $result = $model->auto($test)->create($data);
         $data['name']['a'] = $data['name']['b'] = 'name';
         $data['goods'][0][0]['price'] = 100;
         $data['goods'][0][1]['price'] = 100;
