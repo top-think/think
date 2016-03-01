@@ -58,7 +58,6 @@ class Mysql extends Driver
         $info   = [];
         if ($result) {
             foreach ($result as $key => $val) {
-                $val                 = array_change_key_case($val);
                 $info[$val['field']] = [
                     'name'    => $val['field'],
                     'type'    => $val['type'],

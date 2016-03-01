@@ -111,7 +111,6 @@ class Oracle extends Driver
         $info            = [];
         if ($result) {
             foreach ($result as $key => $val) {
-                $val                       = array_change_key_case($val);
                 $info[$val['column_name']] = [
                     'name'    => $val['column_name'],
                     'type'    => $val['data_type'],

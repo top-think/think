@@ -14,7 +14,7 @@ use think\Config;
 use think\Debug;
 
 /**
- * 页面Trace调试 需要设置 'response_exit' => false 才能生效
+ * 页面Trace调试
  */
 class Trace
 {
@@ -70,13 +70,13 @@ class Trace
         foreach ($this->tabs as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
-                case 'base': // 基本信息
+                case 'base':    // 基本信息
                     $trace[$title] = $base;
                     break;
-                case 'file': // 文件信息
+                case 'file':    // 文件信息
                     $trace[$title] = $info;
                     break;
-                default: // 调试信息
+                default:    // 调试信息
                     if (strpos($name, '|')) {
                         // 多组信息
                         $names  = explode('|', $name);

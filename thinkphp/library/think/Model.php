@@ -32,6 +32,8 @@ class Model
     protected $name = '';
     // 数据库名称
     protected $dbName = '';
+    // 数据表字段大小写
+    protected $attrCase = \PDO::CASE_LOWER;
     //数据库配置
     protected $connection = [];
     // 数据表名（不包含表前缀）
@@ -94,6 +96,10 @@ class Model
         }
         if (!empty($config['db_name'])) {
             $this->dbName = $config['db_name'];
+        }
+
+        if (isset($config['attr_case'])) {
+            $this->attrCase = $config['attr_case'];
         }
 
         // 数据库初始化操作
@@ -1242,7 +1248,7 @@ class Model
                     // 行为验证
                     $result = Hook::exec($rule, '', $data);
                     break;
-                case 'filter': // 使用filter_var验证
+                case 'filter':    // 使用filter_var验证
                     $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                     break;
                 case 'confirm':
@@ -1253,8 +1259,8 @@ class Model
                     $range  = is_array($rule) ? $rule : explode(',', $rule);
                     $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                     break;
-                case 'between': // 验证是否在某个范围
-                case 'notbetween': // 验证是否不在某个范围
+                case 'between':// 验证是否在某个范围
+                case 'notbetween':    // 验证是否不在某个范围
                     if (is_string($rule)) {
                         $rule = explode(',', $rule);
                     }
@@ -1428,7 +1434,20 @@ class Model
         $guid   = md5($tableName);
         $result = Cache::get($guid);
         if (!$result) {
-            $info   = array_change_key_case($this->db->getFields($tableName));
+            $info = $this->db->getFields($tableName);
+            // 字段大小写转换
+            switch ($this->attrCase) {
+                case \PDO::CASE_LOWER:
+                    $info = array_change_key_case($info);
+                    break;
+                case \PDO::CASE_UPPER:
+                    $info = array_change_key_case($info, CASE_UPPER);
+                    break;
+                case \PDO::CASE_NATURAL:
+                default:
+                    // 不做转换
+            }
+
             $fields = array_keys($info);
             foreach ($info as $key => $val) {
                 // 记录字段类型
