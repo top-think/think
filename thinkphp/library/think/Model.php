@@ -1004,52 +1004,101 @@ class Model
             // 获取自动验证规则
             list($rules, $options, $scene) = $this->getDataRule($this->options['validate'], 'validate');
 
-            $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
-            $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
-            foreach ($rules as $key => $val) {
-                if (is_numeric($key) && is_array($val)) {
-                    $key = array_shift($val);
+            if (!isset($options['value_validate'])) {
+                $options['value_validate'] = [];
+            } elseif(is_string($options['value_validate'])) {
+                $options['value_validate'] = explode(',', $options['value_validate']);
+            }
+            if (!isset($options['exists_validate'])) {
+                $options['exists_validate'] = [];
+            } elseif(is_string($options['exists_validate'])) {
+                $options['exists_validate'] = explode(',', $options['exists_validate']);
+            }
+            foreach ($rules as $key => $rule) {
+                if (is_numeric($key) && is_array($rule)) {
+                    $key = array_shift($rule);
                 }
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
-                // 获取数据 支持二维数组
-                $value = $this->getDataValue($data, $key);
-
-                if ((in_array($key, $options['value_validate']) && '' == $value)
-                    || (in_array($key, $options['exists_validate']) && is_null($value))) {
-                    // 不满足自动验证条件
-                    continue;
-                }
-                $result = true;
-                if ($val instanceof \Closure) {
-                    // 匿名函数验证 支持传入当前字段和所有字段两个数据
-                    $result = call_user_func_array($val, [$value, &$data]);
-                } elseif (is_string($val)) {
-                    // 行为验证 用于一次性批量验证
-                    $result = Hook::exec($val, '', $data);
-                } else {
-                    // 验证字段规则
-                    $result = $this->checkValidate($value, $val, $data);
-                }
-                if (true !== $result) {
-                    // 没有返回true 则表示验证失败
-                    if (!empty($options['patch'])) {
-                        // 批量验证
-                        if (is_array($result)) {
-                            $this->error[] = $result;
-                        } else {
-                            $this->error[$key] = $result;
-                        }
-                    } else {
-                        $this->error = $result;
-                        return;
-                    }
+                if (!$this->fieldValidate($key, $rule, $data, $options)) {
+                    break;
                 }
             }
             $this->options['validate'] = null;
         }
         return;
+    }
+
+    /**
+     * 字段验证
+     * @access protected
+     * @param string $name 字段名
+     * @param mixed $rule 规则
+     * @param array $data 数据
+     * @param array $options 配置参数
+     * @param string $key 子字段名
+     * @param array $value 子字段值
+     * @return boolean
+     */
+    protected function fieldValidate($name, $rule, &$data, $options = [], $key = null, $value = null) {
+        if (is_null($key)) {
+            $key = $name;
+        }
+        // 字段名带有通配符* 需要进行多项验证
+        if (false !== $_key = strstr($key, '.*', true)) {
+            if (is_null($value)) {
+                $value = $this->getDataValue($data, $_key);
+            }
+            if (is_array($value)) {
+                $key = substr($key, strlen($_key . '.*'));
+                foreach ($value as $i => $val) {
+                    // 对数组中每一项进行验证
+                    if (!$this->fieldValidate($name, $rule, $data, $options, $_key . '.' . $i . $key, $val)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        } else {
+            // 取得对应的键值
+            $value = $this->getDataValue($data, $key);
+            if ((in_array($name, $options['value_validate']) && '' == $value)
+                || (in_array($name, $options['exists_validate']) && is_null($value))) {
+                // 不满足自动验证条件
+                return true;
+            }
+            if ($rule instanceof \Closure) {
+                // 匿名函数验证 支持传入当前字段和所有字段两个数据
+                $result = call_user_func_array($rule, [$value, &$data]);
+            } elseif (is_string($rule)) {
+                // 行为验证 用于一次性批量验证
+                $result = Hook::exec($rule, '', $data);
+            } else {
+                // 验证字段规则
+                $result = $this->checkValidate($value, $rule, $data);
+            }
+            if (true !== $result) {
+                // 没有返回true 则表示验证失败
+                if (!empty($options['patch'])) {
+                    // 批量验证
+                    if (is_array($result)) {
+                        if (empty($this->error)) {
+                            $this->error = $result;
+                        } else {
+                            $this->error[] = array_merge($this->error, $result);
+                        }
+                    } else {
+                        $this->error[$key] = $result;
+                    }
+                } else {
+                    $this->error = $result;
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -1064,17 +1113,25 @@ class Model
             // 获取自动完成规则
             list($rules, $options, $scene) = $this->getDataRule($this->options['auto'], 'auto');
 
-            $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
-            $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
-            foreach ($rules as $key => $val) {
-                if (is_numeric($key) && is_array($val)) {
-                    $key = array_shift($val);
+            if (!isset($options['value_fill'])) {
+                $options['value_fill'] = [];
+            } elseif(is_string($options['value_fill'])) {
+                $options['value_fill'] = explode(',', $options['value_fill']);
+            }
+            if (!isset($options['exists_fill'])) {
+                $options['exists_fill'] = [];
+            } elseif(is_string($options['exists_fill'])) {
+                $options['exists_fill'] = explode(',', $options['exists_fill']);
+            }
+            foreach ($rules as $key => $rule) {
+                if (is_numeric($key) && is_array($rule)) {
+                    $key = array_shift($rule);
                 }
                 if (!empty($scene) && !in_array($key, $scene)) {
                     continue;
                 }
                 // 数据自动填充
-                $this->autoOperation($key, $val, $data, $options);
+                $this->autoOperation($key, $rule, $data, $options);
             }
             $this->options['auto'] = null;
         }
@@ -1084,19 +1141,27 @@ class Model
      * 获取数据值
      * @access protected
      * @param array $data  数据
-     * @param string $key  数据标识 支持二维
+     * @param string|string $key  数据标识 支持数组
      * @return mixed
      */
     protected function getDataValue($data, $key)
     {
-        if (strpos($key, '.')) {
-            // 支持二维数组验证
-            list($name1, $name2) = explode('.', $key);
-            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
-        } else {
-            $value = isset($data[$key]) ? $data[$key] : null;
+        if (is_string($key)) {
+            if (!strpos($key, '.')) {
+                return isset($data[$key]) ? $data[$key] : null;
+            } else {
+                $key = explode('.', $key);
+            }
         }
-        return $value;
+        foreach ($key as $val) {
+            if (isset($data[$val])) {
+                $data = $data[$val];
+            } else {
+                $data = null;
+                break;
+            }
+        }
+        return $data;
     }
 
     /**
@@ -1122,7 +1187,7 @@ class Model
             } else {
                 $name = $rules;
             }
-            $rules = $config[$name];
+            $rules = isset($config[$name]) ? $config[$name] : [];
             if (isset($config['__all__'])) {
                 $rules = array_merge($config['__all__'], $rules);
             }
@@ -1149,75 +1214,104 @@ class Model
     /**
      * 数据自动填充
      * @access protected
-     * @param string $key  字段名
-     * @param mixed $val  填充规则
+     * @param string $name  字段名
+     * @param mixed $rule  填充规则
      * @param array $data  数据
      * @param array $options  参数
+     * @param string $key  子字段名
+     * @param array $value  子字段值
      * @return void
      */
-    protected function autoOperation($key, $val, &$data, $options = [])
+    protected function autoOperation($name, $rule, &$data, $options = [], $key = null, $value = null)
     {
-        // 获取数据 支持二维数组
-        $value = $this->getDataValue($data, $key);
-        if (strpos($key, '.')) {
-            list($name1, $name2) = explode('.', $key);
+        if (is_null($key)) {
+            $key = $name;
         }
-        if ((in_array($key, $options['value_fill']) && '' == $value)
-            || (in_array($key, $options['exists_fill']) && is_null($value))) {
-            // 不满足自动填充条件
-            return;
-        }
-        if ($val instanceof \Closure) {
-            $result = call_user_func_array($val, [$value, &$data]);
-        } elseif (isset($val[0]) && $val[0] instanceof \Closure) {
-            $result = call_user_func_array($val[0], [$value, &$data]);
-        } elseif (!is_array($val)) {
-            $result = $val;
-        } else {
-            $rule   = isset($val[0]) ? $val[0] : $val;
-            $type   = isset($val[1]) ? $val[1] : 'value';
-            $params = isset($val[2]) ? $val[2] : [];
-            switch ($type) {
-                case 'behavior':
-                    Hook::exec($rule, '', $data);
-                    return;
-                case 'callback':
-                    array_unshift($params, $value);
-                    $result = call_user_func_array($rule, $params);
-                    break;
-                case 'serialize':
-                    if (is_string($rule)) {
-                        $rule = explode(',', $rule);
-                    }
-                    $serialize = [];
-                    foreach ($rule as $name) {
-                        if (isset($data[$name])) {
-                            $serialize[$name] = $data[$name];
-                            unset($data[$name]);
-                        }
-                    }
-                    $fun    = !empty($params['type']) ? $params['type'] : 'serialize';
-                    $result = $fun($serialize);
-                    break;
-                case 'ignore':
-                    if ($rule === $value) {
-                        if (strpos($key, '.')) {
-                            unset($data[$name1][$name2]);
-                        } else {
-                            unset($data[$key]);
-                        }
-                    }
-                    return;
-                case 'value':
-                default:
-                    $result = $rule;
-                    break;
+        // 字段名带有通配符* 需要进行多项填充
+        if (false !== $_key = strstr($key, '.*', true)) {
+            if (is_null($value)) {
+                $value = $this->getDataValue($data, $_key);
             }
-        }
-        if (strpos($key, '.')) {
-            $data[$name1][$name2] = $result;
+            if (is_array($value)) {
+                $key = substr($key, strlen($_key . '.*'));
+                foreach ($value as $i => $val) {
+                    // 对数组中每一项进行填充
+                    $this->autoOperation($name, $rule, $data, $options, $_key . '.' . $i . $key, $val);
+                }
+            }
         } else {
-            $data[$key] = $result;
+            // 取得对应的键值
+            $value = $this->getDataValue($data, $key);
+            if ((in_array($name, $options['value_fill']) && '' == $value)
+                || (in_array($name, $options['exists_fill']) && is_null($value))) {
+                // 不满足自动填充条件
+                return;
+            }
+            // 匿名函数 用于设置或删除表单中字段的值
+            $dataField = function($key, $val = null) use (&$data) {
+                $str = '$data';
+                foreach (explode('.', $key) as $k) {
+                    $str .=  '[\'' . $k . '\']';
+                }
+                if (isset($val)) {
+                    eval($str . "=\$val;");
+                } else {
+                    eval('unset('. $str . ');');
+                }
+            };
+
+            if ($rule instanceof \Closure) {
+                $result = call_user_func_array($rule, [$value, &$data]);
+            } elseif (isset($rule[0]) && $rule[0] instanceof \Closure) {
+                $result = call_user_func_array($rule[0], [$value, &$data]);
+            } elseif (!is_array($rule)) {
+                $result = $rule;
+            } else {
+                $val    = isset($rule[0]) ? $rule[0] : $rule;
+                $type   = isset($rule[1]) ? $rule[1] : 'value';
+                $params = isset($rule[2]) ? (array) $rule[2] : [];
+                switch ($type) {
+                    case 'behavior':
+                        Hook::exec($val, '', $data);
+                        return;
+                    case 'callback':
+                        array_unshift($params, $value);
+                        $result = call_user_func_array($val, $params);
+                        break;
+                    case 'serialize':
+                        if (empty($val)) {
+                            // 为空则序列化自身
+                            $serialize = (array) $this->getDataValue($data, $key);
+                        } else {
+                            // 把$data中指定的字段序列化到当前字段
+                            if (is_string($val)) {
+                                $val = explode(',', $val);
+                            }
+                            $serialize = [];
+                            foreach ($val as $name) {
+                                if (isset($data[$name])) {
+                                    $serialize[$name] = $data[$name];
+                                    unset($data[$name]);
+                                }
+                            }
+                        }
+                        $fun    = !empty($params['type']) ? $params['type'] : 'serialize';
+                        $result = $fun($serialize);
+                        break;
+                    case 'ignore':
+                        if ($val === $value) {
+                            // 从$data中移除$key
+                            $dataField($key);
+                        }
+                        return;
+                    case 'value':
+                    default:
+                        $result = $val;
+                        break;
+                }
+            }
+            // 设置$data中$key的值
+            $dataField($key, $result);
         }
     }
 
@@ -1234,7 +1328,7 @@ class Model
         $rule    = $val[0];
         $msg     = isset($val[1]) ? $val[1] : '';
         $type    = isset($val[2]) ? $val[2] : 'regex';
-        $options = isset($val[3]) ? $val[3] : [];
+        $options = isset($val[3]) ? (array) $val[3] : [];
         if ($rule instanceof \Closure) {
             // 匿名函数验证 支持传入当前字段和所有字段两个数据
             $result = call_user_func_array($rule, [$value, &$data]);
@@ -1249,17 +1343,17 @@ class Model
                     $result = Hook::exec($rule, '', $data);
                     break;
                 case 'filter':    // 使用filter_var验证
-                    $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
+                    $result = false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                     break;
                 case 'confirm':
-                    $result = $value == $data[$rule];
+                    $result = $value == $this->getDataValue($data, $rule);
                     break;
                 case 'in':
                 case 'notin':
                     $range  = is_array($rule) ? $rule : explode(',', $rule);
                     $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                     break;
-                case 'between':// 验证是否在某个范围
+                case 'between':    // 验证是否在某个范围
                 case 'notbetween':    // 验证是否不在某个范围
                     if (is_string($rule)) {
                         $rule = explode(',', $rule);
@@ -1272,7 +1366,11 @@ class Model
                     if (isset($this->rule[$rule])) {
                         $rule = $this->rule[$rule];
                     }
-                    $result = 1 === preg_match('/^' . $rule . '$/', (string) $value);
+                    if (!(0 === strpos($rule, '/') && preg_match('/\/[imsU]{0,4}$/', $rule))) {
+                        // 不是正则表达式则两端补上/
+                        $rule = '/^' . $rule . '$/';
+                    }
+                    $result = 1 === preg_match($rule, (string) $value);
                     break;
             }
         }
