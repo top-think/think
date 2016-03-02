@@ -11,7 +11,7 @@
 
 /**
  * 模板测试
- * @author    Haotong Lin <lofanmi@gmail.com>
+ * @author    oldrind
  */
 
 namespace tests\thinkphp\library\think;
