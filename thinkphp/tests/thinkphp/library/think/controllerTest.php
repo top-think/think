@@ -16,9 +16,12 @@
 
 namespace tests\thinkphp\library\think;
 
+use ReflectionClass;
+use think\Controller;
+
 require_once CORE_PATH . '../../helper.php';
 
-class Foo extends \think\Controller
+class Foo extends Controller
 {
     public $test = 'test';
 
@@ -28,7 +31,7 @@ class Foo extends \think\Controller
     }
 }
 
-class Bar extends \think\Controller
+class Bar extends Controller
 {
     public $test = 1;
 
@@ -47,15 +50,15 @@ class Bar extends \think\Controller
     }
 }
 
-class Baz extends \think\Controller
+class Baz extends Controller
 {
     public $test = 1;
 
     public $beforeActionList = [
-        'action1' => ['only' => ['index']],
-        'action2' => ['except' => ['index']],
-        'action3' => ['only' => ['abcd']],
-        'action4' => ['except' => ['abcd']],
+        'action1' => ['only' => 'index'],
+        'action2' => ['except' => 'index'],
+        'action3' => ['only' => 'abcd'],
+        'action4' => ['except' => 'abcd'],
     ];
 
     public function action1()
@@ -100,5 +103,53 @@ class controllerTest extends \PHPUnit_Framework_TestCase
 
         $obj = new Baz;
         $this->assertEquals(19, $obj->test);
+    }
+
+    private function getView($controller)
+    {
+        $rc       = new ReflectionClass(get_class($controller));
+        $property = $rc->getProperty('view');
+        $property->setAccessible(true);
+        return $property->getValue($controller);
+    }
+
+    public function testFetch()
+    {
+        $controller = new Foo;
+        $view       = $this->getView($controller);
+        $template        = __DIR__ . '/display';
+        $viewFetch       = $view->fetch($template, ['name' => 'ThinkPHP']);
+        $controllerFetch = $controller->fetch($template, ['name' => 'ThinkPHP']);
+        $this->assertEquals($controllerFetch, $viewFetch);
+    }
+
+    public function testShow()
+    {
+        $controller = new Foo;
+        $view       = $this->getView($controller);
+        $template        = __DIR__ . '/display';
+        $viewFetch       = $view->show($template, ['name' => 'ThinkPHP']);
+        $controllerFetch = $controller->show($template, ['name' => 'ThinkPHP']);
+        $this->assertEquals($controllerFetch, $viewFetch);
+    }
+
+    public function testAssign()
+    {
+        $controller = new Foo;
+        $view       = $this->getView($controller);
+        $controller->assign('abcd', 'dcba');
+        $controller->assign(['key1' => 'value1', 'key2' => 'value2']);
+        $expect = ['abcd' => 'dcba', 'key1' => 'value1', 'key2' => 'value2'];
+        $this->assertAttributeEquals($expect, 'data', $view);
+    }
+
+    public function testEngine()
+    {
+        $controller   = new Foo;
+        $view         = $this->getView($controller);
+        $view->engine = null;
+        $this->assertEquals(null, $view->engine);
+        $controller->engine('php');
+        $this->assertEquals('php', $view->engine);
     }
 }

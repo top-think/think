@@ -37,7 +37,7 @@ class cookieTest extends \PHPUnit_Framework_TestCase
         // httponly设置
         'httponly'  => '',
         // 是否使用 setcookie
-        'setcookie' => false,
+        'setcookie' => true,
     ];
 
     protected function setUp()
