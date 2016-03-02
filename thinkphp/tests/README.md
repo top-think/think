@@ -109,7 +109,7 @@ thinkphp5 的测试的主要流程是跟 thinkphp 的系统流程是相似的，
 |---|---|---|
 |Base|||
 |App|Haotong Lin||
-|Build|||
+|Build|刘志淳||
 |Config|Haotong Lin||
 |Cache|||
 |Controller|Haotong Lin||
