@@ -84,12 +84,12 @@ class Controller
      * @access public
      * @param string $template 模板文件名
      * @param array  $vars     模板输出变量
-     * @param string $cache_id 模板缓存标识
+     * @param array $config     模板参数
      * @return mixed
      */
-    public function fetch($template = '', $vars = [], $cache_id = '')
+    public function fetch($template = '', $vars = [], $config = [])
     {
-        return $this->view->fetch($template, $vars, $cache_id);
+        return $this->view->fetch($template, $vars, $config);
     }
 
     /**
