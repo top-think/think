@@ -21,13 +21,12 @@ class modelTest extends \PHPUnit_Framework_TestCase
 {
     public function getConfig()
     {
-        static $config;
-        if (!isset($config)) {
-            $config = \think\Input::get('database');
-            $config['database'] = 'test';
-            $config['username'] = 'root';
-            $config['password'] = '';
-        }
+        $config = [
+            'type' => 'mysql',
+            'database' => 'test',
+            'username' => 'root',
+            'password' => '',
+        ];
         return $config;
     }
 
