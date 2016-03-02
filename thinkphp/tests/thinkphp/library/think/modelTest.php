@@ -22,10 +22,12 @@ class modelTest extends \PHPUnit_Framework_TestCase
     public function getConfig()
     {
         $config = [
-            'type' => 'mysql',
-            'database' => 'test',
-            'username' => 'root',
-            'password' => '',
+            'connection' => [
+                'type' => 'mysql',
+                'database' => 'test',
+                'username' => 'root',
+                'password' => '',
+            ],
         ];
         return $config;
     }
