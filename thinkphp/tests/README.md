@@ -126,6 +126,6 @@ thinkphp5 的测试的主要流程是跟 thinkphp 的系统流程是相似的，
 |Response|大漠|√|
 |Route|流年||
 |Session|大漠|√|
-|Template|Haotong Lin||
+|Template|oldrind||
 |Url|流年||
 |View|mahuan||
