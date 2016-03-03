@@ -40,7 +40,7 @@ class Url
                 // 解析域名
                 list($anchor, $domain) = explode('@', $anchor, 2);
             }
-        } elseif (strpos($url, '@')) {
+        } elseif (false!==strpos($url, '@')) {
             // 解析域名
             list($url, $domain) = explode('@', $url, 2);
         }
@@ -81,7 +81,7 @@ class Url
         $url  = str_replace('/', $depr, $url);
 
         // URL后缀
-        $suffix = ('/' == $url) ? '' : self::parseSuffix($suffix);
+        $suffix = in_array($url, ['/', '']) ? '' : self::parseSuffix($suffix);
         // 锚点
         $anchor = !empty($anchor) ? '#' . $anchor : '';
         // 参数组装
@@ -104,7 +104,6 @@ class Url
 
         // 检测域名
         $domain = self::parseDomain($url, $domain);
-
         // URL组装
         $url = $domain . Config::get('base_url') . '/' . ltrim($url, '/');
         return $url;
