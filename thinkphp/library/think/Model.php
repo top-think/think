@@ -340,12 +340,11 @@ class Model
             throw new Exception('no data to write');
         }
         // 数据处理
-        foreach ($dataList as $key => $data) {
+        foreach ($dataList as &$data) {
             $data = $this->_write_data($data, 'insert');
             if (false === $data) {
                 return false;
             }
-            $dataList[$key] = $data;
         }
         // 分析表达式
         $options = $this->_parseOptions($options);
@@ -489,8 +488,11 @@ class Model
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
-            $data  = Cache::get($key);
+            if (!isset($cache['key']) || !is_string($cache['key'])) {
+                $cache['key'] =  md5(serialize($options));
+            }
+            $cache['expire'] = isset($cache['expire']) ? $cache['expire'] : null;
+            $data  = Cache::get($cache['key']);
             if (false !== $data) {
                 return $data;
             }
@@ -523,7 +525,7 @@ class Model
         }
 
         if (isset($cache)) {
-            Cache::set($key, $resultSet, $cache['expire']);
+            Cache::set($cache['key'], $resultSet, $cache['expire']);
         }
         return $resultSet;
     }
@@ -542,7 +544,7 @@ class Model
             // 根据主键查询
             if (is_array($options)) {
                 // 判断是否索引数组
-                if (key($options) === 0) {
+                if (0 === key($options)) {
                     $where[$pk] = ['in', $options];
                 } else {
                     return;
@@ -554,19 +556,10 @@ class Model
             $options['where'] = $where;
         } elseif (is_array($pk) && is_array($options) && !empty($options)) {
             // 根据复合主键查询
-            $count = 0;
-            foreach (array_keys($options) as $key) {
-                if (is_int($key)) {
-                    $count++;
-                }
-            }
-            if (count($pk) == $count) {
-                $i = 0;
-                foreach ($pk as $field) {
-                    $where[$field] = $options[$i];
-                    unset($options[$i++]);
-                }
-                $options['where'] = $where;
+            $array = array_intersect_key($options, $pk);
+            if (count($pk) == count($array)) {
+                $options = array_diff_key($options, $array);
+                $options['where'] = array_combine($pk, $array);
             } else {
                 throw new Exception('miss complex primary data');
             }
@@ -604,8 +597,8 @@ class Model
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
-            $data  = Cache::get($key);
+            $cache['key'] = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
+            $data  = Cache::get($cache['key']);
             if (false !== $data) {
                 return $data;
             }
@@ -620,22 +613,19 @@ class Model
                 if (is_string($resultSet)) {
                     return $resultSet;
                 }
-                $_field = explode(',', $field);
                 $field  = array_keys($resultSet[0]);
-                $key1   = array_shift($field);
-                $key2   = array_shift($field);
-                $cols   = array();
-                $count  = count($_field);
+                $cols   = [];
+                $count  = count($field);
                 foreach ($resultSet as $result) {
-                    $name = $result[$key1];
+                    $name = $result[$field[0]];
                     if (2 == $count) {
-                        $cols[$name] = $result[$key2];
+                        $cols[$name] = $result[$field[1]];
                     } else {
                         $cols[$name] = is_string($sepa) ? implode($sepa, array_slice($result, 1)) : $result;
                     }
                 }
                 if (isset($cache)) {
-                    Cache::set($key, $cols, $cache['expire']);
+                    Cache::set($cache['key'], $cols, $cache['expire']);
                 }
                 return $cols;
             }
@@ -654,15 +644,16 @@ class Model
                 if (true !== $sepa && 1 == $options['limit']) {
                     $data = reset($result[0]);
                     if (isset($cache)) {
-                        Cache::set($key, $data, $cache['expire']);
+                        Cache::set($cache['key'], $data, $cache['expire']);
                     }
                     return $data;
                 }
+                $array = [];
                 foreach ($result as $val) {
                     $array[] = $val[$field];
                 }
                 if (isset($cache)) {
-                    Cache::set($key, $array, $cache['expire']);
+                    Cache::set($cache['key'], $array, $cache['expire']);
                 }
                 return $array;
             }
@@ -884,8 +875,11 @@ class Model
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
-            $data  = Cache::get($key);
+            if (!isset($cache['key']) || !is_string($cache['key'])) {
+                $cache['key'] =  md5(serialize($options));
+            }
+            $cache['expire'] = isset($cache['expire']) ? $cache['expire'] : null;
+            $data  = Cache::get($cache['key']);
             if (false !== $data) {
                 $this->data = $data;
                 return $data;
@@ -905,7 +899,7 @@ class Model
         // 回调
         $this->_after_find($data, $options);
         if (isset($cache)) {
-            Cache::set($key, $data, $cache['expire']);
+            Cache::set($cache['key'], $data, $cache['expire']);
         }
         // 数据对象赋值
         $this->data = $data;
@@ -1018,7 +1012,8 @@ class Model
                 if (is_numeric($key) && is_array($rule)) {
                     $key = array_shift($rule);
                 }
-                if (!empty($scene) && !in_array($key, $scene)) {
+                if ((!empty($scene) && !in_array($key, $scene)) || isset($this->error[$key])) {
+                    // 不在指定的场景中或者已经验证过相同的字段
                     continue;
                 }
                 if (!$this->fieldValidate($key, $rule, $data, $options)) {
@@ -1525,6 +1520,9 @@ class Model
         if (!$tableName) {
             $tableName = isset($this->options['table']) ? $this->options['table'] : $this->getTableName();
         }
+        if (is_array($tableName)) {
+            $tableName = key($tableName) ?: current($tableName);
+        }
         if (strpos($tableName, ',')) {
             // 多表不获取字段信息
             return false;
@@ -1675,7 +1673,7 @@ class Model
         }
 
         if (empty($condition)) {
-            if (is_array($join) && is_array($join[0])) {
+            if (is_array($join) && is_array(current($join))) {
                 // 如果为组数，则循环调用join
                 foreach ($join as $key => $value) {
                     if (is_array($value) && 2 <= count($value)) {
@@ -1744,21 +1742,22 @@ class Model
         }
         if (is_object($union)) {
             $union = get_object_vars($union);
+        } elseif (is_string($union)) {
+            // 转换union表达式
+            $union = (array) $union;
         }
-        // 转换union表达式
-        if (is_string($union)) {
-            $options = $this->parseSqlTable($union);
-        } elseif (is_array($union)) {
+        if (is_array($union)) {
             if (isset($union[0])) {
-                $this->options['union'] = array_merge($this->options['union'], $union);
-                return $this;
+                foreach ($union as &$val) {
+                    $val = $this->parseSqlTable($val);
+                }
+                $this->options['union'] = isset($this->options['union']) ? array_merge($this->options['union'], $union) : $union;
             } else {
-                $options = $union;
+                $this->options['union'][] = $union;
             }
         } else {
             throw new Exception('data type invalid', 10300);
         }
-        $this->options['union'][] = $options;
         return $this;
     }
 
