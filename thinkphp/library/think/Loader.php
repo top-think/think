@@ -61,7 +61,7 @@ class Loader
             if (is_file($filename)) {
                 // 开启调试模式Win环境严格区分大小写
                 if (APP_DEBUG && IS_WIN && false === strpos(realpath($filename), $class . EXT)) {
-                    return;
+                    return false;
                 }
                 // 记录加载信息
                 APP_DEBUG && self::$load[] = $filename;
