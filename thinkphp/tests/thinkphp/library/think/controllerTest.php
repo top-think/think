@@ -18,6 +18,7 @@ namespace tests\thinkphp\library\think;
 
 use ReflectionClass;
 use think\Controller;
+use think\View;
 
 require_once CORE_PATH . '../../helper.php';
 
@@ -107,17 +108,19 @@ class controllerTest extends \PHPUnit_Framework_TestCase
 
     private function getView($controller)
     {
+        $view     = new View();
         $rc       = new ReflectionClass(get_class($controller));
         $property = $rc->getProperty('view');
         $property->setAccessible(true);
-        return $property->getValue($controller);
+        $property->setValue($controller, $view);
+        return $view;
     }
 
     public function testFetch()
     {
-        $controller = new Foo;
-        $view       = $this->getView($controller);
-        $template        = __DIR__ . '/display';
+        $controller      = new Foo;
+        $view            = $this->getView($controller);
+        $template        = dirname(__FILE__) . '/display.html';
         $viewFetch       = $view->fetch($template, ['name' => 'ThinkPHP']);
         $controllerFetch = $controller->fetch($template, ['name' => 'ThinkPHP']);
         $this->assertEquals($controllerFetch, $viewFetch);
@@ -125,9 +128,9 @@ class controllerTest extends \PHPUnit_Framework_TestCase
 
     public function testShow()
     {
-        $controller = new Foo;
-        $view       = $this->getView($controller);
-        $template        = __DIR__ . '/display';
+        $controller      = new Foo;
+        $view            = $this->getView($controller);
+        $template        = dirname(__FILE__) . '/display.html';
         $viewFetch       = $view->show($template, ['name' => 'ThinkPHP']);
         $controllerFetch = $controller->show($template, ['name' => 'ThinkPHP']);
         $this->assertEquals($controllerFetch, $viewFetch);
