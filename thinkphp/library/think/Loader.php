@@ -20,7 +20,7 @@ class Loader
     // 命名空间
     protected static $namespace = [];
     // 命名空间别名
-    protected static $namespaceAlias  = [];
+    protected static $namespaceAlias = [];
     // PSR-4
     private static $prefixLengthsPsr4 = [];
     private static $prefixDirsPsr4    = [];
@@ -31,13 +31,13 @@ class Loader
     public static function autoload($class)
     {
         // 检测命名空间别名
-        $ns = dirname($class);
-        $cn = basename($class);
-        if (isset(self::$namespaceAlias[$ns])) {
-            $original = self::$namespaceAlias[$ns].'\\'.$cn;
-            if (class_exists($original)) {
-                class_alias($original, $class);
-                return true;
+        if (!empty(self::$namespaceAlias)) {
+            $namespace = dirname($class);
+            if (isset(self::$namespaceAlias[$namespace])) {
+                $original = self::$namespaceAlias[$namespace] . '\\' . basename($class);
+                if (class_exists($original)) {
+                    return class_alias($original, $class, false);
+                }
             }
         }
         // 检查是否定义类库映射
