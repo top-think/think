@@ -19,6 +19,8 @@ class Loader
     protected static $load = [];
     // 命名空间
     protected static $namespace = [];
+    // 命名空间别名
+    protected static $namespaceAlias  = [];
     // PSR-4
     private static $prefixLengthsPsr4 = [];
     private static $prefixDirsPsr4    = [];
@@ -28,6 +30,16 @@ class Loader
     // 自动加载
     public static function autoload($class)
     {
+        // 检测命名空间别名
+        $ns = dirname($class);
+        $cn = basename($class);
+        if (isset(self::$namespaceAlias[$ns])) {
+            $original = self::$namespaceAlias[$ns].'\\'.$cn;
+            if (class_exists($original)) {
+                class_alias($original, $class);
+                return true;
+            }
+        }
         // 检查是否定义类库映射
         if (isset(self::$map[$class])) {
             if (is_file(self::$map[$class])) {
@@ -47,6 +59,7 @@ class Loader
             if (!strpos($class, '\\')) {
                 return false;
             }
+            // 解析命名空间
             list($name, $class) = explode('\\', $class, 2);
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
@@ -91,6 +104,16 @@ class Loader
             self::$namespace = array_merge(self::$namespace, $namespace);
         } else {
             self::$namespace[$namespace] = $path;
+        }
+    }
+
+    // 注册命名空间别名
+    public static function addNamespaceAlias($namespace, $original = '')
+    {
+        if (is_array($namespace)) {
+            self::$namespaceAlias = array_merge(self::$namespace, $namespace);
+        } else {
+            self::$namespaceAlias[$namespace] = $original;
         }
     }
 
