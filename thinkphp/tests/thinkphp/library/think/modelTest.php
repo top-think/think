@@ -36,7 +36,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
     public function testValidate()
     {
         $model = new Model('', $this->getConfig());
-        $data = $_POST  = [
+        $data  = $_POST = [
             'username'   => 'username',
             'nickname'   => 'nickname',
             'password'   => '123456',
@@ -60,8 +60,10 @@ class modelTest extends \PHPUnit_Framework_TestCase
             ],
             'user'        => [
                 ['username', [&$this, 'checkName'], '用户名长度为5到15个字符', 'callback', 'username'],
-                ['username', function ($value, $data) {return 'admin' == $value ? '此用户名已被使用' : true;}],
-                'nickname' => ['require', '请填昵称'],
+                ['username', function ($value, $data) {
+                    return 'admin' == $value ? '此用户名已被使用' : true;
+                }],
+                'nickname'   => ['require', '请填昵称'],
                 'password'   => ['[\w-]{6,15}', '密码长度为6到15个字符'],
                 'repassword' => ['password', '两次密码不一到致', 'confirm'],
                 'mobile'     => ['mobile', '手机号错误'],
@@ -75,7 +77,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
                     ],
                     'value_validate'  => 'email',
                     'exists_validate' => 'password,repassword,code',
-                    'patch' => true,
+                    'patch'           => true,
                 ],
             ],
         ];
@@ -151,8 +153,8 @@ class modelTest extends \PHPUnit_Framework_TestCase
             'phone'    => ' 123456',
             'hobby'    => ['1', '2'],
             'cityid'   => '1',
-            'a' => 'a',
-            'b' => 'b',
+            'a'        => 'a',
+            'b'        => 'b',
         ];
         $auto  = [
             'user' => [
@@ -174,7 +176,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
                 ['login_time', function ($value, $data) {
                     return $data['reg_time'];
                 }],
-                'ab' => ['a,b', 'serialize'],
+                'ab'         => ['a,b', 'serialize'],
             ],
         ];
         \think\Config::set('auto', $auto);
@@ -186,7 +188,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
         $data['integral']   = 0;
         $data['reg_time']   = time();
         $data['login_time'] = $data['reg_time'];
-        $data['ab'] = serialize(['a' => 'a', 'b' => 'b']);
+        $data['ab']         = serialize(['a' => 'a', 'b' => 'b']);
         unset($data['cityid'], $data['a'], $data['b']);
         $this->assertEquals($data, $result);
 
@@ -380,9 +382,10 @@ EOF;
 
         $result = $user_model->where(['status' => 1])->field('password,create_time', true)->order('id', 'desc')->index('id,username')->page('0,10')->select();
         $data   = [
-            '1'       => 'test',
+            '1' => 'test',
             '2' => 'test2',
-        ];        $this->assertEquals($data, $result);
+        ];
+        $this->assertEquals($data, $result);
 
         $time = $user_model->where(['status' => 1])->cache('user_create_time')->getField('create_time');
         $ids  = $user_model->where(['status' => 1])->cache('user_id')->getField('id', true);
@@ -429,8 +432,8 @@ EOF;
 
         $result = $user_model->alias('u')->join('role_user ru', 'u.id=ru.user_id', 'left')->field('u.username,ru.role_id')->select();
         $data   = [
-            'username'  => 'test',
-            'role_id' => '1',
+            'username' => 'test',
+            'role_id'  => '1',
         ];
         $this->assertEquals($data, $result[0]);
 
@@ -541,7 +544,7 @@ EOF;
     {
         $config = $this->getConfig();
 
-        $model  = new Model('', $config);
+        $model = new Model('', $config);
         //$model->select();
     }
 

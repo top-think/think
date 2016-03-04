@@ -1682,7 +1682,7 @@ class Model
             } else {
                 $this->_join($join, $condition); // 兼容原来的join写法
             }
-        } elseif (in_array(strtoupper($condition), array('INNER', 'LEFT', 'RIGHT', 'ALL'))) {
+        } elseif (in_array(strtoupper($condition), ['INNER', 'LEFT', 'RIGHT', 'ALL'])) {
             $this->_join($join, $condition); // 兼容原来的join写法
         } else {
             $prefix = $this->tablePrefix;
