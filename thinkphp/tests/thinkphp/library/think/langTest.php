@@ -52,10 +52,13 @@ class langTest extends \PHPUnit_Framework_TestCase
         Config::set('lang_list', ['zh-cn', 'zh-tw']);
         Lang::set('hello', '欢迎', 'zh-cn');
         Lang::set('hello', '歡迎', 'zh-tw');
-        /*
+
+        Config::set('lang_detect_var', 'lang');
+        Config::set('lang_cookie_var', 'think_cookie');
+
         $_GET['lang'] = 'zh-tw';
         Lang::detect();
-        $this->assertEquals('歡迎',Lang::get('hello') );*/
+        $this->assertEquals('歡迎', Lang::get('hello'));
 
         $_GET['lang'] = 'zh-cn';
         Lang::detect();

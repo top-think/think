@@ -489,10 +489,10 @@ class Model
         if (isset($options['cache'])) {
             $cache = $options['cache'];
             if (!isset($cache['key']) || !is_string($cache['key'])) {
-                $cache['key'] =  md5(serialize($options));
+                $cache['key'] = md5(serialize($options));
             }
             $cache['expire'] = isset($cache['expire']) ? $cache['expire'] : null;
-            $data  = Cache::get($cache['key']);
+            $data            = Cache::get($cache['key']);
             if (false !== $data) {
                 return $data;
             }
@@ -558,7 +558,7 @@ class Model
             // 根据复合主键查询
             $array = array_intersect_key($options, $pk);
             if (count($pk) == count($array)) {
-                $options = array_diff_key($options, $array);
+                $options          = array_diff_key($options, $array);
                 $options['where'] = array_combine($pk, $array);
             } else {
                 throw new Exception('miss complex primary data');
@@ -596,9 +596,9 @@ class Model
         $field            = trim($field);
         // 判断查询缓存
         if (isset($options['cache'])) {
-            $cache = $options['cache'];
+            $cache        = $options['cache'];
             $cache['key'] = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
-            $data  = Cache::get($cache['key']);
+            $data         = Cache::get($cache['key']);
             if (false !== $data) {
                 return $data;
             }
@@ -613,9 +613,9 @@ class Model
                 if (is_string($resultSet)) {
                     return $resultSet;
                 }
-                $field  = array_keys($resultSet[0]);
-                $cols   = [];
-                $count  = count($field);
+                $field = array_keys($resultSet[0]);
+                $cols  = [];
+                $count = count($field);
                 foreach ($resultSet as $result) {
                     $name = $result[$field[0]];
                     if (2 == $count) {
@@ -692,7 +692,7 @@ class Model
      */
     public function setInc($field, $step = 1, $lazyTime = 0)
     {
-        $condition = $this->options['where'];
+        $condition = !empty($this->options['where']) ? $this->options['where'] : [];
         if (empty($condition)) {
             // 没有条件不做任何更新
             throw new Exception('no data to update');
@@ -703,8 +703,6 @@ class Model
             $step = $this->lazyWrite($guid, $step, $lazyTime);
             if (empty($step)) {
                 return true; // 等待下次写入
-            } elseif ($step < 0) {
-                $step = '-' . $step;
             }
         }
         return $this->setField($field, ['exp', $field . '+' . $step]);
@@ -721,7 +719,7 @@ class Model
      */
     public function setDec($field, $step = 1, $lazyTime = 0)
     {
-        $condition = $this->options['where'];
+        $condition = !empty($this->options['where']) ? $this->options['where'] : [];
         if (empty($condition)) {
             // 没有条件不做任何更新
             throw new Exception('no data to update');
@@ -732,8 +730,6 @@ class Model
             $step = $this->lazyWrite($guid, -$step, $lazyTime);
             if (empty($step)) {
                 return true; // 等待下次写入
-            } elseif ($step > 0) {
-                $step = '-' . $step;
             }
         }
         return $this->setField($field, ['exp', $field . '-' . $step]);
@@ -876,10 +872,10 @@ class Model
         if (isset($options['cache'])) {
             $cache = $options['cache'];
             if (!isset($cache['key']) || !is_string($cache['key'])) {
-                $cache['key'] =  md5(serialize($options));
+                $cache['key'] = md5(serialize($options));
             }
             $cache['expire'] = isset($cache['expire']) ? $cache['expire'] : null;
-            $data  = Cache::get($cache['key']);
+            $data            = Cache::get($cache['key']);
             if (false !== $data) {
                 $this->data = $data;
                 return $data;
@@ -1000,12 +996,12 @@ class Model
 
             if (!isset($options['value_validate'])) {
                 $options['value_validate'] = [];
-            } elseif(is_string($options['value_validate'])) {
+            } elseif (is_string($options['value_validate'])) {
                 $options['value_validate'] = explode(',', $options['value_validate']);
             }
             if (!isset($options['exists_validate'])) {
                 $options['exists_validate'] = [];
-            } elseif(is_string($options['exists_validate'])) {
+            } elseif (is_string($options['exists_validate'])) {
                 $options['exists_validate'] = explode(',', $options['exists_validate']);
             }
             foreach ($rules as $key => $rule) {
@@ -1036,7 +1032,8 @@ class Model
      * @param array $value 子字段值
      * @return boolean
      */
-    protected function fieldValidate($name, $rule, &$data, $options = [], $key = null, $value = null) {
+    protected function fieldValidate($name, $rule, &$data, $options = [], $key = null, $value = null)
+    {
         if (is_null($key)) {
             $key = $name;
         }
@@ -1110,12 +1107,12 @@ class Model
 
             if (!isset($options['value_fill'])) {
                 $options['value_fill'] = [];
-            } elseif(is_string($options['value_fill'])) {
+            } elseif (is_string($options['value_fill'])) {
                 $options['value_fill'] = explode(',', $options['value_fill']);
             }
             if (!isset($options['exists_fill'])) {
                 $options['exists_fill'] = [];
-            } elseif(is_string($options['exists_fill'])) {
+            } elseif (is_string($options['exists_fill'])) {
                 $options['exists_fill'] = explode(',', $options['exists_fill']);
             }
             foreach ($rules as $key => $rule) {
@@ -1243,15 +1240,15 @@ class Model
                 return;
             }
             // 匿名函数 用于设置或删除表单中字段的值
-            $dataField = function($key, $val = null) use (&$data) {
+            $dataField = function ($key, $val = null) use (&$data) {
                 $str = '$data';
                 foreach (explode('.', $key) as $k) {
-                    $str .=  '[\'' . $k . '\']';
+                    $str .= '[\'' . $k . '\']';
                 }
                 if (isset($val)) {
                     eval($str . "=\$val;");
                 } else {
-                    eval('unset('. $str . ');');
+                    eval('unset(' . $str . ');');
                 }
             };
 
@@ -1341,14 +1338,14 @@ class Model
                     $result = false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
                     break;
                 case 'confirm':
-                    $result = $value == $this->getDataValue($data, $rule);
+                    $result = $this->getDataValue($data, $rule) == $value;
                     break;
                 case 'in':
                 case 'notin':
                     $range  = is_array($rule) ? $rule : explode(',', $rule);
                     $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
                     break;
-                case 'between':    // 验证是否在某个范围
+                case 'between':// 验证是否在某个范围
                 case 'notbetween':    // 验证是否不在某个范围
                     if (is_string($rule)) {
                         $rule = explode(',', $rule);
