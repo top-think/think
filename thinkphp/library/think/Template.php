@@ -456,13 +456,18 @@ class Template
                     // 分析模板文件名并读取内容
                     $parseStr = $this->parseTemplateName($file);
                     // 替换变量
+                    $varStr = "";
                     foreach ($array as $k => $v) {
                         // 以$开头字符串转换成模板变量
                         if (0 === strpos($v, '$')) {
                             $v = $this->get(substr($v, 1));
                         }
+                        // 兼容 [var_name] 静态渲染
                         $parseStr = str_replace('[' . $k . ']', $v, $parseStr);
+                        // 支持 $var_name = value 动态赋值
+                        $varStr .= "{assign name=\"{$k}\" value=\"{$v}\" /}";
                     }
+                    $parseStr = $varStr . $parseStr;
                     $content = str_replace($match[0], $parseStr, $content);
                     // 再次对包含文件进行模板分析
                     $funReplace($parseStr);
