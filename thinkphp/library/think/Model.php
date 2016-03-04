@@ -990,6 +990,8 @@ class Model
      */
     protected function dataValidate(&$data)
     {
+        // 验证前清空error
+        $this->error = '';
         if (!empty($this->options['validate'])) {
             // 获取自动验证规则
             list($rules, $options, $scene) = $this->getDataRule($this->options['validate'], 'validate');
@@ -1938,11 +1940,10 @@ class Model
      */
     public function order($field, $order = null)
     {
-        if (is_string($field) && !empty($field) && is_null($order)) {
-            $this->options['order'][] = $field;
-        } elseif (is_string($field) && !empty($field) && is_string($order)) {
-            $this->options['order'][$field] = $order;
-        } elseif (is_array($field) && !empty($field)) {
+        if (!empty($field)) {
+            if (!is_array($field)) {
+                $field = empty($order) ? [$field] : [(string) $field => (string) $order];
+            }
             $this->options['order'] = $field;
         }
         return $this;
