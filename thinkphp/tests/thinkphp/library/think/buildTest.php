@@ -33,6 +33,7 @@ class buildTest extends \PHPUnit_Framework_TestCase
                 '__dir__'    => ['behavior', 'controller', 'model', 'view'],
                 'controller' => ['Index', 'Test', 'UserType'],
                 'model'      => ['User', 'UserType'],
+                'service'    => ['User', 'UserType'],
                 'view'       => ['index/index'],
             ],
         ];
