@@ -28,7 +28,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
                 'username' => 'root',
                 'password' => '',
             ],
-            'prefix' => 'tp_',
+            'prefix'     => 'tp_',
         ];
         return $config;
     }
@@ -36,7 +36,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
     public function testValidate()
     {
         $model = new Model('', $this->getConfig());
-        $data  = [
+        $data  = $_POST = [
             'username'   => 'username',
             'nickname'   => 'nickname',
             'password'   => '123456',
@@ -60,7 +60,10 @@ class modelTest extends \PHPUnit_Framework_TestCase
             ],
             'user'        => [
                 ['username', [&$this, 'checkName'], '用户名长度为5到15个字符', 'callback', 'username'],
-                ['nickname', 'require', '请填昵称'],
+                ['username', function ($value, $data) {
+                    return 'admin' == $value ? '此用户名已被使用' : true;
+                }],
+                'nickname'   => ['require', '请填昵称'],
                 'password'   => ['[\w-]{6,15}', '密码长度为6到15个字符'],
                 'repassword' => ['password', '两次密码不一到致', 'confirm'],
                 'mobile'     => ['mobile', '手机号错误'],
@@ -74,17 +77,19 @@ class modelTest extends \PHPUnit_Framework_TestCase
                     ],
                     'value_validate'  => 'email',
                     'exists_validate' => 'password,repassword,code',
+                    'patch'           => true,
                 ],
             ],
         ];
         \think\Config::set('validate', $validate);
-        $result = $model->validate('user.add')->create($data);
-        $this->assertEquals('', $model->getError());
+        $result = $model->validate('user.add')->create();
+        var_dump($model->getError());
+        $this->assertEmpty($model->getError());
 
         unset($data['password'], $data['repassword']);
         $data['email'] = '';
         $result        = $model->validate('user.edit')->create($data);
-        $this->assertEquals('', $model->getError());
+        $this->assertEmpty($model->getError());
 
         // 测试带.和*的键名
         $data   = [
@@ -122,13 +127,18 @@ class modelTest extends \PHPUnit_Framework_TestCase
             'sku.0.1.price' => 'mast int',
         ];
         $this->assertEquals($msg, $model->getError());
+
+        unset($test['__option__']['patch']);
+        $result = $model->field('code')->validate($test)->create($data);
+        $this->assertEquals(['code' => 'not empty'], $model->getError());
     }
 
     public function checkName($value, $field)
     {
         switch ($field) {
             case 'username':
-                return !empty($value);
+                $len = strlen($value);
+                return $len >= 5 && $len <= 15;
             case 'mobile':
                 return 13 == strlen($value);
         }
@@ -143,11 +153,13 @@ class modelTest extends \PHPUnit_Framework_TestCase
             'phone'    => ' 123456',
             'hobby'    => ['1', '2'],
             'cityid'   => '1',
+            'a'        => 'a',
+            'b'        => 'b',
         ];
         $auto  = [
             'user' => [
                 '__option__' => [
-                    'value_fill'  => ['username', 'password', 'phone'],
+                    'value_fill'  => 'username,password,phone',
                     'exists_fill' => 'nickname',
                 ],
                 'username'   => ['strtolower', 'callback'],
@@ -164,6 +176,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
                 ['login_time', function ($value, $data) {
                     return $data['reg_time'];
                 }],
+                'ab'         => ['a,b', 'serialize'],
             ],
         ];
         \think\Config::set('auto', $auto);
@@ -175,7 +188,8 @@ class modelTest extends \PHPUnit_Framework_TestCase
         $data['integral']   = 0;
         $data['reg_time']   = time();
         $data['login_time'] = $data['reg_time'];
-        unset($data['cityid']);
+        $data['ab']         = serialize(['a' => 'a', 'b' => 'b']);
+        unset($data['cityid'], $data['a'], $data['b']);
         $this->assertEquals($data, $result);
 
         // 测试带.和*的键名
@@ -252,6 +266,7 @@ DROP TABLE IF EXISTS `tp_role_user`;
 CREATE TABLE `tp_role_user` (
   `role_id` smallint(5) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
+  `remark` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`role_id`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 EOF;
@@ -263,77 +278,79 @@ EOF;
     public function testAdd()
     {
         $config = $this->getConfig();
-        $time = time();
+        $time   = time();
 
-        $user_model = new Model('user', $config);
-        $data = [
-            'username' => 'test',
-            'password' => md5('123456'),
-            'status' => 1,
+        $user_model = new Model('test.user', $config);
+        $data       = [
+            'username'    => 'test',
+            'password'    => md5('123456'),
+            'status'      => 1,
             'create_time' => $time,
         ];
-        $user_id = $user_model->add($data);
-        $data = [
-            'username' => 'test2',
-            'password' => md5('000000'),
-            'status' => 1,
+        $user_id    = $user_model->add($data);
+        $data       = [
+            'username'    => 'test2',
+            'password'    => md5('000000'),
+            'status'      => 1,
             'create_time' => $time,
         ];
         $user_model->add($data, true);
 
-        $data = [
+        $data          = [
             [
-                'user_id' => $user_id,
+                'user_id'   => $user_id,
                 'consignee' => '张三',
                 'area_info' => '广东深圳',
-                'city_id' => '42',
-                'area_id' => '111',
-                'address' => 'xx路xx号',
-                'mobile' => '1380000000000',
+                'city_id'   => '42',
+                'area_id'   => '111',
+                'address'   => 'xx路xx号',
+                'mobile'    => '1380000000000',
                 'isdefault' => '1',
             ],
             [
-                'user_id' => $user_id,
+                'user_id'   => $user_id,
                 'consignee' => '李四',
                 'area_info' => '广东深圳',
-                'city_id' => '42',
-                'area_id' => '111',
-                'address' => 'xx路xx号',
-                'mobile' => '13999999999',
+                'city_id'   => '42',
+                'area_id'   => '111',
+                'address'   => 'xx路xx号',
+                'mobile'    => '13999999999',
                 'isdefault' => '0',
             ],
         ];
         $address_model = new Model('user_address', $config);
-        $address_id = $address_model->addAll($data, [], true);
+        $address_id    = $address_model->addAll($data, [], true);
 
-        $data = [
+        $data          = [
             [
-                'user_id' => $user_id,
-                'sn' => '10001',
-                'amount' => '200',
+                'user_id'     => $user_id,
+                'sn'          => '10001',
+                'amount'      => '200',
                 'freight_fee' => '10',
-                'address_id' => $address_id - 1,
-                'status' => '1',
+                'address_id'  => $address_id - 1,
+                'status'      => '1',
                 'create_time' => $time,
             ],
             [
-                'user_id' => $user_id,
-                'sn' => '10002',
-                'amount' => '350',
+                'user_id'     => $user_id,
+                'sn'          => '10002',
+                'amount'      => '350',
                 'freight_fee' => '10',
-                'address_id' => $address_id,
-                'status' => '0',
+                'address_id'  => $address_id,
+                'status'      => '0',
                 'create_time' => $time,
             ],
         ];
         $address_model = new Model('order', $config);
         $address_model->addAll($data, [], true);
 
-        $data = [
+        $data                = [
             'user_id' => $user_id,
             'role_id' => 1,
         ];
-        $model = new Model('', $config);
+        $config['db_name']   = 'test';
+        $config['attr_case'] = 2;
+        $model               = new Model('', $config);
         $model->table($config['prefix'] . 'role_user')->add($data);
     }
 
@@ -341,75 +358,97 @@ EOF;
     {
         $user_model = new Model('user', $this->getConfig());
 
-        $sql = "select id,create_time from tp_user where username='test' limit 1";
+        $sql    = "select id,create_time from tp_user where username='test' limit 1";
         $result = $user_model->query($sql);
-        $id = $result[0]['id'];
-        $time = $result[0]['create_time'];
-        $info = $user_model->where('create_time=' . $time)->where(['status' => 1])->field(true)->find(['cache' => ['key' => true]]);
-        $data = [
-            'id' => $id,
-            'username' => 'test',
-            'password' => md5('123456'),
-            'status' => '1',
+        $id     = $result[0]['id'];
+        $time   = $result[0]['create_time'];
+        $info   = $user_model->where('create_time=' . $time)->where(['status' => 1])->field(true)->find(['cache' => ['key' => true]]);
+        $data   = [
+            'id'          => $id,
+            'username'    => 'test',
+            'password'    => md5('123456'),
+            'status'      => '1',
             'create_time' => $time,
         ];
         $this->assertEquals($data, $info);
 
         $result = $user_model->where(['id' => $id])->field('password,create_time', true)->order('id')->limit('0,10')->select(['cache' => ['key' => true, 'expire' => 0], 'index' => 'username']);
-        $data = [
-            'id' => $id,
+        $data   = [
+            'id'       => $id,
             'username' => 'test',
-            'status' => '1',
+            'status'   => '1',
         ];
         $this->assertEquals($data, $result['test']);
 
-        $time = $user_model->where(['status'=>1])->getField('create_time');
-        $ids = $user_model->where(['status'=>1])->getField('id', true);
+        $result = $user_model->where(['status' => 1])->field('password,create_time', true)->order('id', 'desc')->index('id,username')->page('0,10')->select();
+        $data   = [
+            '1' => 'test',
+            '2' => 'test2',
+        ];
+        $this->assertEquals($data, $result);
+
+        $time = $user_model->where(['status' => 1])->cache('user_create_time')->getField('create_time');
+        $ids  = $user_model->where(['status' => 1])->cache('user_id')->getField('id', true);
         $this->assertEquals(2, count($ids));
-        $result = $user_model->getField('username,status,create_time', '|');
-        $data = [
-            'test' => '1|' . $time,
+
+        $result = $user_model->cache(true)->getField('username,status,create_time', '|');
+        $data   = [
+            'test'  => '1|' . $time,
             'test2' => '1|' . $time,
+        ];
+        $this->assertEquals($data, $result);
+
+        $result = $user_model->cache(10)->getField('username,status');
+        $data   = [
+            'test'  => '1',
+            'test2' => '1',
         ];
         $this->assertEquals($data, $result);
     }
 
     public function testJoin()
     {
-        $config = $this->getConfig();
+        $config     = $this->getConfig();
         $user_model = new Model('user', $config);
 
-        $join = [
+        $join   = [
             [['order o', 'tp_'], 'u.id=o.user_id'],
             [['user_address' => 'a'], 'u.id=a.user_id'],
         ];
         $result = $user_model->alias('u')->join($join)->field('u.username,a.consignee,o.amount')->select();
-        $data = [
-            'username' => 'test',
+        $data   = [
+            'username'  => 'test',
             'consignee' => '张三',
-            'amount' => '200',
+            'amount'    => '200',
         ];
         $this->assertEquals($data, $result[0]);
 
         $result = $user_model->alias('u')->join('__USER_ADDRESS__ a', 'u.id=a.user_id', 'left')->field('u.username,a.consignee')->select();
-        $data = [
-            'username' => 'test',
+        $data   = [
+            'username'  => 'test',
             'consignee' => '张三',
+        ];
+        $this->assertEquals($data, $result[0]);
+
+        $result = $user_model->alias('u')->join('role_user ru', 'u.id=ru.user_id', 'left')->field('u.username,ru.role_id')->select();
+        $data   = [
+            'username' => 'test',
+            'role_id'  => '1',
         ];
         $this->assertEquals($data, $result[0]);
 
         $subsql = "(select user_id,amount from {$config['prefix']}order where status=1 limit 1) o";
         $result = $user_model->alias('u')->join($subsql, 'u.id=o.user_id', 'left')->field('u.username,o.amount')->select();
-        $data = [
+        $data   = [
             'username' => 'test',
-            'amount' => '200',
+            'amount'   => '200',
         ];
         $this->assertEquals($data, $result[0]);
 
         // 兼容_join方法
         $result = $user_model->alias('u')->join('__USER_ADDRESS__ a on u.id=a.user_id', 'left')->field('u.username,a.consignee')->select();
-        $data = [
-            'username' => 'test',
+        $data   = [
+            'username'  => 'test',
             'consignee' => '张三',
         ];
         $this->assertEquals($data, $result[0]);
@@ -417,28 +456,28 @@ EOF;
 
     public function testUnion()
     {
-        $config = $this->getConfig();
+        $config     = $this->getConfig();
         $user_model = new Model('user', $config);
 
-        $union = "SELECT consignee FROM __USER_ADDRESS__";
+        $union  = "SELECT consignee FROM __USER_ADDRESS__";
         $result = $user_model->field('username')->union($union)->select();
         $this->assertEquals(4, count($result));
 
-        $model = new Model('', $config);
-        $union = ["SELECT create_time FROM __ORDER__"];
+        $model  = new Model('', $config);
+        $union  = ["SELECT create_time FROM __ORDER__"];
         $result = $model->table([$config['prefix'] . 'user'])->field('create_time')->union($union, true)->select();
         $this->assertEquals(4, count($result));
     }
 
     public function testSave()
     {
-        $config = $this->getConfig();
+        $config      = $this->getConfig();
         $order_model = new Model('order', $config);
 
         $data = [
-            'id' => '1',
-            'amount' => '180',
-            'status' => 0,
+            'id'          => '1',
+            'amount'      => '180',
+            'status'      => 0,
             'create_time' => time(),
         ];
         $flag = $user_id = $order_model->save($data);
@@ -450,46 +489,90 @@ EOF;
         $flag = $order_model->where(['id' => 2])->setField($data);
         $this->assertEquals(1, $flag);
 
-        $flag = $order_model->where(['amount'=>['lt',200]])->setField('freight_fee', 15);
+        $flag = $order_model->where(['amount' => ['lt', 200]])->setField('freight_fee', 15);
         $this->assertEquals(1, $flag);
 
-        $map = [
-            'amount' => ['gt', 300],
-            'freight_fee' =>['gt', 5],
+        $map  = [
+            'amount'      => ['gt', 300],
+            'freight_fee' => ['gt', 0],
         ];
-        $flag = $order_model->where($map)->setDec('freight_fee', 5, 1);
+        $flag = $order_model->where($map)->setDec('freight_fee', 5, 30);
+        $this->assertTrue($flag);
+
+        $flag = $order_model->where($map)->setInc('freight_fee', 5, 30);
+        $this->assertTrue($flag);
+
+        $flag = $order_model->where($map)->setDec('freight_fee', 5);
         $this->assertEquals(1, $flag);
 
-        sleep(1);
-        $flag = $order_model->where($map)->setInc('freight_fee', 5, 1);
+        $flag = $order_model->where($map)->setInc('freight_fee', 5);
         $this->assertEquals(1, $flag);
+
+        $ru_model = new Model('role_user', $config);
+        $data     = [
+            'user_id' => 1,
+            'role_id' => 1,
+            'remark'  => 'remark',
+        ];
+        $flag     = $ru_model->save($data);
+        $this->assertEquals(1, $flag);
+    }
+
+    public function testMagicMethods()
+    {
+        $model = new Model('user', $this->getConfig());
+        $model->data("first=a&last=z");
+        $model->username = 'test';
+
+        $this->assertEquals('a', $model->first);
+
+        $this->assertTrue(isset($model->last));
+
+        unset($model->username);
+        $this->assertTrue(!isset($model->username));
+
+        $this->assertEquals(2, $model->count());
+
+        $info = $model->getByUsername('test');
+        $this->assertEquals(1, $info['id']);
+
+        $id = $model->getFieldByUsername('test', 'id');
+        $this->assertEquals(1, $id);
+    }
+
+    public function testError()
+    {
+        $config = $this->getConfig();
+
+        $model = new Model('', $config);
+        //$model->select();
     }
 
     public function testDelete()
     {
         $config = $this->getConfig();
 
-        $order_model = new Model('order', $config);
+        $order_model     = new Model('order', $config);
         $order_model->id = 2;
-        $flag = $order_model->delete();
+        $flag            = $order_model->delete();
         $this->assertEquals(1, $flag);
 
         $flag = $order_model->delete('1');
         $this->assertEquals(1, $flag);
 
         $address_model = new Model('user_address', $config);
-        $flag = $address_model->delete(['1','2']);
+        $flag          = $address_model->delete(['1', '2']);
         $this->assertEquals(2, $flag);
 
         $user_model = new Model('user', $config);
-        $flag = $user_model->where('1=1')->delete();
+        $flag       = $user_model->where('1=1')->delete();
         $this->assertEquals(2, $flag);
 
         $ru_model = new Model('role_user', $config);
-        $flag = $ru_model->delete(['1','1']);
+        $flag     = $ru_model->delete(['1', '1']);
         $this->assertEquals(1, $flag);
 
-        $sql = <<<EOF
+        $sql   = <<<EOF
 DROP TABLE IF EXISTS `tp_user`;
 DROP TABLE IF EXISTS `tp_order`;
 DROP TABLE IF EXISTS `tp_user_address`;
@@ -497,5 +580,7 @@ DROP TABLE IF EXISTS `tp_role_user`;
 EOF;
         $model = new Model('', $this->getConfig());
         $model->execute($sql);
+        $flag = $model->db(0, null);
+        $this->assertNull($flag);
     }
 }
