@@ -94,7 +94,8 @@ class routeTest extends \PHPUnit_Framework_TestCase
     {
         Route::pattern(['id' => '\d+', 'name' => '\w{6,25}']);
         Route::group('group', [':id' => 'index/hello', ':name' => 'index/say']);
-        $this->assertEquals(false, Route::check('group/think'));
+        $this->assertEquals(false, Route::check('empty/think'));
+        $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'say']], Route::check('group/think'));
         $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'hello']], Route::check('group/10'));
         $this->assertEquals(['type' => 'module', 'module' => [null, 'index', 'say']], Route::check('group/thinkphp'));
     }
