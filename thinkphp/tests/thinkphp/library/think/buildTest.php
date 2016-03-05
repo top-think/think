@@ -66,6 +66,7 @@ class buildTest extends \PHPUnit_Framework_TestCase
                         }
                     }
                 }
+                $this->assertFileExists(APP_PATH . ($module ? $module . DS : '') . 'config.php');
             }
         }
     }
