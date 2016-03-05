@@ -586,37 +586,37 @@ EOF;
 
     public function testDelete()
     {
-//        $config = $this->getConfig();
-//
-//        $order_model     = new Model('order', $config);
-//        $order_model->id = 2;
-//        $flag            = $order_model->delete();
-//        $this->assertEquals(1, $flag);
-//
-//        $flag = $order_model->delete('1');
-//        $this->assertEquals(1, $flag);
-//
-//        $address_model = new Model('user_address', $config);
-//        $flag          = $address_model->delete(['1', '2']);
-//        $this->assertEquals(2, $flag);
-//
-//        $user_model = new Model('user', $config);
-//        $flag       = $user_model->using([''])->where('1=1')->delete();
-//        $this->assertEquals(2, $flag);
-//
-//        $ru_model = new Model('role_user', $config);
-//        $flag     = $ru_model->delete(['1', '1']);
-//        $this->assertEquals(1, $flag);
-//
-//        $sql   = <<<EOF
-//DROP TABLE IF EXISTS `tp_user`;
-//DROP TABLE IF EXISTS `tp_order`;
-//DROP TABLE IF EXISTS `tp_user_address`;
-//DROP TABLE IF EXISTS `tp_role_user`;
-//EOF;
-//        $model = new Model('', $this->getConfig());
-//        $model->execute($sql);
-//        $flag = $model->db(0, null);
-//        $this->assertNull($flag);
+        $config = $this->getConfig();
+
+        $order_model     = new Model('order', $config);
+        $order_model->id = 2;
+        $flag            = $order_model->delete();
+        $this->assertEquals(1, $flag);
+
+        $flag = $order_model->delete('1');
+        $this->assertEquals(1, $flag);
+
+        $address_model = new Model('user_address', $config);
+        $flag          = $address_model->delete(['1', '2']);
+        $this->assertEquals(2, $flag);
+
+        $user_model = new Model('user', $config);
+        $flag       = $user_model->using([''])->where('1=1')->delete();
+        $this->assertEquals(2, $flag);
+
+        $ru_model = new Model('role_user', $config);
+        $flag     = $ru_model->delete(['1', '1']);
+        $this->assertEquals(1, $flag);
+
+        $sql   = <<<EOF
+DROP TABLE IF EXISTS `tp_user`;
+DROP TABLE IF EXISTS `tp_order`;
+DROP TABLE IF EXISTS `tp_user_address`;
+DROP TABLE IF EXISTS `tp_role_user`;
+EOF;
+        $model = new Model('', $this->getConfig());
+        $model->execute($sql);
+        $flag = $model->db(0, null);
+        $this->assertNull($flag);
     }
 }
