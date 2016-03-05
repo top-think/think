@@ -1544,6 +1544,7 @@ class Model
             }
 
             $fields = array_keys($info);
+            $bind = $type = [];
             foreach ($info as $key => $val) {
                 // 记录字段类型
                 $type[$key] = $val['type'];
@@ -1835,7 +1836,7 @@ class Model
             if (!empty($args) && is_array($args)) {
                 $options = array_merge($options, $args);
             }
-        } elseif (is_array($scope)) {
+        } else {
             // 直接传入命名范围定义
             $options = $scope;
         }
