@@ -83,7 +83,6 @@ class modelTest extends \PHPUnit_Framework_TestCase
         ];
         \think\Config::set('validate', $validate);
         $result = $model->validate('user.add')->create();
-        var_dump($model->getError());
         $this->assertEmpty($model->getError());
 
         unset($data['password'], $data['repassword']);
@@ -159,7 +158,10 @@ class modelTest extends \PHPUnit_Framework_TestCase
         $auto  = [
             'user' => [
                 '__option__' => [
-                    'value_fill'  => 'username,password,phone',
+                    'scene'           => [
+                        'edit' => 'username,nickname,phone,hobby,cityid,address,integral,reg_time,login_time,ab',
+                    ],
+                    'value_fill'  => 'username,phone',
                     'exists_fill' => 'nickname',
                 ],
                 'username'   => ['strtolower', 'callback'],
@@ -180,7 +182,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         \think\Config::set('auto', $auto);
-        $result             = $model->auto('user')->create($data);
+        $result             = $model->auto('user.edit')->create($data);
         $data['nickname']   = 'cn_nickname';
         $data['phone']      = '123456';
         $data['hobby']      = serialize($data['hobby']);
@@ -235,6 +237,7 @@ CREATE TABLE `tp_user` (
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间'
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='会员表';
+ALTER TABLE `tp_user` ADD INDEX(`create_time`);
 
 DROP TABLE IF EXISTS `tp_order`;
 CREATE TABLE `tp_order` (
@@ -287,7 +290,7 @@ EOF;
             'status'      => 1,
             'create_time' => $time,
         ];
-        $user_id    = $user_model->add($data);
+        $user_id    = $user_model->data($data)->add();
         $data       = [
             'username'    => 'test2',
             'password'    => md5('000000'),
@@ -334,7 +337,7 @@ EOF;
             [
                 'user_id'     => $user_id,
                 'sn'          => '10002',
-                'amount'      => '350',
+                'amount'      => '350.80',
                 'freight_fee' => '10',
                 'address_id'  => $address_id,
                 'status'      => '0',
@@ -342,7 +345,7 @@ EOF;
             ],
         ];
         $address_model = new Model('order', $config);
-        $address_model->addAll($data, [], true);
+        $address_model->addAll($data);
 
         $data                = [
             'user_id' => $user_id,
@@ -351,7 +354,7 @@ EOF;
         $config['db_name']   = 'test';
         $config['attr_case'] = 2;
         $model               = new Model('', $config);
-        $model->table($config['prefix'] . 'role_user')->add($data);
+        $model->table($config['prefix'] . 'role_user')->data($data)->add();
     }
 
     public function testQuery()
@@ -362,7 +365,8 @@ EOF;
         $result = $user_model->query($sql);
         $id     = $result[0]['id'];
         $time   = $result[0]['create_time'];
-        $info   = $user_model->where('create_time=' . $time)->where(['status' => 1])->field(true)->find(['cache' => ['key' => true]]);
+        $bind = ['create_time' => $time, 'status' => 1];
+        $info   = $user_model->where(['create_time'=>':create_time'])->where(['status' => ':status'])->bind($bind)->field(true)->find(['cache' => ['key' => true]]);
         $data   = [
             'id'          => $id,
             'username'    => 'test',
@@ -372,7 +376,8 @@ EOF;
         ];
         $this->assertEquals($data, $info);
 
-        $result = $user_model->where(['id' => $id])->field('password,create_time', true)->order('id')->limit('0,10')->select(['cache' => ['key' => true, 'expire' => 0], 'index' => 'username']);
+        $_GET['id'] = $id;
+        $result = $user_model->where(['id' => ':id'])->bind('id', $_GET['id'])->field('password,create_time', true)->order('id')->limit('0,10')->select(['cache' => ['key' => true, 'expire' => 0], 'index' => 'username']);
         $data   = [
             'id'       => $id,
             'username' => 'test',
@@ -380,7 +385,8 @@ EOF;
         ];
         $this->assertEquals($data, $result['test']);
 
-        $result = $user_model->where(['status' => 1])->field('password,create_time', true)->order('id', 'desc')->index('id,username')->page('0,10')->select();
+        $_GET['status'] = '1';
+        $result = $user_model->where(['status' => ':status'])->bind('status', $_GET['status'], \PDO::PARAM_INT)->field('password,create_time', true)->order('id', 'desc')->index('id,username')->page('0,10')->select();
         $data   = [
             '1' => 'test',
             '2' => 'test2',
@@ -404,6 +410,27 @@ EOF;
             'test2' => '1',
         ];
         $this->assertEquals($data, $result);
+
+        $result = $user_model->scope(['field'=>'username', 'where'=>'status=1'])->select();
+        $data   = [
+            ['username' => 'test'],
+            ['username' => 'test2'],
+        ];
+        $this->assertEquals($data, $result);
+
+        $result = $user_model->master()->lock(true)->distinct(true)->force('create_time')->comment('查询用户名')->field('username')->fetchSql(true)->select();
+        $sql = 'SELECT DISTINCT  `username` FROM `tp_user` FORCE INDEX ( create_time )   FOR UPDATE  /* 查询用户名 */';
+        $this->assertEquals($sql, $result);
+
+
+        $order_model = new Model('order', $this->getConfig());
+
+        $result = $order_model->field('user_id,sum(amount) amount')->group('user_id')->having('sum(amount) > 1000')->select();
+        $this->assertEmpty($result);
+
+        $result = $order_model->getLastSql();
+        $sql = 'SELECT `user_id`,sum(amount) amount FROM `tp_order` GROUP BY user_id HAVING sum(amount) > 1000 ';
+        $this->assertEquals($sql, $result);
     }
 
     public function testJoin()
@@ -437,8 +464,10 @@ EOF;
         ];
         $this->assertEquals($data, $result[0]);
 
-        $subsql = "(select user_id,amount from {$config['prefix']}order where status=1 limit 1) o";
-        $result = $user_model->alias('u')->join($subsql, 'u.id=o.user_id', 'left')->field('u.username,o.amount')->select();
+
+        $order_model = new Model('order', $config);
+        $subsql = $order_model->limit(1)->buildSql();
+        $result = $user_model->alias('u')->join($subsql. ' o', 'u.id=o.user_id', 'left')->field('u.username,o.amount')->select();
         $data   = [
             'username' => 'test',
             'amount'   => '200',
@@ -476,21 +505,25 @@ EOF;
 
         $data = [
             'id'          => '1',
-            'amount'      => '180',
-            'status'      => 0,
+            'total'      => '180.50',
+            'status'      => 1,
             'create_time' => time(),
+            'about' => '',
         ];
-        $flag = $user_id = $order_model->save($data);
-        $this->assertEquals(1, $flag);
+        \think\Config::set('db_fields_strict', false);
+        $info = $order_model->where(['id' => 1])->map('amount', 'total')->find();
+        $flag = $user_id = $order_model->map(['total' => 'amount'])->filter('trim')->save($data);
+        $this->assertSame(1, $flag);
+        \think\Config::set('db_fields_strict', true);
 
         $data = [
             'status' => 1,
         ];
         $flag = $order_model->where(['id' => 2])->setField($data);
-        $this->assertEquals(1, $flag);
+        $this->assertSame(1, $flag);
 
         $flag = $order_model->where(['amount' => ['lt', 200]])->setField('freight_fee', 15);
-        $this->assertEquals(1, $flag);
+        $this->assertSame(1, $flag);
 
         $map  = [
             'amount'      => ['gt', 300],
@@ -503,10 +536,10 @@ EOF;
         $this->assertTrue($flag);
 
         $flag = $order_model->where($map)->setDec('freight_fee', 5);
-        $this->assertEquals(1, $flag);
+        $this->assertSame(1, $flag);
 
         $flag = $order_model->where($map)->setInc('freight_fee', 5);
-        $this->assertEquals(1, $flag);
+        $this->assertSame(1, $flag);
 
         $ru_model = new Model('role_user', $config);
         $data     = [
@@ -514,8 +547,9 @@ EOF;
             'role_id' => 1,
             'remark'  => 'remark',
         ];
-        $flag     = $ru_model->save($data);
-        $this->assertEquals(1, $flag);
+        $info = $ru_model->where(['user_id' => 1])->find();
+        $flag     = $ru_model->data($data)->save();
+        $this->assertSame(1, $flag);
     }
 
     public function testMagicMethods()
@@ -523,6 +557,13 @@ EOF;
         $model = new Model('user', $this->getConfig());
         $model->data("first=a&last=z");
         $model->username = 'test';
+
+        $data = [
+            'first' => 'a',
+            'last' => 'z',
+            'username' => 'test',
+        ];
+        $this->assertEquals($data, $model->data());
 
         $this->assertEquals('a', $model->first);
 
@@ -538,14 +579,9 @@ EOF;
 
         $id = $model->getFieldByUsername('test', 'id');
         $this->assertEquals(1, $id);
-    }
 
-    public function testError()
-    {
-        $config = $this->getConfig();
-
-        $model = new Model('', $config);
-        //$model->select();
+        $id = $model->getFieldByUsername('test', 'id');
+        $this->assertEquals(1, $id);
     }
 
     public function testDelete()
@@ -565,7 +601,7 @@ EOF;
         $this->assertEquals(2, $flag);
 
         $user_model = new Model('user', $config);
-        $flag       = $user_model->where('1=1')->delete();
+        $flag       = $user_model->using([''])->where('1=1')->delete();
         $this->assertEquals(2, $flag);
 
         $ru_model = new Model('role_user', $config);
