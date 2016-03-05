@@ -93,6 +93,19 @@ class Controller
     }
 
     /**
+     * 加载模板和页面输出 可以返回输出内容
+     * @access public
+     * @param string $template 模板文件名
+     * @param array  $vars     模板输出变量
+     * @param array $config     模板参数
+     * @return mixed
+     */
+    public function display($template = '', $vars = [], $config = [])
+    {
+        return $this->view->fetch($template, $vars, $config);
+    }
+
+    /**
      * 渲染内容输出
      * @access public
      * @param string $content 内容

@@ -186,6 +186,10 @@ class View
             $replace = $this->config['parse_str'];
             $content = str_replace(array_keys($replace), array_values($replace), $content);
         }
+        if (!Config::get('response_auto_output')) {
+            // 自动响应输出
+            return Response::send($content, Response::type());
+        }
         return $content;
     }
 
