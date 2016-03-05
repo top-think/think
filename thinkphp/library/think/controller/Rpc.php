@@ -10,11 +10,18 @@
 // +----------------------------------------------------------------------
 namespace think\controller;
 
+use PHPRPC_Server;
+
 /**
  * ThinkPHP RPC控制器类
  */
 abstract class Rpc
 {
+    /**
+     * PHPRPC_Server实例
+     * @access public
+     */
+    public $server;
 
     protected $allowMethodList = '';
     protected $debug           = false;
@@ -23,31 +30,31 @@ abstract class Rpc
      * 架构函数
      * @access public
      */
-    public function __construct()
+    public function __construct($autoStart = true)
     {
-        //控制器初始化
+        // 控制器初始化
         if (method_exists($this, '_initialize')) {
             $this->_initialize();
         }
-
-        //导入类库
-        \think\Loader::import('vendor.phprpc.phprpc_server');
-        //实例化phprpc
-        $server = new \PHPRPC_Server();
+        // 实例化phprpc
+        $this->server = new PHPRPC_Server;
         if ($this->allowMethodList) {
             $methods = $this->allowMethodList;
         } else {
             $methods = get_class_methods($this);
             $methods = array_diff($methods, array('__construct', '__call', '_initialize'));
         }
-        $server->add($methods, $this);
+        $this->server->add($methods, $this);
 
         if (APP_DEBUG || $this->debug) {
-            $server->setDebugMode(true);
+            $this->server->setDebugMode(true);
         }
-        $server->setEnableGZIP(true);
-        $server->start();
-        echo $server->comment();
+        $this->server->setEnableGZIP(true);
+        // 启动server
+        if ($autoStart) {
+            $this->server->start();
+            echo $this->server->comment();
+        }
     }
 
     /**
@@ -58,5 +65,10 @@ abstract class Rpc
      * @return mixed
      */
     public function __call($method, $args)
-    {}
+    {
+        if (!method_exists($this->server, $method)) {
+            return null;
+        }
+        return call_user_func_array([$this->server, $method], $args);
+    }
 }
