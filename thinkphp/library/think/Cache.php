@@ -11,6 +11,15 @@
 
 namespace think;
 
+/**
+ * Class Cache
+ * 
+ * @package think
+ * @method static mixed get() get(string $name)
+ * @method static bool set() set(string $name, mixed $value, mixed $expire = null)
+ * @method static bool rm() rm(string $name, bool $expire = false)
+ * @method static bool clear() clear()
+ */
 class Cache
 {
     protected static $instance = [];
