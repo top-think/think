@@ -10,11 +10,18 @@
 // +----------------------------------------------------------------------
 namespace think\controller;
 
+use Hprose\Http\Server as HproseHttpServer;
+
 /**
  * ThinkPHP Hprose控制器类
  */
 abstract class Hprose
 {
+    /**
+     * HproseHttpServer实例
+     * @access public
+     */
+    public $server;
 
     protected $allowMethodList = '';
     protected $crossDomain     = false;
@@ -26,33 +33,32 @@ abstract class Hprose
      * 架构函数
      * @access public
      */
-    public function __construct()
+    public function __construct($autoStart = true)
     {
-        //控制器初始化
+        // 控制器初始化
         if (method_exists($this, '_initialize')) {
             $this->_initialize();
         }
-
-        //导入类库
-        \think\Loader::import('vendor.Hprose.HproseHttpServer');
-        //实例化HproseHttpServer
-        $server = new \HproseHttpServer();
+        // 实例化HproseHttpServer
+        $this->server = new HproseHttpServer();
         if ($this->allowMethodList) {
             $methods = $this->allowMethodList;
         } else {
             $methods = get_class_methods($this);
             $methods = array_diff($methods, array('__construct', '__call', '_initialize'));
         }
-        $server->addMethods($methods, $this);
+        $this->server->addMethods($methods, $this);
         if (APP_DEBUG || $this->debug) {
-            $server->setDebugEnabled(true);
+            $this->server->setDebugEnabled(true);
         }
         // Hprose设置
-        $server->setCrossDomainEnabled($this->crossDomain);
-        $server->setP3PEnabled($this->P3P);
-        $server->setGetEnabled($this->get);
+        $this->server->setCrossDomainEnabled($this->crossDomain);
+        $this->server->setP3PEnabled($this->P3P);
+        $this->server->setGetEnabled($this->get);
         // 启动server
-        $server->start();
+        if ($autoStart) {
+            $this->server->start();
+        }
     }
 
     /**
@@ -63,5 +69,10 @@ abstract class Hprose
      * @return mixed
      */
     public function __call($method, $args)
-    {}
+    {
+        if (!method_exists($this->server, $method)) {
+            return null;
+        }
+        return call_user_func_array([$this->server, $method], $args);
+    }
 }

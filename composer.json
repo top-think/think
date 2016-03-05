@@ -12,7 +12,9 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "hprose/hprose": "dev-master",
+        "phplib/phprpc":"dev-master"
     },
     "require-dev": {
         "johnkary/phpunit-speedtrap": "^1.0",

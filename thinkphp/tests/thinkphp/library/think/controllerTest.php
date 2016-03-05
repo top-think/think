@@ -123,6 +123,7 @@ class controllerTest extends \PHPUnit_Framework_TestCase
         $template        = dirname(__FILE__) . '/display.html';
         $viewFetch       = $view->fetch($template, ['name' => 'ThinkPHP']);
         $controllerFetch = $controller->fetch($template, ['name' => 'ThinkPHP']);
+        $this->expectOutputString('ThinkPHPThinkPHP');
         $this->assertEquals($controllerFetch, $viewFetch);
     }
 
@@ -133,6 +134,7 @@ class controllerTest extends \PHPUnit_Framework_TestCase
         $template        = dirname(__FILE__) . '/display.html';
         $viewFetch       = $view->show($template, ['name' => 'ThinkPHP']);
         $controllerFetch = $controller->show($template, ['name' => 'ThinkPHP']);
+        $this->expectOutputString('ThinkPHPThinkPHP');
         $this->assertEquals($controllerFetch, $viewFetch);
     }
 
