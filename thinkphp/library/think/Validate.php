@@ -67,7 +67,7 @@ class Validate
         } elseif (is_string($options['exists_validate'])) {
             $options['exists_validate'] = explode(',', $options['exists_validate']);
         }
-
+        self::$error = [];
         foreach ($rules as $key => $val) {
             if (is_numeric($key) && is_array($val)) {
                 $key = array_shift($val);
@@ -100,6 +100,8 @@ class Validate
                     // 批量验证
                     if (is_array($result)) {
                         self::$error[] = $result;
+                    } elseif (isset(self::$error[$key])) {
+                        self::$error[$key] .= ',' . $result;
                     } else {
                         self::$error[$key] = $result;
                     }
