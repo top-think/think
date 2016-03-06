@@ -99,7 +99,7 @@ class Validate
                 if (!empty($options['patch'])) {
                     // 批量验证
                     if (is_array($result)) {
-                        self::$error[] = $result;
+                        self::$error = array_merge(self::$error, $result);
                     } elseif (isset(self::$error[$key])) {
                         self::$error[$key] .= ',' . $result;
                     } else {
@@ -250,6 +250,18 @@ class Validate
                 case 'notbetween': // 验证是否不在某个范围
                     $result = self::notbetween($value, $rule);
                     break;
+                case 'expire':
+                    $result = self::expire($value, $rule);
+                    break;
+                case 'length':
+                    $result = self::length($value, $rule);
+                    break;
+                case 'allow_ip':
+                    $result = self::allowIp($value, $rule);
+                    break;
+                case 'deny_ip':
+                    $result = self::denyIp($value, $rule);
+                    break;
                 case 'regex':
                 default:
                     $result = self::regex($value, $rule);
@@ -398,6 +410,70 @@ class Validate
         }
         list($min, $max) = $rule;
         return $value < $min || $value > $max;
+    }
+
+    /**
+     * 验证数据长度
+     * @access public
+     * @param mixed $value  字段值
+     * @param mixed $rule  验证规则
+     * @return mixed
+     */
+    public static function length($value, $rule)
+    {
+        $length = mb_strlen((string) $value, 'utf-8'); // 当前数据长度
+        if (strpos($rule, ',')) {
+            // 长度区间
+            list($min, $max) = explode(',', $rule);
+            return $length >= $min && $length <= $max;
+        } else {
+            // 指定长度
+            return $length == $rule;
+        }
+    }
+
+    /**
+     * 验证有效期
+     * @access public
+     * @param mixed $value  字段值
+     * @param mixed $rule  验证规则
+     * @return mixed
+     */
+    public static function expire($value, $rule)
+    {
+        list($start, $end) = explode(',', $rule);
+        if (!is_numeric($start)) {
+            $start = strtotime($start);
+        }
+
+        if (!is_numeric($end)) {
+            $end = strtotime($end);
+        }
+        return NOW_TIME >= $start && NOW_TIME <= $end;
+    }
+
+    /**
+     * 验证IP许可
+     * @access public
+     * @param string $value  字段值
+     * @param mixed $rule  验证规则
+     * @return mixed
+     */
+    public static function allowIp($value, $rule)
+    {
+        return in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
+    }
+
+    /**
+     * 验证IP禁用
+     * @access public
+     * @param string $value  字段值
+     * @param mixed $rule  验证规则
+     * @return mixed
+     */
+    public static function denyIp($value, $rule)
+    {
+        return !in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
