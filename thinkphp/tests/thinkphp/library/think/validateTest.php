@@ -21,6 +21,16 @@ use think\Validate;
 class validateTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testRule()
+    {
+        Validate::rule('zip', '/^\d{6}$/');
+        Validate::rule([
+            'currency' => '/^\d+(\.\d+)?$/',
+            'number'   => '/^\d+$/',
+            'zip'      => '/^\d{6}$/',
+        ]);
+    }
+
     public function testCheck()
     {
         $data = [
