@@ -337,8 +337,7 @@ class Validate
      */
     public static function filter($value, $rule, $params = [])
     {
-        $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $params);
-        return false === $result ? false : true;
+        return false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $params);
     }
 
     /**
@@ -464,7 +463,7 @@ class Validate
             } else {
                 $name = $rules;
             }
-            $rules = $config[$name];
+            $rules = isset($config[$name]) ? $config[$name] : [];
             if (isset($config['__all__'])) {
                 $rules = array_merge($config['__all__'], $rules);
             }
