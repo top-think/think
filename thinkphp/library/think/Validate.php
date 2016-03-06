@@ -140,7 +140,7 @@ class Validate
         if (strpos($key, '.')) {
             list($name1, $name2) = explode('.', $key);
         }
-        if ((isset($options['value_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['value_fill']) : $options['value_fill']) && '' == $value)
+        if ((isset($options['value_fill']) && in_array($key, is_string($options['value_fill']) ? explode(',', $options['value_fill']) : $options['value_fill']) && '' == $value)
             || (isset($options['exists_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['exists_fill']) : $options['exists_fill']) && is_null($value))) {
             // 不满足自动填充条件
             return;
