@@ -13,6 +13,7 @@ namespace think;
 
 class Validate
 {
+    // 预定义正则验证规则
     protected static $rule = [
         'require'  => '/\S+/',
         'email'    => '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
@@ -24,7 +25,25 @@ class Validate
         'double'   => '/^[-\+]?\d+(\.\d+)?$/',
         'english'  => '/^[A-Za-z]+$/',
     ];
+
+    // 验证失败错误信息
     protected static $error = [];
+
+    /**
+     * 设置正则验证规则
+     * @access protected
+     * @param string|array $name  规则名称或者规则数组
+     * @param string $rule  正则规则
+     * @return void
+     */
+    public static function rule($name, $rule = '')
+    {
+        if (is_array($name)) {
+            self::$rule = array_merge(self::$rule, $name);
+        } else {
+            self::$rule[$name] = $rule;
+        }
+    }
 
     /**
      * 数据自动验证
