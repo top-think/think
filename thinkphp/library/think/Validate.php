@@ -27,7 +27,7 @@ class Validate
     ];
 
     // 验证失败错误信息
-    protected static $error = null;
+    protected static $error = [];
 
     /**
      * 设置正则验证规则
