@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 /**
- * 模型类测试
+ * Validate类测试
  */
 
 namespace tests\thinkphp\library\think;
@@ -119,7 +119,6 @@ class validateTest extends \PHPUnit_Framework_TestCase
                 'password'   => ['md5', 'callback'],
                 'nickname'   => [[ & $this, 'fillName'], 'callback', 'cn_'],
                 'phone'      => function ($value, $data) {
-                    echo $value;
                     return trim($value);
                 },
                 'ab'         => ['a,b', 'serialize'],
