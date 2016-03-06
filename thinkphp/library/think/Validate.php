@@ -57,16 +57,7 @@ class Validate
     {
         // 获取自动验证规则
         list($rules, $options, $scene) = self::getDataRule($rules, $config);
-        if (!isset($options['value_validate'])) {
-            $options['value_validate'] = [];
-        } elseif (is_string($options['value_validate'])) {
-            $options['value_validate'] = explode(',', $options['value_validate']);
-        }
-        if (!isset($options['exists_validate'])) {
-            $options['exists_validate'] = [];
-        } elseif (is_string($options['exists_validate'])) {
-            $options['exists_validate'] = explode(',', $options['exists_validate']);
-        }
+
         self::$error = [];
         foreach ($rules as $key => $val) {
             if (is_numeric($key) && is_array($val)) {
@@ -78,8 +69,8 @@ class Validate
             // 获取数据 支持二维数组
             $value = self::getDataValue($data, $key);
 
-            if ((in_array($key, $options['value_validate']) && '' == $value)
-                || (in_array($key, $options['exists_validate']) && is_null($value))) {
+            if ((isset($options['value_validate']) && in_array($key, is_string($options['value_validate']) ? explode(',', $options['value_validate']) : $options['value_validate']) && '' == $value)
+                || (isset($options['exists_validate']) && in_array($key, is_string($options['exists_validate']) ? explode(',', $options['exists_validate']) : $options['exists_validate']) && is_null($value))) {
                 // 不满足自动验证条件
                 continue;
             }
@@ -119,16 +110,6 @@ class Validate
     {
         // 获取自动完成规则
         list($rules, $options, $scene) = self::getDataRule($rules, $config);
-        if (!isset($options['value_fill'])) {
-            $options['value_fill'] = [];
-        } elseif (is_string($options['value_fill'])) {
-            $options['value_fill'] = explode(',', $options['value_fill']);
-        }
-        if (!isset($options['exists_fill'])) {
-            $options['exists_fill'] = [];
-        } elseif (is_string($options['exists_fill'])) {
-            $options['exists_fill'] = explode(',', $options['exists_fill']);
-        }
 
         foreach ($rules as $key => $val) {
             if (is_numeric($key) && is_array($val)) {
@@ -159,8 +140,8 @@ class Validate
         if (strpos($key, '.')) {
             list($name1, $name2) = explode('.', $key);
         }
-        if ((in_array($key, $options['value_fill']) && '' == $value)
-            || (in_array($key, $options['exists_fill']) && is_null($value))) {
+        if ((isset($options['value_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['value_fill']) : $options['value_fill']) && '' == $value)
+            || (isset($options['exists_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['exists_fill']) : $options['exists_fill']) && is_null($value))) {
             // 不满足自动填充条件
             return;
         }
@@ -363,8 +344,7 @@ class Validate
      */
     public static function in($value, $rule)
     {
-        $range = is_array($rule) ? $rule : explode(',', $rule);
-        return in_array($value, $range);
+        return in_array($value, is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
@@ -376,8 +356,7 @@ class Validate
      */
     public static function notin($value, $rule)
     {
-        $range = is_array($rule) ? $rule : explode(',', $rule);
-        return !in_array($value, $range);
+        return !in_array($value, is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
@@ -441,7 +420,10 @@ class Validate
      */
     public static function expire($value, $rule)
     {
-        list($start, $end) = explode(',', $rule);
+        if (is_string($rule)) {
+            $rule = explode(',', $rule);
+        }
+        list($start, $end) = $rule;
         if (!is_numeric($start)) {
             $start = strtotime($start);
         }
