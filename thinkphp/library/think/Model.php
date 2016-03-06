@@ -991,6 +991,9 @@ class Model
         // 验证前清空error
         $this->error = '';
         if (!empty($this->options['validate'])) {
+            if (!empty($this->rule)) {
+                Validate::rule($this->rule);
+            }
             if (!Validate::check($data, $this->options['validate'])) {
                 $this->error = Validate::getError();
                 return false;
