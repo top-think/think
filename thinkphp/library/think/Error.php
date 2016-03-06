@@ -141,7 +141,7 @@ class Error
      */
     public static function output($exception, array $vars)
     {
-        http_response_code($exception instanceof \Exception ? $exception->getHttpStatus() : 500);
+        http_response_code($exception instanceof \think\Exception ? $exception->getHttpStatus() : 500);
 
         $type = Config::get('default_return_type');
 
