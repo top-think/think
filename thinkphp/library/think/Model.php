@@ -1766,7 +1766,7 @@ class Model
     public function validate($field = true, $rule = null)
     {
         if (is_array($field) || is_null($rule)) {
-            $this->options['validate'] = $field;
+            $this->options['validate'] = true === $field ? $this->name : $field;
         } else {
             $this->options['validate'][$field] = $rule;
         }
@@ -1783,7 +1783,7 @@ class Model
     public function auto($field = true, $rule = null)
     {
         if (is_array($field) || is_null($rule)) {
-            $this->options['auto'] = $field;
+            $this->options['auto'] = true === $field ? $this->name : $field;
         } else {
             $this->options['auto'][$field] = $rule;
         }
