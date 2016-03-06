@@ -43,6 +43,7 @@ class validateTest extends \PHPUnit_Framework_TestCase
             'sex'        => '0',
             'age'        => '20',
             'code'       => '1234',
+            'test'       => ['a' => 1, 'b' => 2],
         ];
 
         $validate = [
@@ -64,6 +65,8 @@ class validateTest extends \PHPUnit_Framework_TestCase
                 'email'      => ['validate_email', '邮箱格式错误', 'filter'],
                 'sex'        => ['0,1', '性别只能为为男或女', 'in'],
                 'age'        => ['1,80', '年龄只能在10-80之间', 'between'],
+                'test.a'     => ['number', 'a必须是数字'],
+                'test.b'     => ['1,3', '不能是1或者3', 'notin'],
                 '__option__' => [
                     'scene'           => [
                         'add'  => 'username,nickname,password,repassword,mobile,email,age,code',
