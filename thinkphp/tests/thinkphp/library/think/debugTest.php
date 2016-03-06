@@ -118,7 +118,7 @@ class debugTest extends \PHPUnit_Framework_TestCase
     {
         $useMem = Debug::getUseMem();
 
-        $this->assertLessThan(15, explode(" ", $useMem)[0]);
+        $this->assertLessThan(20, explode(" ", $useMem)[0]);
     }
 
     /**
@@ -135,7 +135,7 @@ class debugTest extends \PHPUnit_Framework_TestCase
             $str .= "mem";
         }
         $memPeak = Debug::getMemPeak($start, $end);
-        $this->assertLessThan(355, explode(" ", $memPeak)[0]);
+        $this->assertLessThan(400, explode(" ", $memPeak)[0]);
     }
 
     /**
