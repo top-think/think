@@ -367,7 +367,7 @@ class Model
     {
         // 数据处理
         $data = $this->_write_data($data, 'update');
-        if (false === $data) {
+        if (false == $data) {
             return false;
         }
         // 分析表达式
