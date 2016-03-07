@@ -65,7 +65,10 @@ class Redis
     public function get($name)
     {
         Cache::$readTimes++;
-        return $this->handler->get($this->options['prefix'] . $name);
+        $value = $this->handler->get($this->options['prefix'] . $name);
+        $jsonData  = json_decode( $value, true );
+        // 检测是否为JSON数据 true 返回JSON解析数组, false返回源数据 byron sampson<xiaobo.sun@qq.com>
+        return ($jsonData === null) ? $value : $jsonData;
     }
 
     /**
@@ -83,6 +86,8 @@ class Redis
             $expire = $this->options['expire'];
         }
         $name = $this->options['prefix'] . $name;
+        //对数组/对象数据进行缓存处理，保证数据完整性  byron sampson<xiaobo.sun@qq.com>
+        $value  =  (is_object($value) || is_array($value)) ? json_encode($value) : $value;
         if (is_int($expire)) {
             $result = $this->handler->setex($name, $expire, $value);
         } else {
