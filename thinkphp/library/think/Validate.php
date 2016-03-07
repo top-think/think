@@ -313,7 +313,13 @@ class Validate
         }
         $serialize = [];
         foreach ($rule as $name) {
-            if (isset($data[$name])) {
+            if (strpos($name, '.')) {
+                list($name1, $name2) = explode('.', $name);
+                if (isset($data[$name1][$name2])) {
+                    $serialize[$name] = $data[$name1][$name2];
+                    unset($data[$name1][$name2]);
+                }
+            } elseif (isset($data[$name])) {
                 $serialize[$name] = $data[$name];
                 unset($data[$name]);
             }
