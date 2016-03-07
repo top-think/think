@@ -33,7 +33,7 @@ class Model
     // 数据库名称
     protected $dbName = '';
     // 数据表字段大小写
-    protected $attrCase = \PDO::CASE_LOWER;
+    protected $attrCase = null;
     //数据库配置
     protected $connection = [];
     // 数据表名（不包含表前缀）
@@ -98,8 +98,8 @@ class Model
             $this->dbName = $config['db_name'];
         }
 
-        if (isset($config['attr_case'])) {
-            $this->attrCase = $config['attr_case'];
+        if (is_null($this->attrCase)) {
+            $this->attrCase = Config::get('db_attr_case');
         }
 
         // 数据库初始化操作
