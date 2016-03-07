@@ -25,7 +25,7 @@ class fileTest extends cacheTestCase
      */
     protected function setUp()
     {
-        \think\Cache::connect(array('type' => 'File', 'expire' => 2));
+        \think\Cache::connect(['type' => 'File', 'path'=> CACHE_PATH]);
     }
 
     /**
@@ -34,21 +34,26 @@ class fileTest extends cacheTestCase
     protected function getCacheInstance()
     {
         if (null === $this->_cacheInstance) {
-            $this->_cacheInstance = new \think\cache\driver\File([
-            'expire'=>2,
-            'path'=> CACHE_PATH,
-        ]);
+            $this->_cacheInstance = new \think\cache\driver\File();
         }
         return $this->_cacheInstance;
     }
 
-    // 待调整后测试
+    // rewrite testQueue
+    public function testQueue()
+    {
+        $cache = $this->prepare();
+        $this->assertTrue($cache->set('1', '1'));
+        $this->assertTrue($cache->set('2', '2'));
+        $this->assertTrue($cache->set('3', '3'));
+        $this->assertEquals(1, $cache->get('1'));
+        $this->assertTrue($cache->set('4', '4'));
+        $this->assertTrue($cache->set('1', false));
+        $this->assertFalse($cache->get('1'));
+    }
+
+    // skip testExpire
     public function testExpire()
     {
     }
-
-    public function testQueue()
-    {
-    }
-
 }
