@@ -1817,4 +1817,18 @@ class Model
         }
         return $sql;
     }
+
+    /**
+     * 获取属性值
+     * @access protected
+     * @param string $property 属性名
+     * @return mixed
+     */
+    public function getProperty($property)
+    {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+        return null;
+    }
 }

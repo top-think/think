@@ -49,7 +49,7 @@ class Validate
      * 数据自动验证
      * @access protected
      * @param array $data  数据
-     * @param array $rules  验证规则
+     * @param mixed $rules  验证规则
      * @param string $config  规则配置名 验证规则不是数组的话读取配置参数
      * @return void
      */
@@ -213,7 +213,7 @@ class Validate
                     // 行为验证
                     $result = self::behavior($rule, $data);
                     break;
-                case 'filter': // 使用filter_var验证
+                case 'filter':    // 使用filter_var验证
                     $result = self::filter($value, $rule, $options);
                     break;
                 case 'confirm':
@@ -225,10 +225,10 @@ class Validate
                 case 'notin':
                     $result = self::notin($value, $rule);
                     break;
-                case 'between': // 验证是否在某个范围
+                case 'between':    // 验证是否在某个范围
                     $result = self::between($value, $rule);
                     break;
-                case 'notbetween': // 验证是否不在某个范围
+                case 'notbetween':    // 验证是否不在某个范围
                     $result = self::notbetween($value, $rule);
                     break;
                 case 'expire':
@@ -263,7 +263,7 @@ class Validate
      */
     public static function confirm($value, $rule, $data)
     {
-        return $value == $data[$rule];
+        return self::getDataValue($data, $rule) == $value;
     }
 
     /**
@@ -517,7 +517,10 @@ class Validate
      */
     protected static function getDataRule($rules, $config)
     {
-        if (!is_array($rules)) {
+        if ($rules instanceof \think\Model) {
+            // 读取模型设置的规则
+            $rules = $rules->getProperty($config);
+        } elseif (is_string($rules)) {
             // 读取配置文件中的数据类型定义
             $config = Config::get($config);
             if (isset($config['__pattern__'])) {
