@@ -10,13 +10,13 @@
 // +----------------------------------------------------------------------
 
 /**
- * File缓存驱动测试
+ * Memcache缓存驱动测试
  * @author    刘志淳 <chun@engineer.com>
  */
 
 namespace tests\thinkphp\library\think\cache\driver;
 
-class fileTest extends cacheTestCase
+class memcacheTest extends cacheTestCase
 {
     private $_cacheInstance = null;
 
@@ -25,31 +25,21 @@ class fileTest extends cacheTestCase
      */
     protected function setUp()
     {
-        \think\Cache::connect(['type' => 'File', 'path'=> CACHE_PATH]);
+        if (!extension_loaded('memcache')) {
+            $this->markTestSkipped("Memcache没有安装，已跳过测试！");
+        }
+        \think\Cache::connect(['type' => 'memcache', 'expire' => 2]);
     }
 
     /**
-     * @return FileCache
+     * @return ApcCache
      */
     protected function getCacheInstance()
     {
         if (null === $this->_cacheInstance) {
-            $this->_cacheInstance = new \think\cache\driver\File();
+            $this->_cacheInstance = new \think\cache\driver\Memcache(['length' => 3]);
         }
         return $this->_cacheInstance;
-    }
-
-    // rewrite testQueue
-    public function testQueue()
-    {
-        $cache = $this->prepare();
-        $this->assertTrue($cache->set('1', '1'));
-        $this->assertTrue($cache->set('2', '2'));
-        $this->assertTrue($cache->set('3', '3'));
-        $this->assertEquals(1, $cache->get('1'));
-        $this->assertTrue($cache->set('4', '4'));
-        $this->assertTrue($cache->set('1', false));
-        $this->assertFalse($cache->get('1'));
     }
 
     // skip testExpire
