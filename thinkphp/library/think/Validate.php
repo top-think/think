@@ -105,88 +105,6 @@ class Validate
         return !empty(self::$error) ? false : true;
     }
 
-    // 自动填充
-    public static function fill(&$data, $rules, $config = 'auto')
-    {
-        // 获取自动完成规则
-        list($rules, $options, $scene) = self::getDataRule($rules, $config);
-
-        foreach ($rules as $key => $val) {
-            if (is_numeric($key) && is_array($val)) {
-                $key = array_shift($val);
-            }
-            if (!empty($scene) && !in_array($key, $scene)) {
-                continue;
-            }
-            // 数据自动填充
-            self::fillItem($key, $val, $data, $options);
-        }
-        return $data;
-    }
-
-    /**
-     * 数据自动填充
-     * @access protected
-     * @param string $key  字段名
-     * @param mixed $val  填充规则
-     * @param array $data  数据
-     * @param array $options  参数
-     * @return void
-     */
-    protected static function fillItem($key, $val, &$data, $options = [])
-    {
-        // 获取数据 支持二维数组
-        $value = self::getDataValue($data, $key);
-        if (strpos($key, '.')) {
-            list($name1, $name2) = explode('.', $key);
-        }
-        if ((isset($options['value_fill']) && in_array($key, is_string($options['value_fill']) ? explode(',', $options['value_fill']) : $options['value_fill']) && '' == $value)
-            || (isset($options['exists_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['exists_fill']) : $options['exists_fill']) && is_null($value))) {
-            // 不满足自动填充条件
-            return;
-        }
-        if ($val instanceof \Closure) {
-            $result = self::callback($value, $val, $data);
-        } elseif (isset($val[0]) && $val[0] instanceof \Closure) {
-            $result = self::callback($value, $val[0], $data);
-        } elseif (!is_array($val)) {
-            $result = $val;
-        } else {
-            $rule   = isset($val[0]) ? $val[0] : $val;
-            $type   = isset($val[1]) ? $val[1] : 'value';
-            $params = isset($val[2]) ? (array) $val[2] : [];
-            switch ($type) {
-                case 'behavior':
-                    self::behavior($rule, $data);
-                    return;
-                case 'callback':
-                    $result = self::callback($value, $rule, $data, $params);
-                    break;
-                case 'serialize':
-                    $result = self::serialize($value, $rule, $data, $params);
-                    break;
-                case 'ignore':
-                    if ($rule === $value) {
-                        if (strpos($key, '.')) {
-                            unset($data[$name1][$name2]);
-                        } else {
-                            unset($data[$key]);
-                        }
-                    }
-                    return;
-                case 'value':
-                default:
-                    $result = $rule;
-                    break;
-            }
-        }
-        if (strpos($key, '.')) {
-            $data[$name1][$name2] = $result;
-        } else {
-            $data[$key] = $result;
-        }
-    }
-
     /**
      * 验证字段规则
      * @access protected
@@ -213,7 +131,7 @@ class Validate
                     // 行为验证
                     $result = self::behavior($rule, $data);
                     break;
-                case 'filter':    // 使用filter_var验证
+                case 'filter': // 使用filter_var验证
                     $result = self::filter($value, $rule, $options);
                     break;
                 case 'confirm':
@@ -225,10 +143,10 @@ class Validate
                 case 'notin':
                     $result = self::notin($value, $rule);
                     break;
-                case 'between':    // 验证是否在某个范围
+                case 'between': // 验证是否在某个范围
                     $result = self::between($value, $rule);
                     break;
-                case 'notbetween':    // 验证是否不在某个范围
+                case 'notbetween': // 验证是否不在某个范围
                     $result = self::notbetween($value, $rule);
                     break;
                 case 'expire':
@@ -267,7 +185,7 @@ class Validate
     }
 
     /**
-     * 使用callback方式验证或者填充
+     * 使用callback方式验证
      * @access public
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
@@ -285,7 +203,7 @@ class Validate
     }
 
     /**
-     * 使用行为类验证或者填充
+     * 使用行为类验证
      * @access public
      * @param mixed $rule  验证规则
      * @param array $data  数据
@@ -293,39 +211,7 @@ class Validate
      */
     public static function behavior($rule, $data)
     {
-        // 行为验证
         return Hook::exec($rule, '', $data);
-    }
-
-    /**
-     * 序列化填充
-     * @access public
-     * @param mixed $value  字段值
-     * @param mixed $rule  验证规则
-     * @param array $data  数据
-     * @param array $params  参数
-     * @return mixed
-     */
-    public static function serialize($value, $rule, &$data, $params = [])
-    {
-        if (is_string($rule)) {
-            $rule = explode(',', $rule);
-        }
-        $serialize = [];
-        foreach ($rule as $name) {
-            if (strpos($name, '.')) {
-                list($name1, $name2) = explode('.', $name);
-                if (isset($data[$name1][$name2])) {
-                    $serialize[$name] = $data[$name1][$name2];
-                    unset($data[$name1][$name2]);
-                }
-            } elseif (isset($data[$name])) {
-                $serialize[$name] = $data[$name];
-                unset($data[$name]);
-            }
-        }
-        $fun = !empty($params['type']) ? $params['type'] : 'serialize';
-        return $fun($serialize);
     }
 
     /**

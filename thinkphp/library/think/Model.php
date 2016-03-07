@@ -988,8 +988,6 @@ class Model
      */
     protected function dataValidate(&$data)
     {
-        // 验证前清空error
-        $this->error = '';
         if (!empty($this->options['validate'])) {
             if (!empty($this->rule)) {
                 Validate::rule($this->rule);
@@ -1012,8 +1010,143 @@ class Model
     protected function dataFill(&$data)
     {
         if (!empty($this->options['auto'])) {
-            Validate::fill($data, $this->options['auto']);
+            // 获取自动完成规则
+            list($rules, $options, $scene) = $this->getDataRule($this->options['auto']);
+
+            foreach ($rules as $key => $val) {
+                if (is_numeric($key) && is_array($val)) {
+                    $key = array_shift($val);
+                }
+                if (!empty($scene) && !in_array($key, $scene)) {
+                    continue;
+                }
+                // 数据自动填充
+                $this->fillItem($key, $val, $data, $options);
+            }
             $this->options['auto'] = null;
+        }
+    }
+
+    /**
+     * 获取数据自动完成的规则定义
+     * @access protected
+     * @param mixed $rules  数据规则
+     * @return array
+     */
+    protected function getDataRule($rules)
+    {
+        if (is_string($rules)) {
+            // 读取配置定义
+            $config = Config::get('auto');
+            if (strpos($rules, '.')) {
+                list($name, $group) = explode('.', $rules);
+            } else {
+                $name = $rules;
+            }
+            $rules = isset($config[$name]) ? $config[$name] : [];
+            if (isset($config['__all__'])) {
+                $rules = array_merge($config['__all__'], $rules);
+            }
+        }
+        if (isset($rules['__option__'])) {
+            // 参数设置
+            $options = $rules['__option__'];
+            unset($rules['__option__']);
+        } else {
+            $options = [];
+        }
+        if (isset($group) && isset($options['scene'][$group])) {
+            // 如果设置了适用场景
+            $scene = $options['scene'][$group];
+            if (is_string($scene)) {
+                $scene = explode(',', $scene);
+            }
+        } else {
+            $scene = [];
+        }
+        return [$rules, $options, $scene];
+    }
+
+    /**
+     * 数据自动填充
+     * @access protected
+     * @param string $key  字段名
+     * @param mixed $val  填充规则
+     * @param array $data  数据
+     * @param array $options  参数
+     * @return void
+     */
+    protected function fillItem($key, $val, &$data, $options = [])
+    {
+        // 获取数据 支持二维数组
+        if (strpos($key, '.')) {
+            list($name1, $name2) = explode('.', $key);
+            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
+        } else {
+            $value = isset($data[$key]) ? $data[$key] : null;
+        }
+        if ((isset($options['value_fill']) && in_array($key, is_string($options['value_fill']) ? explode(',', $options['value_fill']) : $options['value_fill']) && '' == $value)
+            || (isset($options['exists_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['exists_fill']) : $options['exists_fill']) && is_null($value))) {
+            // 不满足自动填充条件
+            return;
+        }
+        if ($val instanceof \Closure) {
+            $result = call_user_func_array($val, [$value, &$data]);
+        } elseif (isset($val[0]) && $val[0] instanceof \Closure) {
+            $result = call_user_func_array($val[0], [$value, &$data]);
+        } elseif (!is_array($val)) {
+            $result = $val;
+        } else {
+            $rule   = isset($val[0]) ? $val[0] : $val;
+            $type   = isset($val[1]) ? $val[1] : 'value';
+            $params = isset($val[2]) ? (array) $val[2] : [];
+            switch ($type) {
+                case 'behavior':
+                    Hook::exec($rule, '', $data);
+                    return;
+                case 'callback':
+                    array_unshift($params, $value);
+                    $result = call_user_func_array($rule, $params);
+                    break;
+                case 'serialize':
+                    if (is_string($rule)) {
+                        $rule = explode(',', $rule);
+                    }
+                    $serialize = [];
+                    foreach ($rule as $name) {
+                        if (strpos($name, '.')) {
+                            list($name1, $name2) = explode('.', $name);
+                            if (isset($data[$name1][$name2])) {
+                                $serialize[$name] = $data[$name1][$name2];
+                                unset($data[$name1][$name2]);
+                            }
+                        } elseif (isset($data[$name])) {
+                            $serialize[$name] = $data[$name];
+                            unset($data[$name]);
+                        }
+                    }
+                    $fun    = !empty($params['type']) ? $params['type'] : 'serialize';
+                    $result = $fun($serialize);
+                    break;
+                case 'ignore':
+                    if ($rule === $value) {
+                        if (strpos($key, '.')) {
+                            unset($data[$name1][$name2]);
+                        } else {
+                            unset($data[$key]);
+                        }
+                    }
+                    return;
+                case 'value':
+                default:
+                    $result = $rule;
+                    break;
+            }
+        }
+        if (strpos($key, '.')) {
+            $data[$name1][$name2] = $result;
+        } else {
+            $data[$key] = $result;
         }
     }
 
