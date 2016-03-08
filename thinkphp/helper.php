@@ -192,10 +192,10 @@ function dump($var, $echo = true, $label = null)
  */
 function W($name, $data = [])
 {
-    return \think\Loader::action($name, $data, 'Widget');
+    return \think\Loader::action($name, $data, 'widget');
 }
 
-function U($url='', $vars = '', $suffix = true, $domain = false)
+function U($url = '', $vars = '', $suffix = true, $domain = false)
 {
     return \think\Url::build($url, $vars, $suffix, $domain);
 }
