@@ -37,7 +37,7 @@ class Shmcache
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $this->handler = shm_attach($this->options['key'], $this->options['memsize'], $this->options['perm']);
+        $this->handler = shm_attach(crc32($this->options['key']), $this->options['memsize'], $this->options['perm']);
     }
 
     /**
