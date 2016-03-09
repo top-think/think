@@ -47,6 +47,7 @@ class Cx extends Taglib
         'assign'     => ['attr' => 'name,value', 'close' => 0],
         'define'     => ['attr' => 'name,value', 'close' => 0],
         'for'        => ['attr' => 'start,end,name,comparison,step'],
+        'url'        => ['attr' => 'link,vars,suffix,domain', 'close' => 0, 'expression' => true],
     ];
 
     /**
@@ -702,5 +703,22 @@ class Cx extends Taglib
         $parseStr .= $content;
         $parseStr .= '<?php } ?>';
         return $parseStr;
+    }
+
+    /**
+     * U函数的tag标签
+     * 格式：<url link="模块/控制器/方法" vars="参数" suffix="true或者false 是否带有后缀" domain="true或者false 是否携带域名" />
+     * @access public
+     * @param array $tag 标签属性
+     * @param string $content 标签内容
+     * @return string
+     */
+    public function _url($tag, $content)
+    {
+        $url    = isset($tag['link']) ? $tag['link'] : '';
+        $vars   = isset($tag['vars']) ? $tag['vars'] : '';
+        $suffix = isset($tag['suffix']) ? $tag['suffix'] : 'true';
+        $domain = isset($tag['domain']) ? $tag['domain'] : 'false';
+        return '<?php echo U("' . $url . '","' . $vars . '",' . $suffix . ',' . $domain . ');?>';
     }
 }
