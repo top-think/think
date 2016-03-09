@@ -47,7 +47,7 @@ class Cx extends Taglib
         'assign'     => ['attr' => 'name,value', 'close' => 0],
         'define'     => ['attr' => 'name,value', 'close' => 0],
         'for'        => ['attr' => 'start,end,name,comparison,step'],
-        'url'        => ['attr' => 'link,vars,suffix,domain','close'=>0, 'expression' => true],
+        'url'        => ['attr' => 'link,vars,suffix,domain', 'close' => 0, 'expression' => true],
     ];
 
     /**
@@ -715,10 +715,10 @@ class Cx extends Taglib
      */
     public function _url($tag, $content)
     {
-        $url=isset($tag['link'])?$tag['link']:'';
-        $vars=isset($tag['vars'])?$tag['vars']:'';
-        $suffix=isset($tag['suffix'])?$tag['suffix']:'true';
-        $domain=isset($tag['domain'])?$tag['domain']:'false';
-        return '<?php echo U("'.$url.'","'.$vars.'",'.$suffix.','.$domain.');?>';
+        $url    = isset($tag['link']) ? $tag['link'] : '';
+        $vars   = isset($tag['vars']) ? $tag['vars'] : '';
+        $suffix = isset($tag['suffix']) ? $tag['suffix'] : 'true';
+        $domain = isset($tag['domain']) ? $tag['domain'] : 'false';
+        return '<?php echo U("' . $url . '","' . $vars . '",' . $suffix . ',' . $domain . ');?>';
     }
 }
