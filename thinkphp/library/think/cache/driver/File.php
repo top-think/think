@@ -26,7 +26,7 @@ class File
         'path_level'    => 1,
         'prefix'        => '',
         'length'        => 0,
-        'path'          => LOG_PATH,
+        'path'          => CACHE_PATH,
         'data_compress' => false,
     ];
 
