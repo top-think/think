@@ -74,7 +74,7 @@ class Validate
                 // 不满足自动验证条件
                 continue;
             }
-            $result = true;
+
             if ($val instanceof \Closure) {
                 // 匿名函数验证 支持传入当前字段和所有字段两个数据
                 $result = self::callback($value, $val, $data);
@@ -85,6 +85,7 @@ class Validate
                 // 验证字段规则
                 $result = self::checkItem($value, $val, $data);
             }
+
             if (true !== $result) {
                 // 没有返回true 则表示验证失败
                 if (!empty($options['patch'])) {
