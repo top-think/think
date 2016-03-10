@@ -13,7 +13,7 @@
 define('START_TIME', microtime(true));
 define('START_MEM', memory_get_usage());
 //  版本信息
-define('THINK_VERSION', '5.0.0 RC1');
+define('THINK_VERSION', '5.0.0 RC2');
 // 系统常量
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . DS);
