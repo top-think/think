@@ -469,7 +469,7 @@ EOF;
 {import file="base,common" type="php" /}
 EOF;
         $data = <<<EOF
-<?php import("base"); ?><?php import("common"); ?>
+<?php \\think\\Loader::import("base"); ?><?php \\think\\Loader::import("common"); ?>
 EOF;
         $cx->parseTag($content);
         $this->assertEquals($content, $data);
@@ -563,4 +563,31 @@ EOF;
         $this->expectOutputString('123456789');
     }
 
+    public function testFunction()
+    {
+        $template = new template();
+        $data = [
+            'list' => ['language' => 'php', 'version' => ['5.4', '5.5']],
+            'a' => '[',
+            'b' => ']',
+        ];
+
+        $content = <<<EOF
+{function name="func" vars="\$data" call="\$list" use="&\$a,&\$b"}
+{foreach \$data as \$key=>\$val}
+{if is_array(\$val)}
+{~\$func(\$val)}
+{else}
+{if !is_numeric(\$key)}
+{\$key.':'.\$val.','}
+{else}
+{\$a.\$val.\$b}
+{/if}
+{/if}
+{/foreach}
+{/function}
+EOF;
+        $template->fetch($content, $data);
+        $this->expectOutputString("language:php,[5.4][5.5]");
+    }
 }
