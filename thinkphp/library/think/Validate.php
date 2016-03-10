@@ -51,7 +51,7 @@ class Validate
      * @param array $data  数据
      * @param mixed $rules  验证规则
      * @param string $config  规则配置名 验证规则不是数组的话读取配置参数
-     * @return void
+     * @return bool
      */
     public static function check(&$data, $rules, $config = 'validate')
     {
@@ -362,7 +362,7 @@ class Validate
         if (isset(self::$rule[$rule])) {
             $rule = self::$rule[$rule];
         }
-        if (!(0 === strpos($rule, '/') && preg_match('/\/[imsU]{0,4}$/', $rule))) {
+        if (!(0 === strpos($rule, '/') && preg_match('/\/[imsUu]{0,4}$/', $rule))) {
             // 不是正则表达式则两端补上/
             $rule = '/^' . $rule . '$/';
         }
