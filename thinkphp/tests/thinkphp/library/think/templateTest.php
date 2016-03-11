@@ -217,6 +217,16 @@ EOF;
         $this->assertEquals($data, $content);
 
         $content = <<<EOF
+<#\$info.a?='test'#>
+EOF;
+        $data = <<<EOF
+<?php if((is_array(\$info)?\$info['a']:\$info->a)) echo 'test'; ?>
+EOF;
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
+
+        $content = <<<EOF
 <#\$info.a==\$info.b?='test'#>
 EOF;
         $data = <<<EOF
@@ -332,17 +342,29 @@ EOF;
 
         $content = <<<EOF
 {extend name="\$files.extend" /}
+{block name="main"}
+main
 {block name="side"}
+{__BLOCK__}
     {include file="\$files.include" name="\$user.name" value="\$user.account" /}
     {\$message}{literal}{\$message}{/literal}
+{/block}
+{block name="mainbody"}
+    mainbody
+{/block}
 {/block}
 EOF;
         $content2 = <<<EOF
 <nav>
-<div>
+header
+<div id="wrap">
     <input name="info" value="value">
 value:
 
+main
+
+
+    side
 
     <input name="name" value="100">
 value:
@@ -360,6 +382,8 @@ value:
 EOF;
         $template->fetch($content);
         $this->expectOutputString($content2);
+//        $template->parse($content);
+//        var_dump($content);
     }
 
     public function testVarAssign()
