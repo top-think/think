@@ -570,7 +570,7 @@ class Template
      * 获取模板中的block标签
      * @access private
      * @param  string $content 模板内容
-     * @param  string $sort 是否排序
+     * @param  boolean $sort 是否排序
      * @return array
      */
     private function parseBlock(&$content, $sort = false)
@@ -591,7 +591,7 @@ class Template
                             'end'     => $match[0][0],
                             'parent'  => count($right) ? end($right)['name'] : '',
                         ];
-                        $keys[] = $match[0][1];
+                        $keys[$tag['name']] = $match[0][1];
                     }
                 } else {
                     // 标签头压入栈
