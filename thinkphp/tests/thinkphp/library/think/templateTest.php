@@ -382,8 +382,6 @@ value:
 EOF;
         $template->fetch($content);
         $this->expectOutputString($content2);
-//        $template->parse($content);
-//        var_dump($content);
     }
 
     public function testVarAssign()

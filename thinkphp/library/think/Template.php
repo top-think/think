@@ -492,7 +492,7 @@ class Template
                 }
             } else {
                 // 取得顶层模板block标签内容
-                $baseBlocks = $this->parseBlock($template);
+                $baseBlocks = $this->parseBlock($template, true);
                 if (empty($extend)) {
                     // 无extend标签但有block标签的情况
                     $extend = $template;
@@ -570,9 +570,10 @@ class Template
      * 获取模板中的block标签
      * @access private
      * @param  string $content 模板内容
+     * @param  string $sort 是否排序
      * @return array
      */
-    private function parseBlock(&$content)
+    private function parseBlock(&$content, $sort = false)
     {
         $regex = $this->getRegex('block');
         $result = [];
@@ -602,8 +603,10 @@ class Template
                 }
             }
             unset($right, $matches);
-            // 按block标签结束符在模板中的位置排序
-            array_multisort($keys, $result);
+            if ($sort) {
+                // 按block标签结束符在模板中的位置排序
+                array_multisort($keys, $result);
+            }
         }
         return $result;
     }
