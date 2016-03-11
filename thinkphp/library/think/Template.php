@@ -503,20 +503,33 @@ class Template
         $func($content);
         if (!empty($extend)) {
             if ($baseBlocks) {
+                $children = [];
                 foreach ($baseBlocks as $name => $val) {
-                    $replace = !isset($blocks[$name]) ? $val['content'] : str_replace(['{__BLOCK__}', '{__block__}'], $val['content'], $blocks[$name]['content']);
-                    $extend  = str_replace($val['begin'] . $val['content'] . $val['end'], $replace, $extend);
-                    if (!empty($val['parent'])) {
-                        foreach ($val['parent'] as $key) {
-                            $baseBlocks[$key]['content'] = str_replace($val['begin'] . $val['content'] . $val['end'], $replace, $baseBlocks[$key]['content']);
-                            if (in_array($key, $blocks[$name]['parent'])) {
-                                $blocks[$key]['content'] = str_replace($blocks[$name]['begin'] . $blocks[$name]['content'] . $blocks[$name]['end'], $replace, $blocks[$key]['content']);
-                            }
+                    $replace = $val['content'];
+                    if (!empty($children[$name])) {
+                        // 如果包含有子block标签
+                        foreach ($children[$name] as $key) {
+                            $replace = str_replace($baseBlocks[$key]['begin'] . $baseBlocks[$key]['content'] . $baseBlocks[$key]['end'], $blocks[$key]['content'], $replace);
                         }
+                    }
+                    // 带有{__block__}表示与所继承模板的相应标签合并，而不是覆盖
+                    $replace = !isset($blocks[$name]) ? $replace : str_replace(['{__BLOCK__}', '{__block__}'], $replace, $blocks[$name]['content']);
+                    if (!empty($val['parent'])) {
+                        // 如果不是最顶层的block标签
+                        $parent = $val['parent'];
+                        if (isset($blocks[$parent])) {
+                            $blocks[$parent]['content'] = str_replace($blocks[$name]['begin'] . $blocks[$name]['content'] . $blocks[$name]['end'], $replace, $blocks[$parent]['content']);
+                        }
+                        $blocks[$name]['content'] = $replace;
+                        $children[$parent][] = $name;
+                    } else {
+                        // 替换模板中的block标签
+                        $extend  = str_replace($val['begin'] . $val['content'] . $val['end'], $replace, $extend);
                     }
                 }
             }
             $content = $extend;
+            unset($blocks, $baseBlocks);
         }
         return;
     }
@@ -575,13 +588,13 @@ class Template
                             'begin'   => $tag['tag'],
                             'content' => substr($content, $start, $length),
                             'end'     => $match[0][0],
-                            'parent'  => count($right) > 0 ? array_keys($right) : [],
+                            'parent'  => count($right) ? end($right)['name'] : '',
                         ];
                         $keys[] = $match[0][1];
                     }
                 } else {
                     // 标签头压入栈
-                    $right[$match[2][0]] = [
+                    $right[] = [
                         'name'   => $match[2][0],
                         'offset' => $match[0][1],
                         'tag'    => $match[0][0],
@@ -589,7 +602,7 @@ class Template
                 }
             }
             unset($right, $matches);
-            // 按block标签在模板中的位置排序
+            // 按block标签结束符在模板中的位置排序
             array_multisort($keys, $result);
         }
         return $result;
