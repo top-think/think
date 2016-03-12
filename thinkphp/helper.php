@@ -200,7 +200,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
     return \think\Url::build($url, $vars, $suffix, $domain);
 }
 
-function session($name, $value = '')
+function session($name, $value = '', $prefix = null)
 {
     if (is_array($name)) {
         // 初始化
@@ -209,14 +209,14 @@ function session($name, $value = '')
         // 清除
         \think\Session::clear($value);
     } elseif ('' === $value) {
-        // 获取
-        return \think\Session::get($name);
+        // 判断或获取
+        return 0 === strpos($name, '?') ? \think\Session::has(substr($name, 1), $prefix) : \think\Session::get($name, $prefix);
     } elseif (is_null($value)) {
         // 删除session
-        return \think\Session::delete($name);
+        return \think\Session::delete($name, $prefix);
     } else {
         // 设置session
-        return \think\Session::set($name, $value);
+        return \think\Session::set($name, $value, $prefix);
     }
 }
 

@@ -174,7 +174,7 @@ class Response
             'code' => $code,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => is_null($url) ? $_SERVER["HTTP_REFERER"] : $url,
+            'url'  => is_null($url) && isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : $url,
             'wait' => $wait,
         ];
 
