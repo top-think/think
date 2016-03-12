@@ -69,19 +69,12 @@ class Sae
 
     /**
      * 检查编译缓存是否有效
-     * @array $templates 用到的模板更新时间列表
      * @string $cacheFile 缓存的文件名
      * @int $cacheTime 缓存时间
      * @return boolean
      */
-    public function check($templates, $cacheFile, $cacheTime)
+    public function check($cacheFile, $cacheTime)
     {
-        foreach($templates as $time => $path) {
-            if (is_file($path) && filemtime($path) > $time) {
-                // 模板文件如果有更新则缓存需要更新
-                return false;
-            }
-        }
         $mtime = $this->get($cacheFile, 'mtime');
         if (0 != $cacheTime && time() > $mtime + $cacheTime) {
             // 缓存是否在有效期

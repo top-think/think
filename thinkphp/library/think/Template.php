@@ -170,24 +170,26 @@ class Template
             $this->config($config);
         }
         $template  = $this->parseTemplateFile($template);
-        $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($template) . $this->config['cache_suffix'];
-        if (!$this->checkCache($cacheFile)) {
-            // 缓存无效 重新模板编译
-            $content = file_get_contents($template);
-            $this->compiler($content, $cacheFile);
+        if ($template) {
+            $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($template) . $this->config['cache_suffix'];
+            if (!$this->checkCache($cacheFile)) {
+                // 缓存无效 重新模板编译
+                $content = file_get_contents($template);
+                $this->compiler($content, $cacheFile);
+            }
+            // 页面缓存
+            ob_start();
+            ob_implicit_flush(0);
+            // 读取编译存储
+            $this->storage->read($cacheFile, $this->data);
+            // 获取并清空缓存
+            $content = ob_get_clean();
+            if (!empty($this->config['cache_id']) && $this->config['display_cache']) {
+                // 缓存页面输出
+                Cache::set($this->config['cache_id'], $content, $this->config['cache_time']);
+            }
+            echo $content;
         }
-        // 页面缓存
-        ob_start();
-        ob_implicit_flush(0);
-        // 读取编译存储
-        $this->storage->read($cacheFile, $this->data);
-        // 获取并清空缓存
-        $content = ob_get_clean();
-        if (!empty($this->config['cache_id']) && $this->config['display_cache']) {
-            // 缓存页面输出
-            Cache::set($this->config['cache_id'], $content, $this->config['cache_time']);
-        }
-        echo $content;
     }
 
     /**
@@ -239,19 +241,22 @@ class Template
      */
     private function checkCache($cacheFile)
     {
-        if (!$this->config['tpl_cache']) {
-            // 优先对配置设定检测
-            return false;
-        }
-        if (is_file($cacheFile)) {
-            $handle = @fopen($cacheFile, "r");
-            if ($handle) {
-                preg_match('/\/\*(.+?)\*\//', fgets($handle), $matches);
-                if (isset($matches[1])) {
-                    $this->includeFile = unserialize($matches[1]);
-                    // 检查编译存储是否有效
-                    return $this->storage->check($this->includeFile, $cacheFile, $this->config['cache_time']);
+        if ($this->config['tpl_cache'] && is_file($cacheFile) && $handle = @fopen($cacheFile, "r")) {
+            // 读取第一行
+            preg_match('/\/\*(.+?)\*\//', fgets($handle), $matches);
+            if (isset($matches[1])) {
+                $includeFile = unserialize($matches[1]);
+                if (is_array($includeFile)) {
+                    // 检查模板文件是否有更新
+                    foreach($includeFile as $path => $time) {
+                        if (is_file($path) && filemtime($path) > $time) {
+                            // 模板文件如果有更新则缓存需要更新
+                            return false;
+                        }
+                    }
                 }
+                // 检查编译存储是否有效
+                return $this->storage->check($cacheFile, $this->config['cache_time']);
             }
         }
         return false;
@@ -289,14 +294,9 @@ class Template
             } else {
                 // 读取布局模板
                 $layoutFile = $this->parseTemplateFile($this->config['layout_name']);
-                // 检查布局文件
-                if (is_file($layoutFile)) {
+                if ($layoutFile) {
                     // 替换布局的主体内容
                     $content = str_replace($this->config['layout_item'], $content, file_get_contents($layoutFile));
-                    // 记录布局文件的更新时间
-                    $this->includeFile[filemtime($layoutFile)] = $layoutFile;
-                } else {
-                    throw new Exception('template not exist:' . $layoutFile, 10700);
                 }
             }
         }
@@ -417,12 +417,10 @@ class Template
             if (!$this->config['layout_on'] || $this->config['layout_name'] != $array['name']) {
                 // 读取布局模板
                 $layoutFile = $this->parseTemplateFile($array['name']);
-                if (is_file($layoutFile)) {
+                if ($layoutFile) {
                     $replace = isset($array['replace']) ? $array['replace'] : $this->config['layout_item'];
                     // 替换布局的主体内容
                     $content = str_replace($replace, $content, file_get_contents($layoutFile));
-                    // 记录布局文件的更新时间
-                    $this->includeFile[filemtime($layoutFile)] = $layoutFile;
                 }
             }
         } else {
@@ -996,11 +994,9 @@ class Template
                 $templateName = $this->get(substr($templateName, 1));
             }
             $template = $this->parseTemplateFile($templateName);
-            if (is_file($template)) {
+            if ($template) {
                 // 获取模板文件内容
                 $parseStr .= file_get_contents($template);
-                // 记录模板文件的更新时间
-                $this->includeFile[filemtime($template)] = $template;
             }
         }
         return $parseStr;
@@ -1010,7 +1006,7 @@ class Template
      * 解析模板文件名
      * @access private
      * @param  string $template 文件名
-     * @return string
+     * @return string|false
      */
     private function parseTemplateFile($template)
     {
@@ -1020,7 +1016,14 @@ class Template
             APP_PATH . str_replace('@', '/' . basename($this->config['view_path']) . '/', $template) . $this->config['view_suffix'] :
             (defined('THEME_PATH') && substr_count($template, '/') < 2 ? THEME_PATH : $this->config['view_path']) . $template . $this->config['view_suffix'];
         }
-        return $template;
+        if (is_file($template)) {
+            // 记录模板文件的更新时间
+            $this->includeFile[$template] = filemtime($template);
+            return $template;
+        } else {
+            throw new Exception('template not exist:' . $template, 10700);
+            return false;
+        }
     }
 
     /**
