@@ -59,15 +59,15 @@ class File
      */
     public function check($templates, $cacheFile, $cacheTime)
     {
-        if (0 != $cacheTime && time() > filemtime($cacheFile) + $cacheTime) {
-            // 缓存是否在有效期
-            return false;
-        }
         foreach($templates as $time => $path) {
-            if (is_file($path) && filemtime($path) > $time + $cacheTime) {
+            if (is_file($path) && filemtime($path) > $time) {
                 // 模板文件如果有更新则缓存需要更新
                 return false;
             }
+        }
+        if (0 != $cacheTime && time() > filemtime($cacheFile) + $cacheTime) {
+            // 缓存是否在有效期
+            return false;
         }
         return true;
     }
