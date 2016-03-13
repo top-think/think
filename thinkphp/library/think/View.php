@@ -39,7 +39,12 @@ class View
     public function __construct(array $config = [])
     {
         $this->config($config);
-        $this->engine($this->config['engine_type']);
+        $engineConfig = array_merge(Config::get(), [
+            'view_path'   => $this->config['view_path'],
+            'view_suffix' => $this->config['view_suffix'],
+            'view_depr'   => $this->config['view_depr'],
+        ]);
+        $this->engine($this->config['engine_type'], $engineConfig);
     }
 
     /**
@@ -229,7 +234,7 @@ class View
             list($module, $template) = explode('@', $template);
         }
         // 获取当前主题的模版路径
-        defined('THEME_PATH') || define('THEME_PATH', $this->getThemePath($module));
+        $path = $this->getThemePath($module);
 
         // 分析模板文件规则
         if (defined('CONTROLLER_NAME')) {
@@ -240,7 +245,7 @@ class View
                 $template = str_replace('.', DS, CONTROLLER_NAME) . $depr . $template;
             }
         }
-        return THEME_PATH . $template . $this->config['view_suffix'];
+        return $path . $template . $this->config['view_suffix'];
     }
 
     /**
