@@ -793,7 +793,7 @@ class Template
     public function parseVar(&$varStr)
     {
         $varStr = trim($varStr);
-        if (preg_match_all('/\$[a-zA-Z_](?>\w*)(?:[:\.][a-zA-Z_](?>\w*))+/', $varStr, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all('/\$[a-zA-Z_](?>\w*)(?:[:\.][0-9a-zA-Z_](?>\w*))+/', $varStr, $matches, PREG_OFFSET_CAPTURE)) {
             static $_varParseList = [];
             while ($matches[0]) {
                 $match = array_pop($matches[0]);
