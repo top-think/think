@@ -23,17 +23,30 @@ class View
     protected $data = [];
     // 视图参数
     protected $config = [
+        // 模板主题
         'theme_on'          => false,
+        // 是否自动侦测主题
         'auto_detect_theme' => false,
+        // 自动侦测主题的URL变量
         'var_theme'         => 't',
+        // 默认主题 开启模板主题有效
         'default_theme'     => 'default',
+        // 视图文件路径
         'view_path'         => '',
+        // 视图文件后缀
         'view_suffix'       => '.html',
+        // 视图文件分隔符
         'view_depr'         => DS,
+        // 视图层目录名
         'view_layer'        => VIEW_LAYER,
+        // 视图输出字符串替换
         'parse_str'         => [],
-        'engine_type'       => 'think',
+        // 视图驱动命名空间
         'namespace'         => '\\think\\view\\driver\\',
+        // 模板引擎配置参数
+        'engine'            => [
+            'type' => 'think',
+        ],
     ];
 
     public function __construct(array $config = [])
@@ -42,12 +55,12 @@ class View
         if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
             $this->config['view_path'] = VIEW_PATH;
         }
-        $engineConfig = array_merge(Config::get(), [
+        $this->config['engine'] = array_merge($this->config['engine'], [
             'view_path'   => $this->config['view_path'],
             'view_suffix' => $this->config['view_suffix'],
             'view_depr'   => $this->config['view_depr'],
         ]);
-        $this->engine($this->config['engine_type'], $engineConfig);
+        $this->engine($this->config['engine']['type'], $this->config['engine']);
     }
 
     /**
