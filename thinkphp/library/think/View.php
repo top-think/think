@@ -39,6 +39,9 @@ class View
     public function __construct(array $config = [])
     {
         $this->config($config);
+        if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+            $this->config['view_path'] = VIEW_PATH;
+        }
         $engineConfig = array_merge(Config::get(), [
             'view_path'   => $this->config['view_path'],
             'view_suffix' => $this->config['view_suffix'],
