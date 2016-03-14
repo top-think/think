@@ -52,10 +52,6 @@ class View
     public function __construct(array $config = [])
     {
         $this->config($config);
-        if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
-            $this->config['view_path'] = VIEW_PATH;
-        }
-        $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
     }
 
     /**
@@ -234,12 +230,18 @@ class View
      */
     private function parseTemplate($template)
     {
+        if (is_null($this->engine)) {
+            // 初始化模板引擎
+            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+                $this->config['view_path'] = VIEW_PATH;
+            }
+            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
+        }
+
         if (is_file($template)) {
             return realpath($template);
         }
-        if (strpos($template, $this->config['view_suffix'])) {
-            return $template;
-        }
+
         $depr     = $this->config['view_depr'];
         $template = str_replace(['/', ':'], $depr, $template);
         $theme    = $this->getTemplateTheme();
