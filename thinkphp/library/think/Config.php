@@ -142,14 +142,13 @@ class Config
             return;
         } elseif (is_array($name)) {
             // 批量设置
-            $config = array_change_key_case($name);
             if (!empty($value)) {
                 self::$config[$range][$value] = isset(self::$config[$range][$value]) ?
-                array_merge(self::$config[$range][$value], $config) :
-                self::$config[$range][$value] = $config;
+                array_merge(self::$config[$range][$value], $name) :
+                self::$config[$range][$value] = $name;
                 return self::$config[$range][$value];
             } else {
-                return self::$config[$range] = array_merge(self::$config[$range], $config);
+                return self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
             }
         } else {
             // 为空直接返回 已有配置
