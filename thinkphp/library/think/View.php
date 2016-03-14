@@ -170,6 +170,14 @@ class View
      */
     public function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
+        if (is_null($this->engine)) {
+            // 初始化模板引擎
+            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+                $this->config['view_path'] = VIEW_PATH;
+            }
+            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
+        }
+
         // 模板变量
         $vars = $vars ? $vars : $this->data;
         if (!$renderContent) {
@@ -230,14 +238,6 @@ class View
      */
     private function parseTemplate($template)
     {
-        if (is_null($this->engine)) {
-            // 初始化模板引擎
-            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
-                $this->config['view_path'] = VIEW_PATH;
-            }
-            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
-        }
-
         if (is_file($template)) {
             return realpath($template);
         }
