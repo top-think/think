@@ -70,7 +70,7 @@ class Error
             // 部署模式仅显示 Code 和 Message
             $data = [
                 'code'    => $exception->getCode(),
-                'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message'),
+                'message' => $exception->getMessage(),
             ];
             $log = "[{$data['code']}]{$data['message']}";
         }
@@ -136,15 +136,18 @@ class Error
     /**
      * 输出异常信息
      * @param  \Exception $exception
-     * @param  Array      $vars      异常信息
+     * @param  array      $data      异常信息
      * @return void
      */
-    public static function output($exception, array $vars)
+    public static function output($exception, array $data)
     {
         http_response_code($exception instanceof Exception ? $exception->getHttpStatus() : 500);
 
         $type = Config::get('default_return_type');
-
+        if (!APP_DEBUG) {
+            // 部署模式不显示详细错误信息
+            $data['message'] = Config::get('show_error_msg');
+        }
         if (IS_API && 'html' != $type) {
             // 异常信息输出监听
             APP_HOOK && Hook::listen('error_output', $data);
@@ -152,7 +155,7 @@ class Error
             Response::send($data, $type, Config::get('response_return'));
         } else {
             //ob_end_clean();
-            extract($vars);
+            extract($data);
             include Config::get('exception_tmpl');
         }
     }
