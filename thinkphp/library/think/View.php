@@ -44,7 +44,7 @@ class View
         // 视图驱动命名空间
         'namespace'         => '\\think\\view\\driver\\',
         // 模板引擎配置参数
-        'engine'            => [
+        'view_engine'       => [
             'type' => 'think',
         ],
     ];
@@ -55,12 +55,7 @@ class View
         if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
             $this->config['view_path'] = VIEW_PATH;
         }
-        $this->config['engine'] = array_merge($this->config['engine'], [
-            'view_path'   => $this->config['view_path'],
-            'view_suffix' => $this->config['view_suffix'],
-            'view_depr'   => $this->config['view_depr'],
-        ]);
-        $this->engine($this->config['engine']['type'], $this->config['engine']);
+        $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
     }
 
     /**
@@ -131,7 +126,12 @@ class View
         if ('php' == $engine) {
             $this->engine = 'php';
         } else {
-            $class        = $this->config['namespace'] . ucwords($engine);
+            $class  = $this->config['namespace'] . ucwords($engine);
+            $config = array_merge($config, [
+                'view_path'   => $this->config['view_path'],
+                'view_suffix' => $this->config['view_suffix'],
+                'view_depr'   => $this->config['view_depr'],
+            ]);
             $this->engine = new $class($config);
         }
         return $this;
