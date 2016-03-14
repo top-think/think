@@ -8,13 +8,13 @@
         /* Base */
         body{
             color: #333;
-            font: 14px Verdana, "Helvetica Neue", helvetica, Arial, 'Microsoft YaHei', sans-serif;
+            font: 16px Verdana, "Helvetica Neue", helvetica, Arial, 'Microsoft YaHei', sans-serif;
             margin: 0px;
             padding: 20px;
         }
         h1{
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 500;
             line-height: 32px;
         }
@@ -48,6 +48,20 @@
         }
     
         /* Exception Info */
+        .exception .message{
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-bottom: 0 none;
+            line-height: 18px;
+        font-size:16px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
+        }
+    .exception .message div{
+        margin:8px 0px;
+    }
+
         .exception .code{
             float: left;
             text-align: center;
@@ -58,17 +72,15 @@
             background: #999;
         }
         .exception .source-code{
-            margin-top: 12px;
             padding: 6px;
             border: 1px solid #ddd;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
+
             background: #f9f9f9;
             overflow-x: auto;
+
         }
         .exception .source-code pre{
             margin: 0;
-            font-family: Consolas,"Liberation Mono",Courier,"微软雅黑";
         }
         .exception .source-code pre ol{
             margin: 0;
@@ -76,6 +88,8 @@
             display: inline-block;
             min-width: 100%;
             box-sizing: border-box;
+        font-size:14px;
+            font-family: "Century Gothic",Consolas,"Liberation Mono",Courier,Verdana;
             padding-left: <?php echo isset($source) ? parse_padding($source) : 40; ?>px;
         }
         .exception .source-code pre li{
@@ -86,15 +100,18 @@
         .exception .source-code pre code{
             color: #333;
             height: 100%;
-            padding-left: 6px;
             display: inline-block;
             border-left: 1px solid #fff;
+        font-size:14px;
+            font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
         }
         .exception .trace{
             padding: 6px;
             border: 1px solid #ddd;
             border-top: 0 none;
             line-height: 16px;
+        font-size:14px;
+            font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
         }
         .exception .trace ol{
             margin: 12px;
@@ -168,15 +185,16 @@
 <body>
     <?php if(APP_DEBUG) { ?>
     <div class="exception">
-        <h1>
-            <span class="code"><?php echo $code; ?></span>
+    <div class="message">
+        
             <div class="info">
                 <div>
-                    <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?>
+                    [<?php echo $code; ?>] <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?>
                 </div>
-                <div><?php echo htmlentities($message); ?></div>
+                <div><h1><?php echo htmlentities($message); ?></h1></div>
             </div>
-        </h1>
+        
+    </div>
         <div class="source-code">
             <pre class="prettyprint lang-php"><ol start="<?php echo $source['first']; ?>"><?php foreach ((array) $source['source'] as $key => $value) { ?><li class="line-<?php echo $key + $source['first']; ?>"><code><?php echo htmlentities($value); ?></code></li><?php } ?></ol></pre>
         </div>
@@ -210,9 +228,9 @@
     </div>
     <?php } else { ?>
     <div class="exception">
-        <h1>
-            <div class="info"><?php echo htmlentities($message); ?></div>
-        </h1>
+        
+            <div class="info"><h1><?php echo htmlentities($message); ?></h1></div>
+        
     </div>
     <?php } ?>
     
