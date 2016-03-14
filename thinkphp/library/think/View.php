@@ -242,15 +242,12 @@ class View
         }
         $depr     = $this->config['view_depr'];
         $template = str_replace(['/', ':'], $depr, $template);
-
-        // 获取当前模块
-        $module = defined('MODULE_NAME') ? MODULE_NAME : '';
+        $theme    = $this->getTemplateTheme();
+        $path     = $this->config['view_path'];
         if (strpos($template, '@')) {
-            // 跨模块调用模版文件
             list($module, $template) = explode('@', $template);
+            $path                    = APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS;
         }
-        // 获取当前主题的模版路径
-        $path = $this->getThemePath($module);
 
         // 分析模板文件规则
         if (defined('CONTROLLER_NAME')) {
@@ -261,16 +258,15 @@ class View
                 $template = str_replace('.', DS, CONTROLLER_NAME) . $depr . $template;
             }
         }
-        return $path . $template . $this->config['view_suffix'];
+        return realpath($path) . DS . $theme . $template . $this->config['view_suffix'];
     }
 
     /**
      * 获取当前的模板主题
      * @access private
-     * @param  string $module 模块名
      * @return string
      */
-    private function getTemplateTheme($module)
+    private function getTemplateTheme()
     {
         if ($this->config['theme_on']) {
             if ($this->theme) {
@@ -284,7 +280,7 @@ class View
                 } elseif (Cookie::get('think_theme')) {
                     $theme = Cookie::get('think_theme');
                 }
-                if (!isset($theme) || !is_dir(APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS . $theme)) {
+                if (!isset($theme) || !is_dir($this->config['view_path'] . DS . $theme)) {
                     $theme = $this->config['default_theme'];
                 }
                 Cookie::set('think_theme', $theme, 864000);
@@ -294,25 +290,6 @@ class View
             return $theme . DS;
         }
         return '';
-    }
-
-    /**
-     * 获取当前的模板路径
-     * @access protected
-     * @param  string $module 模块名
-     * @return string
-     */
-    protected function getThemePath($module = '')
-    {
-        // 获取当前主题名称
-        $theme = $this->getTemplateTheme($module);
-        // 获取当前主题的模版路径
-        $tmplPath = $this->config['view_path']; // 模块设置独立的视图目录
-        if (!$tmplPath) {
-            // 定义TMPL_PATH 则改变全局的视图目录到模块之外
-            $tmplPath = defined('TMPL_PATH') ? TMPL_PATH . $module . DS : APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS;
-        }
-        return realpath($tmplPath) . DS . $theme;
     }
 
     /**

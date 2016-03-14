@@ -132,16 +132,4 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_data, $method->invoke($view_instance, 'template_name'));
     }
 
-    /**
-     *  测试引擎设置
-     * @return  mixed
-     * @access public
-     */
-    public function testGetThemePath()
-    {
-        $view_instance = \think\View::instance();
-        $method        = new \ReflectionMethod('\think\View', 'getThemePath');
-        $method->setAccessible(true);
-        $this->assertEquals(DS . 'theme_name' . DS, $method->invoke($view_instance));
-    }
 }
