@@ -11,7 +11,7 @@
 
 namespace think;
 
-T('controller/Jump');
+\think\Loader::import('controller/Jump', TRAIT_PATH, EXT);
 
 class Controller
 {
