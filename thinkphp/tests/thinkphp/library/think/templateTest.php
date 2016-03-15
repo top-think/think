@@ -318,13 +318,14 @@ EOF;
     {
         $template = new Template();
         $template->assign('name', 'name');
+        $template->layout('layout');
         $config = [
             'strip_space' => true,
             'view_path'   => dirname(__FILE__) . '/',
         ];
         $data = ['name' => 'value'];
         $template->display('display', $data, $config);
-        $this->expectOutputString('value');
+        $this->expectOutputString('<div>value</div>');
     }
 
     public function testFetch()
@@ -382,8 +383,6 @@ value:
 EOF;
         $template->fetch($content);
         $this->expectOutputString($content2);
-//        $template->parse($content);
-//        var_dump($content);
     }
 
     public function testVarAssign()
