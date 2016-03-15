@@ -52,6 +52,9 @@ class View
     public function __construct(array $config = [])
     {
         $this->config($config);
+        if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+            $this->config['view_path'] = VIEW_PATH;
+        }
     }
 
     /**
@@ -172,9 +175,6 @@ class View
     {
         if (is_null($this->engine)) {
             // 初始化模板引擎
-            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
-                $this->config['view_path'] = VIEW_PATH;
-            }
             $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
         }
 
