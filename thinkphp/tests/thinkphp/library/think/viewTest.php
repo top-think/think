@@ -100,7 +100,6 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $config_value = $property->getValue($view_instance);
 
         $this->assertTrue($config_value['theme_on']);
-        $this->assertTrue($config_value['auto_detect_theme']);
 
         //关闭主题测试
         $data         = $view_instance->theme(false);
