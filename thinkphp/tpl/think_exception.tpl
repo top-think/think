@@ -22,7 +22,7 @@
             color: #4288ce;
             font-weight: 400;
             padding: 6px 0;
-            margin: 24px 0 0;
+            margin: 10px 6px 0 0;
             font-size: 18px;
             border-bottom: 1px solid #eee;
         }
@@ -58,9 +58,6 @@
             border-top-right-radius: 4px;
             font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
         }
-    .exception .message div{
-        margin:8px 0px;
-    }
 
         .exception .code{
             float: left;
@@ -189,7 +186,7 @@
         
             <div class="info">
                 <div>
-                    [<?php echo $code; ?>] <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?>
+                    <h2>[<?php echo $code; ?>] <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?></h2>
                 </div>
                 <div><h1><?php echo htmlentities($message); ?></h1></div>
             </div>
@@ -199,7 +196,7 @@
             <pre class="prettyprint lang-php"><ol start="<?php echo $source['first']; ?>"><?php foreach ((array) $source['source'] as $key => $value) { ?><li class="line-<?php echo $key + $source['first']; ?>"><code><?php echo htmlentities($value); ?></code></li><?php } ?></ol></pre>
         </div>
         <div class="trace">
-            <h3>Call Stack</h3>
+            <h2>Call Stack</h2>
             <ol>
                 <li><?php echo sprintf('in %s', parse_file($file, $line)); ?></li>
                 <?php foreach ((array) $trace as $value) { ?>
