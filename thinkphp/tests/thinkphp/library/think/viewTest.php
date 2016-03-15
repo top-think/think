@@ -124,9 +124,9 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $method        = new \ReflectionMethod('\think\View', 'ParseTemplate');
         $method->setAccessible(true);
         if (defined('CONTROLLER_NAME')) {
-            $expect_data = DS . 'theme_name' . DS . CONTROLLER_NAME . DS . 'template_name.html';
+            $expect_data = 'view_path' . 'theme_name' . DS . CONTROLLER_NAME . DS . 'template_name.html';
         } else {
-            $expect_data = DS . 'theme_name' . DS . 'template_name.html';
+            $expect_data = 'view_path' . 'theme_name' . DS . 'template_name.html';
         }
         $this->assertEquals($expect_data, $method->invoke($view_instance, 'template_name'));
     }
