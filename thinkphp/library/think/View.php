@@ -118,7 +118,10 @@ class View
         if ('php' == $engine) {
             $this->engine = 'php';
         } else {
-            $class  = $this->config['namespace'] . ucwords($engine);
+            $class = $this->config['namespace'] . ucfirst($engine);
+            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+                $this->config['view_path'] = VIEW_PATH;
+            }
             $config = array_merge($config, [
                 'view_path'   => $this->config['view_path'],
                 'view_suffix' => $this->config['view_suffix'],
