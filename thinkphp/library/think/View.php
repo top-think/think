@@ -24,27 +24,23 @@ class View
     // 视图参数
     protected $config = [
         // 模板主题
-        'theme_on'          => false,
-        // 是否自动侦测主题
-        'auto_detect_theme' => false,
-        // 自动侦测主题的URL变量
-        'var_theme'         => 't',
+        'theme_on'      => false,
         // 默认主题 开启模板主题有效
-        'default_theme'     => 'default',
+        'default_theme' => 'default',
         // 视图文件路径
-        'view_path'         => '',
+        'view_path'     => '',
         // 视图文件后缀
-        'view_suffix'       => '.html',
+        'view_suffix'   => '.html',
         // 视图文件分隔符
-        'view_depr'         => DS,
+        'view_depr'     => DS,
         // 视图层目录名
-        'view_layer'        => VIEW_LAYER,
+        'view_layer'    => VIEW_LAYER,
         // 视图输出字符串替换
-        'parse_str'         => [],
+        'parse_str'     => [],
         // 视图驱动命名空间
-        'namespace'         => '\\think\\view\\driver\\',
+        'namespace'     => '\\think\\view\\driver\\',
         // 模板引擎配置参数
-        'view_engine'       => [
+        'template'      => [
             'type' => 'think',
         ],
     ];
@@ -142,14 +138,13 @@ class View
     public function theme($theme)
     {
         if (true === $theme) {
-            // 自动侦测
-            $this->config['theme_on']          = true;
-            $this->config['auto_detect_theme'] = true;
+            // 启用主题
+            $this->config['theme_on'] = true;
         } elseif (false === $theme) {
             // 关闭主题
             $this->config['theme_on'] = false;
         } else {
-            // 指定模板主题
+            // 指定主题
             $this->config['theme_on'] = true;
             $this->theme              = $theme;
         }
@@ -185,7 +180,7 @@ class View
         }
         if (is_null($this->engine)) {
             // 初始化模板引擎
-            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
+            $this->engine($this->config['template']['type'], $this->config['template']);
         }
         // 页面缓存
         ob_start();
