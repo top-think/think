@@ -62,7 +62,7 @@ class Shmcache
             if (is_array($data) && $data[0] > time())
                 return $data[1];
         }
-        return null;
+        return false;
     }
 
     /**

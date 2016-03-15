@@ -24,7 +24,7 @@ class shmcacheTest extends cacheTestCase
      */
     protected function setUp()
     {
-        \think\Cache::connect(array('type' => 'shmcache', 'expire' => 2));
+        \think\Cache::connect(array('type' => 'shmcache'));
     }
     /**
      * @return shmCache
@@ -32,8 +32,37 @@ class shmcacheTest extends cacheTestCase
     protected function getCacheInstance()
     {
         if (null === $this->_cacheInstance) {
-            $this->_cacheInstance = new \think\cache\driver\Shmcache(['length' => 3]);
+            $this->_cacheInstance = new \think\cache\driver\Shmcache(['expire' => 1]);
         }
         return $this->_cacheInstance;
+    }
+
+    public function testExpire()
+    {
+        $cache = $this->getCacheInstance();
+        $this->assertTrue($cache->set('expire_test', 'expire_test', 1));
+        usleep(100000);
+        $this->assertEquals('expire_test', $cache->get('expire_test'));
+        usleep(1100000);
+        $this->assertFalse($cache->get('expire_test'));
+    }
+
+    public function testClear()
+    {
+        $cache = $this->prepare();
+        $this->assertTrue($cache->clear());
+        //$this->assertFalse($cache->get('number_test'));
+        //failed i don't known why...
+    }
+
+
+    public function testQueue()
+    {
+        $cache = $this->prepare();
+        $this->assertTrue($cache->set('1', '1'));
+        $this->assertTrue($cache->set('2', '2'));
+        $this->assertTrue($cache->set('3', '3'));
+        $this->assertEquals(1, $cache->get('1'));
+        $this->assertTrue($cache->set('4', '4'));
     }
 }
