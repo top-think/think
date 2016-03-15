@@ -170,14 +170,6 @@ class View
      */
     public function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
-        if (is_null($this->engine)) {
-            // 初始化模板引擎
-            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
-                $this->config['view_path'] = VIEW_PATH;
-            }
-            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
-        }
-
         // 模板变量
         $vars = $vars ? $vars : $this->data;
         if (!$renderContent) {
@@ -190,6 +182,10 @@ class View
             }
             // 记录视图信息
             APP_DEBUG && Log::record('[ VIEW ] ' . $template . ' [ ' . var_export($vars, true) . ' ]', 'info');
+        }
+        if (is_null($this->engine)) {
+            // 初始化模板引擎
+            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
         }
         // 页面缓存
         ob_start();
@@ -241,14 +237,20 @@ class View
         if (is_file($template)) {
             return realpath($template);
         }
+        if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+            $this->config['view_path'] = VIEW_PATH;
+        }
+        // 获取当前主题
+        $theme = $this->getTemplateTheme();
+        $this->config['view_path'] .= $theme;
 
         $depr     = $this->config['view_depr'];
         $template = str_replace(['/', ':'], $depr, $template);
-        $theme    = $this->getTemplateTheme();
-        $path     = $this->config['view_path'];
         if (strpos($template, '@')) {
             list($module, $template) = explode('@', $template);
             $path                    = APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS;
+        } else {
+            $path = $this->config['view_path'];
         }
 
         // 分析模板文件规则
@@ -274,24 +276,11 @@ class View
             if ($this->theme) {
                 // 指定模板主题
                 $theme = $this->theme;
-            } elseif ($this->config['auto_detect_theme']) {
-                // 自动侦测模板主题
-                $t = $this->config['var_theme'];
-                if (isset($_GET[$t])) {
-                    $theme = $_GET[$t];
-                } elseif (Cookie::get('think_theme')) {
-                    $theme = Cookie::get('think_theme');
-                }
-                if (!isset($theme) || !is_dir($this->config['view_path'] . DS . $theme)) {
-                    $theme = $this->config['default_theme'];
-                }
-                Cookie::set('think_theme', $theme, 864000);
             } else {
                 $theme = $this->config['default_theme'];
             }
-            return $theme . DS;
         }
-        return '';
+        return isset($theme) ? $theme . DS : '';
     }
 
     /**
