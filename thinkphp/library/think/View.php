@@ -169,7 +169,7 @@ class View
     public function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
         // 模板变量
-        $vars = $vars ? $vars : $this->data;
+        $vars = array_merge($this->data, $vars);
         if (!$renderContent) {
             // 获取模板文件名
             $template = $this->parseTemplate($template);
