@@ -530,7 +530,7 @@ class Template
                         // 如果不是最顶层的block标签
                         $parent = $val['parent'];
                         if (isset($blocks[$parent])) {
-                            $blocks[$parent]['content'] = str_replace($blocks[$name]['begin'] . $blocks[$name]['content'] . $blocks[$name]['end'], $replace, $blocks[$parent]['content']);
+                            $blocks[$parent]['content'] = str_replace($baseBlocks[$name]['begin'] . $baseBlocks[$name]['content'] . $baseBlocks[$name]['end'], $replace, $blocks[$parent]['content']);
                         }
                         $blocks[$name]['content'] = $replace;
                         $children[$parent][]      = $name;
@@ -1043,7 +1043,7 @@ class Template
                     $path = $this->config['view_path'];
                 }
                 $template = str_replace(['/', ':'], $this->config['view_depr'], $template);
-                $template = $path . $template . $this->config['view_suffix'];
+                $template = realpath($path) . DS . $template . $this->config['view_suffix'];
             }
         }
         if (is_file($template)) {
