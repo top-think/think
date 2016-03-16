@@ -24,27 +24,23 @@ class View
     // 视图参数
     protected $config = [
         // 模板主题
-        'theme_on'          => false,
-        // 是否自动侦测主题
-        'auto_detect_theme' => false,
-        // 自动侦测主题的URL变量
-        'var_theme'         => 't',
+        'theme_on'      => false,
         // 默认主题 开启模板主题有效
-        'default_theme'     => 'default',
+        'default_theme' => 'default',
         // 视图文件路径
-        'view_path'         => '',
+        'view_path'     => '',
         // 视图文件后缀
-        'view_suffix'       => '.html',
+        'view_suffix'   => '.html',
         // 视图文件分隔符
-        'view_depr'         => DS,
+        'view_depr'     => DS,
         // 视图层目录名
-        'view_layer'        => VIEW_LAYER,
+        'view_layer'    => VIEW_LAYER,
         // 视图输出字符串替换
-        'parse_str'         => [],
+        'parse_str'     => [],
         // 视图驱动命名空间
-        'namespace'         => '\\think\\view\\driver\\',
+        'namespace'     => '\\think\\view\\driver\\',
         // 模板引擎配置参数
-        'view_engine'       => [
+        'template'      => [
             'type' => 'think',
         ],
     ];
@@ -122,7 +118,10 @@ class View
         if ('php' == $engine) {
             $this->engine = 'php';
         } else {
-            $class  = $this->config['namespace'] . ucwords($engine);
+            $class = $this->config['namespace'] . ucfirst($engine);
+            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+                $this->config['view_path'] = VIEW_PATH;
+            }
             $config = array_merge($config, [
                 'view_path'   => $this->config['view_path'],
                 'view_suffix' => $this->config['view_suffix'],
@@ -142,14 +141,13 @@ class View
     public function theme($theme)
     {
         if (true === $theme) {
-            // 自动侦测
-            $this->config['theme_on']          = true;
-            $this->config['auto_detect_theme'] = true;
+            // 启用主题
+            $this->config['theme_on'] = true;
         } elseif (false === $theme) {
             // 关闭主题
             $this->config['theme_on'] = false;
         } else {
-            // 指定模板主题
+            // 指定主题
             $this->config['theme_on'] = true;
             $this->theme              = $theme;
         }
@@ -170,16 +168,8 @@ class View
      */
     public function fetch($template = '', $vars = [], $config = [], $renderContent = false)
     {
-        if (is_null($this->engine)) {
-            // 初始化模板引擎
-            if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
-                $this->config['view_path'] = VIEW_PATH;
-            }
-            $this->engine($this->config['view_engine']['type'], $this->config['view_engine']);
-        }
-
         // 模板变量
-        $vars = $vars ? $vars : $this->data;
+        $vars = array_merge($this->data, $vars);
         if (!$renderContent) {
             // 获取模板文件名
             $template = $this->parseTemplate($template);
@@ -190,6 +180,10 @@ class View
             }
             // 记录视图信息
             APP_DEBUG && Log::record('[ VIEW ] ' . $template . ' [ ' . var_export($vars, true) . ' ]', 'info');
+        }
+        if (is_null($this->engine)) {
+            // 初始化模板引擎
+            $this->engine($this->config['template']['type'], $this->config['template']);
         }
         // 页面缓存
         ob_start();
@@ -241,14 +235,20 @@ class View
         if (is_file($template)) {
             return realpath($template);
         }
+        if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
+            $this->config['view_path'] = VIEW_PATH;
+        }
+        // 获取当前主题
+        $theme = $this->getTemplateTheme();
+        $this->config['view_path'] .= $theme;
 
         $depr     = $this->config['view_depr'];
         $template = str_replace(['/', ':'], $depr, $template);
-        $theme    = $this->getTemplateTheme();
-        $path     = $this->config['view_path'];
         if (strpos($template, '@')) {
             list($module, $template) = explode('@', $template);
             $path                    = APP_PATH . (APP_MULTI_MODULE ? $module . DS : '') . $this->config['view_layer'] . DS;
+        } else {
+            $path = $this->config['view_path'];
         }
 
         // 分析模板文件规则
@@ -260,7 +260,7 @@ class View
                 $template = str_replace('.', DS, CONTROLLER_NAME) . $depr . $template;
             }
         }
-        return realpath($path) . DS . $theme . $template . $this->config['view_suffix'];
+        return realpath($path) . DS . $template . $this->config['view_suffix'];
     }
 
     /**
@@ -274,24 +274,11 @@ class View
             if ($this->theme) {
                 // 指定模板主题
                 $theme = $this->theme;
-            } elseif ($this->config['auto_detect_theme']) {
-                // 自动侦测模板主题
-                $t = $this->config['var_theme'];
-                if (isset($_GET[$t])) {
-                    $theme = $_GET[$t];
-                } elseif (Cookie::get('think_theme')) {
-                    $theme = Cookie::get('think_theme');
-                }
-                if (!isset($theme) || !is_dir($this->config['view_path'] . DS . $theme)) {
-                    $theme = $this->config['default_theme'];
-                }
-                Cookie::set('think_theme', $theme, 864000);
             } else {
                 $theme = $this->config['default_theme'];
             }
-            return $theme . DS;
         }
-        return '';
+        return isset($theme) ? $theme . DS : '';
     }
 
     /**

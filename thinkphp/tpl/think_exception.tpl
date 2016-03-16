@@ -13,7 +13,7 @@
             padding: 20px;
         }
         h1{
-            margin: 0;
+            margin: 10px 0 0;
             font-size: 28px;
             font-weight: 500;
             line-height: 32px;
@@ -22,7 +22,7 @@
             color: #4288ce;
             font-weight: 400;
             padding: 6px 0;
-            margin: 10px 6px 0 0;
+            margin: 6px 0 0;
             font-size: 18px;
             border-bottom: 1px solid #eee;
         }
