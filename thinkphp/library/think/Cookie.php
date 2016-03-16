@@ -76,7 +76,6 @@ class Cookie
             } elseif (is_string($option)) {
                 parse_str($option, $option);
             }
-
             $config = array_merge(self::$config, array_change_key_case($option));
         } else {
             $config = self::$config;
@@ -88,7 +87,7 @@ class Cookie
             $value = 'think:' . json_encode($value);
         }
         $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
-        if (self::$config['setcookie']) {
+        if ($config['setcookie']) {
             setcookie($name, $value, $expire, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
         }
         $_COOKIE[$name] = $value;
@@ -128,7 +127,7 @@ class Cookie
         $config = self::$config;
         $prefix = !is_null($prefix) ? $prefix : $config['prefix'];
         $name   = $prefix . $name;
-        if (self::$config['setcookie']) {
+        if ($config['setcookie']) {
             setcookie($name, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
         }
         // 删除指定cookie
@@ -154,14 +153,12 @@ class Cookie
             // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === strpos($key, $prefix)) {
-                    if (self::$config['setcookie']) {
+                    if ($config['setcookie']) {
                         setcookie($key, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
                     }
                     unset($_COOKIE[$key]);
                 }
             }
-        } else {
-            unset($_COOKIE);
         }
         return;
     }

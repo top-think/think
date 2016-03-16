@@ -4,7 +4,7 @@
 
 - conf 测试环境配置文件。
 - script 测试环境配置脚本。
-- thinkphp 测试用例和相关文件，与项目文件夹机构一致。
+- thinkphp 测试用例和相关文件，与项目文件夹结构一致。
 - mock.php 测试入口文件。
 
 ## 主要测试流程
@@ -108,24 +108,25 @@ thinkphp5 的测试的主要流程是跟 thinkphp 的系统流程是相似的，
 |模块|认领人|进度|
 |---|---|---|
 |Base|||
-|App|Haotong Lin||
-|Build|||
-|Config|Haotong Lin||
+|App|Haotong Lin|√|
+|Build|刘志淳||
+|Config|Haotong Lin|√|
 |Cache|||
-|Controller|Haotong Lin||
-|Cookie|Haotong Lin||
+|Controller|Haotong Lin|√|
+|Cookie|Haotong Lin|√|
 |Db|||
 |Debug|大漠|√|
 |Error|大漠||
-|Hook|||
-|Input|Haotong Lin||
-|Lang|||
-|Loader|||
+|Exception|Haotong Lin|√|
+|Hook|流年|√|
+|Input|Haotong Lin|√|
+|Lang|流年|√|
+|Loader|流年||
 |Log|||
 |Model|||
 |Response|大漠|√|
-|Route|||
+|Route|流年||
 |Session|大漠|√|
-|Template|Haotong Lin||
-|Url|||
+|Template|oldrind||
+|Url|流年||
 |View|mahuan||

@@ -11,7 +11,7 @@
 
 namespace think;
 
-T('controller/Jump');
+\think\Loader::import('controller/Jump', TRAIT_PATH, EXT);
 
 class Controller
 {
@@ -84,12 +84,25 @@ class Controller
      * @access public
      * @param string $template 模板文件名
      * @param array  $vars     模板输出变量
-     * @param string $cache_id 模板缓存标识
+     * @param array $config     模板参数
      * @return mixed
      */
-    public function fetch($template = '', $vars = [], $cache_id = '')
+    public function fetch($template = '', $vars = [], $config = [])
     {
-        return $this->view->fetch($template, $vars, $cache_id);
+        return $this->view->fetch($template, $vars, $config);
+    }
+
+    /**
+     * 加载模板和页面输出 可以返回输出内容
+     * @access public
+     * @param string $template 模板文件名
+     * @param array  $vars     模板输出变量
+     * @param array $config     模板参数
+     * @return mixed
+     */
+    public function display($template = '', $vars = [], $config = [])
+    {
+        return $this->view->fetch($template, $vars, $config);
     }
 
     /**

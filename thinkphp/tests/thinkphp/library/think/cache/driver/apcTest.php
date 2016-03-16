@@ -37,7 +37,7 @@ class apcTest extends cacheTestCase
     protected function getCacheInstance()
     {
         if (null === $this->_cacheInstance) {
-            $this->_cacheInstance = new \think\cache\driver\Apc();
+            $this->_cacheInstance = new \think\cache\driver\Apc(['length' => 3]);
         }
         return $this->_cacheInstance;
     }
@@ -49,4 +49,5 @@ class apcTest extends cacheTestCase
     public function testExpire()
     {
     }
+
 }

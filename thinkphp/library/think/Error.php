@@ -33,14 +33,6 @@ class Error
      */
     public static function appException($exception)
     {
-        /* 非API模式下的部署模式，跳转到指定的 Error Page */
-        if (!(APP_DEBUG || IS_API)) {
-            $error_page = Config::get('error_page');
-            if (!empty($error_page)) {
-                header("Location: {$error_page}");
-            }
-        }
-
         // 收集异常数据
         if (APP_DEBUG) {
             // 调试模式，获取详细的错误信息
@@ -65,18 +57,27 @@ class Error
                     'ThinkPHP Constants'    => self::getTPConst(),
                 ],
             ];
-            $err_msg = "[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]";
+            $log = "[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]";
         } else {
             // 部署模式仅显示 Code 和 Message
             $data = [
                 'code'    => $exception->getCode(),
-                'message' => Config::get('show_error_msg') ? $exception->getMessage() : Config::get('error_message'),
+                'message' => $exception->getMessage(),
             ];
-            $err_msg = "[{$data['code']}]{$data['message']}";
+            $log = "[{$data['code']}]{$data['message']}";
         }
 
         // 记录异常日志
-        Log::record($err_msg, 'error');
+        Log::record($log, 'error');
+
+        /* 非API模式下的部署模式，跳转到指定的 Error Page */
+        if (!(APP_DEBUG || IS_API)) {
+            $error_page = Config::get('error_page');
+            if (!empty($error_page)) {
+                header("Location: {$error_page}");
+            }
+        }
+
         // 输出错误信息
         self::output($exception, $data);
         // 禁止往下传播已处理过的异常
@@ -136,18 +137,18 @@ class Error
     /**
      * 输出异常信息
      * @param  \Exception $exception
-     * @param  Array      $vars      异常信息
+     * @param  array      $data      异常信息
      * @return void
      */
-    public static function output($exception, array $vars)
+    public static function output($exception, array $data)
     {
-        if ($exception instanceof Exception) {
-            http_response_code($exception->getHttpStatus());
-        } else {
-            http_response_code(500);
-        }
+        http_response_code($exception instanceof Exception ? $exception->getHttpStatus() : 500);
 
         $type = Config::get('default_return_type');
+        if (!APP_DEBUG && !Config::get('show_error_msg')) {
+            // 不显示详细错误信息
+            $data['message'] = Config::get('error_message');
+        }
         if (IS_API && 'html' != $type) {
             // 异常信息输出监听
             APP_HOOK && Hook::listen('error_output', $data);
@@ -155,7 +156,7 @@ class Error
             Response::send($data, $type, Config::get('response_return'));
         } else {
             //ob_end_clean();
-            extract($vars);
+            extract($data);
             include Config::get('exception_tmpl');
         }
     }
@@ -220,56 +221,10 @@ class Error
      */
     private static function getTPConst()
     {
-        return [
-            'THINK_VERSION'    => defined('THINK_VERSION') ? THINK_VERSION : 'undefined',
-            'THINK_PATH'       => defined('THINK_PATH') ? THINK_PATH : 'undefined',
-            'LIB_PATH'         => defined('LIB_PATH') ? LIB_PATH : 'undefined',
-            'EXTEND_PATH'      => defined('EXTEND_PATH') ? EXTEND_PATH : 'undefined',
-            'MODE_PATH'        => defined('MODE_PATH') ? MODE_PATH : 'undefined',
-            'CORE_PATH'        => defined('CORE_PATH') ? CORE_PATH : 'undefined',
-            'ORG_PATH'         => defined('ORG_PATH') ? ORG_PATH : 'undefined',
-            'TRAIT_PATH'       => defined('TRAIT_PATH') ? TRAIT_PATH : 'undefined',
-            'APP_PATH'         => defined('APP_PATH') ? APP_PATH : 'undefined',
-            'RUNTIME_PATH'     => defined('RUNTIME_PATH') ? RUNTIME_PATH : 'undefined',
-            'DATA_PATH'        => defined('DATA_PATH') ? DATA_PATH : 'undefined',
-            'LOG_PATH'         => defined('LOG_PATH') ? LOG_PATH : 'undefined',
-            'CACHE_PATH'       => defined('CACHE_PATH') ? CACHE_PATH : 'undefined',
-            'TEMP_PATH'        => defined('TEMP_PATH') ? TEMP_PATH : 'undefined',
-            'VENDOR_PATH'      => defined('VENDOR_PATH') ? VENDOR_PATH : 'undefined',
-            'MODULE_PATH'      => defined('MODULE_PATH') ? MODULE_PATH : 'undefined',
-            'VIEW_PATH'        => defined('VIEW_PATH') ? VIEW_PATH : 'undefined',
-            'APP_NAMESPACE'    => defined('APP_NAMESPACE') ? APP_NAMESPACE : 'undefined',
-            'COMMON_MODULE'    => defined('COMMON_MODULE') ? COMMON_MODULE : 'undefined',
-            'APP_MULTI_MODULE' => defined('APP_MULTI_MODULE') ? APP_MULTI_MODULE : 'undefined',
-            'MODULE_ALIAS'     => defined('MODULE_ALIAS') ? MODULE_ALIAS : 'undefined',
-            'MODULE_NAME'      => defined('MODULE_NAME') ? MODULE_NAME : 'undefined',
-            'CONTROLLER_NAME'  => defined('CONTROLLER_NAME') ? CONTROLLER_NAME : 'undefined',
-            'ACTION_NAME'      => defined('ACTION_NAME') ? ACTION_NAME : 'undefined',
-            'MODEL_LAYER'      => defined('MODEL_LAYER') ? MODEL_LAYER : 'undefined',
-            'VIEW_LAYER'       => defined('VIEW_LAYER') ? VIEW_LAYER : 'undefined',
-            'CONTROLLER_LAYER' => defined('CONTROLLER_LAYER') ? CONTROLLER_LAYER : 'undefined',
-            'APP_DEBUG'        => defined('APP_DEBUG') ? APP_DEBUG : 'undefined',
-            'APP_HOOK'         => defined('APP_HOOK') ? APP_HOOK : 'undefined',
-            'ENV_PREFIX'       => defined('ENV_PREFIX') ? ENV_PREFIX : 'undefined',
-            'IS_API'           => defined('IS_API') ? IS_API : 'undefined',
-            'APP_AUTO_BUILD'   => defined('APP_AUTO_BUILD') ? APP_AUTO_BUILD : 'undefined',
-            'APP_AUTO_RUN'     => defined('APP_AUTO_RUN') ? APP_AUTO_RUN : 'undefined',
-            'APP_MODE'         => defined('APP_MODE') ? APP_MODE : 'undefined',
-            'REQUEST_METHOD'   => defined('REQUEST_METHOD') ? REQUEST_METHOD : 'undefined',
-            'IS_CGI'           => defined('IS_CGI') ? IS_CGI : 'undefined',
-            'IS_WIN'           => defined('IS_WIN') ? IS_WIN : 'undefined',
-            'IS_CLI'           => defined('IS_CLI') ? IS_CLI : 'undefined',
-            'IS_AJAX'          => defined('IS_AJAX') ? IS_AJAX : 'undefined',
-            'IS_GET'           => defined('IS_GET') ? IS_GET : 'undefined',
-            'IS_POST'          => defined('IS_POST') ? IS_POST : 'undefined',
-            'IS_PUT'           => defined('IS_PUT') ? IS_PUT : 'undefined',
-            'IS_DELETE'        => defined('IS_DELETE') ? IS_DELETE : 'undefined',
-            'NOW_TIME'         => defined('NOW_TIME') ? NOW_TIME : 'undefined',
-            'LANG_SET'         => defined('LANG_SET') ? LANG_SET : 'undefined',
-            'EXT'              => defined('EXT') ? EXT : 'undefined',
-            'DS'               => defined('DS') ? DS : 'undefined',
-            '__INFO__'         => defined('__INFO__') ? __INFO__ : 'undefined',
-            '__EXT__'          => defined('__EXT__') ? __EXT__ : 'undefined',
-        ];
+        $consts = ['THINK_VERSION', 'THINK_PATH', 'LIB_PATH', 'EXTEND_PATH', 'MODE_PATH', 'CORE_PATH', 'TRAIT_PATH', 'APP_PATH', 'RUNTIME_PATH', 'LOG_PATH', 'CACHE_PATH', 'TEMP_PATH', 'MODULE_PATH', 'VIEW_PATH', 'APP_NAMESPACE', 'COMMON_MODULE', 'APP_MULTI_MODULE', 'MODULE_ALIAS', 'MODULE_NAME', 'CONTROLLER_NAME', 'ACTION_NAME', 'MODEL_LAYER', 'VIEW_LAYER', 'CONTROLLER_LAYER', 'APP_DEBUG', 'APP_HOOK', 'ENV_PREFIX', 'IS_API', 'VENDOR_PATH', 'APP_AUTO_RUN', 'APP_MODE', 'REQUEST_METHOD', 'IS_CGI', 'IS_WIN', 'IS_API', 'IS_CLI', 'IS_GET', 'IS_POST', 'IS_PUT', 'IS_AJAX', 'IS_DELETE', 'NOW_TIME', 'LANG_SET', 'EXT', 'DS', '__INFO__', '__EXT__'];
+        foreach ($consts as $const) {
+            $data[$const] = defined($const) ? constant($const) : 'undefined';
+        }
+        return $data;
     }
 }

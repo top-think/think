@@ -19,6 +19,8 @@ class Loader
     protected static $load = [];
     // 命名空间
     protected static $namespace = [];
+    // 命名空间别名
+    protected static $namespaceAlias = [];
     // PSR-4
     private static $prefixLengthsPsr4 = [];
     private static $prefixDirsPsr4    = [];
@@ -28,12 +30,24 @@ class Loader
     // 自动加载
     public static function autoload($class)
     {
+        // 检测命名空间别名
+        if (!empty(self::$namespaceAlias)) {
+            $namespace = dirname($class);
+            if (isset(self::$namespaceAlias[$namespace])) {
+                $original = self::$namespaceAlias[$namespace] . '\\' . basename($class);
+                if (class_exists($original)) {
+                    return class_alias($original, $class, false);
+                }
+            }
+        }
         // 检查是否定义类库映射
         if (isset(self::$map[$class])) {
             if (is_file(self::$map[$class])) {
                 // 记录加载信息
                 APP_DEBUG && self::$load[] = self::$map[$class];
                 include self::$map[$class];
+            } else {
+                return false;
             }
         } elseif ($file = self::findFileInComposer($class)) {
             // Composer自动加载
@@ -43,8 +57,9 @@ class Loader
         } else {
             // 命名空间自动加载
             if (!strpos($class, '\\')) {
-                return;
+                return false;
             }
+            // 解析命名空间
             list($name, $class) = explode('\\', $class, 2);
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
@@ -53,21 +68,23 @@ class Loader
                 // 扩展类库命名空间
                 $path = EXTEND_PATH . $name . DS;
             } else {
-                return;
+                return false;
             }
             $filename = $path . str_replace('\\', DS, $class) . EXT;
             if (is_file($filename)) {
                 // 开启调试模式Win环境严格区分大小写
                 if (APP_DEBUG && IS_WIN && false === strpos(realpath($filename), $class . EXT)) {
-                    return;
+                    return false;
                 }
                 // 记录加载信息
                 APP_DEBUG && self::$load[] = $filename;
                 include $filename;
             } else {
                 Log::record('autoloader error : ' . $filename, 'notice');
+                return false;
             }
         }
+        return true;
     }
 
     // 注册classmap
@@ -87,6 +104,16 @@ class Loader
             self::$namespace = array_merge(self::$namespace, $namespace);
         } else {
             self::$namespace[$namespace] = $path;
+        }
+    }
+
+    // 注册命名空间别名
+    public static function addNamespaceAlias($namespace, $original = '')
+    {
+        if (is_array($namespace)) {
+            self::$namespaceAlias = array_merge(self::$namespace, $namespace);
+        } else {
+            self::$namespaceAlias[$namespace] = $original;
         }
     }
 
@@ -199,8 +226,6 @@ class Loader
         $class        = str_replace(['.', '#'], [DS, '.'], $class);
         if (isset($_file[$class . $baseUrl])) {
             return true;
-        } else {
-            $_file[$class . $baseUrl] = true;
         }
 
         if (empty($baseUrl)) {
@@ -208,18 +233,13 @@ class Loader
             if (isset(self::$namespace[$name])) {
                 // 注册的命名空间
                 $baseUrl = self::$namespace[$name];
-            } elseif ('@' == $name || MODULE_NAME == $name) {
+            } elseif ('@' == $name) {
                 //加载当前模块应用类库
                 $baseUrl = MODULE_PATH;
-            } elseif (in_array($name, ['traits', 'think', 'behavior'])) {
-                $baseUrl = LIB_PATH;
-            } elseif (APP_NAMESPACE == $name) {
-                // 项目命名空间
-                $baseUrl = APP_PATH;
             } elseif (is_dir(EXTEND_PATH . $name)) {
                 $baseUrl = EXTEND_PATH;
             } else {
-                // 加载其他模块应用类库
+                // 加载其它模块的类库
                 $baseUrl = APP_PATH . $name . DS;
             }
         } elseif (substr($baseUrl, -1) != DS) {
@@ -233,6 +253,7 @@ class Loader
                 return false;
             }
             include $filename;
+            $_file[$class . $baseUrl] = true;
             return true;
         }
         return false;
@@ -416,7 +437,7 @@ class Loader
     {
         $name  = str_replace(['/', '.'], '\\', $name);
         $array = explode('\\', $name);
-        $class = self::parseName(array_pop($array), 1);
+        $class = self::parseName(array_pop($array), 1) . (CLASS_APPEND_SUFFIX ? ucfirst($layer) : '');
         $path  = $array ? implode('\\', $array) . '\\' : '';
         return APP_NAMESPACE . '\\' . (APP_MULTI_MODULE ? $module . '\\' : '') . $layer . '\\' . $path . $class;
     }

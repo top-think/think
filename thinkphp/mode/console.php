@@ -21,9 +21,22 @@ return [
         'traits'      => LIB_PATH . 'traits' . DS,
         APP_NAMESPACE => APP_PATH,
     ],
-
-    'config'    => [
-        'commands' => [],
+    // 别名定义
+    'alias'     => [
+        'think\Error' => MODE_PATH . 'console/Error' . EXT,
     ],
+    // 配置文件
+    'config'    => [
+        'log'   => [
+            'type' => 'File', // 支持 file socket trace sae
+            'path' => LOG_PATH,
+        ],
+        'cache' => [
+            'type'   => 'File',
+            'path'   => CACHE_PATH,
+            'prefix' => '',
+            'expire' => 0,
+        ]
+    ]
 
 ];

@@ -38,38 +38,27 @@ class File
      * 读取编译编译
      * @string $cacheFile 缓存的文件名
      * @array $vars 变量数组
-     * @boolean $isReturn 是否返回内容
-     * @return void|array
+     * @return void
      */
-    public function read($cacheFile, $vars = [], $isReturn = false)
+    public function read($cacheFile, $vars = [])
     {
         if (!empty($vars) && is_array($vars)) {
             // 模板阵列变量分解成为独立变量
             extract($vars, EXTR_OVERWRITE);
         }
-        if ($isReturn) {
-            //载入模版缓存文件
-            include $cacheFile;
-        } else {
-            return include $cacheFile;
-        }
+        //载入模版缓存文件
+        include $cacheFile;
     }
 
     /**
      * 检查编译缓存是否有效
-     * @array $template 用到的模板更新时间列表
+     * @array $templates 用到的模板文件及更新时间列表
      * @string $cacheFile 缓存的文件名
      * @int $cacheTime 缓存时间
      * @return boolean
      */
-    public function check($files, $cacheFile, $cacheTime)
+    public function check($cacheFile, $cacheTime)
     {
-        foreach($files as $time => $path) {
-            if (is_file($path) && filemtime($path) > $time) {
-                // 模板文件如果有更新则缓存需要更新
-                return false;
-            }
-        }
         if (0 != $cacheTime && time() > filemtime($cacheFile) + $cacheTime) {
             // 缓存是否在有效期
             return false;

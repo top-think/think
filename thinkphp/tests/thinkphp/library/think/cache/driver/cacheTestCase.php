@@ -16,7 +16,7 @@
 
 namespace tests\thinkphp\library\think\cache\driver;
 
-use think\cache;
+use think\Cache;
 
 abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -26,12 +26,14 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
      * @access protected
      */
     abstract protected function getCacheInstance();
+
     /**
      * tearDown函数
      */
     protected function tearDown()
     {
     }
+
     /**
      * 设定一组测试值，包括测试字符串、整数、数组和对象
      * @return  mixed
@@ -46,6 +48,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $cache->set('array_test', ['array_test' => 'array_test']);
         return $cache;
     }
+
     /**
      * 测试缓存设置，包括测试字符串、整数、数组和对象
      * @return  mixed
@@ -58,6 +61,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTrue($cache->set('number_test', 11));
         $this->assertTrue($cache->set('array_test', ['array_test' => 'array_test']));
     }
+
     /**
      * 测试缓存读取，包括测试字符串、整数、数组和对象
      * @return  mixed
@@ -72,6 +76,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('array_test', $array);
         $this->assertEquals('array_test', $array['array_test']);
     }
+
     /**
      * 测试缓存存在情况，包括测试字符串、整数、数组和对象
      * @return  mixed
@@ -84,6 +89,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($cache->get('number_test'));
         $this->assertFalse($cache->get('not_exists'));
     }
+
     /**
      * 测试缓存不存在情况，包括测试字符串、整数、数组和对象
      * @return  mixed
@@ -94,6 +100,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $cache = $this->getCacheInstance();
         $this->assertFalse($cache->get('non_existent_key'));
     }
+
     /**
      * 测试特殊值缓存，包括测试字符串、整数、数组和对象
      * @return  mixed
@@ -106,6 +113,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         //清空缓存后，返回null而不是false
         $this->assertTrue(is_null($cache->get('null_value')));
     }
+
     /**
      * 缓存过期测试
      * @return  mixed
@@ -114,12 +122,13 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
     public function testExpire()
     {
         $cache = $this->getCacheInstance();
-        $this->assertTrue($cache->set('expire_test', 'expire_test', 2));
-        usleep(500000);
+        $this->assertTrue($cache->set('expire_test', 'expire_test', 1));
+        usleep(600000);
         $this->assertEquals('expire_test', $cache->get('expire_test'));
-        usleep(2500000);
+        usleep(800000);
         $this->assertFalse($cache->get('expire_test'));
     }
+
     /**
      * 删除缓存测试
      * @return  mixed
@@ -131,6 +140,7 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($cache->rm('number_test'));
         $this->assertFalse($cache->get('number_test'));
     }
+
     /**
      * 清空缓存测试
      * @return  mixed
@@ -141,5 +151,23 @@ abstract class cacheTestCase extends \PHPUnit_Framework_TestCase
         $cache = $this->prepare();
         $this->assertTrue($cache->clear());
         $this->assertFalse($cache->get('number_test'));
+    }
+
+    public function testStaticCall()
+    {
+        $this->assertTrue(Cache::set('a', 'a'));
+        $this->assertEquals('a', Cache::get('a'));
+        $this->assertNotNull(Cache::rm('a'));
+    }
+
+    public function testQueue()
+    {
+        $cache = $this->prepare();
+        $this->assertTrue($cache->set('1', '1'));
+        $this->assertTrue($cache->set('2', '2'));
+        $this->assertTrue($cache->set('3', '3'));
+        $this->assertEquals(1, $cache->get('1'));
+        $this->assertTrue($cache->set('4', '4'));
+        $this->assertFalse($cache->get('1'));
     }
 }

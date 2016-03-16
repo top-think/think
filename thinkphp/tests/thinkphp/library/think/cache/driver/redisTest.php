@@ -31,7 +31,7 @@ class redisTest extends cacheTestCase
     protected function getCacheInstance()
     {
         if (null === $this->_cacheInstance) {
-            $this->_cacheInstance = new \think\cache\driver\Redis();
+            $this->_cacheInstance = new \think\cache\driver\Redis(['length' => 3]);
         }
         return $this->_cacheInstance;
     }

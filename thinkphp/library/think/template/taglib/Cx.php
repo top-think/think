@@ -35,22 +35,27 @@ class Cx extends Taglib
         'switch'     => ['attr' => 'name', 'expression' => true],
         'case'       => ['attr' => 'value,break', 'expression' => true],
         'default'    => ['attr' => '', 'close' => 0],
-        'compare'    => ['attr' => 'name,value,type', 'alias' => 'eq,equal,notequal,neq,gt,lt,egt,elt,heq,nheq'],
-        'range'      => ['attr' => 'name,value,type', 'alias' => 'in,notin,between,notbetween'],
+        'compare'    => ['attr' => 'name,value,type', 'alias' => ['eq,equal,notequal,neq,gt,lt,egt,elt,heq,nheq', 'type']],
+        'range'      => ['attr' => 'name,value,type', 'alias' => ['in,notin,between,notbetween', 'type']],
         'empty'      => ['attr' => 'name'],
         'notempty'   => ['attr' => 'name'],
         'present'    => ['attr' => 'name'],
         'notpresent' => ['attr' => 'name'],
         'defined'    => ['attr' => 'name'],
         'notdefined' => ['attr' => 'name'],
-        'import'     => ['attr' => 'file,href,type,value,basepath', 'close' => 0, 'alias' => 'load,css,js'],
+        'import'     => ['attr' => 'file,href,type,value,basepath', 'close' => 0],
+        'load'       => ['attr' => 'file,href,type,value,basepath', 'close' => 0, 'alias' => ['css,js', 'type']],
         'assign'     => ['attr' => 'name,value', 'close' => 0],
         'define'     => ['attr' => 'name,value', 'close' => 0],
         'for'        => ['attr' => 'start,end,name,comparison,step'],
+        'url'        => ['attr' => 'link,vars,suffix,domain', 'close' => 0, 'expression' => true],
+        'function'   => ['attr' => 'name,vars,use,call'],
     ];
 
     /**
      * php标签解析
+     * 格式：
+     * {php}echo $name{/php}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -65,10 +70,10 @@ class Cx extends Taglib
     /**
      * volist标签解析 循环输出数据集
      * 格式：
-     * <volist name="userList" id="user" empty="" >
+     * {volist name="userList" id="user" empty=""}
      * {user.username}
      * {user.email}
-     * </volist>
+     * {/volist}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -116,6 +121,10 @@ class Cx extends Taglib
 
     /**
      * foreach标签解析 循环输出数据集
+     * 格式：
+     * {foreach name="userList" id="user" key="key" index="i" mod="2" offset="3" length="5" empty=""}
+     * {user.username}
+     * {/foreach}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -191,10 +200,10 @@ class Cx extends Taglib
     /**
      * if标签解析
      * 格式：
-     * <if condition=" $a eq 1" >
-     * <elseif condition="$a eq 2" />
-     * <else />
-     * </if>
+     * {if condition=" $a eq 1"}
+     * {elseif condition="$a eq 2" /}
+     * {else /}
+     * {/if}
      * 表达式支持 eq neq gt egt lt elt == > >= < <= or and || &&
      * @access public
      * @param array $tag 标签属性
@@ -210,7 +219,7 @@ class Cx extends Taglib
     }
 
     /**
-     * else标签解析
+     * elseif标签解析
      * 格式：见if标签
      * @access public
      * @param array $tag 标签属性
@@ -227,6 +236,7 @@ class Cx extends Taglib
 
     /**
      * else标签解析
+     * 格式：见if标签
      * @access public
      * @param array $tag 标签属性
      * @return string
@@ -240,11 +250,11 @@ class Cx extends Taglib
     /**
      * switch标签解析
      * 格式：
-     * <switch name="a.name" >
-     * <case value="1" break="false">1</case>
-     * <case value="2" >2</case>
-     * <default />other
-     * </switch>
+     * {switch name="a.name"}
+     * {case value="1" break="false"}1{/case}
+     * {case value="2" }2{/case}
+     * {default /}other
+     * {/switch}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -291,7 +301,7 @@ class Cx extends Taglib
 
     /**
      * default标签解析 需要配合switch才有效
-     * 使用： <default />ddfdf
+     * 使用： {default /}ddfdf
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -306,18 +316,17 @@ class Cx extends Taglib
     /**
      * compare标签解析
      * 用于值的比较 支持 eq neq gt lt egt elt heq nheq 默认是eq
-     * 格式： <compare name="" type="eq" value="" >content</compare>
+     * 格式： {compare name="" type="eq" value="" }content{/compare}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
-     * @param string $type 比较类型
      * @return string
      */
-    public function _compare($tag, $content, $type = 'eq')
+    public function _compare($tag, $content)
     {
         $name  = $tag['name'];
         $value = $tag['value'];
-        $type  = isset($tag['type']) ? $tag['type'] : $type;
+        $type  = isset($tag['type']) ? $tag['type'] : 'eq'; // 比较类型
         $name  = $this->autoBuildVar($name);
         $flag  = substr($value, 0, 1);
         if ('$' == $flag || ':' == $flag) {
@@ -325,77 +334,34 @@ class Cx extends Taglib
         } else {
             $value = '\'' . $value . '\'';
         }
+        switch($type) {
+            case 'equal':
+                $type = 'eq';
+                break;
+            case 'notequal':
+                $type = 'neq';
+                break;
+        }
         $type     = $this->parseCondition(' ' . $type . ' ');
         $parseStr = '<?php if(' . $name . ' ' . $type . ' ' . $value . '): ?>' . $content . '<?php endif; ?>';
         return $parseStr;
     }
 
-    public function _eq($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'eq');
-    }
-
-    public function _equal($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'eq');
-    }
-
-    public function _neq($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'neq');
-    }
-
-    public function _notequal($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'neq');
-    }
-
-    public function _gt($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'gt');
-    }
-
-    public function _lt($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'lt');
-    }
-
-    public function _egt($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'egt');
-    }
-
-    public function _elt($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'elt');
-    }
-
-    public function _heq($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'heq');
-    }
-
-    public function _nheq($tag, $content)
-    {
-        return $this->_compare($tag, $content, 'nheq');
-    }
-
     /**
      * range标签解析
      * 如果某个变量存在于某个范围 则输出内容 type= in 表示在范围内 否则表示在范围外
-     * 格式： <range name="var|function"  value="val" type='in|notin' >content</range>
-     * example: <range name="a"  value="1,2,3" type='in' >content</range>
+     * 格式： {range name="var|function"  value="val" type='in|notin' }content{/range}
+     * example: {range name="a"  value="1,2,3" type='in' }content{/range}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
-     * @param string $type 比较类型
      * @return string
      */
-    public function _range($tag, $content, $type = 'in')
+    public function _range($tag, $content)
     {
         $name  = $tag['name'];
         $value = $tag['value'];
-        $type  = isset($tag['type']) ? $tag['type'] : $type;
+        $type  = isset($tag['type']) ? $tag['type'] : 'in'; // 比较类型
 
         $name = $this->autoBuildVar($name);
         $flag = substr($value, 0, 1);
@@ -417,32 +383,10 @@ class Cx extends Taglib
         return $parseStr;
     }
 
-    // range标签的别名 用于in判断
-    public function _in($tag, $content)
-    {
-        return $this->_range($tag, $content, 'in');
-    }
-
-    // range标签的别名 用于notin判断
-    public function _notin($tag, $content)
-    {
-        return $this->_range($tag, $content, 'notin');
-    }
-
-    public function _between($tag, $content)
-    {
-        return $this->_range($tag, $content, 'between');
-    }
-
-    public function _notbetween($tag, $content)
-    {
-        return $this->_range($tag, $content, 'notbetween');
-    }
-
     /**
      * present标签解析
      * 如果某个变量已经设置 则输出内容
-     * 格式： <present name="" >content</present>
+     * 格式： {present name="" }content{/present}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -459,7 +403,7 @@ class Cx extends Taglib
     /**
      * notpresent标签解析
      * 如果某个变量没有设置，则输出内容
-     * 格式： <notpresent name="" >content</notpresent>
+     * 格式： {notpresent name="" }content{/notpresent}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -476,7 +420,7 @@ class Cx extends Taglib
     /**
      * empty标签解析
      * 如果某个变量为empty 则输出内容
-     * 格式： <empty name="" >content</empty>
+     * 格式： {empty name="" }content{/empty}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -490,6 +434,15 @@ class Cx extends Taglib
         return $parseStr;
     }
 
+    /**
+     * notempty标签解析
+     * 如果某个变量不为empty 则输出内容
+     * 格式： {notempty name="" }content{/notempty}
+     * @access public
+     * @param array $tag 标签属性
+     * @param string $content 标签内容
+     * @return string
+     */
     public function _notempty($tag, $content)
     {
         $name     = $tag['name'];
@@ -500,7 +453,7 @@ class Cx extends Taglib
 
     /**
      * 判断是否已经定义了该常量
-     * <defined name='TXT'>已定义</defined>
+     * {defined name='TXT'}已定义{/defined}
      * @param array $tag
      * @param string $content
      * @return string
@@ -512,6 +465,13 @@ class Cx extends Taglib
         return $parseStr;
     }
 
+    /**
+     * 判断是否没有定义了该常量
+     * {notdefined name='TXT'}已定义{/notdefined}
+     * @param array $tag
+     * @param string $content
+     * @return string
+     */
     public function _notdefined($tag, $content)
     {
         $name     = $tag['name'];
@@ -520,8 +480,8 @@ class Cx extends Taglib
     }
 
     /**
-     * import 标签解析 <import file="Js.Base" />
-     * <import file="Css.Base" type="css" />
+     * import 标签解析 {import file="Js.Base" /}
+     * 格式：{import file="Css.Base" type="css" /}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -529,9 +489,10 @@ class Cx extends Taglib
      * @param string $type 类型
      * @return string
      */
-    public function _import($tag, $content, $isFile = false, $type = '')
+    public function _import($tag, $content, $isFile = false)
     {
         $file     = isset($tag['file']) ? $tag['file'] : $tag['href'];
+        $type     = isset($tag['type']) ? strtolower($tag['type']) : ($isFile ? null : 'js');
         $parseStr = '';
         $endStr   = '';
         // 判断是否存在加载条件 允许使用函数判断(默认为isset)
@@ -543,8 +504,6 @@ class Cx extends Taglib
             $endStr = '<?php endif; ?>';
         }
         if ($isFile) {
-            // 根据文件名后缀自动识别
-            $type = $type ? $type : (!empty($tag['type']) ? strtolower($tag['type']) : null);
             // 文件方式导入
             $array = explode(',', $file);
             foreach ($array as $val) {
@@ -564,8 +523,7 @@ class Cx extends Taglib
                 }
             }
         } else {
-            // 命名空间导入模式 默认是js
-            $type     = $type ? $type : (!empty($tag['type']) ? strtolower($tag['type']) : 'js');
+            // 命名空间导入模式
             $basepath = !empty($tag['basepath']) ? $tag['basepath'] : '/Public';
             // 命名空间方式导入外部文件
             $array = explode(',', $file);
@@ -583,7 +541,7 @@ class Cx extends Taglib
                         $parseStr .= '<link rel="stylesheet" type="text/css" href="' . $basepath . '/' . str_replace(['.', '#'], ['/', '.'], $val) . '.css' . ($version ? '?' . $version : '') . '" />';
                         break;
                     case 'php':
-                        $parseStr .= '<?php import("' . $val . '"); ?>';
+                        $parseStr .= '<?php \think\Loader::import("' . $val . '"); ?>';
                         break;
                 }
             }
@@ -597,22 +555,10 @@ class Cx extends Taglib
         return $this->_import($tag, $content, true);
     }
 
-    // import别名使用 导入css文件 <css file="__PUBLIC__/Css/Base.css" />
-    public function _css($tag, $content)
-    {
-        return $this->_import($tag, $content, true, 'css');
-    }
-
-    // import别名使用 导入js文件 <js file="__PUBLIC__/Js/Base.js" />
-    public function _js($tag, $content)
-    {
-        return $this->_import($tag, $content, true, 'js');
-    }
-
     /**
      * assign标签解析
      * 在模板中给某个变量赋值 支持变量赋值
-     * 格式： <assign name="" value="" />
+     * 格式： {assign name="" value="" /}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -634,7 +580,7 @@ class Cx extends Taglib
     /**
      * define标签解析
      * 在模板中定义常量 支持变量赋值
-     * 格式： <define name="" value="" />
+     * 格式： {define name="" value="" /}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -655,7 +601,10 @@ class Cx extends Taglib
 
     /**
      * for标签解析
-     * 格式： <for start="" end="" comparison="" step="" name="" />
+     * 格式：
+     * {for start="" end="" comparison="" step="" name=""}
+     * content
+     * {/for}
      * @access public
      * @param array $tag 标签属性
      * @param string $content 标签内容
@@ -701,6 +650,57 @@ class Cx extends Taglib
         $parseStr .= 'for($' . $name . '=$__FOR_START_' . $rand . '__;' . $this->parseCondition('$' . $name . ' ' . $comparison . ' $__FOR_END_' . $rand . '__') . ';$' . $name . '+=' . $step . '){ ?>';
         $parseStr .= $content;
         $parseStr .= '<?php } ?>';
+        return $parseStr;
+    }
+
+    /**
+     * U函数的tag标签
+     * 格式：<url link="模块/控制器/方法" vars="参数" suffix="true或者false 是否带有后缀" domain="true或者false 是否携带域名" />
+     * @access public
+     * @param array $tag 标签属性
+     * @param string $content 标签内容
+     * @return string
+     */
+    public function _url($tag, $content)
+    {
+        $url    = isset($tag['link']) ? $tag['link'] : '';
+        $vars   = isset($tag['vars']) ? $tag['vars'] : '';
+        $suffix = isset($tag['suffix']) ? $tag['suffix'] : 'true';
+        $domain = isset($tag['domain']) ? $tag['domain'] : 'false';
+        return '<?php echo U("' . $url . '","' . $vars . '",' . $suffix . ',' . $domain . ');?>';
+    }
+
+    /**
+     * function标签解析 匿名函数，可实现递归
+     * 使用：
+     * {function name="func" vars="$data" call="$list" use="&$a,&$b"}
+     *      {if is_array($data)}
+     *          {foreach $data as $val}
+     *              {~func($val) /}
+     *          {/foreach}
+     *      {else /}
+     *          {$data}
+     *      {/if}
+     * {/function}
+     * @access public
+     * @param array $tag 标签属性
+     * @param string $content 标签内容
+     * @return string
+     */
+    public function _function($tag, $content)
+    {
+        $name     = !empty($tag['name']) ? $tag['name'] : 'func';
+        $vars     = !empty($tag['vars']) ? $tag['vars'] : '';
+        $call     = !empty($tag['call']) ? $tag['call'] : '';
+        $use      = ['&$' . $name];
+        if (!empty($tag['use'])) {
+            foreach (explode(',', $tag['use']) as $val) {
+                $use[] = '&' . ltrim(trim($val), '&');
+            }
+        }
+        $parseStr = '<?php $' . $name . '=function(' . $vars . ') use(' . implode(',', $use) . ') {';
+        $parseStr .= ' ?>' . $content . '<?php }; ';
+        $parseStr .= $call ? '$' . $name . '(' . $call . '); ?>' : '?>';
         return $parseStr;
     }
 }

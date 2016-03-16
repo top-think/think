@@ -14,13 +14,13 @@ use think\Config;
 use think\Debug;
 
 /**
- * 页面Trace调试 需要设置 'response_exit' => false 才能生效
+ * 页面Trace调试
  */
 class Trace
 {
-    protected $tabs   = ['base' => '基本', 'file' => '文件', 'info' => '流程', 'notice|error' => '错误', 'sql' => 'SQL', 'debug|log' => '调试'];
     protected $config = [
         'trace_file' => '',
+        'trace_tabs' => ['base' => '基本', 'file' => '文件', 'info' => '流程', 'notice|error' => '错误', 'sql' => 'SQL', 'debug|log' => '调试'],
     ];
 
     // 实例化并传入参数
@@ -34,13 +34,13 @@ class Trace
      * 日志写入接口
      * @access public
      * @param array $log 日志信息
-     * @return void
+     * @return bool
      */
     public function save(array $log = [])
     {
         if (IS_AJAX || IS_CLI || IS_API || 'html' != Config::get('default_return_type')) {
             // ajax cli api方式下不输出
-            return;
+            return false;
         }
         // 获取基本信息
         $runtime = number_format(microtime(true) - START_TIME, 6);
@@ -54,8 +54,11 @@ class Trace
             '查询信息' => \think\Db::$queryTimes . ' queries ' . \think\Db::$executeTimes . ' writes ',
             '缓存信息' => \think\Cache::$readTimes . ' reads,' . \think\Cache::$writeTimes . ' writes',
             '配置加载' => count(Config::get()),
-            '会话信息' => 'SESSION_ID=' . session_id(),
         ];
+
+        if (session_id()) {
+            $base['会话信息'] = 'SESSION_ID=' . session_id();
+        }
 
         $info = Debug::getFile(true);
 
@@ -67,7 +70,7 @@ class Trace
 
         // 页面Trace信息
         $trace = [];
-        foreach ($this->tabs as $name => $title) {
+        foreach ($this->config['trace_tabs'] as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
                 case 'base': // 基本信息
@@ -94,6 +97,7 @@ class Trace
         ob_start();
         include $this->config['trace_file'];
         echo ob_get_clean();
+        return true;
     }
 
 }

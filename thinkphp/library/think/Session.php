@@ -109,9 +109,7 @@ class Session
      */
     public static function set($name, $value = '', $prefix = null)
     {
-        if (!self::$active) {
-            self::init();
-        }
+        !self::$active && self::init();
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 二维数组赋值
@@ -136,9 +134,7 @@ class Session
      */
     public static function get($name = '', $prefix = null)
     {
-        if (!self::$active) {
-            self::init();
-        }
+        !self::$active && self::init();
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if ('' == $name) {
             // 获取全部的session
@@ -170,6 +166,7 @@ class Session
      */
     public static function delete($name, $prefix = null)
     {
+        !self::$active && self::init();
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             list($name1, $name2) = explode('.', $name);
@@ -194,6 +191,7 @@ class Session
      */
     public static function clear($prefix = null)
     {
+        !self::$active && self::init();
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if ($prefix) {
             unset($_SESSION[$prefix]);
@@ -211,9 +209,7 @@ class Session
      */
     public static function has($name, $prefix = null)
     {
-        if (!self::$active) {
-            self::init();
-        }
+        !self::$active && self::init();
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if (strpos($name, '.')) {
             // 支持数组

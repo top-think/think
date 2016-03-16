@@ -75,22 +75,31 @@ class Log
     }
 
     /**
-     * 保存调试信息
+     * 清空日志信息
      * @return void
+     */
+    public static function clear()
+    {
+        self::$log = [];
+    }
+
+    /**
+     * 保存调试信息
+     * @return bool
      */
     public static function save()
     {
         if (is_null(self::$driver)) {
             self::init(Config::get('log'));
         }
-        self::$driver->save(self::$log);
+        return self::$driver->save(self::$log);
     }
 
     /**
      * 实时写入日志信息 并支持行为
      * @param mixed $msg 调试信息
      * @param string $type 信息类型
-     * @return void
+     * @return bool
      */
     public static function write($msg, $type = 'log')
     {
@@ -106,7 +115,7 @@ class Log
             self::init(Config::get('log'));
         }
         // 写入日志
-        self::$driver->save($log);
+        return self::$driver->save($log);
     }
 
     /**

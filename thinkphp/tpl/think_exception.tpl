@@ -8,13 +8,13 @@
         /* Base */
         body{
             color: #333;
-            font: 14px Verdana, "Helvetica Neue", helvetica, Arial, 'Microsoft YaHei', sans-serif;
+            font: 16px Verdana, "Helvetica Neue", helvetica, Arial, 'Microsoft YaHei', sans-serif;
             margin: 0px;
             padding: 20px;
         }
         h1{
-            margin: 0;
-            font-size: 24px;
+            margin: 10px 0 0;
+            font-size: 28px;
             font-weight: 500;
             line-height: 32px;
         }
@@ -22,7 +22,7 @@
             color: #4288ce;
             font-weight: 400;
             padding: 6px 0;
-            margin: 24px 0 0;
+            margin: 6px 0 0;
             font-size: 18px;
             border-bottom: 1px solid #eee;
         }
@@ -48,6 +48,17 @@
         }
     
         /* Exception Info */
+        .exception .message{
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-bottom: 0 none;
+            line-height: 18px;
+        font-size:16px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
+        }
+
         .exception .code{
             float: left;
             text-align: center;
@@ -58,17 +69,15 @@
             background: #999;
         }
         .exception .source-code{
-            margin-top: 12px;
             padding: 6px;
             border: 1px solid #ddd;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
+
             background: #f9f9f9;
             overflow-x: auto;
+
         }
         .exception .source-code pre{
             margin: 0;
-            font-family: Consolas,"Liberation Mono",Courier,"微软雅黑";
         }
         .exception .source-code pre ol{
             margin: 0;
@@ -76,7 +85,9 @@
             display: inline-block;
             min-width: 100%;
             box-sizing: border-box;
-            padding-left: <?php echo parse_padding($source); ?>px;
+        font-size:14px;
+            font-family: "Century Gothic",Consolas,"Liberation Mono",Courier,Verdana;
+            padding-left: <?php echo isset($source) ? parse_padding($source) : 40; ?>px;
         }
         .exception .source-code pre li{
             border-left: 1px solid #ddd;
@@ -86,15 +97,18 @@
         .exception .source-code pre code{
             color: #333;
             height: 100%;
-            padding-left: 6px;
             display: inline-block;
             border-left: 1px solid #fff;
+        font-size:14px;
+            font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
         }
         .exception .trace{
             padding: 6px;
             border: 1px solid #ddd;
             border-top: 0 none;
             line-height: 16px;
+        font-size:14px;
+            font-family: Consolas,"Liberation Mono",Courier,Verdana,"微软雅黑";
         }
         .exception .trace ol{
             margin: 12px;
@@ -166,24 +180,26 @@
     </style>
 </head>
 <body>
+    <?php if(APP_DEBUG) { ?>
     <div class="exception">
-        <h1>
-            <span class="code"><?php echo $code; ?></span>
+    <div class="message">
+        
             <div class="info">
                 <div>
-                    <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?>
+                    <h2>[<?php echo $code; ?>] <?php echo sprintf('%s in %s', parse_class($name), parse_file($file, $line)); ?></h2>
                 </div>
-                <div><?php echo htmlentities($message); ?></div>
+                <div><h1><?php echo htmlentities($message); ?></h1></div>
             </div>
-        </h1>
+        
+    </div>
         <div class="source-code">
-            <pre class="prettyprint lang-php"><ol start="<?php echo $source['first']; ?>"><?php foreach ($source['source'] as $key => $value) { ?><li class="line-<?php echo $key + $source['first']; ?>"><code><?php echo htmlentities($value); ?></code></li><?php } ?></ol></pre>
+            <pre class="prettyprint lang-php"><ol start="<?php echo $source['first']; ?>"><?php foreach ((array) $source['source'] as $key => $value) { ?><li class="line-<?php echo $key + $source['first']; ?>"><code><?php echo htmlentities($value); ?></code></li><?php } ?></ol></pre>
         </div>
         <div class="trace">
-            <h3>Call Stack</h3>
+            <h2>Call Stack</h2>
             <ol>
                 <li><?php echo sprintf('in %s', parse_file($file, $line)); ?></li>
-                <?php foreach ($trace as $value) { ?>
+                <?php foreach ((array) $trace as $value) { ?>
                 <li>
                 <?php 
                     // Show Function
@@ -207,18 +223,25 @@
             </ol>
         </div>
     </div>
+    <?php } else { ?>
+    <div class="exception">
+        
+            <div class="info"><h1><?php echo htmlentities($message); ?></h1></div>
+        
+    </div>
+    <?php } ?>
     
     <?php if(!empty($datas)){ ?>
     <div class="exception-var">
         <h2>Exception Datas</h2>
-        <?php foreach ($datas as $label => $value) { ?>
+        <?php foreach ((array) $datas as $label => $value) { ?>
         <table>
             <?php if(empty($value)){ ?>
             <caption><?php echo $label; ?><small>empty</small></caption>
             <?php } else { ?>
             <caption><?php echo $label; ?></caption>
             <tbody>
-                <?php foreach ($value as $key => $val) { ?>
+                <?php foreach ((array) $value as $key => $val) { ?>
                 <tr>
                     <td><?php echo htmlentities($key); ?></td>
                     <td>
@@ -241,16 +264,17 @@
     </div>
     <?php } ?>
 
+    <?php if(!empty($tables)){ ?>
     <div class="exception-var">
         <h2>Environment Variables</h2>
-        <?php foreach ($tables as $label => $value) { ?>
+        <?php foreach ((array) $tables as $label => $value) { ?>
         <table>
             <?php if(empty($value)){ ?>
             <caption><?php echo $label; ?><small>empty</small></caption>
             <?php } else { ?>
             <caption><?php echo $label; ?></caption>
             <tbody>
-                <?php foreach ($value as $key => $val) { ?>
+                <?php foreach ((array) $value as $key => $val) { ?>
                 <tr>
                     <td><?php echo htmlentities($key); ?></td>
                     <td>
@@ -271,13 +295,14 @@
         </table>
         <?php } ?>
     </div>
+    <?php } ?>
 
     <div class="copyright">
         <a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> 
         <span>V<?php echo THINK_VERSION; ?></span> 
         <span>{ 十年磨一剑-为API开发设计的高性能框架 }</span>
     </div>
-
+    <?php if(APP_DEBUG) { ?>
     <script>
         var LINE = <?php echo $line; ?>;
 
@@ -364,8 +389,8 @@
             });
 
         })();
-
     </script>
+    <?php } ?>
 </body>
 </html>
 <?php

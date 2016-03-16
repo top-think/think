@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace think\view\driver;
 
 use think\Template;
@@ -16,33 +15,31 @@ use think\Template;
 class Think
 {
     private $template = null;
+
     public function __construct($config = [])
     {
         $this->template = new Template($config);
     }
 
-    public function fetch($template, $data = [], $cache = [])
+    /**
+     * 渲染模板文件
+     * @access public
+     * @param string $template 模板文件或者内容
+     * @param array $data 模板变量
+     * @param array $config 模板参数
+     * @return void
+     */
+    public function fetch($template, $data = [], $config = [])
     {
         if (is_file($template)) {
-            $this->template->display($template, $data, $cache);
+            $this->template->display($template, $data, $config);
         } else {
             $this->template->fetch($template, $data);
         }
     }
-    
-    /**
-     * 修改模板引擎配置项
-     * @access public
-     * @param array|string $config
-     * @return string|array
-     */
-    public function config($config)
+
+    public function __call($method, $params)
     {
-        if(is_array($config)){
-            $this->template->config($config);
-            return $this;
-        }else{
-            return $this->template->config($config);
-        }
+        return call_user_func_array([$this->template, $method], $params);
     }
 }

@@ -928,21 +928,21 @@ abstract class Driver
      * 批量更新某字段
      * @access public
      * @param mixed $field 字段名
-     * @param mixed $pk 主键名 
-     * @param mixed $dataSet 数据集 
+     * @param mixed $pk 主键名
+     * @param mixed $dataSet 数据集
      * @param mixed $operator 运算符
      * @param array $options 参数表达式
      **/
-    public function updateFieldAll($field,$pk,$dataSet,$operator = '=',$options = [])
+    public function updateFieldAll($field, $pk, $dataSet, $operator = '=', $options = [])
     {
-        $values      = [];
+        $values     = [];
         $this->bind = array_merge($this->bind, !empty($options['bind']) ? $options['bind'] : []);
-        $field = $this->parseKey($field);
-        $pk = $this->parseKey($pk);
-        if(in_array($operator,['+','-'])){
+        $field      = $this->parseKey($field);
+        $pk         = $this->parseKey($pk);
+        if (in_array($operator, ['+', '-'])) {
             $operator = '= ' . $field . $operator;
         }
-        
+
         $value = '';
         foreach ($dataSet as $key => $val) {
             if (is_array($val) && 'exp' == $val[0]) {
@@ -953,22 +953,22 @@ abstract class Driver
                 if (0 === strpos($val, ':') && isset($this->bind[substr($val, 1)])) {
                     $value = $val;
                 } else {
-                    $name    = count($this->bind);
-                    $value = ':' .  $_SERVER['REQUEST_TIME'] . '_' . $name;
-                    $this->bindParam( $_SERVER['REQUEST_TIME'] . '_' . $name, $val);
+                    $name  = count($this->bind);
+                    $value = ':' . $_SERVER['REQUEST_TIME'] . '_' . $name;
+                    $this->bindParam($_SERVER['REQUEST_TIME'] . '_' . $name, $val);
                 }
             }
             //没使用过非数字主键,怎么处理比较合适?
-            $values[] = " WHEN " .$key." THEN " . $value;
-         }
-         
-        $sql = 'UPDATE ' . $this->parseTable($options['table']) . ' SET ' . $field . $operator . ' CASE ' . $pk . implode(' ', $values) . ' END ' ;
+            $values[] = " WHEN " . $key . " THEN " . $value;
+        }
+
+        $sql = 'UPDATE ' . $this->parseTable($options['table']) . ' SET ' . $field . $operator . ' CASE ' . $pk . implode(' ', $values) . ' END ';
         //查询条件需和WHEN THEN对一致
-        $sql .= ' WHERE ' . $pk . ' in (' . implode(',',array_map([$this,'parseValue'],array_keys($dataSet))) . ')';
+        $sql .= ' WHERE ' . $pk . ' in (' . implode(',', array_map([$this, 'parseValue'], array_keys($dataSet))) . ')';
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
         return $this->execute($sql, $this->getBindParams(true), !empty($options['fetch_sql']) ? true : false);
     }
-    
+
     /**
      * 批量插入记录
      * @access public

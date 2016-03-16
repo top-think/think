@@ -103,7 +103,10 @@ class App
         // 监听app_end
         APP_HOOK && Hook::listen('app_end', $data);
         // 输出数据到客户端
-        return Response::send($data, Response::type(), Config::get('response_return'));
+        if (Config::get('response_auto_output')) {
+            // 自动响应输出
+            return Response::send($data, Response::type(), Config::get('response_return'));
+        }
     }
 
     // 执行函数或者闭包方法 支持参数调用
@@ -150,8 +153,7 @@ class App
     {
         $args = [];
         // 判断数组类型 数字数组时按顺序绑定参数
-        $keys = array_keys($vars);
-        $type = array_keys($keys) === $keys ? 1 : 0;
+        $type = key($vars) === 0 ? 1 : 0;
         if ($reflect->getNumberOfParameters() > 0) {
             $params = $reflect->getParameters();
             foreach ($params as $param) {
@@ -210,11 +212,11 @@ class App
 
         // 获取控制器名
         $controllerName = strip_tags($result[1] ?: Config::get('default_controller'));
-        define('CONTROLLER_NAME', Config::get('url_controller_convert') ? strtolower($controllerName) : $controllerName);
+        defined('CONTROLLER_NAME') or define('CONTROLLER_NAME', Config::get('url_controller_convert') ? strtolower($controllerName) : $controllerName);
 
         // 获取操作名
         $actionName = strip_tags($result[2] ?: Config::get('default_action'));
-        define('ACTION_NAME', Config::get('url_action_convert') ? strtolower($actionName) : $actionName);
+        defined('ACTION_NAME') or define('ACTION_NAME', Config::get('url_action_convert') ? strtolower($actionName) : $actionName);
 
         // 执行操作
         if (!preg_match('/^[A-Za-z](\/|\.|\w)*$/', CONTROLLER_NAME)) {

@@ -32,6 +32,8 @@ class Model
     protected $name = '';
     // 数据库名称
     protected $dbName = '';
+    // 数据表字段大小写
+    protected $attrCase = null;
     //数据库配置
     protected $connection = [];
     // 数据表名（不包含表前缀）
@@ -94,6 +96,10 @@ class Model
         }
         if (!empty($config['db_name'])) {
             $this->dbName = $config['db_name'];
+        }
+
+        if (is_null($this->attrCase)) {
+            $this->attrCase = Config::get('db_attr_case');
         }
 
         // 数据库初始化操作
@@ -204,7 +210,7 @@ class Model
                 throw new Exception('invalid data');
             }
         }
-        if (!empty($this->duplicate)) {
+        if (!empty($this->duplicate) && 'update' == $type) {
             // 存在数据副本
             foreach ($data as $key => $val) {
                 // 去除相同数据
@@ -215,7 +221,7 @@ class Model
             if (empty($data)) {
                 // 没有数据变化
                 return [];
-            } elseif ('update' == $type) {
+            } else {
                 // 更新操作保留主键信息
                 $pk = $this->getPk();
                 if (is_array($pk)) {
@@ -242,8 +248,7 @@ class Model
         }
 
         // 数据自动验证
-        $this->dataValidate($data);
-        if (!empty($this->error)) {
+        if (!$this->dataValidate($data)) {
             return false;
         }
 
@@ -334,12 +339,11 @@ class Model
             throw new Exception('no data to write');
         }
         // 数据处理
-        foreach ($dataList as $key => $data) {
+        foreach ($dataList as &$data) {
             $data = $this->_write_data($data, 'insert');
             if (false === $data) {
                 return false;
             }
-            $dataList[$key] = $data;
         }
         // 分析表达式
         $options = $this->_parseOptions($options);
@@ -362,7 +366,7 @@ class Model
     {
         // 数据处理
         $data = $this->_write_data($data, 'update');
-        if (false === $data) {
+        if (false == $data) {
             return false;
         }
         // 分析表达式
@@ -483,8 +487,11 @@ class Model
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
-            $data  = Cache::get($key);
+            if (!isset($cache['key']) || !is_string($cache['key'])) {
+                $cache['key'] = md5(serialize($options));
+            }
+            $cache['expire'] = isset($cache['expire']) ? $cache['expire'] : null;
+            $data            = Cache::get($cache['key']);
             if (false !== $data) {
                 return $data;
             }
@@ -517,7 +524,7 @@ class Model
         }
 
         if (isset($cache)) {
-            Cache::set($key, $resultSet, $cache['expire']);
+            Cache::set($cache['key'], $resultSet, $cache['expire']);
         }
         return $resultSet;
     }
@@ -536,8 +543,7 @@ class Model
             // 根据主键查询
             if (is_array($options)) {
                 // 判断是否索引数组
-                $keys = array_keys($options);
-                if (array_keys($keys) === $keys) {
+                if (0 === key($options)) {
                     $where[$pk] = ['in', $options];
                 } else {
                     return;
@@ -549,19 +555,10 @@ class Model
             $options['where'] = $where;
         } elseif (is_array($pk) && is_array($options) && !empty($options)) {
             // 根据复合主键查询
-            $count = 0;
-            foreach (array_keys($options) as $key) {
-                if (is_int($key)) {
-                    $count++;
-                }
-            }
-            if (count($pk) == $count) {
-                $i = 0;
-                foreach ($pk as $field) {
-                    $where[$field] = $options[$i];
-                    unset($options[$i++]);
-                }
-                $options['where'] = $where;
+            $array = array_intersect_key($options, $pk);
+            if (count($pk) == count($array)) {
+                $options          = array_diff_key($options, $array);
+                $options['where'] = array_combine($pk, $array);
             } else {
                 throw new Exception('miss complex primary data');
             }
@@ -598,9 +595,9 @@ class Model
         $field            = trim($field);
         // 判断查询缓存
         if (isset($options['cache'])) {
-            $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
-            $data  = Cache::get($key);
+            $cache        = $options['cache'];
+            $cache['key'] = is_string($cache['key']) ? $cache['key'] : md5($sepa . serialize($options));
+            $data         = Cache::get($cache['key']);
             if (false !== $data) {
                 return $data;
             }
@@ -615,22 +612,19 @@ class Model
                 if (is_string($resultSet)) {
                     return $resultSet;
                 }
-                $_field = explode(',', $field);
-                $field  = array_keys($resultSet[0]);
-                $key1   = array_shift($field);
-                $key2   = array_shift($field);
-                $cols   = array();
-                $count  = count($_field);
+                $field = array_keys($resultSet[0]);
+                $cols  = [];
+                $count = count($field);
                 foreach ($resultSet as $result) {
-                    $name = $result[$key1];
+                    $name = $result[$field[0]];
                     if (2 == $count) {
-                        $cols[$name] = $result[$key2];
+                        $cols[$name] = $result[$field[1]];
                     } else {
                         $cols[$name] = is_string($sepa) ? implode($sepa, array_slice($result, 1)) : $result;
                     }
                 }
                 if (isset($cache)) {
-                    Cache::set($key, $cols, $cache['expire']);
+                    Cache::set($cache['key'], $cols, $cache['expire']);
                 }
                 return $cols;
             }
@@ -649,15 +643,16 @@ class Model
                 if (true !== $sepa && 1 == $options['limit']) {
                     $data = reset($result[0]);
                     if (isset($cache)) {
-                        Cache::set($key, $data, $cache['expire']);
+                        Cache::set($cache['key'], $data, $cache['expire']);
                     }
                     return $data;
                 }
+                $array = [];
                 foreach ($result as $val) {
                     $array[] = $val[$field];
                 }
                 if (isset($cache)) {
-                    Cache::set($key, $array, $cache['expire']);
+                    Cache::set($cache['key'], $array, $cache['expire']);
                 }
                 return $array;
             }
@@ -680,6 +675,8 @@ class Model
         } else {
             $data[$field] = $value;
         }
+        // 更新某个字段的时候 忽略数据副本
+        $this->duplicate = [];
         return $this->save($data);
     }
 
@@ -694,7 +691,7 @@ class Model
      */
     public function setInc($field, $step = 1, $lazyTime = 0)
     {
-        $condition = $this->options['where'];
+        $condition = !empty($this->options['where']) ? $this->options['where'] : [];
         if (empty($condition)) {
             // 没有条件不做任何更新
             throw new Exception('no data to update');
@@ -705,11 +702,8 @@ class Model
             $step = $this->lazyWrite($guid, $step, $lazyTime);
             if (empty($step)) {
                 return true; // 等待下次写入
-            } elseif ($step < 0) {
-                $step = '-' . $step;
             }
         }
-        $this->duplicate = [];
         return $this->setField($field, ['exp', $field . '+' . $step]);
     }
 
@@ -724,7 +718,7 @@ class Model
      */
     public function setDec($field, $step = 1, $lazyTime = 0)
     {
-        $condition = $this->options['where'];
+        $condition = !empty($this->options['where']) ? $this->options['where'] : [];
         if (empty($condition)) {
             // 没有条件不做任何更新
             throw new Exception('no data to update');
@@ -735,11 +729,8 @@ class Model
             $step = $this->lazyWrite($guid, -$step, $lazyTime);
             if (empty($step)) {
                 return true; // 等待下次写入
-            } elseif ($step > 0) {
-                $step = '-' . $step;
             }
         }
-        $this->duplicate = [];
         return $this->setField($field, ['exp', $field . '-' . $step]);
     }
 
@@ -879,8 +870,11 @@ class Model
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
-            $key   = is_string($cache['key']) ? $cache['key'] : md5(serialize($options));
-            $data  = Cache::get($key);
+            if (!isset($cache['key']) || !is_string($cache['key'])) {
+                $cache['key'] = md5(serialize($options));
+            }
+            $cache['expire'] = isset($cache['expire']) ? $cache['expire'] : null;
+            $data            = Cache::get($cache['key']);
             if (false !== $data) {
                 $this->data = $data;
                 return $data;
@@ -900,7 +894,7 @@ class Model
         // 回调
         $this->_after_find($data, $options);
         if (isset($cache)) {
-            Cache::set($key, $data, $cache['expire']);
+            Cache::set($cache['key'], $data, $cache['expire']);
         }
         // 数据对象赋值
         $this->data = $data;
@@ -968,8 +962,7 @@ class Model
         }
 
         // 数据自动验证
-        $this->dataValidate($data);
-        if (!empty($this->error)) {
+        if (!$this->dataValidate($data)) {
             return false;
         }
 
@@ -996,51 +989,16 @@ class Model
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
-            // 获取自动验证规则
-            list($rules, $options, $scene) = $this->getDataRule($this->options['validate'], 'validate');
-
-            $options['value_validate']  = isset($options['value_validate']) ? $options['value_validate'] : [];
-            $options['exists_validate'] = isset($options['exists_validate']) ? $options['exists_validate'] : [];
-            foreach ($rules as $key => $val) {
-                if (is_numeric($key) && is_array($val)) {
-                    $key = array_shift($val);
-                }
-                if (!empty($scene) && !in_array($key, $scene)) {
-                    continue;
-                }
-                // 获取数据 支持二维数组
-                $value = $this->getDataValue($data, $key);
-
-                if ((in_array($key, $options['value_validate']) && '' == $value)
-                    || (in_array($key, $options['exists_validate']) && is_null($value))) {
-                    // 不满足自动验证条件
-                    continue;
-                }
-                $result = true;
-                if ($val instanceof \Closure) {
-                    // 匿名函数验证 支持传入当前字段和所有字段两个数据
-                    $result = call_user_func_array($val, [$value, &$data]);
-                } elseif (is_string($val)) {
-                    // 行为验证 用于一次性批量验证
-                    $result = Hook::exec($val, '', $data);
-                } else {
-                    // 验证字段规则
-                    $result = $this->checkValidate($value, $val, $data);
-                }
-                if (true !== $result) {
-                    // 没有返回true 则表示验证失败
-                    if (!empty($options['patch'])) {
-                        // 批量验证
-                        $this->error[] = $result;
-                    } else {
-                        $this->error = $result;
-                        return;
-                    }
-                }
+            if (!empty($this->rule)) {
+                Validate::rule($this->rule);
+            }
+            if (!Validate::check($data, $this->options['validate'])) {
+                $this->error = Validate::getError();
+                return false;
             }
             $this->options['validate'] = null;
         }
-        return;
+        return true;
     }
 
     /**
@@ -1053,10 +1011,8 @@ class Model
     {
         if (!empty($this->options['auto'])) {
             // 获取自动完成规则
-            list($rules, $options, $scene) = $this->getDataRule($this->options['auto'], 'auto');
+            list($rules, $options, $scene) = $this->getDataRule($this->options['auto']);
 
-            $options['value_fill']  = isset($options['value_fill']) ? $options['value_fill'] : [];
-            $options['exists_fill'] = isset($options['exists_fill']) ? $options['exists_fill'] : [];
             foreach ($rules as $key => $val) {
                 if (is_numeric($key) && is_array($val)) {
                     $key = array_shift($val);
@@ -1065,55 +1021,29 @@ class Model
                     continue;
                 }
                 // 数据自动填充
-                $this->autoOperation($key, $val, $data, $options);
+                $this->fillItem($key, $val, $data, $options);
             }
             $this->options['auto'] = null;
         }
     }
 
     /**
-     * 获取数据值
-     * @access protected
-     * @param array $data  数据
-     * @param string $key  数据标识 支持二维
-     * @return mixed
-     */
-    protected function getDataValue($data, $key)
-    {
-        if (strpos($key, '.')) {
-            // 支持二维数组验证
-            list($name1, $name2) = explode('.', $key);
-            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
-        } else {
-            $value = isset($data[$key]) ? $data[$key] : null;
-        }
-        return $value;
-    }
-
-    /**
-     * 获取数据自动验证或者完成的规则定义
+     * 获取数据自动完成的规则定义
      * @access protected
      * @param mixed $rules  数据规则
-     * @param string $type  数据类型 支持 validate auto
      * @return array
      */
-    protected function getDataRule($rules, $type)
+    protected function getDataRule($rules)
     {
-        if (!is_array($rules)) {
-            // 读取配置文件中的数据类型定义
-            $config = Config::get($type);
-            if ('validate' == $type && isset($config['__pattern__'])) {
-                // 全局字段规则
-                $this->rule = $config['__pattern__'];
-            }
-            if (true === $rules) {
-                $name = strtolower($this->name);
-            } elseif (strpos($rules, '.')) {
+        if (is_string($rules)) {
+            // 读取配置定义
+            $config = Config::get('auto');
+            if (strpos($rules, '.')) {
                 list($name, $group) = explode('.', $rules);
             } else {
                 $name = $rules;
             }
-            $rules = $config[$name];
+            $rules = isset($config[$name]) ? $config[$name] : [];
             if (isset($config['__all__'])) {
                 $rules = array_merge($config['__all__'], $rules);
             }
@@ -1126,7 +1056,7 @@ class Model
             $options = [];
         }
         if (isset($group) && isset($options['scene'][$group])) {
-            // 如果设置了验证适用场景
+            // 如果设置了适用场景
             $scene = $options['scene'][$group];
             if (is_string($scene)) {
                 $scene = explode(',', $scene);
@@ -1146,15 +1076,17 @@ class Model
      * @param array $options  参数
      * @return void
      */
-    protected function autoOperation($key, $val, &$data, $options = [])
+    protected function fillItem($key, $val, &$data, $options = [])
     {
         // 获取数据 支持二维数组
-        $value = $this->getDataValue($data, $key);
         if (strpos($key, '.')) {
             list($name1, $name2) = explode('.', $key);
+            $value               = isset($data[$name1][$name2]) ? $data[$name1][$name2] : null;
+        } else {
+            $value = isset($data[$key]) ? $data[$key] : null;
         }
-        if ((in_array($key, $options['value_fill']) && '' == $value)
-            || (in_array($key, $options['exists_fill']) && is_null($value))) {
+        if ((isset($options['value_fill']) && in_array($key, is_string($options['value_fill']) ? explode(',', $options['value_fill']) : $options['value_fill']) && '' == $value)
+            || (isset($options['exists_fill']) && in_array($key, is_string($options['exists_fill']) ? explode(',', $options['exists_fill']) : $options['exists_fill']) && is_null($value))) {
             // 不满足自动填充条件
             return;
         }
@@ -1167,7 +1099,7 @@ class Model
         } else {
             $rule   = isset($val[0]) ? $val[0] : $val;
             $type   = isset($val[1]) ? $val[1] : 'value';
-            $params = isset($val[2]) ? $val[2] : [];
+            $params = isset($val[2]) ? (array) $val[2] : [];
             switch ($type) {
                 case 'behavior':
                     Hook::exec($rule, '', $data);
@@ -1175,6 +1107,26 @@ class Model
                 case 'callback':
                     array_unshift($params, $value);
                     $result = call_user_func_array($rule, $params);
+                    break;
+                case 'serialize':
+                    if (is_string($rule)) {
+                        $rule = explode(',', $rule);
+                    }
+                    $serialize = [];
+                    foreach ($rule as $name) {
+                        if (strpos($name, '.')) {
+                            list($name1, $name2) = explode('.', $name);
+                            if (isset($data[$name1][$name2])) {
+                                $serialize[$name] = $data[$name1][$name2];
+                                unset($data[$name1][$name2]);
+                            }
+                        } elseif (isset($data[$name])) {
+                            $serialize[$name] = $data[$name];
+                            unset($data[$name]);
+                        }
+                    }
+                    $fun    = !empty($params['type']) ? $params['type'] : 'serialize';
+                    $result = $fun($serialize);
                     break;
                 case 'ignore':
                     if ($rule === $value) {
@@ -1196,65 +1148,6 @@ class Model
         } else {
             $data[$key] = $result;
         }
-    }
-
-    /**
-     * 验证字段规则
-     * @access protected
-     * @param mixed $value  字段值
-     * @param mixed $val  验证规则
-     * @param array $data  数据
-     * @return string|true
-     */
-    protected function checkValidate($value, $val, &$data)
-    {
-        $rule    = $val[0];
-        $msg     = isset($val[1]) ? $val[1] : '';
-        $type    = isset($val[2]) ? $val[2] : 'regex';
-        $options = isset($val[3]) ? $val[3] : [];
-        if ($rule instanceof \Closure) {
-            // 匿名函数验证 支持传入当前字段和所有字段两个数据
-            $result = call_user_func_array($rule, [$value, &$data]);
-        } else {
-            switch ($type) {
-                case 'callback':
-                    array_unshift($options, $value);
-                    $result = call_user_func_array($rule, $options);
-                    break;
-                case 'behavior':
-                    // 行为验证
-                    $result = Hook::exec($rule, '', $data);
-                    break;
-                case 'filter':    // 使用filter_var验证
-                    $result = filter_var($value, is_int($rule) ? $rule : filter_id($rule), $options);
-                    break;
-                case 'confirm':
-                    $result = $value == $data[$rule];
-                    break;
-                case 'in':
-                case 'notin':
-                    $range  = is_array($rule) ? $rule : explode(',', $rule);
-                    $result = 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
-                    break;
-                case 'between':// 验证是否在某个范围
-                case 'notbetween':    // 验证是否不在某个范围
-                    if (is_string($rule)) {
-                        $rule = explode(',', $rule);
-                    }
-                    list($min, $max) = $rule;
-                    $result          = 'between' == $type ? $value >= $min && $value <= $max : $value < $min || $value > $max;
-                    break;
-                case 'regex':
-                default:
-                    if (isset($this->rule[$rule])) {
-                        $rule = $this->rule[$rule];
-                    }
-                    $result = 1 === preg_match('/^' . $rule . '$/', (string) $value);
-                    break;
-            }
-        }
-        // 验证失败返回错误信息
-        return (false !== $result) ? $result : $msg;
     }
 
     /**
@@ -1404,6 +1297,9 @@ class Model
         if (!$tableName) {
             $tableName = isset($this->options['table']) ? $this->options['table'] : $this->getTableName();
         }
+        if (is_array($tableName)) {
+            $tableName = key($tableName) ?: current($tableName);
+        }
         if (strpos($tableName, ',')) {
             // 多表不获取字段信息
             return false;
@@ -1411,8 +1307,22 @@ class Model
         $guid   = md5($tableName);
         $result = Cache::get($guid);
         if (!$result) {
-            $info   = $this->db->getFields($tableName);
+            $info = $this->db->getFields($tableName);
+            // 字段大小写转换
+            switch ($this->attrCase) {
+                case \PDO::CASE_LOWER:
+                    $info = array_change_key_case($info);
+                    break;
+                case \PDO::CASE_UPPER:
+                    $info = array_change_key_case($info, CASE_UPPER);
+                    break;
+                case \PDO::CASE_NATURAL:
+                default:
+                    // 不做转换
+            }
+
             $fields = array_keys($info);
+            $bind   = $type   = [];
             foreach ($info as $key => $val) {
                 // 记录字段类型
                 $type[$key] = $val['type'];
@@ -1435,7 +1345,7 @@ class Model
             }
             // 记录字段类型信息
             $result = ['fields' => $fields, 'bind' => $bind, 'type' => $type, 'pk' => $pk];
-            APP_DEBUG && Cache::set($guid, $result);
+            !APP_DEBUG && Cache::set($guid, $result, 0);
         }
         return $fetch ? $result[$fetch] : $result;
     }
@@ -1541,7 +1451,7 @@ class Model
         }
 
         if (empty($condition)) {
-            if (is_array($join) && is_array($join[0])) {
+            if (is_array($join) && is_array(current($join))) {
                 // 如果为组数，则循环调用join
                 foreach ($join as $key => $value) {
                     if (is_array($value) && 2 <= count($value)) {
@@ -1551,7 +1461,7 @@ class Model
             } else {
                 $this->_join($join, $condition); // 兼容原来的join写法
             }
-        } elseif (in_array(strtoupper($condition), array('INNER', 'LEFT', 'RIGHT', 'ALL'))) {
+        } elseif (in_array(strtoupper($condition), ['INNER', 'LEFT', 'RIGHT', 'ALL'])) {
             $this->_join($join, $condition); // 兼容原来的join写法
         } else {
             $prefix = $this->tablePrefix;
@@ -1610,21 +1520,22 @@ class Model
         }
         if (is_object($union)) {
             $union = get_object_vars($union);
+        } elseif (is_string($union)) {
+            // 转换union表达式
+            $union = (array) $union;
         }
-        // 转换union表达式
-        if (is_string($union)) {
-            $options = $this->parseSqlTable($union);
-        } elseif (is_array($union)) {
+        if (is_array($union)) {
             if (isset($union[0])) {
-                $this->options['union'] = array_merge($this->options['union'], $union);
-                return $this;
+                foreach ($union as &$val) {
+                    $val = $this->parseSqlTable($val);
+                }
+                $this->options['union'] = isset($this->options['union']) ? array_merge($this->options['union'], $union) : $union;
             } else {
-                $options = $union;
+                $this->options['union'][] = $union;
             }
         } else {
             throw new Exception('data type invalid', 10300);
         }
-        $this->options['union'][] = $options;
         return $this;
     }
 
@@ -1703,7 +1614,7 @@ class Model
             if (!empty($args) && is_array($args)) {
                 $options = array_merge($options, $args);
             }
-        } elseif (is_array($scope)) {
+        } else {
             // 直接传入命名范围定义
             $options = $scope;
         }
@@ -1808,11 +1719,10 @@ class Model
      */
     public function order($field, $order = null)
     {
-        if (is_string($field) && !empty($field) && is_null($order)) {
-            $this->options['order'][] = $field;
-        } elseif (is_string($field) && !empty($field) && is_string($order)) {
-            $this->options['order'][$field] = $order;
-        } elseif (is_array($field) && !empty($field)) {
+        if (!empty($field)) {
+            if (!is_array($field)) {
+                $field = empty($order) ? [$field] : [(string) $field => (string) $order];
+            }
             $this->options['order'] = $field;
         }
         return $this;
@@ -1989,7 +1899,7 @@ class Model
     public function validate($field = true, $rule = null)
     {
         if (is_array($field) || is_null($rule)) {
-            $this->options['validate'] = $field;
+            $this->options['validate'] = true === $field ? $this->name : $field;
         } else {
             $this->options['validate'][$field] = $rule;
         }
@@ -2006,7 +1916,7 @@ class Model
     public function auto($field = true, $rule = null)
     {
         if (is_array($field) || is_null($rule)) {
-            $this->options['auto'] = $field;
+            $this->options['auto'] = true === $field ? $this->name : $field;
         } else {
             $this->options['auto'][$field] = $rule;
         }
@@ -2039,5 +1949,19 @@ class Model
             }, $sql);
         }
         return $sql;
+    }
+
+    /**
+     * 获取属性值
+     * @access protected
+     * @param string $property 属性名
+     * @return mixed
+     */
+    public function getProperty($property)
+    {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+        return null;
     }
 }

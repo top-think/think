@@ -94,7 +94,7 @@ class Lang
         }
         $key   = strtolower($name);
         $value = isset(self::$lang[$range][$key]) ? self::$lang[$range][$key] : $name;
-        
+
         // 变量解析
         if (!empty($vars) && is_array($vars)) {
             /**
@@ -104,7 +104,7 @@ class Lang
              */
             if (key($vars) === 0) {
                 // 数字索引解析
-                array_unshift($vars, $name);
+                array_unshift($vars, $value);
                 $value = call_user_func_array('sprintf', $vars);
             } else {
                 // 关联索引解析
@@ -114,8 +114,7 @@ class Lang
                 }
                 $value = str_replace($replace, $vars, $value);
             }
-            
-            
+
         }
         return $value;
     }

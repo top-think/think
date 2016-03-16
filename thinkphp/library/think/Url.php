@@ -40,9 +40,9 @@ class Url
                 // 解析域名
                 list($anchor, $domain) = explode('@', $anchor, 2);
             }
-        } elseif (false !== strpos($url, '@')) {
+        } elseif (strpos($url, '@')) {
             // 解析域名
-            list($url, $domain) = explode('@', $info['path'], 2);
+            list($url, $domain) = explode('@', $url, 2);
         }
 
         // 解析参数
@@ -81,7 +81,7 @@ class Url
         $url  = str_replace('/', $depr, $url);
 
         // URL后缀
-        $suffix = ('/' == $url) ? '' : self::parseSuffix($suffix);
+        $suffix = in_array($url, ['/', '']) ? '' : self::parseSuffix($suffix);
         // 锚点
         $anchor = !empty($anchor) ? '#' . $anchor : '';
         // 参数组装
@@ -104,9 +104,8 @@ class Url
 
         // 检测域名
         $domain = self::parseDomain($url, $domain);
-
         // URL组装
-        $url = $domain . Config::get('base_url') . '/' . $url;
+        $url = $domain . Config::get('base_url') . '/' . ltrim($url, '/');
         return $url;
     }
 
@@ -129,11 +128,11 @@ class Url
                 // 空字符串输出当前的 模块/控制器/操作
                 $url = $module . CONTROLLER_NAME . '/' . ACTION_NAME;
             } else {
-                $path = explode('/', $url);
-                $len  = count($path);
-                if ($len < 3) {
-                    $url = $module . (1 == $len ? CONTROLLER_NAME . '/' : '') . $url;
-                }
+                $path       = explode('/', $url);
+                $action     = array_pop($path);
+                $controller = empty($path) ? CONTROLLER_NAME : (Config::get('url_controller_convert') ? Loader::parseName(array_pop($path)) : array_pop($path));
+                $module     = empty($path) ? $module : array_pop($path) . '/';
+                $url        = $module . $controller . '/' . $action;
             }
         }
         return $url;
@@ -272,7 +271,7 @@ class Url
                 $alias[$route][] = [$rule, $var];
             }
         }
-        Cache::set('think_route_alias', $alias);
+        !APP_DEBUG && Cache::set('think_route_alias', $alias);
         return $alias;
     }
 

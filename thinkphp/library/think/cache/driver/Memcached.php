@@ -84,7 +84,8 @@ class Memcached
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-        $name = $this->options['prefix'] . $name;
+        $name   = $this->options['prefix'] . $name;
+        $expire = 0 == $expire ? 0 : time() + $expire;
         if ($this->handler->set($name, $value, $expire)) {
             if ($this->options['length'] > 0) {
                 // 记录缓存队列

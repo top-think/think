@@ -15,12 +15,13 @@ class Route
 {
     // 路由规则
     private static $rules = [
-        'GET'    => [],
-        'POST'   => [],
-        'PUT'    => [],
-        'DELETE' => [],
-        'HEAD'   => [],
-        '*'      => [],
+        'GET'     => [],
+        'POST'    => [],
+        'PUT'     => [],
+        'DELETE'  => [],
+        'HEAD'    => [],
+        'OPTIONS' => [],
+        '*'       => [],
     ];
 
     // REST路由操作方法定义
@@ -68,8 +69,8 @@ class Route
     {
         if (is_array($name)) {
             self::${$var} = self::${$var}+$name;
-        } elseif (empty($name)) {
-            return self::${$var};
+        } elseif (empty($value)) {
+            return empty($name) ? self::${$var} : self::${$var}[$name];
         } else {
             self::${$var}[$name] = $value;
         }
@@ -136,8 +137,6 @@ class Route
                 if (0 === strpos($rule, '[')) {
                     $rule   = substr($rule, 1, -1);
                     $result = ['routes' => $route, 'option' => $option, 'pattern' => $pattern];
-                } elseif (is_array($route)) {
-                    $result = ['route' => !empty($route[0]) ? $route[0] : '', 'option' => !empty($route[1]) ? $route[1] : '', 'pattern' => !empty($route[2]) ? $route[2] : ''];
                 } else {
                     $result = ['route' => $route, 'option' => $option, 'pattern' => $pattern];
                 }

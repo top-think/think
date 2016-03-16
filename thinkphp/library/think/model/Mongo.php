@@ -13,7 +13,7 @@ namespace think\model;
 use think\Lang;
 use think\Loader;
 
-T('modle/Adv');
+\think\Loader::import('modle/Adv', TRAIT_PATH, EXT);
 
 /**
  * MongoModel模型类
