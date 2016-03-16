@@ -130,7 +130,7 @@ class viewTest extends \PHPUnit_Framework_TestCase
         } else {
             $expect_data = __DIR__ . DS . 'default' . DS . 'template.html';
         }
-        $this->assertEquals($expect_data, $method->invoke($view_instance, 'template_name'));
+        $this->assertEquals($expect_data, $method->invoke($view_instance, 'template'));
     }
 
 }
