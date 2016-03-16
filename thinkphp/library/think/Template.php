@@ -221,15 +221,18 @@ class Template
      */
     public function layout($name)
     {
-        if (false !== $name) {
-            $this->config['layout_on'] = true;
-            if (is_string($name)) {
-                $this->config['layout_name'] = $name;
-            }
-        } else {
+        if (false === $name) {
             // 关闭布局
             $this->config['layout_on'] = false;
+            return $this;
         }
+        // 开启布局
+        $this->config['layout_on'] = true;
+        // 名称必须为字符串
+        if (is_string($name)) {
+            $this->config['layout_name'] = $name;
+        }
+        return $this;
     }
 
     /**
@@ -241,25 +244,36 @@ class Template
      */
     private function checkCache($cacheFile)
     {
-        if ($this->config['tpl_cache'] && is_file($cacheFile) && $handle = @fopen($cacheFile, "r")) {
-            // 读取第一行
-            preg_match('/\/\*(.+?)\*\//', fgets($handle), $matches);
-            if (isset($matches[1])) {
-                $includeFile = unserialize($matches[1]);
-                if (is_array($includeFile)) {
-                    // 检查模板文件是否有更新
-                    foreach ($includeFile as $path => $time) {
-                        if (is_file($path) && filemtime($path) > $time) {
-                            // 模板文件如果有更新则缓存需要更新
-                            return false;
-                        }
-                    }
-                }
-                // 检查编译存储是否有效
-                return $this->storage->check($cacheFile, $this->config['cache_time']);
+        // 未开启缓存功能
+        if (!$this->config['tpl_cache']) {
+            return false;
+        }
+        // 缓存文件不存在
+        if (!is_file($cacheFile)) {
+            return false;
+        }
+        // 读取缓存文件失败
+        if (!$handle = @fopen($cacheFile, "r")) {
+            return false;
+        }
+        // 读取第一行
+        preg_match('/\/\*(.+?)\*\//', fgets($handle), $matches);
+        if (!isset($matches[1])) {
+            return false;
+        }
+        $includeFile = unserialize($matches[1]);
+        if (!is_array($includeFile)) {
+            return false;
+        }
+        // 检查模板文件是否有更新
+        foreach ($includeFile as $path => $time) {
+            if (is_file($path) && filemtime($path) > $time) {
+                // 模板文件如果有更新则缓存需要更新
+                return false;
             }
         }
-        return false;
+        // 检查编译存储是否有效
+        return $this->storage->check($cacheFile, $this->config['cache_time']);
     }
 
     /**
