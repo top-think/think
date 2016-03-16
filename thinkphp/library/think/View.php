@@ -260,7 +260,7 @@ class View
                 $template = str_replace('.', DS, CONTROLLER_NAME) . $depr . $template;
             }
         }
-        return $path . $template . $this->config['view_suffix'];
+        return realpath($path) . DS . $template . $this->config['view_suffix'];
     }
 
     /**

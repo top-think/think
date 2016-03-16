@@ -121,12 +121,14 @@ class viewTest extends \PHPUnit_Framework_TestCase
     public function testParseTemplate()
     {
         $view_instance = \think\View::instance();
-        $method        = new \ReflectionMethod('\think\View', 'ParseTemplate');
+        $view_instance->theme(true);
+        $view_instance->config(['view_path' => __DIR__ . DS]);
+        $method = new \ReflectionMethod('\think\View', 'ParseTemplate');
         $method->setAccessible(true);
         if (defined('CONTROLLER_NAME')) {
-            $expect_data = 'view_path' . 'theme_name' . DS . CONTROLLER_NAME . DS . 'template_name.html';
+            $expect_data = __DIR__ . DS . 'default' . DS . CONTROLLER_NAME . DS . 'template.html';
         } else {
-            $expect_data = 'view_path' . 'theme_name' . DS . 'template_name.html';
+            $expect_data = __DIR__ . DS . 'default' . DS . 'template.html';
         }
         $this->assertEquals($expect_data, $method->invoke($view_instance, 'template_name'));
     }
