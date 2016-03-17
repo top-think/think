@@ -1045,7 +1045,7 @@ class Template
                     $path = $this->config['view_path'];
                 }
                 $template = str_replace(['/', ':'], $this->config['view_depr'], $template);
-                $template = $path . $template . $this->config['view_suffix'];
+                $template = realpath($path) . DS . $template . $this->config['view_suffix'];
             }
         }
         if (is_file($template)) {
