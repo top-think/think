@@ -323,7 +323,7 @@ EOF;
             'view_path'   => dirname(__FILE__) . '/',
         ];
         $data = ['name' => 'value'];
-        $template->display('display', $data, $config);
+        $template->layout('layout')->display('display', $data, $config);
         $this->expectOutputString('value');
     }
 

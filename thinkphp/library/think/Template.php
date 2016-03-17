@@ -217,20 +217,20 @@ class Template
      * 设置布局
      * @access public
      * @param mixed $name 布局模板名称 false 则关闭布局
-     * @return void
+     * @return object
      */
     public function layout($name)
     {
         if (false === $name) {
             // 关闭布局
             $this->config['layout_on'] = false;
-            return $this;
-        }
-        // 开启布局
-        $this->config['layout_on'] = true;
-        // 名称必须为字符串
-        if (is_string($name)) {
-            $this->config['layout_name'] = $name;
+        } else {
+            // 开启布局
+            $this->config['layout_on'] = true;
+            // 名称必须为字符串
+            if (is_string($name)) {
+                $this->config['layout_name'] = $name;
+            }
         }
         return $this;
     }
@@ -524,20 +524,22 @@ class Template
                             $replace = str_replace($baseBlocks[$key]['begin'] . $baseBlocks[$key]['content'] . $baseBlocks[$key]['end'], $blocks[$key]['content'], $replace);
                         }
                     }
-                    // 带有{__block__}表示与所继承模板的相应标签合并，而不是覆盖
-                    $replace = !isset($blocks[$name]) ? $replace : str_replace(['{__BLOCK__}', '{__block__}'], $replace, $blocks[$name]['content']);
-                    if (!empty($val['parent'])) {
-                        // 如果不是最顶层的block标签
-                        $parent = $val['parent'];
-                        if (isset($blocks[$parent])) {
-                            $blocks[$parent]['content'] = str_replace($blocks[$name]['begin'] . $blocks[$name]['content'] . $blocks[$name]['end'], $replace, $blocks[$parent]['content']);
+                    if (isset($blocks[$name])) {
+                        // 带有{__block__}表示与所继承模板的相应标签合并，而不是覆盖
+                        $replace = str_replace(['{__BLOCK__}', '{__block__}'], $replace, $blocks[$name]['content']);
+                        if (!empty($val['parent'])) {
+                            // 如果不是最顶层的block标签
+                            $parent = $val['parent'];
+                            if (isset($blocks[$parent])) {
+                                $blocks[$parent]['content'] = str_replace($blocks[$name]['begin'] . $blocks[$name]['content'] . $blocks[$name]['end'], $replace, $blocks[$parent]['content']);
+                            }
+                            $blocks[$name]['content'] = $replace;
+                            $children[$parent][]      = $name;
+                            continue;
                         }
-                        $blocks[$name]['content'] = $replace;
-                        $children[$parent][]      = $name;
-                    } else {
-                        // 替换模板中的block标签
-                        $extend = str_replace($val['begin'] . $val['content'] . $val['end'], $replace, $extend);
                     }
+                    // 替换模板中的block标签
+                    $extend = str_replace($val['begin'] . $val['content'] . $val['end'], $replace, $extend);
                 }
             }
             $content = $extend;
