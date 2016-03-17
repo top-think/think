@@ -373,6 +373,8 @@ class App
             // 路由无效默认分析为模块/控制器/操作/参数...方式URL
             $result = Route::parseUrl($_SERVER['PATH_INFO'], $depr);
         }
+        //保证$_REQUEST正常取值
+        $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
         // 注册调度机制
         self::dispatch($result);
     }

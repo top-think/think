@@ -40,14 +40,15 @@ class View
         // 视图驱动命名空间
         'namespace'     => '\\think\\view\\driver\\',
         // 模板引擎配置参数
-        'template'      => [
-            'type' => 'think',
-        ],
+        'template'      => [],
     ];
 
     public function __construct(array $config = [])
     {
         $this->config($config);
+        if (!isset($this->config['template']['type'])) {
+            $this->config['template']['type'] = 'think';
+        }
     }
 
     /**
@@ -122,6 +123,7 @@ class View
             if (empty($this->config['view_path']) && defined('VIEW_PATH')) {
                 $this->config['view_path'] = VIEW_PATH;
             }
+
             $config = array_merge($config, [
                 'view_path'   => $this->config['view_path'],
                 'view_suffix' => $this->config['view_suffix'],
