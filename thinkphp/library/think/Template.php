@@ -332,7 +332,7 @@ class Template
             $content = preg_replace($find, $replace, $content);
         }
         // 优化生成的php代码
-        $content = preg_replace('/\?>\s*<\?php\s?/is', '', $content);
+        $content = preg_replace('/\?>\s*<\?php\s(?!echo\b)/s', '', $content);
         // 模板过滤输出
         $replace = $this->config['tpl_replace_string'];
         $content = str_replace(array_keys($replace), array_values($replace), $content);
