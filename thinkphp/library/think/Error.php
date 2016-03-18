@@ -71,15 +71,13 @@ class Error
         Log::record($log, 'error');
 
         /* 非API模式下的部署模式，跳转到指定的 Error Page */
-        if (!(APP_DEBUG || IS_API)) {
-            $error_page = Config::get('error_page');
-            if (!empty($error_page)) {
-                header("Location: {$error_page}");
-            }
+        $error_page = Config::get('error_page');
+        if (!(APP_DEBUG || IS_API) && !empty($error_page)) {
+            header("Location: {$error_page}");
+        } else {
+            // 输出错误信息
+            self::output($exception, $data);
         }
-
-        // 输出错误信息
-        self::output($exception, $data);
         // 禁止往下传播已处理过的异常
         return true;
     }
