@@ -319,8 +319,10 @@ EOF;
         $template = new Template();
         $template->assign('name', 'name');
         $config = [
-            'strip_space' => true,
-            'view_path'   => dirname(__FILE__) . '/',
+            'strip_space'  => true,
+            'view_path'    => dirname(__FILE__) . '/',
+            'cache_id'     => '__CACHE_ID__',
+            'display_cache'=> true
         ];
         $data = ['name' => 'value'];
         $template->layout('layout')->display('display', $data, $config);
@@ -400,5 +402,13 @@ EOF;
         $data     = ['a' => 'a', 'b' => 'b'];
         $template->assign($data);
         $this->assertEquals($data, $template->get());
+    }
+
+    public function testIsCache()
+    {
+        $template = new Template(['cache_id' => '__CACHE_ID__','display_cache' => true]);
+        $this->assertTrue(!$template->isCache('__CACHE_ID__'));
+        $template->display_cache = false;
+        $this->assertTrue(!$template->isCache('__CACHE_ID__'));
     }
 }
