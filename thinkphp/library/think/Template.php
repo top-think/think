@@ -169,6 +169,14 @@ class Template
         if ($config) {
             $this->config($config);
         }
+        if (!empty($this->config['cache_id']) && $this->config['display_cache']) {
+            // 读取渲染缓存
+            $cacheContent = Cache::get($this->config['cache_id']);
+            if ($cacheContent !== false) {
+                echo $cacheContent;
+                return;
+            }
+        }
         $template = $this->parseTemplateFile($template);
         if ($template) {
             $cacheFile = $this->config['cache_path'] . $this->config['cache_prefix'] . md5($template) . $this->config['cache_suffix'];
