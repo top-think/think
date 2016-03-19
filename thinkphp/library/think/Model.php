@@ -989,11 +989,12 @@ class Model
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
-            if (!empty($this->rule)) {
-                Validate::rule($this->rule);
+            $validate = Loader::validate($this->name);
+            if (is_array($this->options['validate'])) {
+                $validate->rule($this->options['validate']);
             }
-            if (!Validate::check($data, $this->options['validate'])) {
-                $this->error = Validate::getError();
+            if (!$validate->check($data)) {
+                $this->error = $validate->getError();
                 return false;
             }
             $this->options['validate'] = null;

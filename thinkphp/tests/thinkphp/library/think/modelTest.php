@@ -36,61 +36,62 @@ class modelTest extends \PHPUnit_Framework_TestCase
 
     public function testValidate()
     {
-        $model = new Model('', $this->getConfig());
-        $data  = $_POST  = [
-            'username'   => 'username',
-            'nickname'   => 'nickname',
-            'password'   => '123456',
-            'repassword' => '123456',
-            'mobile'     => '13800000000',
-            'email'      => 'abc@abc.com',
-            'sex'        => '0',
-            'age'        => '20',
-            'code'       => '1234',
-        ];
+        /*
+    $model = new Model('', $this->getConfig());
+    $data  = $_POST  = [
+    'username'   => 'username',
+    'nickname'   => 'nickname',
+    'password'   => '123456',
+    'repassword' => '123456',
+    'mobile'     => '13800000000',
+    'email'      => 'abc@abc.com',
+    'sex'        => '0',
+    'age'        => '20',
+    'code'       => '1234',
+    ];
 
-        $validate = [
-            '__pattern__' => [
-                'mobile'  => '/^1(?:[358]\d|7[6-8])\d{8}$/',
-                'require' => '/.+/',
-            ],
-            '__all__'     => [
-                'code' => function ($value, $data) {
-                    return '1234' != $value ? 'code error' : true;
-                },
-            ],
-            'user'        => [
-                ['username', [ & $this, 'checkName'], '用户名长度为5到15个字符', 'callback', 'username'],
-                ['username', function ($value, $data) {
-                    return 'admin' == $value ? '此用户名已被使用' : true;
-                }],
-                'nickname'   => ['require', '请填昵称'],
-                'password'   => ['[\w-]{6,15}', '密码长度为6到15个字符'],
-                'repassword' => ['password', '两次密码不一到致', 'confirm'],
-                'mobile'     => ['mobile', '手机号错误'],
-                'email'      => ['validate_email', '邮箱格式错误', 'filter'],
-                'sex'        => ['0,1', '性别只能为为男或女', 'in'],
-                'age'        => ['1,80', '年龄只能在10-80之间', 'between'],
-                '__option__' => [
-                    'scene'           => [
-                        'add'  => 'username,nickname,password,repassword,mobile,email,age,code',
-                        'edit' => 'nickname,password,repassword,mobile,email,sex,age,code',
-                    ],
-                    'value_validate'  => 'email',
-                    'exists_validate' => 'password,repassword,code',
-                    'patch'           => true,
-                ],
-            ],
-        ];
-        Config::set('validate', $validate);
-        $result = $model->validate('user.add')->create();
-        $this->assertEmpty($model->getError());
+    $validate = [
+    '__pattern__' => [
+    'mobile'  => '/^1(?:[358]\d|7[6-8])\d{8}$/',
+    'require' => '/.+/',
+    ],
+    '__all__'     => [
+    'code' => function ($value, $data) {
+    return '1234' != $value ? 'code error' : true;
+    },
+    ],
+    'user'        => [
+    ['username', [ & $this, 'checkName'], '用户名长度为5到15个字符', 'callback', 'username'],
+    ['username', function ($value, $data) {
+    return 'admin' == $value ? '此用户名已被使用' : true;
+    }],
+    'nickname'   => ['require', '请填昵称'],
+    'password'   => ['[\w-]{6,15}', '密码长度为6到15个字符'],
+    'repassword' => ['password', '两次密码不一到致', 'confirm'],
+    'mobile'     => ['mobile', '手机号错误'],
+    'email'      => ['validate_email', '邮箱格式错误', 'filter'],
+    'sex'        => ['0,1', '性别只能为为男或女', 'in'],
+    'age'        => ['1,80', '年龄只能在10-80之间', 'between'],
+    '__option__' => [
+    'scene'           => [
+    'add'  => 'username,nickname,password,repassword,mobile,email,age,code',
+    'edit' => 'nickname,password,repassword,mobile,email,sex,age,code',
+    ],
+    'value_validate'  => 'email',
+    'exists_validate' => 'password,repassword,code',
+    'patch'           => true,
+    ],
+    ],
+    ];
+    Config::set('validate', $validate);
+    $result = $model->validate('user.add')->create();
+    $this->assertEmpty($model->getError());
 
-        unset($data['password'], $data['repassword']);
-        $data['email'] = '';
-        $result        = $model->validate('user.edit')->create($data);
-        $this->assertEmpty($model->getError());
-
+    unset($data['password'], $data['repassword']);
+    $data['email'] = '';
+    $result        = $model->validate('user.edit')->create($data);
+    $this->assertEmpty($model->getError());
+     */
     }
 
     public function checkName($value, $field)
