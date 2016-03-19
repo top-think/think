@@ -1893,14 +1893,14 @@ class Model
     /**
      * 设置字段验证
      * @access public
-     * @param mixed $field 字段名或者验证规则 true表示自动读取
+     * @param mixed $field 字段名或者验证规则 true表示自动读取验证器类
      * @param array|null $rule 验证规则
      * @return Model
      */
     public function validate($field = true, $rule = null)
     {
-        if (is_array($field) || is_null($rule)) {
-            $this->options['validate'] = true === $field ? $this->name : $field;
+        if (is_null($rule)) {
+            $this->options['validate'] = $field;
         } else {
             $this->options['validate'][$field] = $rule;
         }
