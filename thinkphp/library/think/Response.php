@@ -222,7 +222,7 @@ class Response
 
     /**
      * URL重定向
-     * @access protected
+     * @access public
      * @param string $url 跳转的URL表达式
      * @param array|int $params 其它URL参数或http code
      * @return void
@@ -240,7 +240,7 @@ class Response
 
     /**
      * 设置响应头
-     * @access protected
+     * @access public
      * @param string $name 参数名
      * @param string $value 参数值
      * @return void
