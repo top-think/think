@@ -113,13 +113,13 @@ class Validate
     }
 
     /**
-     * 注册验证（类型）规则
+     * 设置提示信息
      * @access public
-     * @param string $type  验证规则类型
-     * @param mixed $callback callback方法(或闭包)
+     * @param string|array $name  字段名称
+     * @param string $message 提示信息
      * @return void
      */
-    public function message($name, $message)
+    public function message($name, $message = '')
     {
         if (is_array($name)) {
             $this->message = array_merge($this->message, $name);
