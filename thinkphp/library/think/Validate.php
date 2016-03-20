@@ -561,7 +561,7 @@ class Validate
         if (isset($except)) {
             $map[$key] = ['neq', $except];
         }
-        if ($model->where($map)->find()) {
+        if ($model->where($map)->field($key)->find()) {
             return false;
         }
         return true;
