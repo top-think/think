@@ -111,9 +111,13 @@ class Validate
      * @param mixed $callback callback方法(或闭包)
      * @return void
      */
-    public function extend($type, $callback)
+    public function extend($type, $callback = null)
     {
-        $this->type[$type] = $callback;
+        if (is_array($type)) {
+            $this->type = array_merge($this->type, $type);
+        } else {
+            $this->type[$type] = $callback;
+        }
         return $this;
     }
 
@@ -524,10 +528,13 @@ class Validate
      */
     public function filter($value, $rule)
     {
-        if (is_string($rule)) {
-            $rule = explode(',', $rule);
+        if (is_int($rule)) {
+            $param = null;
+        } elseif (is_string($rule) && strpos($rule, ',')) {
+            list($rule, $param) = explode(',', $rule);
+        } elseif (is_array($rule)) {
+            $param = isset($rule[1]) ? $rule[1] : null;
         }
-        list($rule, $param) = $rule;
         return false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $param);
     }
 
