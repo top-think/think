@@ -32,7 +32,7 @@ class Validate
 
     // 验证规则默认提示信息
     protected $typeMsg = [
-        'require'    => '必须填写',
+        'require'    => '不能为空',
         'number'     => '必须是数字',
         'float'      => '必须是浮点数',
         'boolean'    => '必须是布尔值',
@@ -43,10 +43,10 @@ class Validate
         'alpha'      => '只能是字母',
         'alphaNum'   => '只能是字母和数字',
         'alphaDash'  => '只能是字母、数字和下划线_及破折号-',
-        'activeUrl'  => '必须是有效的域名或者IP',
-        'url'        => '必须是有效的URL地址',
+        'activeUrl'  => '不是有效的域名或者IP',
+        'url'        => '不是有效的URL地址',
         'ip'         => '不是有效的IP地址',
-        'dateFormat' => '不符合日期格式 :rule',
+        'dateFormat' => '必须使用日期格式 :rule',
         'in'         => '必须在 :rule 范围内',
         'notIn'      => '不能在 :rule 范围内',
         'between'    => '只能在 :1 - :2 之间',
@@ -66,7 +66,9 @@ class Validate
         'lt'         => '必须小于 :rule',
         'eq'         => '必须等于 :rule',
         'unique'     => '必须在 :1 中唯一',
+        'regex'      => '不符合指定规则',
     ];
+
     // 当前验证场景
     protected $scene = null;
 
