@@ -19,6 +19,11 @@ class Validate
     // 自定义的验证类型
     protected $type = [];
 
+    // 验证类型别名
+    protected $alias = [
+        '>' => 'gt', '>=' => 'egt', '<' => 'lt', '<=' => 'elt', '=' => 'eq', 'same' => 'eq',
+    ];
+
     // 当前验证的规则
     protected $rule = [];
 
@@ -271,7 +276,11 @@ class Validate
                     // 判断验证类型
                     if (is_numeric($key) && strpos($rule, ':')) {
                         list($type, $rule) = explode(':', $rule, 2);
-                        $info              = $type;
+                        if (isset($this->alias[$type])) {
+                            // 判断别名
+                            $type = $this->alias[$type];
+                        }
+                        $info = $type;
                     } elseif (is_numeric($key)) {
                         $type = 'is';
                         $info = $rule;
@@ -376,7 +385,7 @@ class Validate
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function same($value, $rule)
+    public function eq($value, $rule)
     {
         return $value == $rule;
     }
