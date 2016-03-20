@@ -989,9 +989,12 @@ class Model
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
-            $validate = Loader::validate($this->name);
-            if (is_array($this->options['validate'])) {
-                $validate->rule($this->options['validate']);
+            $info     = $this->options['validate'];
+            $name     = is_string($info) ? $info : $this->name;
+            $validate = Loader::validate($name);
+            if (is_array($info)) {
+                $validate->rule($info['rule']);
+                $validate->message($info['msg']);
             }
             if (!$validate->check($data)) {
                 $this->error = $validate->getError();
@@ -1893,16 +1896,19 @@ class Model
     /**
      * 设置字段验证
      * @access public
-     * @param mixed $field 字段名或者验证规则 true表示自动读取验证器类
-     * @param array|null $rule 验证规则
+     * @param array|bool $rule 验证规则 true表示自动读取验证器类
+     * @param array $msg 提示信息
      * @return Model
      */
-    public function validate($field = true, $rule = null)
+    public function validate($rule = true, $msg = null)
     {
-        if (is_null($rule)) {
-            $this->options['validate'] = $field;
-        } else {
-            $this->options['validate'][$field] = $rule;
+        if (true === $rule) {
+            $this->options['validate'] = $this->name;
+        } elseif (is_array($rule)) {
+            $this->options['validate'] = [
+                'rule' => $rule,
+                'msg'  => is_array($msg) ? $msg : [],
+            ];
         }
         return $this;
     }

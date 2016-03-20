@@ -145,16 +145,21 @@ class Controller
      * 验证数据
      * @access protected
      * @param array $data 数据
-     * @param string $validate 验证器名
+     * @param string|array $validate 验证器名或者验证规则数组
+     * @param array $message 提示信息
      * @return void
      */
-    public function validate($data, $validate)
+    public function validate($data, $validate, $message = [])
     {
         if (is_array($validate)) {
             $v = Loader::validate();
             $v->rule($validate);
         } else {
             $v = Loader::validate($validate);
+        }
+
+        if (is_array($message)) {
+            $v->message($message);
         }
 
         if (!$v->check($data)) {

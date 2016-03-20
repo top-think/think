@@ -187,6 +187,8 @@ class Validate
      */
     public function check(&$data, $rules = [], $scene = '')
     {
+        $this->error = [];
+
         if (empty($rules)) {
             // 读取验证规则
             $rules = $this->rule;
@@ -194,6 +196,12 @@ class Validate
 
         // 分析验证规则
         $scene = $this->getScene($scene);
+        // 读取提示信息
+        if (isset($rules['__message__'])) {
+            $this->message($rules['__message__']);
+            unset($rules['__message__']);
+        }
+
         foreach ($rules as $key => $rule) {
             if (strpos($key, '|')) {
                 // 支持 字段|描述 用于返回默认错误
@@ -252,26 +260,30 @@ class Validate
             $result = call_user_func_array($rules, [$value, &$data]);
         } else {
             // 支持多规则验证 require|in:a,b,c|... 或者 ['require','in'=>'a,b,c',...]
-            // [['require|in:a,b,c|...'],['错误信息1','错误信息2']]
             if (is_string($rules)) {
                 $rules = explode('|', $rules);
             }
             $error = [];
             foreach ($rules as $key => $rule) {
-                // 判断验证类型
-                if (is_numeric($key) && strpos($rule, ':')) {
-                    list($type, $rule) = explode(':', $rule, 2);
-                    $info              = $type;
-                } elseif (is_numeric($key)) {
-                    $type = 'is';
-                    $info = $rule;
+                if ($rule instanceof \Closure) {
+                    $result = call_user_func_array($rules, [$value, &$data]);
                 } else {
-                    $info = $type = $key;
+                    // 判断验证类型
+                    if (is_numeric($key) && strpos($rule, ':')) {
+                        list($type, $rule) = explode(':', $rule, 2);
+                        $info              = $type;
+                    } elseif (is_numeric($key)) {
+                        $type = 'is';
+                        $info = $rule;
+                    } else {
+                        $info = $type = $key;
+                    }
+                    // 验证类型
+                    $callback = isset($this->type[$type]) ? $this->type[$type] : [$this, $type];
+                    // 验证数据
+                    $result = call_user_func_array($callback, [$value, $rule, &$data, $field]);
                 }
-                // 验证类型
-                $callback = isset($this->type[$type]) ? $this->type[$type] : [$this, $type];
-                // 验证数据
-                $result = call_user_func_array($callback, [$value, $rule, &$data, $field]);
+
                 if (false === $result) {
                     // 验证失败 返回错误信息
                     if (isset($this->message[$field . '.' . $info])) {
