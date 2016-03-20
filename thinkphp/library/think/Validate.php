@@ -520,11 +520,14 @@ class Validate
      * @access public
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
-     * @param mixed $param  参数
      * @return bool
      */
-    public function filter($value, $rule, $param = null)
+    public function filter($value, $rule)
     {
+        if (is_string($rule)) {
+            $rule = explode(',', $rule);
+        }
+        list($rule, $param) = $rule;
         return false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $param);
     }
 

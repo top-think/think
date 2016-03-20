@@ -989,12 +989,14 @@ class Model
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
-            $info     = $this->options['validate'];
-            $name     = is_string($info) ? $info : $this->name;
-            $validate = Loader::validate($name);
+            $info = $this->options['validate'];
             if (is_array($info)) {
+                $validate = Loader::validate();
                 $validate->rule($info['rule']);
                 $validate->message($info['msg']);
+            } else {
+                $name     = is_string($info) ? $info : $this->name;
+                $validate = Loader::validate($name);
             }
             if (!$validate->check($data)) {
                 $this->error = $validate->getError();

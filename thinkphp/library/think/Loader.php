@@ -376,6 +376,8 @@ class Loader
             $class = str_replace('\\' . $module . '\\', '\\' . COMMON_MODULE . '\\', $class);
             if (class_exists($class)) {
                 $validate = new $class;
+            } else {
+                throw new Exception('class [ ' . $class . ' ] not exists', 10001);
             }
         }
         $_instance[$name . $layer] = $validate;
