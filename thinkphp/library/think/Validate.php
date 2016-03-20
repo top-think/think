@@ -60,8 +60,8 @@ class Validate
      */
     public function __construct(array $rules = [], $message = [], $config = [])
     {
-        $this->rule    = $rules;
-        $this->message = $message;
+        $this->rule    = array_merge($this->rule, $rules);
+        $this->message = array_merge($this->message, $message);
         $this->config  = array_merge($this->config, $config);
         if (is_string($this->config['value_validate'])) {
             $this->config['value_validate'] = explode(',', $this->config['value_validate']);
