@@ -30,6 +30,43 @@ class Validate
     // 验证提示信息
     protected $message = [];
 
+    // 验证规则默认提示信息
+    protected $typeMsg = [
+        'require'    => ':attribute必须填写',
+        'number'     => ':attribute必须是数字',
+        'float'      => ':attribute必须是浮点数',
+        'boolean'    => ':attribute必须是布尔值',
+        'email'      => ':attribute格式不符',
+        'array'      => ':attribute必须是数组',
+        'accepted'   => ':attribute必须是yes、on或者1',
+        'date'       => ':attribute格式不符合',
+        'alpha'      => ':attribute只能是字母',
+        'alphaNum'   => ':attribute只能是字母和数字',
+        'alphaDash'  => ':attribute只能是字母、数字和下划线_及破折号-',
+        'activeUrl'  => ':attribute必须是有效的域名或者IP',
+        'url'        => ':attribute必须是有效的URL地址',
+        'ip'         => ':attribute不是有效的IP地址',
+        'dateFormat' => ':attribute不符合日期格式 :rule',
+        'in'         => ':attribute必须在 :rule 范围内',
+        'notIn'      => ':attribute不能在 :rule 范围内',
+        'between'    => ':attribute只能在 :1 - :2 之间',
+        'notBetween' => ':attribute不能在 :1 - :2 之间',
+        'length'     => ':attribute长度不符合要求 :rule',
+        'max'        => ':attribute长度不能超过 :rule',
+        'min'        => ':attribute长度不能小于 :rule',
+        'after'      => ':attribute日期不能小于 :rule',
+        'before'     => ':attribute日期不能超过 :rule',
+        'expire'     => ':attribute不在有效期内 :rule',
+        'allowIp'    => '不允许的IP访问',
+        'denyIp'     => '禁止的IP访问',
+        'confirm'    => ':attribute和字段 :rule 不一致',
+        'egt'        => ':attribute必须大于等于 :rule',
+        'gt'         => ':attribute必须大于 :rule',
+        'elt'        => ':attribute必须小于等于 :rule',
+        'lt'         => ':attribute必须小于 :rule',
+        'eq'         => ':attribute必须等于 :rule',
+        'unique'     => ':attribute必须在 :1 中唯一',
+    ];
     // 当前验证场景
     protected $scene = null;
 
@@ -275,7 +312,7 @@ class Validate
             $error = [];
             foreach ($rules as $key => $rule) {
                 if ($rule instanceof \Closure) {
-                    $result = call_user_func_array($rules, [$value, &$data]);
+                    $result = call_user_func_array($rule, [$value, &$data]);
                 } else {
                     // 判断验证类型
                     if (is_numeric($key) && strpos($rule, ':')) {
@@ -304,7 +341,7 @@ class Validate
                     } elseif (isset($this->message[$field . '.'])) {
                         $error[] = $this->message[$field . '.'];
                     } else {
-                        $error[] = ($title ?: $field) . '错误';
+                        $error[] = $this->getTypeMsg($title ?: $field, $info, $rule);
                     }
                 } elseif (is_string($result)) {
                     $error[] = $result;
@@ -775,6 +812,29 @@ class Validate
             $value = isset($data[$key]) ? $data[$key] : null;
         }
         return $value;
+    }
+
+    /**
+     * 获取验证规则的默认提示信息
+     * @access protected
+     * @param string $type  验证规则
+     * @return string
+     */
+    protected function getTypeMsg($attribute, $type, $rule)
+    {
+        if (isset($this->typeMsg[$type])) {
+            if (strpos($rule, ',')) {
+                $array = array_pad(explode(',', $rule), 3, '');
+            } else {
+                $array = array_pad([], 3, '');
+            }
+            return str_replace(
+                [':rule', ':attribute', ':1', ':2', ':3'],
+                [(string) $rule, $attribute, $array[0], $array[1], $array[2]],
+                $this->typeMsg[$type]);
+        } else {
+            return '规则错误';
+        }
     }
 
     /**
