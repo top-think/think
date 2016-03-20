@@ -543,22 +543,23 @@ class Validate
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则 格式：数据表,字段名,排除ID
      * @param array $data  数据
+     * @param string $field  验证字段名
      * @return bool
      */
-    protected function unique($value, $rule, $data)
+    protected function unique($value, $rule, $data, $field)
     {
         $rule  = explode(',', $rule);
         $model = Loader::table($rule[0]);
-        $pk    = $model->getPk();
-        $field = isset($rule[1]) ? $rule[1] : $key;
+        $key   = isset($rule[3]) ? $rule[3] : $model->getPk();
+        $field = isset($rule[1]) ? $rule[1] : $field;
         if (isset($rule[2])) {
             $except = $rule[2];
-        } elseif (isset($data[$pk])) {
-            $except = $data[$pk];
+        } elseif (isset($data[$key])) {
+            $except = $data[$key];
         }
         $map[$field] = $value;
         if (isset($except)) {
-            $map[$pk] = ['neq', $except];
+            $map[$key] = ['neq', $except];
         }
         if ($model->where($map)->find()) {
             return false;
