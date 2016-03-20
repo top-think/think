@@ -323,85 +323,85 @@ class Validate
 
     /**
      * 验证是否和某个字段的值一致
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @param array $data  数据
      * @return bool
      */
-    public function confirm($value, $rule, $data)
+    protected function confirm($value, $rule, $data)
     {
         return $this->getDataValue($data, $rule) == $value;
     }
 
     /**
      * 验证是否大于等于某个值
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function egt($value, $rule)
+    protected function egt($value, $rule)
     {
         return $value >= $rule;
     }
 
     /**
      * 验证是否大于某个值
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function gt($value, $rule)
+    protected function gt($value, $rule)
     {
         return $value > $rule;
     }
 
     /**
      * 验证是否小于等于某个值
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function elt($value, $rule)
+    protected function elt($value, $rule)
     {
         return $value <= $rule;
     }
 
     /**
      * 验证是否小于某个值
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function lt($value, $rule)
+    protected function lt($value, $rule)
     {
         return $value < $rule;
     }
 
     /**
      * 验证是否等于某个值
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function eq($value, $rule)
+    protected function eq($value, $rule)
     {
         return $value == $rule;
     }
 
     /**
      * 验证字段值是否为有效格式
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param string $rule  验证规则
      * @return bool
      */
-    public function is($value, $rule)
+    protected function is($value, $rule)
     {
         switch ($rule) {
             case 'require':
@@ -420,15 +420,15 @@ class Validate
                 // 只允许字母
                 $result = $this->regex($value, '/^[A-Za-z]+$/');
                 break;
-            case 'alpha_num':
+            case 'alphaNum':
                 // 只允许字母和数字
                 $result = $this->regex($value, '/^[A-Za-z0-9]+$/');
                 break;
-            case 'alpha_dash':
+            case 'alphaDash':
                 // 只允许字母、数字和下划线 破折号
                 $result = $this->regex($value, '/^[A-Za-z0-9\-\_]+$/');
                 break;
-            case 'active_url':
+            case 'activeUrl':
                 // 是否为有效的网址
                 $result = checkdnsrr($value);
                 break;
@@ -475,7 +475,7 @@ class Validate
      * @param mixed $rule  验证规则
      * @return bool
      */
-    protected function date_format($value, $rule)
+    protected function dateFormat($value, $rule)
     {
         $info = date_parse_from_format($rule, $value);
         return 0 == $info['warning_count'] && 0 == $info['error_count'];
@@ -521,12 +521,12 @@ class Validate
 
     /**
      * 使用filter_var方式验证
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function filter($value, $rule)
+    protected function filter($value, $rule)
     {
         if (is_int($rule)) {
             $param = null;
@@ -540,13 +540,13 @@ class Validate
 
     /**
      * 验证某个字段的值等于某个值的时候必须
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @param array $data  数据
      * @return bool
      */
-    public function require_if($value, $rule, $data)
+    protected function requireIf($value, $rule, $data)
     {
         list($field, $val) = explode(',', $rule);
         if ($this->getDataValue($data, $field) == $val) {
@@ -558,36 +558,36 @@ class Validate
 
     /**
      * 验证是否在范围内
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function in($value, $rule)
+    protected function in($value, $rule)
     {
         return in_array($value, is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
      * 验证是否不在某个范围
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function notin($value, $rule)
+    protected function notIn($value, $rule)
     {
         return !in_array($value, is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
      * between验证数据
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function between($value, $rule)
+    protected function between($value, $rule)
     {
         if (is_string($rule)) {
             $rule = explode(',', $rule);
@@ -598,12 +598,12 @@ class Validate
 
     /**
      * 使用notbetween验证数据
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function notbetween($value, $rule)
+    protected function notBetween($value, $rule)
     {
         if (is_string($rule)) {
             $rule = explode(',', $rule);
@@ -614,12 +614,12 @@ class Validate
 
     /**
      * 验证数据长度
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function length($value, $rule)
+    protected function length($value, $rule)
     {
         $length = strlen((string) $value); // 当前数据长度
         if (strpos($rule, ',')) {
@@ -634,12 +634,12 @@ class Validate
 
     /**
      * 验证数据最大长度
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function max($value, $rule)
+    protected function max($value, $rule)
     {
         $length = strlen((string) $value);
         return $length <= $rule;
@@ -647,12 +647,12 @@ class Validate
 
     /**
      * 验证数据最小长度
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function min($value, $rule)
+    protected function min($value, $rule)
     {
         $length = strlen((string) $value);
         return $length >= $rule;
@@ -660,36 +660,36 @@ class Validate
 
     /**
      * 验证日期
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function after($value, $rule)
+    protected function after($value, $rule)
     {
         return strtotime($value) >= strtotime($rule);
     }
 
     /**
      * 验证日期
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function before($value, $rule)
+    protected function before($value, $rule)
     {
         return strtotime($value) <= strtotime($rule);
     }
 
     /**
      * 验证有效期
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
      * @return bool
      */
-    public function expire($value, $rule)
+    protected function expire($value, $rule)
     {
         if (is_string($rule)) {
             $rule = explode(',', $rule);
@@ -707,36 +707,36 @@ class Validate
 
     /**
      * 验证IP许可
-     * @access public
+     * @access protected
      * @param string $value  字段值
      * @param mixed $rule  验证规则
      * @return mixed
      */
-    public function allow_ip($value, $rule)
+    protected function allowIp($value, $rule)
     {
         return in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
      * 验证IP禁用
-     * @access public
+     * @access protected
      * @param string $value  字段值
      * @param mixed $rule  验证规则
      * @return mixed
      */
-    public function deny_ip($value, $rule)
+    protected function denyIp($value, $rule)
     {
         return !in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
      * 使用正则验证数据
-     * @access public
+     * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则 正则规则或者预定义正则名
      * @return mixed
      */
-    public function regex($value, $rule)
+    protected function regex($value, $rule)
     {
         if (isset($this->regex[$rule])) {
             $rule = $this->regex[$rule];

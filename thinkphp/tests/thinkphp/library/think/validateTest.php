@@ -47,11 +47,11 @@ class validateTest extends \PHPUnit_Framework_TestCase
     public function testRule()
     {
         $rule = [
-            'name'       => 'require|alpha_num|max:25',
-            'account'    => 'alpha_dash|min:4|length:4,30',
+            'name'       => 'require|alphaNum|max:25',
+            'account'    => 'alphaDash|min:4|length:4,30',
             'age'        => 'number|between:1,120',
             'email'      => 'email',
-            'url'        => 'active_url',
+            'url'        => 'activeUrl',
             'ip'         => 'ip',
             'score'      => 'float|gt:60',
             'status'     => 'integer|in:0,1,2',
@@ -85,7 +85,7 @@ class validateTest extends \PHPUnit_Framework_TestCase
         $validate->rule('zip', '/^\d{6}$/');
         $validate->rule([
             'ok'   => 'require|accepted',
-            'date' => 'date|date_format:y-m-d',
+            'date' => 'date|dateFormat:y-m-d',
         ]);
         $result = $validate->batch()->check($data);
         $this->assertEquals(true, $result);
