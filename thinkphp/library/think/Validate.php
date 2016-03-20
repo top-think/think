@@ -114,7 +114,7 @@ class Validate
      * @param array $rules 验证规则
      * @param array $message 验证提示信息
      * @param array $config 验证参数
-     * @return object
+     * @return Validate
      */
     public static function make($rules = [], $message = [], $config = [])
     {
@@ -129,7 +129,7 @@ class Validate
      * @access protected
      * @param string|array $name  字段名称或者规则数组
      * @param mixed $rule  验证规则
-     * @return void
+     * @return Validate
      */
     public function rule($name, $rule = '')
     {
@@ -146,7 +146,7 @@ class Validate
      * @access public
      * @param string $type  验证规则类型
      * @param mixed $callback callback方法(或闭包)
-     * @return void
+     * @return Validate
      */
     public function extend($type, $callback = null)
     {
@@ -163,7 +163,7 @@ class Validate
      * @access public
      * @param string|array $name  字段名称
      * @param string $message 提示信息
-     * @return void
+     * @return Validate
      */
     public function message($name, $message = '')
     {
@@ -176,11 +176,28 @@ class Validate
     }
 
     /**
+     * 获取验证规则的默认提示信息
+     * @access protected
+     * @param string|array $type  验证规则类型名称或者数组
+     * @param string $msg  验证提示信息
+     * @return Validate
+     */
+    public function setTypeMsg($type, $msg = null)
+    {
+        if (is_array($type)) {
+            $this->typeMsg = array_merge($this->typeMsg, $type);
+        } else {
+            $this->typeMsg[$type] = $msg;
+        }
+        return $this;
+    }
+
+    /**
      * 传入验证参数
      * @access public
      * @param string|array $name  参数名或者数组
      * @param mixed $value 参数值
-     * @return void
+     * @return Validate
      */
     public function config($name, $value = null)
     {
@@ -197,7 +214,7 @@ class Validate
      * @access public
      * @param string $name  场景名
      * @param mixed $fields 要验证的字段
-     * @return void
+     * @return Validate
      */
     public function scene($name, $fields = null)
     {
@@ -215,7 +232,7 @@ class Validate
      * 设置批量验证
      * @access public
      * @param bool $batch  是否批量验证
-     * @return void
+     * @return Validate
      */
     public function batch($batch = true)
     {
@@ -817,7 +834,9 @@ class Validate
     /**
      * 获取验证规则的默认提示信息
      * @access protected
-     * @param string $type  验证规则
+     * @param string $attribute  字段名称
+     * @param string $type  验证类型名称
+     * @param mixed $rule  验证规则
      * @return string
      */
     protected function getTypeMsg($attribute, $type, $rule)
