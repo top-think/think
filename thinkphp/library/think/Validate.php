@@ -32,40 +32,40 @@ class Validate
 
     // 验证规则默认提示信息
     protected $typeMsg = [
-        'require'    => ':attribute必须填写',
-        'number'     => ':attribute必须是数字',
-        'float'      => ':attribute必须是浮点数',
-        'boolean'    => ':attribute必须是布尔值',
-        'email'      => ':attribute格式不符',
-        'array'      => ':attribute必须是数组',
-        'accepted'   => ':attribute必须是yes、on或者1',
-        'date'       => ':attribute格式不符合',
-        'alpha'      => ':attribute只能是字母',
-        'alphaNum'   => ':attribute只能是字母和数字',
-        'alphaDash'  => ':attribute只能是字母、数字和下划线_及破折号-',
-        'activeUrl'  => ':attribute必须是有效的域名或者IP',
-        'url'        => ':attribute必须是有效的URL地址',
-        'ip'         => ':attribute不是有效的IP地址',
-        'dateFormat' => ':attribute不符合日期格式 :rule',
-        'in'         => ':attribute必须在 :rule 范围内',
-        'notIn'      => ':attribute不能在 :rule 范围内',
-        'between'    => ':attribute只能在 :1 - :2 之间',
-        'notBetween' => ':attribute不能在 :1 - :2 之间',
-        'length'     => ':attribute长度不符合要求 :rule',
-        'max'        => ':attribute长度不能超过 :rule',
-        'min'        => ':attribute长度不能小于 :rule',
-        'after'      => ':attribute日期不能小于 :rule',
-        'before'     => ':attribute日期不能超过 :rule',
-        'expire'     => ':attribute不在有效期内 :rule',
+        'require'    => '必须填写',
+        'number'     => '必须是数字',
+        'float'      => '必须是浮点数',
+        'boolean'    => '必须是布尔值',
+        'email'      => '格式不符',
+        'array'      => '必须是数组',
+        'accepted'   => '必须是yes、on或者1',
+        'date'       => '格式不符合',
+        'alpha'      => '只能是字母',
+        'alphaNum'   => '只能是字母和数字',
+        'alphaDash'  => '只能是字母、数字和下划线_及破折号-',
+        'activeUrl'  => '必须是有效的域名或者IP',
+        'url'        => '必须是有效的URL地址',
+        'ip'         => '不是有效的IP地址',
+        'dateFormat' => '不符合日期格式 :rule',
+        'in'         => '必须在 :rule 范围内',
+        'notIn'      => '不能在 :rule 范围内',
+        'between'    => '只能在 :1 - :2 之间',
+        'notBetween' => '不能在 :1 - :2 之间',
+        'length'     => '长度不符合要求 :rule',
+        'max'        => '长度不能超过 :rule',
+        'min'        => '长度不能小于 :rule',
+        'after'      => '日期不能小于 :rule',
+        'before'     => '日期不能超过 :rule',
+        'expire'     => '不在有效期内 :rule',
         'allowIp'    => '不允许的IP访问',
         'denyIp'     => '禁止的IP访问',
-        'confirm'    => ':attribute和字段 :rule 不一致',
-        'egt'        => ':attribute必须大于等于 :rule',
-        'gt'         => ':attribute必须大于 :rule',
-        'elt'        => ':attribute必须小于等于 :rule',
-        'lt'         => ':attribute必须小于 :rule',
-        'eq'         => ':attribute必须等于 :rule',
-        'unique'     => ':attribute必须在 :1 中唯一',
+        'confirm'    => '和字段 :rule 不一致',
+        'egt'        => '必须大于等于 :rule',
+        'gt'         => '必须大于 :rule',
+        'elt'        => '必须小于等于 :rule',
+        'lt'         => '必须小于 :rule',
+        'eq'         => '必须等于 :rule',
+        'unique'     => '必须在 :1 中唯一',
     ];
     // 当前验证场景
     protected $scene = null;
@@ -847,12 +847,12 @@ class Validate
             } else {
                 $array = array_pad([], 3, '');
             }
-            return str_replace(
+            return (false === strpos($this->typeMsg[$type], ':attribute') ? $attribute : '') . str_replace(
                 [':rule', ':attribute', ':1', ':2', ':3'],
                 [(string) $rule, $attribute, $array[0], $array[1], $array[2]],
                 $this->typeMsg[$type]);
         } else {
-            return '规则错误';
+            return $attribute . '规则错误';
         }
     }
 
