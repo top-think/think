@@ -485,19 +485,23 @@ class Validate
      * 验证是否唯一
      * @access protected
      * @param mixed $value  字段值
-     * @param mixed $rule  验证规则 格式：数据表,字段名,排除ID,主键名
+     * @param mixed $rule  验证规则 格式：数据表,字段名,排除ID
      * @param array $data  数据
      * @return bool
      */
-    protected function unique($value, $rule, $data, $key)
+    protected function unique($value, $rule, $data)
     {
-        $rule        = explode(',', $rule);
-        $model       = Loader::table($rule[0]);
-        $field       = isset($rule[1]) ? $rule[1] : $key;
-        $except      = isset($rule[2]) ? $rule[2] : null;
-        $pk          = isset($rule[3]) ? $rule[3] : 'id';
+        $rule  = explode(',', $rule);
+        $model = Loader::table($rule[0]);
+        $pk    = $model->getPk();
+        $field = isset($rule[1]) ? $rule[1] : $key;
+        if (isset($rule[2])) {
+            $except = $rule[2];
+        } elseif (isset($data[$pk])) {
+            $except = $data[$pk];
+        }
         $map[$field] = $value;
-        if (!is_null($except)) {
+        if (isset($except)) {
             $map[$pk] = ['neq', $except];
         }
         if ($model->where($map)->find()) {
