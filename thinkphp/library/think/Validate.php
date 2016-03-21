@@ -256,9 +256,14 @@ class Validate
                 $title = $key;
             }
             // 场景检测
-            if (!empty($scene) && !in_array($key, $scene)) {
-                continue;
+            if (!empty($scene)) {
+                if ($scene instanceof \Closure && call_user_func_array($scene, [$key, &$data])) {
+                    continue;
+                } elseif (is_array($scene) && !in_array($key, $scene)) {
+                    continue;
+                }
             }
+
             // 获取数据 支持二维数组
             $value = $this->getDataValue($data, $key);
 
