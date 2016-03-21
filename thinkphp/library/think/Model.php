@@ -109,7 +109,7 @@ class Model
     }
 
     /**
-     * instance
+     * 单例 便于调用
      *
      * @access public
      * @param string $name 模型名称
