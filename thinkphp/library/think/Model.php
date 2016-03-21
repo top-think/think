@@ -56,6 +56,8 @@ class Model
     protected $map = [];
     // 字段验证规则定义
     protected $rule = [];
+    // 单例
+    protected static $_instance=[];
 
     /**
      * 架构函数
@@ -106,6 +108,26 @@ class Model
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
         $this->db(0, $this->connection);
+    }
+
+    /**
+     * instance
+     *
+     * @access public
+     * @param string $name 模型名称
+     * @param array $config 模型配置
+     *
+     * @return static
+     */
+    public static function instance($name = '', array $config = [])
+    {
+        $key      = static::class . '_' . serialize(func_get_args());
+        $instance = isset(static::$_instance[$key]) ? static::$_instance[$key] : null;
+        if (!$instance instanceof static) {
+            $instance                = new static($name, $config);
+            static::$_instance[$key] = $instance;
+        }
+        return $instance;
     }
 
     /**

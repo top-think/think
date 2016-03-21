@@ -43,10 +43,9 @@ class Response
             'text'   => 'text/plain',
         ];
 
-        if (!headers_sent() && !headers_list() && isset($headers[$type])) {
+        if (!headers_sent()  && isset($headers[$type])) {
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
-
         $data = $data ?: self::$data;
         if (is_callable(self::$tramsform)) {
             $data = call_user_func_array(self::$tramsform, [$data]);

@@ -719,6 +719,15 @@ class Cx extends Taglib
         $vars   = isset($tag['vars']) ? $tag['vars'] : '';
         $suffix = isset($tag['suffix']) ? $tag['suffix'] : 'true';
         $domain = isset($tag['domain']) ? $tag['domain'] : 'false';
+        foreach($tag as $k=>$v){
+            if(!in_array($k,['link','vars','suffix','false'])){
+                $flag  = substr($v, 0, 1);
+                if ('$' == $flag || ':' == $flag) {
+                    $v = '".'.$this->autoBuildVar($v).'."';
+                }
+                $vars.="{$k}={$v}";
+            }
+        }
         return '<?php echo U("' . $url . '","' . $vars . '",' . $suffix . ',' . $domain . ');?>';
     }
 }
