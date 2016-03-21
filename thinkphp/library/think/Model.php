@@ -989,7 +989,7 @@ class Model
         if (!empty($this->options['validate'])) {
             $info = $this->options['validate'];
             if (is_array($info)) {
-                $validate = Loader::validate();
+                $validate = Loader::validate(Config::get('default_validate'));
                 $validate->rule($info['rule']);
                 $validate->message($info['msg']);
             } else {

@@ -147,17 +147,20 @@ class Controller
      * @param array $data 数据
      * @param string|array $validate 验证器名或者验证规则数组
      * @param array $message 提示信息
+     * @param mixed $callback 回调方法（闭包）
      * @return void
      */
-    public function validate($data, $validate, $message = [])
+    public function validate($data, $validate, $message = [], $callback = null)
     {
         if (is_array($validate)) {
-            $v = Loader::validate();
+            $v = Loader::validate(Config::get('default_validate'));
             $v->rule($validate);
         } else {
             $v = Loader::validate($validate);
         }
-
+        if (is_callable($callback)) {
+            call_user_func_array($callback, [$v, &$data]);
+        }
         if (is_array($message)) {
             $v->message($message);
         }
