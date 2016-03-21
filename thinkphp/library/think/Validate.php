@@ -301,7 +301,7 @@ class Validate
      * @param array $data  数据
      * @param string $title  字段描述
      * @param array $msg  提示信息
-     * @return string|true
+     * @return mixed
      */
     protected function checkItem($field, $value, $rules, &$data, $title = '', $msg = [])
     {
@@ -313,8 +313,7 @@ class Validate
             if (is_string($rules)) {
                 $rules = explode('|', $rules);
             }
-            $error = [];
-            $i     = 0;
+            $i = 0;
             foreach ($rules as $key => $rule) {
                 if ($rule instanceof \Closure) {
                     $result = call_user_func_array($rule, [$value, &$data]);
@@ -344,22 +343,20 @@ class Validate
 
                 if (false === $result) {
                     // 验证失败 返回错误信息
-                    $message = isset($msg[$i]) ? $msg[$i] : null;
-                    $error[] = $this->getRuleMsg($field, $title, $info, $rule, $message);
-                } elseif (is_string($result)) {
-                    $error[] = $result;
-                } elseif (is_array($result)) {
-                    // 自定义错误信息数组
+                    if (isset($msg[$i])) {
+                        $message = $msg[$i];
+                    } else {
+                        $message = $this->getRuleMsg($field, $title, $info, $rule);
+                    }
+                    return $message;
+                } elseif (true !== $result) {
+                    // 返回自定义错误信息
                     return $result;
                 }
                 $i++;
             }
-            if (!empty($error)) {
-                $result = implode(',', $error);
-            }
         }
-        // 验证失败返回错误信息
-        return $result;
+        return true !== $result ? $result : true;
     }
 
     /**
@@ -544,7 +541,19 @@ class Validate
         } elseif (isset($data[$key])) {
             $except = $data[$key];
         }
-        $map[$field] = $value;
+
+        if (strpos($field, '|')) {
+            // 支持多个字段验证
+            $fields = explode('|', $field);
+            foreach ($fields as $field) {
+                $map[$field] = $data[$field];
+            }
+        } elseif (strpos($field, '=')) {
+            parse_str($field, $map);
+        } else {
+            $map[$field] = $data[$field];
+        }
+
         if (isset($except)) {
             $map[$key] = ['neq', $except];
         }
@@ -846,14 +855,11 @@ class Validate
      * @param string $title  字段描述名
      * @param string $type  验证规则名称
      * @param mixed $rule  验证规则数据
-     * @param string $message  自定义提示信息
      * @return string
      */
-    protected function getRuleMsg($attribute, $title, $type, $rule, $message)
+    protected function getRuleMsg($attribute, $title, $type, $rule)
     {
-        if (!is_null($message)) {
-            $msg = $message;
-        } elseif (isset($this->message[$attribute . '.' . $type])) {
+        if (isset($this->message[$attribute . '.' . $type])) {
             $msg = $this->message[$attribute . '.' . $type];
         } elseif (isset($this->message[$attribute])) {
             $msg = $this->message[$attribute];
@@ -863,8 +869,7 @@ class Validate
             $msg = $title . '规则错误';
         }
         // TODO 多语言支持
-
-        if (false !== strpos($msg, ':')) {
+        if (is_string($msg) && false !== strpos($msg, ':')) {
             // 变量替换
             if (strpos($rule, ',')) {
                 $array = array_pad(explode(',', $rule), 3, '');
