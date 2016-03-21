@@ -244,7 +244,11 @@ class Validate
                 // [field,rule1|rule2,msg1|msg2]
                 $key  = $item[0];
                 $rule = $item[1];
-                $msg  = isset($item[2]) ? explode('|', $item[2]) : [];
+                if (isset($item[2])) {
+                    $msg = is_string($item[2]) ? explode('|', $item[2]) : $item[2];
+                } else {
+                    $msg = [];
+                }
             } else {
                 $rule = $item;
                 $msg  = [];
