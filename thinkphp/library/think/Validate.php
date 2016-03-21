@@ -208,8 +208,8 @@ class Validate
      */
     public function scene($name, $fields = null)
     {
-        if(is_array($name){
-            $this->scene = array_merge($this->scene,$name);
+        if (is_array($name)) {
+            $this->scene = array_merge($this->scene, $name);
         }if (is_null($fields)) {
             // 设置当前场景
             $this->currentScene = $name;
