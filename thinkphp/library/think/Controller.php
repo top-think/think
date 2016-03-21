@@ -156,13 +156,22 @@ class Controller
             $v = Loader::validate(Config::get('default_validate'));
             $v->rule($validate);
         } else {
+            if (strpos($validate, '.')) {
+                // 支持场景
+                list($validate, $scene) = explode('.', $validate);
+            }
             $v = Loader::validate($validate);
+            if (!empty($scene)) {
+                $v->scene($scene);
+            }
         }
-        if (is_callable($callback)) {
-            call_user_func_array($callback, [$v, &$data]);
-        }
+
         if (is_array($message)) {
             $v->message($message);
+        }
+
+        if (is_callable($callback)) {
+            call_user_func_array($callback, [$v, &$data]);
         }
 
         if (!$v->check($data)) {

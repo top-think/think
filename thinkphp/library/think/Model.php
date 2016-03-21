@@ -993,8 +993,14 @@ class Model
                 $validate->rule($info['rule']);
                 $validate->message($info['msg']);
             } else {
-                $name     = is_string($info) ? $info : $this->name;
+                $name = is_string($info) ? $info : $this->name;
+                if (strpos($name, '.')) {
+                    list($name, $scene) = explode('.', $name);
+                }
                 $validate = Loader::validate($name);
+                if (!empty($scene)) {
+                    $validate->scene($scene);
+                }
             }
             if (!$validate->check($data)) {
                 $this->error = $validate->getError();
