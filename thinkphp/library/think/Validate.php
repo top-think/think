@@ -257,7 +257,7 @@ class Validate
             }
             // 场景检测
             if (!empty($scene)) {
-                if ($scene instanceof \Closure && call_user_func_array($scene, [$key, &$data])) {
+                if ($scene instanceof \Closure && !call_user_func_array($scene, [$key, &$data])) {
                     continue;
                 } elseif (is_array($scene) && !in_array($key, $scene)) {
                     continue;
