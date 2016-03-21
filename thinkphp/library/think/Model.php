@@ -54,8 +54,6 @@ class Model
     protected $scope = [];
     // 字段映射定义
     protected $map = [];
-    // 字段验证规则定义
-    protected $rule = [];
 
     /**
      * 架构函数

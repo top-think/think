@@ -70,20 +70,14 @@ class Validate
     ];
 
     // 当前验证场景
-    protected $scene = null;
+    protected $currentScene = null;
 
     // 正则表达式 regex = ['zip'=>'\d{6}',...]
     protected $regex = [];
 
-    // 验证参数
-    protected $config = [
-        // 有值才验证 value_validate = [name1,name2,...]
-        'value_validate'  => [],
-        // 存在就验证 exists_validate = [name1,name2,...]
-        'exists_validate' => [],
-        // 验证场景 scene = ['edit'=>'name1,name2,...']
-        'scene'           => [],
-    ];
+    // 验证场景 scene = ['edit'=>'name1,name2,...']
+    protected $scene = [];
+
     // 验证失败错误信息
     protected $error = [];
 
@@ -102,12 +96,6 @@ class Validate
         $this->rule    = array_merge($this->rule, $rules);
         $this->message = array_merge($this->message, $message);
         $this->config  = array_merge($this->config, $config);
-        if (is_string($this->config['value_validate'])) {
-            $this->config['value_validate'] = explode(',', $this->config['value_validate']);
-        }
-        if (is_string($this->config['exists_validate'])) {
-            $this->config['exists_validate'] = explode(',', $this->config['exists_validate']);
-        }
     }
 
     /**
@@ -214,18 +202,20 @@ class Validate
     /**
      * 设置验证场景
      * @access public
-     * @param string $name  场景名
+     * @param string|array $name  场景名或者场景设置数组
      * @param mixed $fields 要验证的字段
      * @return Validate
      */
     public function scene($name, $fields = null)
     {
-        if (is_null($fields)) {
+        if(is_array($name){
+            $this->scene = array_merge($this->scene,$name);
+        }if (is_null($fields)) {
             // 设置当前场景
-            $this->scene = $name;
+            $this->currentScene = $name;
         } else {
             // 设置验证场景
-            $this->config['scene'][$name] = $fields;
+            $this->scene[$name] = $fields;
         }
         return $this;
     }
@@ -267,9 +257,19 @@ class Validate
             unset($rules['__message__']);
         }
 
-        foreach ($rules as $key => $rule) {
+        foreach ($rules as $key => $item) {
+            // field => rule1|rule2... field=>['rule1','rule2',...]
+            if (is_numeric($key)) {
+                // [field,rule1|rule2,msg1|msg2]
+                $key  = $item[0];
+                $rule = $item[1];
+                $msg  = isset($item[2]) ? explode('|', $item[2]) : [];
+            } else {
+                $rule = $item;
+                $msg  = [];
+            }
             if (strpos($key, '|')) {
-                // 支持 字段|描述 用于返回默认错误
+                // 字段|描述 用于指定属性名称
                 list($key, $title) = explode('|', $key);
             } else {
                 $title = $key;
@@ -281,14 +281,8 @@ class Validate
             // 获取数据 支持二维数组
             $value = $this->getDataValue($data, $key);
 
-            if ((isset($this->config['value_validate']) && in_array($key, $this->config['value_validate']) && '' == $value)
-                || (isset($this->config['exists_validate']) && in_array($key, $this->config['exists_validate']) && is_null($value))) {
-                // 不满足自动验证条件
-                continue;
-            }
-
-            // 验证字段规则
-            $result = $this->checkItem($key, $value, $rule, $data, $title);
+            // 字段验证
+            $result = $this->checkItem($key, $value, $rule, $data, $title, $msg);
 
             if (true !== $result) {
                 // 没有返回true 则表示验证失败
@@ -316,9 +310,10 @@ class Validate
      * @param mixed $rules  验证规则
      * @param array $data  数据
      * @param string $title  字段描述
+     * @param array $msg  提示信息
      * @return string|true
      */
-    protected function checkItem($field, $value, $rules, &$data, $title = '')
+    protected function checkItem($field, $value, $rules, &$data, $title = '', $msg = [])
     {
         if ($rules instanceof \Closure) {
             // 匿名函数验证 支持传入当前字段和所有字段两个数据
@@ -329,6 +324,7 @@ class Validate
                 $rules = explode('|', $rules);
             }
             $error = [];
+            $i     = 0;
             foreach ($rules as $key => $rule) {
                 if ($rule instanceof \Closure) {
                     $result = call_user_func_array($rule, [$value, &$data]);
@@ -347,18 +343,23 @@ class Validate
                     } else {
                         $info = $type = $key;
                     }
-                    // 验证类型
-                    $callback = isset($this->type[$type]) ? $this->type[$type] : [$this, $type];
-                    // 验证数据
-                    $result = call_user_func_array($callback, [$value, $rule, &$data, $field]);
+                    // 如果不是require 有数据才会行验证
+                    if (0 === strpos($info, 'require') || !empty($value)) {
+                        // 验证类型
+                        $callback = isset($this->type[$type]) ? $this->type[$type] : [$this, $type];
+                        // 验证数据
+                        $result = call_user_func_array($callback, [$value, $rule, &$data, $field]);
+                    }
                 }
 
                 if (false === $result) {
                     // 验证失败 返回错误信息
-                    if (isset($this->message[$field . '.' . $info])) {
+                    if (isset($msg[$i])) {
+                        $error[] = $msg[$i];
+                    } elseif (isset($this->message[$field . '.' . $info])) {
                         $error[] = $this->message[$field . '.' . $info];
-                    } elseif (isset($this->message[$field . '.'])) {
-                        $error[] = $this->message[$field . '.'];
+                    } elseif (isset($this->message[$field])) {
+                        $error[] = $this->message[$field];
                     } else {
                         $error[] = $this->getTypeMsg($title ?: $field, $info, $rule);
                     }
@@ -368,6 +369,7 @@ class Validate
                     // 自定义错误信息数组
                     return $result;
                 }
+                $i++;
             }
             if (!empty($error)) {
                 $result = implode(',', $error);
@@ -548,7 +550,9 @@ class Validate
      */
     protected function unique($value, $rule, $data, $field)
     {
-        $rule  = explode(',', $rule);
+        if (is_string($rule)) {
+            $rule = explode(',', $rule);
+        }
         $model = Loader::table($rule[0]);
         $key   = isset($rule[3]) ? $rule[3] : $model->getPk();
         $field = isset($rule[1]) ? $rule[1] : $field;
@@ -600,7 +604,7 @@ class Validate
     }
 
     /**
-     * 验证某个字段的值等于某个值的时候必须
+     * 验证某个字段等于某个值的时候必须
      * @access protected
      * @param mixed $value  字段值
      * @param mixed $rule  验证规则
@@ -611,6 +615,24 @@ class Validate
     {
         list($field, $val) = explode(',', $rule);
         if ($this->getDataValue($data, $field) == $val) {
+            return !empty($value);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 验证某个字段有值的情况下必须
+     * @access protected
+     * @param mixed $value  字段值
+     * @param mixed $rule  验证规则
+     * @param array $data  数据
+     * @return bool
+     */
+    protected function requireWith($value, $rule, $data)
+    {
+        $val = $this->getDataValue($data, $rule);
+        if (!empty($val)) {
             return !empty($value);
         } else {
             return true;
@@ -869,12 +891,12 @@ class Validate
     {
         if (empty($scene)) {
             // 读取指定场景
-            $scene = $this->scene;
+            $scene = $this->currentScene;
         }
 
-        if (!empty($scene) && isset($this->config['scene'][$scene])) {
+        if (!empty($scene) && isset($this->scene[$scene])) {
             // 如果设置了验证适用场景
-            $scene = $this->config['scene'][$scene];
+            $scene = $this->scene[$scene];
             if (is_string($scene)) {
                 $scene = explode(',', $scene);
             }
