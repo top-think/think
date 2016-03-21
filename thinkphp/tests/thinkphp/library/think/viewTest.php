@@ -80,7 +80,7 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals('php', 'engine', $view_instance);
         //测试模板引擎驱动
         $data         = $view_instance->engine('think');
-        $think_engine = new \think\view\driver\Think;
+        $think_engine = new \think\view\driver\Think(['view_path' => 'view_path']);
         $this->assertAttributeEquals($think_engine, 'engine', $view_instance);
     }
 
@@ -100,7 +100,6 @@ class viewTest extends \PHPUnit_Framework_TestCase
         $config_value = $property->getValue($view_instance);
 
         $this->assertTrue($config_value['theme_on']);
-        $this->assertTrue($config_value['auto_detect_theme']);
 
         //关闭主题测试
         $data         = $view_instance->theme(false);
@@ -122,26 +121,16 @@ class viewTest extends \PHPUnit_Framework_TestCase
     public function testParseTemplate()
     {
         $view_instance = \think\View::instance();
-        $method        = new \ReflectionMethod('\think\View', 'ParseTemplate');
+        $view_instance->theme('theme');
+        $view_instance->config(['view_path' => __DIR__ . DS . 'view' . DS]);
+        $method = new \ReflectionMethod('\think\View', 'ParseTemplate');
         $method->setAccessible(true);
         if (defined('CONTROLLER_NAME')) {
-            $expect_data = DS . 'theme_name' . DS . CONTROLLER_NAME . DS . 'template_name.html';
+            $expect_data = __DIR__ . DS . 'view' . DS . 'theme' . DS . CONTROLLER_NAME . DS . 'template.html';
         } else {
-            $expect_data = DS . 'theme_name' . DS . 'template_name.html';
+            $expect_data = __DIR__ . DS . 'view' . DS . 'theme' . DS . 'template.html';
         }
-        $this->assertEquals($expect_data, $method->invoke($view_instance, 'template_name'));
+        $this->assertEquals($expect_data, $method->invoke($view_instance, 'template'));
     }
 
-    /**
-     *  测试引擎设置
-     * @return  mixed
-     * @access public
-     */
-    public function testGetThemePath()
-    {
-        $view_instance = \think\View::instance();
-        $method        = new \ReflectionMethod('\think\View', 'getThemePath');
-        $method->setAccessible(true);
-        $this->assertEquals(DS . 'theme_name' . DS, $method->invoke($view_instance));
-    }
 }

@@ -217,6 +217,16 @@ EOF;
         $this->assertEquals($data, $content);
 
         $content = <<<EOF
+<#\$info.a?='test'#>
+EOF;
+        $data = <<<EOF
+<?php if((is_array(\$info)?\$info['a']:\$info->a)) echo 'test'; ?>
+EOF;
+
+        $template->parse($content);
+        $this->assertEquals($data, $content);
+
+        $content = <<<EOF
 <#\$info.a==\$info.b?='test'#>
 EOF;
         $data = <<<EOF
@@ -309,11 +319,13 @@ EOF;
         $template = new Template();
         $template->assign('name', 'name');
         $config = [
-            'strip_space' => true,
-            'view_path'   => dirname(__FILE__) . '/',
+            'strip_space'  => true,
+            'view_path'    => dirname(__FILE__) . '/',
+            'cache_id'     => '__CACHE_ID__',
+            'display_cache'=> true
         ];
         $data = ['name' => 'value'];
-        $template->display('display', $data, $config);
+        $template->layout('layout')->display('display', $data, $config);
         $this->expectOutputString('value');
     }
 
@@ -332,17 +344,29 @@ EOF;
 
         $content = <<<EOF
 {extend name="\$files.extend" /}
+{block name="main"}
+main
 {block name="side"}
+{__BLOCK__}
     {include file="\$files.include" name="\$user.name" value="\$user.account" /}
     {\$message}{literal}{\$message}{/literal}
+{/block}
+{block name="mainbody"}
+    mainbody
+{/block}
 {/block}
 EOF;
         $content2 = <<<EOF
 <nav>
-<div>
+header
+<div id="wrap">
     <input name="info" value="value">
 value:
 
+main
+
+
+    side
 
     <input name="name" value="100">
 value:
@@ -360,6 +384,8 @@ value:
 EOF;
         $template->fetch($content);
         $this->expectOutputString($content2);
+//        $template->parse($content);
+//        var_dump($content);
     }
 
     public function testVarAssign()
@@ -376,5 +402,13 @@ EOF;
         $data     = ['a' => 'a', 'b' => 'b'];
         $template->assign($data);
         $this->assertEquals($data, $template->get());
+    }
+
+    public function testIsCache()
+    {
+        $template = new Template(['cache_id' => '__CACHE_ID__','display_cache' => true]);
+        $this->assertTrue(!$template->isCache('__CACHE_ID__'));
+        $template->display_cache = false;
+        $this->assertTrue(!$template->isCache('__CACHE_ID__'));
     }
 }

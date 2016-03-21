@@ -43,9 +43,10 @@ class Response
             'text'   => 'text/plain',
         ];
 
-        if (!headers_sent()  && isset($headers[$type])) {
+        if (!headers_sent() && isset($headers[$type])) {
             header('Content-Type:' . $headers[$type] . '; charset=utf-8');
         }
+
         $data = $data ?: self::$data;
         if (is_callable(self::$tramsform)) {
             $data = call_user_func_array(self::$tramsform, [$data]);
@@ -173,7 +174,7 @@ class Response
             'code' => $code,
             'msg'  => $msg,
             'data' => $data,
-            'url'  => is_null($url) ? $_SERVER["HTTP_REFERER"] : $url,
+            'url'  => is_null($url) && isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : $url,
             'wait' => $wait,
         ];
 
@@ -221,7 +222,7 @@ class Response
 
     /**
      * URL重定向
-     * @access protected
+     * @access public
      * @param string $url 跳转的URL表达式
      * @param array|int $params 其它URL参数或http code
      * @return void
@@ -239,7 +240,7 @@ class Response
 
     /**
      * 设置响应头
-     * @access protected
+     * @access public
      * @param string $name 参数名
      * @param string $value 参数值
      * @return void

@@ -13,7 +13,7 @@
 define('START_TIME', microtime(true));
 define('START_MEM', memory_get_usage());
 //  版本信息
-define('THINK_VERSION', '5.0.0 RC1');
+define('THINK_VERSION', '5.0.0 RC2');
 // 系统常量
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__) . DS);
@@ -34,6 +34,7 @@ defined('EXT') or define('EXT', '.php');
 defined('MODEL_LAYER') or define('MODEL_LAYER', 'model');
 defined('VIEW_LAYER') or define('VIEW_LAYER', 'view');
 defined('CONTROLLER_LAYER') or define('CONTROLLER_LAYER', 'controller');
+defined('VALIDATE_LAYER') or define('VALIDATE_LAYER', 'validate');
 defined('APP_MULTI_MODULE') or define('APP_MULTI_MODULE', true); // 是否多模块
 defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
 defined('APP_HOOK') or define('APP_HOOK', false); // 是否开启HOOK

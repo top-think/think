@@ -15,87 +15,145 @@
 
 namespace tests\thinkphp\library\think;
 
-use think\Config;
 use think\Validate;
 
 class validateTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testCheck()
+    {
+        $rule = [
+            'name'  => 'require|max:25',
+            'age'   => 'number|between:1,120',
+            'email' => 'email',
+        ];
+        $msg = [
+            'name.require' => '名称必须',
+            'name.max'     => '名称最多不能超过25个字符',
+            'age.number'   => '年龄必须是数字',
+            'age.between'  => '年龄只能在1-120之间',
+            'email'        => '邮箱格式错误',
+        ];
+        $data = [
+            'name'  => 'thinkphp',
+            'age'   => 10,
+            'email' => 'thinkphp@qq.com',
+        ];
+        $validate = new Validate($rule, $msg);
+        $result   = $validate->check($data);
+        $this->assertEquals(true, $result);
+    }
+
     public function testRule()
     {
-        Validate::rule('zip', '/^\d{6}$/');
-        Validate::rule([
-            'currency' => '/^\d+(\.\d+)?$/',
-            'number'   => '/^\d+$/',
-            'zip'      => '/^\d{6}$/',
+        $rule = [
+            'name'       => 'require|alphaNum|max:25',
+            'account'    => 'alphaDash|min:4|length:4,30',
+            'age'        => 'number|between:1,120',
+            'email'      => 'email',
+            'url'        => 'activeUrl',
+            'ip'         => 'ip',
+            'score'      => 'float|gt:60',
+            'status'     => 'integer|in:0,1,2',
+            'begin_time' => 'after:2016-3-18',
+            'end_time'   => 'before:2016-10-01',
+            'info'       => 'require|array',
+            'value'      => 'same:100',
+            'bool'       => 'boolean',
+
+        ];
+        $data = [
+            'name'       => 'thinkphp',
+            'account'    => 'liuchen',
+            'age'        => 10,
+            'email'      => 'thinkphp@qq.com',
+            'url'        => 'thinkphp.cn',
+            'ip'         => '114.34.54.5',
+            'score'      => '89.15',
+            'status'     => 1,
+            'begin_time' => '2016-3-20',
+            'end_time'   => '2016-5-1',
+            'info'       => [1, 2, 3],
+            'zip'        => '200000',
+            'date'       => '16-3-8',
+            'ok'         => 'yes',
+            'value'      => 100,
+            'bool'       => 'true',
+
+        ];
+        $validate = new Validate($rule);
+        $validate->rule('zip', '/^\d{6}$/');
+        $validate->rule([
+            'ok'   => 'require|accepted',
+            'date' => 'date|dateFormat:y-m-d',
+        ]);
+        $result = $validate->batch()->check($data);
+        $this->assertEquals(true, $result);
+    }
+
+    public function testMsg()
+    {
+        $validate = new Validate();
+        $validate->message('name.require', '名称必须');
+        $validate->message([
+            'name.require' => '名称必须',
+            'name.max'     => '名称最多不能超过25个字符',
+            'age.number'   => '年龄必须是数字',
+            'age.between'  => '年龄只能在1-120之间',
+            'email'        => '邮箱格式错误',
         ]);
     }
 
-    public function testCheck()
+    public function testMake()
     {
-        $data = [
-            'username'   => 'username',
-            'nickname'   => 'nickname',
-            'password'   => '123456',
-            'repassword' => '123456',
-            'mobile'     => '13800000000',
-            'email'      => 'abc@abc.com',
-            'sex'        => '0',
-            'age'        => '20',
-            'code'       => '1234',
-            'test'       => ['a' => 1, 'b' => 2],
+        $rule = [
+            'name'  => 'require|max:25',
+            'age'   => 'number|between:1,120',
+            'email' => 'email',
         ];
-
-        $validate = [
-            '__pattern__' => [
-                'mobile'  => '/^1(?:[358]\d|7[6-8])\d{8}$/',
-                'require' => '/.+/',
-            ],
-            '__all__'     => [
-                'code' => function ($value, $data) {
-                    return '1234' != $value ? 'code error' : true;
-                },
-            ],
-            'user'        => [
-                ['username', [ & $this, 'checkName'], '用户名长度为5到15个字符', 'callback', 'username'],
-                ['nickname', 'require', '请填昵称'],
-                'password'   => ['[\w-]{6,15}', '密码长度为6到15个字符'],
-                'repassword' => ['password', '两次密码不一到致', 'confirm'],
-                'mobile'     => ['mobile', '手机号错误'],
-                'email'      => ['validate_email', '邮箱格式错误', 'filter'],
-                'sex'        => ['0,1', '性别只能为为男或女', 'in'],
-                'age'        => ['1,80', '年龄只能在10-80之间', 'between'],
-                'test.a'     => ['number', 'a必须是数字'],
-                'test.b'     => ['1,3', '不能是1或者3', 'notin'],
-                '__option__' => [
-                    'scene'           => [
-                        'add'  => 'username,nickname,password,repassword,mobile,email,age,code',
-                        'edit' => 'nickname,password,repassword,mobile,email,sex,age,code',
-                    ],
-                    'value_validate'  => 'email',
-                    'exists_validate' => 'password,repassword,code',
-                ],
-            ],
+        $msg = [
+            'name.require' => '名称必须',
+            'name.max'     => '名称最多不能超过25个字符',
+            'age.number'   => '年龄必须是数字',
+            'age.between'  => '年龄只能在1-120之间',
+            'email'        => '邮箱格式错误',
         ];
-        Config::set('validate', $validate);
-        Validate::check($data, 'user.add');
-        $this->assertEquals([], Validate::getError());
-
-        unset($data['password'], $data['repassword']);
-        $data['email'] = '';
-        Validate::check($data, 'user.edit');
-        $this->assertEquals([], Validate::getError());
-
+        $validate = Validate::make($rule, $msg);
     }
 
-    public function checkName($value, $field)
+    public function testExtend()
     {
-        switch ($field) {
-            case 'username':
-                return !empty($value);
-            case 'mobile':
-                return 13 == strlen($value);
-        }
+        $validate = new Validate(['name' => 'check:1']);
+        $validate->extend('check', function ($value, $rule) {return $rule == $value ? true : false;});
+        $data   = ['name' => 1];
+        $result = $validate->check($data);
+        $this->assertEquals(true, $result);
+    }
+
+    public function testScene()
+    {
+        $rule = [
+            'name'  => 'require|max:25',
+            'age'   => 'number|between:1,120',
+            'email' => 'email',
+        ];
+        $msg = [
+            'name.require' => '名称必须',
+            'name.max'     => '名称最多不能超过25个字符',
+            'age.number'   => '年龄必须是数字',
+            'age.between'  => '年龄只能在1-120之间',
+            'email'        => '邮箱格式错误',
+        ];
+        $data = [
+            'name'  => 'thinkphp',
+            'age'   => 10,
+            'email' => 'thinkphp@qq.com',
+        ];
+        $validate = new Validate($rule);
+        $validate->scene('edit', ['name', 'age']);
+        $validate->scene('edit');
+        $result = $validate->check($data);
+        $this->assertEquals(true, $result);
     }
 
 }

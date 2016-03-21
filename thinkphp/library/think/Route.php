@@ -553,11 +553,11 @@ class Route
         if (false !== strpos($url, '?')) {
             // [模块/控制器/操作?]参数1=值1&参数2=值2...
             $info = parse_url($url);
-            $path = explode('/', $info['path'], 4);
+            $path = explode('/', $info['path'], APP_MULTI_MODULE ? 4 : 3);
             parse_str($info['query'], $var);
         } elseif (strpos($url, '/')) {
             // [模块/控制器/操作]
-            $path = explode('/', $url, 4);
+            $path = explode('/', $url, APP_MULTI_MODULE ? 4 : 3);
         } elseif (false !== strpos($url, '=')) {
             // 参数1=值1&参数2=值2...
             parse_str($url, $var);
@@ -567,7 +567,7 @@ class Route
         $route = [null, null, null];
         if (isset($path)) {
             // 解析path额外的参数
-            if (!empty($path[3])) {
+            if (!empty($path[APP_MULTI_MODULE ? 3 : 2])) {
                 preg_replace_callback('/([^\/]+)\/([^\/]+)/', function ($match) use (&$var) {
                     $var[strtolower($match[1])] = strip_tags($match[2]);
                 }, array_pop($path));

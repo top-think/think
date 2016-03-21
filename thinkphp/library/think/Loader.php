@@ -349,6 +349,42 @@ class Loader
     }
 
     /**
+     * 实例化验证类 格式：[模块名/]验证器名
+     * @param string $name 资源地址
+     * @param string $layer 验证层名称
+     * @return Object|false
+     */
+    public static function validate($name = '', $layer = '')
+    {
+        if (empty($name)) {
+            return new Validate;
+        }
+        static $_instance = [];
+        $layer            = $layer ?: VALIDATE_LAYER;
+        if (isset($_instance[$name . $layer])) {
+            return $_instance[$name . $layer];
+        }
+        if (strpos($name, '/')) {
+            list($module, $name) = explode('/', $name);
+        } else {
+            $module = APP_MULTI_MODULE ? MODULE_NAME : '';
+        }
+        $class = self::parseClass($module, $layer, $name);
+        if (class_exists($class)) {
+            $validate = new $class;
+        } else {
+            $class = str_replace('\\' . $module . '\\', '\\' . COMMON_MODULE . '\\', $class);
+            if (class_exists($class)) {
+                $validate = new $class;
+            } else {
+                throw new Exception('class [ ' . $class . ' ] not exists', 10001);
+            }
+        }
+        $_instance[$name . $layer] = $validate;
+        return $validate;
+    }
+
+    /**
      * 实例化数据库
      * @param mixed $config 数据库配置
      * @return object

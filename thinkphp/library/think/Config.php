@@ -73,14 +73,13 @@ class Config
     public static function has($name, $range = '')
     {
         $range = $range ?: self::$range;
-        $name  = strtolower($name);
 
         if (!strpos($name, '.')) {
-            return isset(self::$config[$range][$name]);
+            return isset(self::$config[$range][strtolower($name)]);
         } else {
             // 二维数组设置和获取支持
             $name = explode('.', $name);
-            return isset(self::$config[$range][$name[0]][$name[1]]);
+            return isset(self::$config[$range][strtolower($name[0])][$name[1]]);
         }
     }
 
@@ -98,12 +97,13 @@ class Config
         if (empty($name) && isset(self::$config[$range])) {
             return self::$config[$range];
         }
-        $name = strtolower($name);
+
         if (!strpos($name, '.')) {
             // 判断环境变量
             if (isset($_ENV[ENV_PREFIX . $name])) {
                 return $_ENV[ENV_PREFIX . $name];
             }
+            $name = strtolower($name);
             return isset(self::$config[$range][$name]) ? self::$config[$range][$name] : null;
         } else {
             // 二维数组设置和获取支持
@@ -112,6 +112,7 @@ class Config
             if (isset($_ENV[ENV_PREFIX . $name[0] . '_' . $name[1]])) {
                 return $_ENV[ENV_PREFIX . $name[0] . '_' . $name[1]];
             }
+            $name[0] = strtolower($name[0]);
             return isset(self::$config[$range][$name[0]][$name[1]]) ? self::$config[$range][$name[0]][$name[1]] : null;
         }
     }
@@ -131,25 +132,23 @@ class Config
             self::$config[$range] = [];
         }
         if (is_string($name)) {
-            $name = strtolower($name);
             if (!strpos($name, '.')) {
-                self::$config[$range][$name] = $value;
+                self::$config[$range][strtolower($name)] = $value;
             } else {
                 // 二维数组设置和获取支持
-                $name                                     = explode('.', $name);
-                self::$config[$range][$name[0]][$name[1]] = $value;
+                $name                                                 = explode('.', $name);
+                self::$config[$range][strtolower($name[0])][$name[1]] = $value;
             }
             return;
         } elseif (is_array($name)) {
             // 批量设置
-            $config = array_change_key_case($name);
             if (!empty($value)) {
                 self::$config[$range][$value] = isset(self::$config[$range][$value]) ?
-                array_merge(self::$config[$range][$value], $config) :
-                self::$config[$range][$value] = $config;
+                array_merge(self::$config[$range][$value], $name) :
+                self::$config[$range][$value] = $name;
                 return self::$config[$range][$value];
             } else {
-                return self::$config[$range] = array_merge(self::$config[$range], $config);
+                return self::$config[$range] = array_merge(self::$config[$range], array_change_key_case($name));
             }
         } else {
             // 为空直接返回 已有配置

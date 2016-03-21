@@ -11,7 +11,7 @@
 
 namespace think;
 
-T('controller/Jump');
+\think\Loader::import('controller/Jump', TRAIT_PATH, EXT);
 
 class Controller
 {
@@ -139,5 +139,45 @@ class Controller
     public function engine($engine, $config = [])
     {
         $this->view->engine($engine, $config);
+    }
+
+    /**
+     * 验证数据
+     * @access protected
+     * @param array $data 数据
+     * @param string|array $validate 验证器名或者验证规则数组
+     * @param array $message 提示信息
+     * @param mixed $callback 回调方法（闭包）
+     * @return void
+     */
+    public function validate($data, $validate, $message = [], $callback = null)
+    {
+        if (is_array($validate)) {
+            $v = Loader::validate(Config::get('default_validate'));
+            $v->rule($validate);
+        } else {
+            if (strpos($validate, '.')) {
+                // 支持场景
+                list($validate, $scene) = explode('.', $validate);
+            }
+            $v = Loader::validate($validate);
+            if (!empty($scene)) {
+                $v->scene($scene);
+            }
+        }
+
+        if (is_array($message)) {
+            $v->message($message);
+        }
+
+        if (is_callable($callback)) {
+            call_user_func_array($callback, [$v, &$data]);
+        }
+
+        if (!$v->check($data)) {
+            return $v->getError();
+        } else {
+            return true;
+        }
     }
 }

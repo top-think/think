@@ -52,6 +52,8 @@ return [
     'default_controller'     => 'Index',
     // 默认操作名
     'default_action'         => 'index',
+    // 默认验证器
+    'default_validate'       => '',
     // 默认的空控制器名
     'empty_controller'       => 'Error',
     // 操作方法后缀
@@ -99,8 +101,6 @@ return [
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
     'dispatch_error_tmpl'    => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
-    // 默认的模板引擎
-    'template_engine'        => 'Think',
 
     // +----------------------------------------------------------------------
     // | 异常及错误设置
@@ -123,7 +123,9 @@ return [
     // +----------------------------------------------------------------------
 
     'log'                    => [
-        'type' => 'File', // 支持 file socket trace sae
+        // 日志记录方式，支持 file socket trace sae
+        'type' => 'File',
+        // 日志保存目录
         'path' => LOG_PATH,
     ],
 
@@ -132,9 +134,13 @@ return [
     // +----------------------------------------------------------------------
 
     'cache'                  => [
+        // 驱动方式
         'type'   => 'File',
+        // 缓存保存目录
         'path'   => CACHE_PATH,
+        // 缓存前缀
         'prefix' => '',
+        // 缓存有效期 0表示永久缓存
         'expire' => 0,
     ],
 
@@ -144,9 +150,13 @@ return [
 
     'session'                => [
         'id'             => '',
-        'var_session_id' => '', // SESSION_ID的提交变量,解决flash上传跨域
+        // SESSION_ID的提交变量,解决flash上传跨域
+        'var_session_id' => '',
+        // SESSION 前缀
         'prefix'         => 'think',
+        // 驱动方式 支持redis memcache memcached
         'type'           => '',
+        // 是否自动开启 SESSION
         'auto_start'     => true,
     ],
 

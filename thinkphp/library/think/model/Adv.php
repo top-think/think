@@ -11,8 +11,8 @@
 
 namespace think\model;
 
-T('model/Adv');
-T('model/Transaction');
+\think\Loader::import('model/Adv', TRAIT_PATH, EXT);
+\think\Loader::import('model/Transaction', TRAIT_PATH, EXT);
 
 class Adv extends \think\Model
 {

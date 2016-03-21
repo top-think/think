@@ -54,10 +54,6 @@ class Model
     protected $scope = [];
     // 字段映射定义
     protected $map = [];
-    // 字段验证规则定义
-    protected $rule = [];
-    // 单例
-    protected static $_instance=[];
 
     /**
      * 架构函数
@@ -108,26 +104,6 @@ class Model
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
         $this->db(0, $this->connection);
-    }
-
-    /**
-     * instance
-     *
-     * @access public
-     * @param string $name 模型名称
-     * @param array $config 模型配置
-     *
-     * @return static
-     */
-    public static function instance($name = '', array $config = [])
-    {
-        $key      = static::class . '_' . serialize(func_get_args());
-        $instance = isset(static::$_instance[$key]) ? static::$_instance[$key] : null;
-        if (!$instance instanceof static) {
-            $instance                = new static($name, $config);
-            static::$_instance[$key] = $instance;
-        }
-        return $instance;
     }
 
     /**
@@ -1011,11 +987,23 @@ class Model
     protected function dataValidate(&$data)
     {
         if (!empty($this->options['validate'])) {
-            if (!empty($this->rule)) {
-                Validate::rule($this->rule);
+            $info = $this->options['validate'];
+            if (is_array($info)) {
+                $validate = Loader::validate(Config::get('default_validate'));
+                $validate->rule($info['rule']);
+                $validate->message($info['msg']);
+            } else {
+                $name = is_string($info) ? $info : $this->name;
+                if (strpos($name, '.')) {
+                    list($name, $scene) = explode('.', $name);
+                }
+                $validate = Loader::validate($name);
+                if (!empty($scene)) {
+                    $validate->scene($scene);
+                }
             }
-            if (!Validate::check($data, $this->options['validate'])) {
-                $this->error = Validate::getError();
+            if (!$validate->check($data)) {
+                $this->error = $validate->getError();
                 return false;
             }
             $this->options['validate'] = null;
@@ -1914,16 +1902,19 @@ class Model
     /**
      * 设置字段验证
      * @access public
-     * @param mixed $field 字段名或者验证规则 true表示自动读取
-     * @param array|null $rule 验证规则
+     * @param array|bool $rule 验证规则 true表示自动读取验证器类
+     * @param array $msg 提示信息
      * @return Model
      */
-    public function validate($field = true, $rule = null)
+    public function validate($rule = true, $msg = null)
     {
-        if (is_array($field) || is_null($rule)) {
-            $this->options['validate'] = true === $field ? $this->name : $field;
-        } else {
-            $this->options['validate'][$field] = $rule;
+        if (true === $rule) {
+            $this->options['validate'] = $this->name;
+        } elseif (is_array($rule)) {
+            $this->options['validate'] = [
+                'rule' => $rule,
+                'msg'  => is_array($msg) ? $msg : [],
+            ];
         }
         return $this;
     }

@@ -65,9 +65,6 @@ return [
             'expire' => 0,
         ],
         'file_upload_type' => 'Sae',
-        'template'         => [
-            'compile_type' => 'Sae',
-        ],
         'compile_type'     => 'Sae',
     ]),
 
