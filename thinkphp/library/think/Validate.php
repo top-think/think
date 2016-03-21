@@ -338,6 +338,8 @@ class Validate
                         $callback = isset($this->type[$type]) ? $this->type[$type] : [$this, $type];
                         // 验证数据
                         $result = call_user_func_array($callback, [$value, $rule, &$data, $field]);
+                    } else {
+                        $result = true;
                     }
                 }
 
