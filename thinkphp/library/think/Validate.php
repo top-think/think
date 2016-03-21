@@ -65,7 +65,7 @@ class Validate
         'elt'        => '必须小于等于 :rule',
         'lt'         => '必须小于 :rule',
         'eq'         => '必须等于 :rule',
-        'unique'     => '必须在 :1 中唯一',
+        'unique'     => '已存在',
         'regex'      => '不符合指定规则',
     ];
 
