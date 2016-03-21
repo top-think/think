@@ -32,41 +32,41 @@ class Validate
 
     // 验证规则默认提示信息
     protected $typeMsg = [
-        'require'    => '不能为空',
-        'number'     => '必须是数字',
-        'float'      => '必须是浮点数',
-        'boolean'    => '必须是布尔值',
-        'email'      => '格式不符',
-        'array'      => '必须是数组',
-        'accepted'   => '必须是yes、on或者1',
-        'date'       => '格式不符合',
-        'alpha'      => '只能是字母',
-        'alphaNum'   => '只能是字母和数字',
-        'alphaDash'  => '只能是字母、数字和下划线_及破折号-',
-        'activeUrl'  => '不是有效的域名或者IP',
-        'url'        => '不是有效的URL地址',
-        'ip'         => '不是有效的IP地址',
-        'dateFormat' => '必须使用日期格式 :rule',
-        'in'         => '必须在 :rule 范围内',
-        'notIn'      => '不能在 :rule 范围内',
-        'between'    => '只能在 :1 - :2 之间',
-        'notBetween' => '不能在 :1 - :2 之间',
-        'length'     => '长度不符合要求 :rule',
-        'max'        => '长度不能超过 :rule',
-        'min'        => '长度不能小于 :rule',
-        'after'      => '日期不能小于 :rule',
-        'before'     => '日期不能超过 :rule',
+        'require'    => ':attribute不能为空',
+        'number'     => ':attribute必须是数字',
+        'float'      => ':attribute必须是浮点数',
+        'boolean'    => ':attribute必须是布尔值',
+        'email'      => ':attribute格式不符',
+        'array'      => ':attribute必须是数组',
+        'accepted'   => ':attribute必须是yes、on或者1',
+        'date'       => ':attribute格式不符合',
+        'alpha'      => ':attribute只能是字母',
+        'alphaNum'   => ':attribute只能是字母和数字',
+        'alphaDash'  => ':attribute只能是字母、数字和下划线_及破折号-',
+        'activeUrl'  => ':attribute不是有效的域名或者IP',
+        'url'        => ':attribute不是有效的URL地址',
+        'ip'         => ':attribute不是有效的IP地址',
+        'dateFormat' => ':attribute必须使用日期格式 :rule',
+        'in'         => ':attribute必须在 :rule 范围内',
+        'notIn'      => ':attribute不能在 :rule 范围内',
+        'between'    => ':attribute只能在 :1 - :2 之间',
+        'notBetween' => ':attribute不能在 :1 - :2 之间',
+        'length'     => ':attribute长度不符合要求 :rule',
+        'max'        => ':attribute长度不能超过 :rule',
+        'min'        => ':attribute长度不能小于 :rule',
+        'after'      => ':attribute日期不能小于 :rule',
+        'before'     => ':attribute日期不能超过 :rule',
         'expire'     => '不在有效期内 :rule',
         'allowIp'    => '不允许的IP访问',
         'denyIp'     => '禁止的IP访问',
-        'confirm'    => '和字段 :rule 不一致',
-        'egt'        => '必须大于等于 :rule',
-        'gt'         => '必须大于 :rule',
-        'elt'        => '必须小于等于 :rule',
-        'lt'         => '必须小于 :rule',
-        'eq'         => '必须等于 :rule',
-        'unique'     => '已存在',
-        'regex'      => '不符合指定规则',
+        'confirm'    => ':attribute和字段 :rule 不一致',
+        'egt'        => ':attribute必须大于等于 :rule',
+        'gt'         => ':attribute必须大于 :rule',
+        'elt'        => ':attribute必须小于等于 :rule',
+        'lt'         => ':attribute必须小于 :rule',
+        'eq'         => ':attribute必须等于 :rule',
+        'unique'     => ':attribute已存在',
+        'regex'      => ':attribute不符合指定规则',
     ];
 
     // 当前验证场景
@@ -340,15 +340,8 @@ class Validate
 
                 if (false === $result) {
                     // 验证失败 返回错误信息
-                    if (isset($msg[$i])) {
-                        $error[] = $msg[$i];
-                    } elseif (isset($this->message[$field . '.' . $info])) {
-                        $error[] = $this->message[$field . '.' . $info];
-                    } elseif (isset($this->message[$field])) {
-                        $error[] = $this->message[$field];
-                    } else {
-                        $error[] = $this->getTypeMsg($title ?: $field, $info, $rule);
-                    }
+                    $message = isset($msg[$i]) ? $msg[$i] : null;
+                    $error[] = $this->getRuleMsg($field, $title, $info, $rule, $message);
                 } elseif (is_string($result)) {
                     $error[] = $result;
                 } elseif (is_array($result)) {
@@ -843,28 +836,43 @@ class Validate
     }
 
     /**
-     * 获取验证规则的默认提示信息
+     * 获取验证规则的错误提示信息
      * @access protected
-     * @param string $attribute  字段名称
-     * @param string $type  验证类型名称
-     * @param mixed $rule  验证规则
+     * @param string $attribute  字段英文名
+     * @param string $title  字段描述名
+     * @param string $type  验证规则名称
+     * @param mixed $rule  验证规则数据
+     * @param string $message  自定义提示信息
      * @return string
      */
-    protected function getTypeMsg($attribute, $type, $rule)
+    protected function getRuleMsg($attribute, $title, $type, $rule, $message)
     {
-        if (isset($this->typeMsg[$type])) {
+        if (!is_null($message)) {
+            $msg = $message;
+        } elseif (isset($this->message[$attribute . '.' . $type])) {
+            $msg = $this->message[$attribute . '.' . $type];
+        } elseif (isset($this->message[$attribute])) {
+            $msg = $this->message[$attribute];
+        } elseif (isset($this->typeMsg[$type])) {
+            $msg = $this->typeMsg[$type];
+        } else {
+            $msg = $title . '规则错误';
+        }
+        // TODO 多语言支持
+
+        if (false !== strpos($msg, ':')) {
+            // 变量替换
             if (strpos($rule, ',')) {
                 $array = array_pad(explode(',', $rule), 3, '');
             } else {
                 $array = array_pad([], 3, '');
             }
-            return (false === strpos($this->typeMsg[$type], ':attribute') ? $attribute : '') . str_replace(
-                [':rule', ':attribute', ':1', ':2', ':3'],
-                [(string) $rule, $attribute, $array[0], $array[1], $array[2]],
-                $this->typeMsg[$type]);
-        } else {
-            return $attribute . '规则错误';
+            $msg = str_replace(
+                [':attribute', ':rule', ':1', ':2', ':3'],
+                [$title, (string) $rule, $array[0], $array[1], $array[2]],
+                $msg);
         }
+        return $msg;
     }
 
     /**
