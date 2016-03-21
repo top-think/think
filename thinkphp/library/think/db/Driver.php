@@ -438,7 +438,7 @@ abstract class Driver
                 }
             }
         }
-        return ' SET ' . implode(',', $set);
+        return ' SET ' . implode(' , ', $set);
     }
 
     /**

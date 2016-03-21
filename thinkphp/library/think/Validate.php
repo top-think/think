@@ -816,7 +816,7 @@ class Validate
         if (isset($this->regex[$rule])) {
             $rule = $this->regex[$rule];
         }
-        if (0 !== strpos($rule, '/') && !preg_match('/\/[imsU]{0,4}$/', $rule)) {
+        if (0 !== strpos($rule, '/') && !preg_match('/\/[imsUu]{0,4}$/', $rule)) {
             // 不是正则表达式则两端补上/
             $rule = '/^' . $rule . '$/';
         }

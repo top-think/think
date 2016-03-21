@@ -325,8 +325,11 @@ class Input
                 // 调用函数过滤
                 $value = call_user_func($filter, $value);
             } else {
-                $begin = substr($filter, 0, 1);
-                if (in_array($begin, ['/', '#', '~']) && $begin == $end = substr($filter, -1)) {
+                if (is_array($filter)) {
+                    if (!in_array($value, $filter)) {
+                        $value = $default;
+                    }
+                } elseif (in_array($begin = substr($filter, 0, 1), ['/', '#', '~']) && preg_match('/\\'.$begin.'[imsUu]{0,4}$/', $filter)) {
                     // 正则过滤
                     if (!preg_match($filter, $value)) {
                         // 匹配不成功返回默认值
