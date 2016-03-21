@@ -89,13 +89,11 @@ class Validate
      * @access public
      * @param array $rules 验证规则
      * @param array $message 验证提示信息
-     * @param array $config 验证参数
      */
-    public function __construct(array $rules = [], $message = [], $config = [])
+    public function __construct(array $rules = [], $message = [])
     {
         $this->rule    = array_merge($this->rule, $rules);
         $this->message = array_merge($this->message, $message);
-        $this->config  = array_merge($this->config, $config);
     }
 
     /**
@@ -178,23 +176,6 @@ class Validate
             $this->typeMsg = array_merge($this->typeMsg, $type);
         } else {
             $this->typeMsg[$type] = $msg;
-        }
-        return $this;
-    }
-
-    /**
-     * 传入验证参数
-     * @access public
-     * @param string|array $name  参数名或者数组
-     * @param mixed $value 参数值
-     * @return Validate
-     */
-    public function config($name, $value = null)
-    {
-        if (is_array($name)) {
-            $this->config = array_merge($this->config, $name);
-        } else {
-            $this->config[$name] = $value;
         }
         return $this;
     }

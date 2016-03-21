@@ -104,19 +104,6 @@ class validateTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function testConfig()
-    {
-        $validate = new Validate();
-        $validate->config('value_validate', ['name', 'age', 'email']);
-        $validate->config([
-            'value_validate'  => ['name', 'age', 'email'],
-            'exists_validate' => ['zip'],
-            'scene'           => [
-                'edit' => ['name', 'age', 'email'],
-            ],
-        ]);
-    }
-
     public function testMake()
     {
         $rule = [
