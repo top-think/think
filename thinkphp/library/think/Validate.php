@@ -523,7 +523,7 @@ class Validate
      * 验证是否唯一
      * @access protected
      * @param mixed $value  字段值
-     * @param mixed $rule  验证规则 格式：数据表,字段名,排除ID
+     * @param mixed $rule  验证规则 格式：数据表,字段名,排除ID,主键名
      * @param array $data  数据
      * @param string $field  验证字段名
      * @return bool
@@ -534,13 +534,7 @@ class Validate
             $rule = explode(',', $rule);
         }
         $model = Loader::table($rule[0]);
-        $key   = isset($rule[3]) ? $rule[3] : $model->getPk();
         $field = isset($rule[1]) ? $rule[1] : $field;
-        if (isset($rule[2])) {
-            $except = $rule[2];
-        } elseif (isset($data[$key])) {
-            $except = $data[$key];
-        }
 
         if (strpos($field, '|')) {
             // 支持多个字段验证
@@ -554,9 +548,13 @@ class Validate
             $map[$field] = $data[$field];
         }
 
-        if (isset($except)) {
-            $map[$key] = ['neq', $except];
+        $key = strval(isset($rule[3]) ? $rule[3] : $model->getPk());
+        if (isset($rule[2])) {
+            $map[$key] = ['neq', $rule[2]];
+        } elseif (isset($data[$key])) {
+            $map[$key] = ['neq', $data[$key]];
         }
+
         if ($model->where($map)->field($key)->find()) {
             return false;
         }
