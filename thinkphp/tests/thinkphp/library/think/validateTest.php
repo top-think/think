@@ -53,11 +53,12 @@ class validateTest extends \PHPUnit_Framework_TestCase
             'email'      => 'email',
             'url'        => 'activeUrl',
             'ip'         => 'ip',
-            'score'      => 'float|gt:60',
+            'score'      => 'float|gt:60|notBetween:90,100|notIn:70,80|lt:100|elt:100|egt:60',
             'status'     => 'integer|in:0,1,2',
             'begin_time' => 'after:2016-3-18',
             'end_time'   => 'before:2016-10-01',
             'info'       => 'require|array',
+            'info.name'  => 'require|same:thinkphp',
             'value'      => 'same:100',
             'bool'       => 'boolean',
 
@@ -73,7 +74,7 @@ class validateTest extends \PHPUnit_Framework_TestCase
             'status'     => 1,
             'begin_time' => '2016-3-20',
             'end_time'   => '2016-5-1',
-            'info'       => [1, 2, 3],
+            'info'       => [1, 2, 3, 'name' => 'thinkphp'],
             'zip'        => '200000',
             'date'       => '16-3-8',
             'ok'         => 'yes',
@@ -154,6 +155,25 @@ class validateTest extends \PHPUnit_Framework_TestCase
         $validate->scene('edit');
         $result = $validate->check($data);
         $this->assertEquals(true, $result);
+    }
+
+    public function testSetTypeMsg()
+    {
+        $rule = [
+            'name|名称' => 'require|max:25',
+            'age'     => 'number|between:1,120',
+            'email'   => 'email',
+        ];
+        $data = [
+            'name'  => '',
+            'age'   => 10,
+            'email' => 'thinkphp@qq.com',
+        ];
+        $validate = new Validate($rule);
+        $validate->setTypeMsg('require', ':attribute必须');
+        $result = $validate->check($data);
+        $this->assertFalse($result);
+        $this->assertEquals('名称必须', $validate->getError());
     }
 
 }
