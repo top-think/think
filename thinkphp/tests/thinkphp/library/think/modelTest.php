@@ -49,7 +49,7 @@ class modelTest extends \PHPUnit_Framework_TestCase
         ];
 
         $validate = [
-            ['username', 'length:5,15|unique:user', '用户名长度为5到15个字符|用户名已经存在'],
+            ['username', 'length:5,15', '用户名长度为5到15个字符'],
             ['nickname', 'require', '请填昵称'],
             ['password', '[\w-]{6,15}', '密码长度为6到15个字符'],
             ['repassword', 'confirm:password', '两次密码不一到致'],

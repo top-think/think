@@ -585,12 +585,12 @@ class Validate
      */
     protected function filter($value, $rule)
     {
-        if (is_int($rule)) {
-            $param = null;
-        } elseif (is_string($rule) && strpos($rule, ',')) {
+        if (is_string($rule) && strpos($rule, ',')) {
             list($rule, $param) = explode(',', $rule);
         } elseif (is_array($rule)) {
             $param = isset($rule[1]) ? $rule[1] : null;
+        } else {
+            $param = null;
         }
         return false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $param);
     }
