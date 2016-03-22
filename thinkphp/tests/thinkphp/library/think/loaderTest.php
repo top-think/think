@@ -42,6 +42,23 @@ class loaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, Loader::autoload('top\test\Hello'));
     }
 
+    public function testTable()
+    {
+        Loader::table('', [
+            'connection' => [
+                'type'     => 'mysql',
+                'database' => 'test',
+                'username' => 'root',
+                'password' => '',
+            ]]);
+        Loader::db('mysql://root@127.0.0.1/test#utf8');
+    }
+
+    public function testInstance()
+    {
+        Loader::instance('\think\Validate');
+    }
+
     public function testImport()
     {
         $this->assertEquals(true, Loader::import('think.log.driver.Sae'));
