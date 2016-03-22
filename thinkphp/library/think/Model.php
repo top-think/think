@@ -1310,7 +1310,7 @@ class Model
         if (is_array($tableName)) {
             $tableName = key($tableName) ?: current($tableName);
         }
-        if (strpos($tableName, ',')) {
+        if (strpos($tableName, ',') || !empty(stristr($tableName, 'UNION'))) {
             // 多表不获取字段信息
             return false;
         }
