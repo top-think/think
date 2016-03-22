@@ -58,7 +58,7 @@ trait Auto
                 $fields = explode(',', $fields);
             }
             // 判断令牌验证字段
-            if (Config::get('token_on')) {
+            if (\think\Config::get('token_on')) {
                 $fields[] = Config::get('token_name');
             }
 
