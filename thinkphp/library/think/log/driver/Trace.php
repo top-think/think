@@ -43,8 +43,9 @@ class Trace
             return false;
         }
         // 获取基本信息
-        $runtime = number_format(microtime(true) - START_TIME, 6);
+        $runtime = microtime(true) - START_TIME;
         $reqs    = number_format(1 / $runtime, 2);
+        $runtime = number_format($runtime, 6);
         $mem     = number_format((memory_get_usage() - START_MEM) / 1024, 2);
 
         // 页面Trace信息
