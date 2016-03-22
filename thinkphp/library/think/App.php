@@ -130,6 +130,7 @@ class App
                     break;
                 case 'PUT':
                     parse_str(file_get_contents('php://input'), $vars);
+                    $vars = array_merge($_GET, $vars);
                     break;
                 default:
                     $vars = $_GET;
