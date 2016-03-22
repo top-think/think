@@ -232,11 +232,6 @@ class Validate
 
         // 分析验证规则
         $scene = $this->getScene($scene);
-        // 读取提示信息
-        if (isset($rules['__message__'])) {
-            $this->message($rules['__message__']);
-            unset($rules['__message__']);
-        }
 
         foreach ($rules as $key => $item) {
             // field => rule1|rule2... field=>['rule1','rule2',...]
@@ -259,6 +254,7 @@ class Validate
             } else {
                 $title = $key;
             }
+
             // 场景检测
             if (!empty($scene)) {
                 if ($scene instanceof \Closure && !call_user_func_array($scene, [$key, &$data])) {
@@ -332,6 +328,7 @@ class Validate
                     } else {
                         $info = $type = $key;
                     }
+
                     // 如果不是require 有数据才会行验证
                     if (0 === strpos($info, 'require') || !empty($value)) {
                         // 验证类型
