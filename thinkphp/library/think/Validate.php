@@ -538,9 +538,9 @@ class Validate
         $model = Loader::table($rule[0]);
         $field = isset($rule[1]) ? $rule[1] : $field;
 
-        if (strpos($field, '|')) {
+        if (strpos($field, '^')) {
             // 支持多个字段验证
-            $fields = explode('|', $field);
+            $fields = explode('^', $field);
             foreach ($fields as $field) {
                 $map[$field] = $data[$field];
             }
