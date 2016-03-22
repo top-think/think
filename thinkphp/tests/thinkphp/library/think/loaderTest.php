@@ -42,6 +42,13 @@ class loaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, Loader::autoload('top\test\Hello'));
     }
 
+    public function testAddNamespaceAlias()
+    {
+        Loader::addNamespaceAlias('top', 'top\test');
+        Loader::addNamespaceAlias(['top' => 'top\test', 'app' => 'app\index']);
+        $this->assertEquals(true, Loader::autoload('top\Hello'));
+    }
+
     public function testTable()
     {
         Loader::table('', [
