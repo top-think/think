@@ -41,6 +41,7 @@ return [
         'think\Lang'                 => CORE_PATH . 'Lang' . EXT,
         'think\Log'                  => CORE_PATH . 'Log' . EXT,
         'think\Model'                => CORE_PATH . 'Model' . EXT,
+        'think\Page'                 => CORE_PATH . 'Page' . EXT,
         'think\Response'             => CORE_PATH . 'Response' . EXT,
         'think\Route'                => CORE_PATH . 'Route' . EXT,
         'think\Session'              => CORE_PATH . 'Session' . EXT,
