@@ -27,12 +27,9 @@ if (is_file(APP_PATH . 'command' . EXT)) {
     $commands = include APP_PATH . 'command' . EXT;
     if (is_array($commands)) {
         foreach ($commands as $command) {
-            if (class_exists($command)) {
+            if (class_exists($command) && is_subclass_of($command, "\\think\\console\\command\\Command")) {
                 // 注册指令
-                $object = new $command();
-                if ($object instanceof \think\console\command\Command) {
-                    $console->add($object);
-                }
+                $console->add(new $command());
             }
         }
     }
