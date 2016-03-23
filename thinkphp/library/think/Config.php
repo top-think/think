@@ -29,7 +29,6 @@ class Config
 
     /**
      * 解析配置文件或内容
-     *
      * @param string $config 配置文件路径或内容
      * @param string $type 配置解析类型
      * @param string $range  作用域
@@ -46,7 +45,6 @@ class Config
 
     /**
      * 加载配置文件（PHP格式）
-     *
      * @param string $file 配置文件名
      * @param string $name 配置名（如设置即表示二级配置）
      * @param string $range  作用域
@@ -64,8 +62,27 @@ class Config
     }
 
     /**
+     * 加载环境变量配置文件
+     * @param string $file 配置文件名
+     * @param string $name 配置名（如设置即表示二级配置）
+     * @return void
+     */
+    public static function loadEnv($file, $name = '')
+    {
+        if (is_file($file)) {
+            $env = include $file;
+            foreach ($env as $key => $val) {
+                if (!empty($name)) {
+                    $_ENV[ENV_PREFIX . $name . '_' . $key] = $val;
+                } else {
+                    $_ENV[ENV_PREFIX . $key] = $val;
+                }
+            }
+        }
+    }
+
+    /**
      * 检测配置是否存在
-     *
      * @param string $name 配置参数名（支持二级配置 .号分割）
      * @param string $range  作用域
      * @return bool
@@ -85,7 +102,6 @@ class Config
 
     /**
      * 获取配置参数 为空则获取所有配置
-     *
      * @param string $name 配置参数名（支持二级配置 .号分割）
      * @param string $range  作用域
      * @return mixed
@@ -119,7 +135,6 @@ class Config
 
     /**
      * 设置配置参数 name为数组则为批量设置
-     *
      * @param string $name 配置参数名（支持二级配置 .号分割）
      * @param mixed $value 配置值
      * @param string $range  作用域

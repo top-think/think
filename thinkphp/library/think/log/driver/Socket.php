@@ -59,8 +59,9 @@ class Socket
         if (!$this->check()) {
             return false;
         }
-        $runtime    = number_format(microtime(true) - START_TIME, 6);
+        $runtime    = microtime(true) - START_TIME;
         $reqs       = number_format(1 / $runtime, 2);
+        $runtime    = number_format($runtime, 6);
         $time_str   = " [运行时间：{$runtime}s][吞吐率：{$reqs}req/s]";
         $memory_use = number_format((memory_get_usage() - START_MEM) / 1024, 2);
         $memory_str = " [内存消耗：{$memory_use}kb]";

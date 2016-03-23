@@ -28,6 +28,9 @@ class App
      */
     public static function run()
     {
+        // 加载环境变量配置文件
+        Config::loadEnv(APP_PATH . 'env' . EXT);
+
         // 初始化应用（公共模块）
         self::initModule(COMMON_MODULE, Config::get());
 
@@ -130,6 +133,7 @@ class App
                     break;
                 case 'PUT':
                     parse_str(file_get_contents('php://input'), $vars);
+                    $vars = array_merge($_GET, $vars);
                     break;
                 default:
                     $vars = $_GET;

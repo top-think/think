@@ -54,8 +54,6 @@ class Model
     protected $scope = [];
     // 字段映射定义
     protected $map = [];
-    // 字段验证规则定义
-    protected $rule = [];
 
     /**
      * 架构函数
@@ -991,12 +989,18 @@ class Model
         if (!empty($this->options['validate'])) {
             $info = $this->options['validate'];
             if (is_array($info)) {
-                $validate = Loader::validate();
+                $validate = Loader::validate(Config::get('default_validate'));
                 $validate->rule($info['rule']);
                 $validate->message($info['msg']);
             } else {
-                $name     = is_string($info) ? $info : $this->name;
+                $name = is_string($info) ? $info : $this->name;
+                if (strpos($name, '.')) {
+                    list($name, $scene) = explode('.', $name);
+                }
                 $validate = Loader::validate($name);
+                if (!empty($scene)) {
+                    $validate->scene($scene);
+                }
             }
             if (!$validate->check($data)) {
                 $this->error = $validate->getError();
@@ -1726,8 +1730,8 @@ class Model
     public function order($field, $order = null)
     {
         if (!empty($field)) {
-            if (!is_array($field)) {
-                $field = empty($order) ? [$field] : [(string) $field => (string) $order];
+            if (is_string($field)) {
+                $field = empty($order) ? $field : [$field => $order];
             }
             $this->options['order'] = $field;
         }
