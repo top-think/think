@@ -16,8 +16,19 @@ namespace think;
 require __DIR__ . '/base.php';
 require CORE_PATH . 'Loader.php';
 
-// 注册自动加载
-Loader::register();
+// 加载环境变量配置文件
+if (is_file(ROOT_PATH . 'env' . EXT)) {
+    $env = include ROOT_PATH . 'env' . EXT;
+    foreach ($env as $key => $val) {
+        $name = ENV_PREFIX . $key;
+        putenv("$name=$val");
+    }
+}
+// 自动识别调试模式
+if (!defined('APP_DEBUG')) {
+    $debug = getenv(ENV_PREFIX . 'APP_DEBUG');
+    define('APP_DEBUG', $debug);
+}
 
 // 加载模式定义文件
 $mode = require MODE_PATH . APP_MODE . EXT;
@@ -26,6 +37,9 @@ $mode = require MODE_PATH . APP_MODE . EXT;
 if (isset($mode['namespace'])) {
     Loader::addNamespace($mode['namespace']);
 }
+
+// 注册自动加载
+Loader::register();
 
 // 加载模式别名定义
 if (isset($mode['alias'])) {

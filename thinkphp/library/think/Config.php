@@ -62,26 +62,6 @@ class Config
     }
 
     /**
-     * 加载环境变量配置文件
-     * @param string $file 配置文件名
-     * @param string $name 配置名（如设置即表示二级配置）
-     * @return void
-     */
-    public static function loadEnv($file, $name = '')
-    {
-        if (is_file($file)) {
-            $env = include $file;
-            foreach ($env as $key => $val) {
-                if (!empty($name)) {
-                    $_ENV[ENV_PREFIX . $name . '_' . $key] = $val;
-                } else {
-                    $_ENV[ENV_PREFIX . $key] = $val;
-                }
-            }
-        }
-    }
-
-    /**
      * 检测配置是否存在
      * @param string $name 配置参数名（支持二级配置 .号分割）
      * @param string $range  作用域
@@ -92,10 +72,20 @@ class Config
         $range = $range ?: self::$range;
 
         if (!strpos($name, '.')) {
+            // 判断环境变量
+            $result = getenv(ENV_PREFIX . $name);
+            if (false !== $result) {
+                return $result;
+            }
             return isset(self::$config[$range][strtolower($name)]);
         } else {
             // 二维数组设置和获取支持
-            $name = explode('.', $name);
+            $name   = explode('.', $name);
+            $result = getenv(ENV_PREFIX . $name[0] . '_' . $name[1]);
+            // 判断环境变量
+            if (false !== $result) {
+                return $result;
+            }
             return isset(self::$config[$range][strtolower($name[0])][$name[1]]);
         }
     }
@@ -115,18 +105,19 @@ class Config
         }
 
         if (!strpos($name, '.')) {
-            // 判断环境变量
-            if (isset($_ENV[ENV_PREFIX . $name])) {
-                return $_ENV[ENV_PREFIX . $name];
+            $result = getenv(ENV_PREFIX . $name);
+            if (false !== $result) {
+                return $result;
             }
             $name = strtolower($name);
             return isset(self::$config[$range][$name]) ? self::$config[$range][$name] : null;
         } else {
             // 二维数组设置和获取支持
-            $name = explode('.', $name);
+            $name   = explode('.', $name);
+            $result = getenv(ENV_PREFIX . $name[0] . '_' . $name[1]);
             // 判断环境变量
-            if (isset($_ENV[ENV_PREFIX . $name[0] . '_' . $name[1]])) {
-                return $_ENV[ENV_PREFIX . $name[0] . '_' . $name[1]];
+            if (false !== $result) {
+                return $result;
             }
             $name[0] = strtolower($name[0]);
             return isset(self::$config[$range][$name[0]][$name[1]]) ? self::$config[$range][$name[0]][$name[1]] : null;
