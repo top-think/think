@@ -119,7 +119,7 @@ class Model
      */
     public static function instance($name = '', array $config = [])
     {
-        $key      = static::class . '_' . serialize(func_get_args());
+        $key      = get_called_class() . '_' . serialize(func_get_args());
         $instance = isset(static::$_instance[$key]) ? static::$_instance[$key] : null;
         if (!$instance instanceof static) {
             $instance                = new static($name, $config);
