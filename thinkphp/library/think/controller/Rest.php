@@ -62,7 +62,7 @@ abstract class Rest
      * @param array  $args   参数
      *
      * @return mixed
-     * @throws \think\Exception
+     * @throws \Exception
      */
     public function _empty($method, $args)
     {
@@ -78,7 +78,7 @@ abstract class Rest
             return $this->$fun();
         } else {
             // 抛出异常
-            throw new \Exception('error action :' . ACTION_NAME);
+            throw new \Exception('error action :' . ACTION_NAME);  
         }
     }
 
