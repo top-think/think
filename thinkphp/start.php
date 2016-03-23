@@ -16,6 +16,20 @@ namespace think;
 require __DIR__ . '/base.php';
 require CORE_PATH . 'Loader.php';
 
+// 加载环境变量配置文件
+if (is_file(ROOT_PATH . 'env' . EXT)) {
+    $env = include ROOT_PATH . 'env' . EXT;
+    foreach ($env as $key => $val) {
+        $name = ENV_PREFIX . $key;
+        putenv("$name=$val");
+    }
+}
+// 自动识别调试模式
+if (!defined('APP_DEBUG')) {
+    $debug = getenv(ENV_PREFIX . 'APP_DEBUG');
+    define('APP_DEBUG', $debug);
+}
+
 // 注册自动加载
 Loader::register();
 

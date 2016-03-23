@@ -62,23 +62,6 @@ class Config
     }
 
     /**
-     * 加载环境变量配置文件
-     * @param string $file 配置文件名
-     * @param string $name 配置名（如设置即表示二级配置）
-     * @return void
-     */
-    public static function loadEnv($file, $name = '')
-    {
-        if (is_file($file)) {
-            $env = include $file;
-            foreach ($env as $key => $val) {
-                $name = !empty($name) ? ENV_PREFIX . $name . '_' . $key : ENV_PREFIX . $key;
-                putenv("$name=$val");
-            }
-        }
-    }
-
-    /**
      * 检测配置是否存在
      * @param string $name 配置参数名（支持二级配置 .号分割）
      * @param string $range  作用域
