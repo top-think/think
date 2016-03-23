@@ -30,9 +30,6 @@ if (!defined('APP_DEBUG')) {
     define('APP_DEBUG', $debug);
 }
 
-// 注册自动加载
-Loader::register();
-
 // 加载模式定义文件
 $mode = require MODE_PATH . APP_MODE . EXT;
 
@@ -40,6 +37,9 @@ $mode = require MODE_PATH . APP_MODE . EXT;
 if (isset($mode['namespace'])) {
     Loader::addNamespace($mode['namespace']);
 }
+
+// 注册自动加载
+Loader::register();
 
 // 加载模式别名定义
 if (isset($mode['alias'])) {

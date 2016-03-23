@@ -94,10 +94,9 @@ class configTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], Config::get(null, $range));
         $this->assertEquals(null, Config::get(null, 'does_not_exist'));
         // test $_ENV configuration
-        defined('ENV_PREFIX') or define('ENV_PREFIX', '_TEST_');
-        $name                     = 'test_name';
-        $value                    = 'value';
-        $_ENV[ENV_PREFIX . $name] = $value;
+        $name  = 'test_name';
+        $value = 'value';
+        putenv(ENV_PREFIX . $name . '=' . $value);
         $this->assertEquals($value, Config::get($name, $range));
         // test getting configuration
         $reflectedPropertyConfig->setValue([$range => ['abcd' => 'efg']]);
