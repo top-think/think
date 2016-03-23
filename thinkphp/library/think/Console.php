@@ -740,7 +740,7 @@ class Console
 
     public static function addDefaultCommands(array $classnames)
     {
-        self::$defaultCommands[] = array_merge(self::$defaultCommands, $classnames);
+        self::$defaultCommands = array_merge(self::$defaultCommands, $classnames);
     }
 
     /**
