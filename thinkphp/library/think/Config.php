@@ -72,11 +72,8 @@ class Config
         if (is_file($file)) {
             $env = include $file;
             foreach ($env as $key => $val) {
-                if (!empty($name)) {
-                    $_ENV[ENV_PREFIX . $name . '_' . $key] = $val;
-                } else {
-                    $_ENV[ENV_PREFIX . $key] = $val;
-                }
+                $name = !empty($name) ? ENV_PREFIX . $name . '_' . $key : ENV_PREFIX . $key;
+                putenv("$name=$val");
             }
         }
     }
@@ -92,10 +89,20 @@ class Config
         $range = $range ?: self::$range;
 
         if (!strpos($name, '.')) {
+            // 判断环境变量
+            $result = getenv(ENV_PREFIX . $name);
+            if (false !== $result) {
+                return $result;
+            }
             return isset(self::$config[$range][strtolower($name)]);
         } else {
             // 二维数组设置和获取支持
-            $name = explode('.', $name);
+            $name   = explode('.', $name);
+            $result = getenv(ENV_PREFIX . $name[0] . '_' . $name[1]);
+            // 判断环境变量
+            if (false !== $result) {
+                return $result;
+            }
             return isset(self::$config[$range][strtolower($name[0])][$name[1]]);
         }
     }
@@ -115,18 +122,19 @@ class Config
         }
 
         if (!strpos($name, '.')) {
-            // 判断环境变量
-            if (isset($_ENV[ENV_PREFIX . $name])) {
-                return $_ENV[ENV_PREFIX . $name];
+            $result = getenv(ENV_PREFIX . $name);
+            if (false !== $result) {
+                return $result;
             }
             $name = strtolower($name);
             return isset(self::$config[$range][$name]) ? self::$config[$range][$name] : null;
         } else {
             // 二维数组设置和获取支持
-            $name = explode('.', $name);
+            $name   = explode('.', $name);
+            $result = getenv(ENV_PREFIX . $name[0] . '_' . $name[1]);
             // 判断环境变量
-            if (isset($_ENV[ENV_PREFIX . $name[0] . '_' . $name[1]])) {
-                return $_ENV[ENV_PREFIX . $name[0] . '_' . $name[1]];
+            if (false !== $result) {
+                return $result;
             }
             $name[0] = strtolower($name[0]);
             return isset(self::$config[$range][$name[0]][$name[1]]) ? self::$config[$range][$name[0]][$name[1]] : null;
