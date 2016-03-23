@@ -1752,8 +1752,8 @@ class Model
     public function order($field, $order = null)
     {
         if (!empty($field)) {
-            if (!is_array($field)) {
-                $field = empty($order) ? [$field] : [(string) $field => (string) $order];
+            if (is_string($field)) {
+                $field = empty($order) ? $field : [$field => $order];
             }
             $this->options['order'] = $field;
         }

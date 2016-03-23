@@ -232,11 +232,6 @@ class Validate
 
         // 分析验证规则
         $scene = $this->getScene($scene);
-        // 读取提示信息
-        if (isset($rules['__message__'])) {
-            $this->message($rules['__message__']);
-            unset($rules['__message__']);
-        }
 
         foreach ($rules as $key => $item) {
             // field => rule1|rule2... field=>['rule1','rule2',...]
@@ -259,6 +254,7 @@ class Validate
             } else {
                 $title = $key;
             }
+
             // 场景检测
             if (!empty($scene)) {
                 if ($scene instanceof \Closure && !call_user_func_array($scene, [$key, &$data])) {
@@ -332,6 +328,7 @@ class Validate
                     } else {
                         $info = $type = $key;
                     }
+
                     // 如果不是require 有数据才会行验证
                     if (0 === strpos($info, 'require') || !empty($value)) {
                         // 验证类型
@@ -538,9 +535,9 @@ class Validate
         $model = Loader::table($rule[0]);
         $field = isset($rule[1]) ? $rule[1] : $field;
 
-        if (strpos($field, '|')) {
+        if (strpos($field, '^')) {
             // 支持多个字段验证
-            $fields = explode('|', $field);
+            $fields = explode('^', $field);
             foreach ($fields as $field) {
                 $map[$field] = $data[$field];
             }
@@ -585,12 +582,12 @@ class Validate
      */
     protected function filter($value, $rule)
     {
-        if (is_int($rule)) {
-            $param = null;
-        } elseif (is_string($rule) && strpos($rule, ',')) {
+        if (is_string($rule) && strpos($rule, ',')) {
             list($rule, $param) = explode(',', $rule);
         } elseif (is_array($rule)) {
             $param = isset($rule[1]) ? $rule[1] : null;
+        } else {
+            $param = null;
         }
         return false !== filter_var($value, is_int($rule) ? $rule : filter_id($rule), $param);
     }
