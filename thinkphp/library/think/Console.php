@@ -9,12 +9,8 @@
 
 namespace think;
 
-use think\console\command\Build as BuildCommand;
 use think\console\command\Command;
 use think\console\command\Help as HelpCommand;
-use think\console\command\Lists as ListCommand;
-use think\console\command\make\Controller as MakeControllerCommand;
-use think\console\command\make\Model as MakeModelCommand;
 use think\console\helper\Debug as DebugFormatterHelper;
 use think\console\helper\Formatter as FormatterHelper;
 use think\console\helper\Process as ProcessHelper;
@@ -47,6 +43,14 @@ class Console
     private $helperSet;
     private $terminalDimensions;
     private $defaultCommand;
+
+    private static $defaultCommands = [
+        "think\\console\\command\\Help",
+        "think\\console\\command\\Lists",
+        "think\\console\\command\\Build",
+        "think\\console\\command\\make\\Controller",
+        "think\\console\\command\\make\\Model"
+    ];
 
     public function __construct($name = 'UNKNOWN', $version = 'UNKNOWN')
     {
@@ -723,13 +727,20 @@ class Console
      */
     protected function getDefaultCommands()
     {
-        return [
-            new HelpCommand(),
-            new ListCommand(),
-            new MakeControllerCommand(),
-            new MakeModelCommand(),
-            new BuildCommand(),
-        ];
+        $defaultCommands = [];
+
+        foreach (self::$defaultCommands as $classname) {
+            if (class_exists($classname) && is_subclass_of($classname, "think\\console\\command\\Command")) {
+                $defaultCommands[] = new $classname();
+            }
+        }
+
+        return $defaultCommands;
+    }
+
+    public static function addDefaultCommands(array $classnames)
+    {
+        self::$defaultCommands = array_merge(self::$defaultCommands, $classnames);
     }
 
     /**
