@@ -16,4 +16,8 @@ define('APP_PATH', __DIR__ . '/../application/');
 // 开启调试模式
 define('APP_DEBUG', true);
 // 加载框架引导文件
-require_once __DIR__ . '/../vendor/autoload.php';
+if (is_file(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+} else {
+    require __DIR__ . '/../thinkphp/start.php';
+}
