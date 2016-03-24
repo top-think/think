@@ -46,6 +46,8 @@ class Cache
             $type  = !empty($options['type']) ? $options['type'] : 'File';
             $class = (!empty($options['namespace']) ? $options['namespace'] : '\\think\\cache\\driver\\') . ucwords($type);
             unset($options['type']);
+            // 读取配置文件中相应类型下的配置信息 by xiaobo.sun@qq.com
+            $options = array_merge($options, (array)\think\Config::get($type));
             self::$instance[$md5] = new $class($options);
             // 记录初始化信息
             APP_DEBUG && Log::record('[ CACHE ] INIT ' . $type . ':' . var_export($options, true), 'info');
