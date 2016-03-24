@@ -1,8 +1,6 @@
 ThinkPHP 5.0.0 RC2
 ===============
 
-[![Build Status](https://img.shields.io/travis/top-think/think.svg)](https://travis-ci.org/top-think/think)
-[![Coverage Status](https://img.shields.io/codecov/c/github/top-think/think.svg)](https://codecov.io/github/top-think/think)
 [![Downloads](https://img.shields.io/github/downloads/top-think/think/total.svg)](https://github.com/top-think/think/releases)
 [![Releases](https://img.shields.io/github/release/top-think/think.svg)](https://github.com/top-think/think/releases/latest)
 [![Releases Downloads](https://img.shields.io/github/downloads/top-think/think/latest/total.svg)](https://github.com/top-think/think/releases/latest)
