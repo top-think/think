@@ -12,17 +12,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
-    },
-    "require-dev": {
-        "johnkary/phpunit-speedtrap": "^1.0",
-        "mikey179/vfsStream": "~1.6",
-        "phploc/phploc": "*",
-        "phpunit/phpunit": "4.8.*",
-        "sebastian/phpcpd": "*",
-        "squizlabs/php_codesniffer": "2.*"
-    },
-    "config": {
-        "vendor-dir": "thinkphp/vendor"
+        "php": ">=5.4.0",
+        "topthink/framework": "dev-master"
     }
 }
