@@ -101,13 +101,12 @@ class Validate
      * @access public
      * @param array $rules 验证规则
      * @param array $message 验证提示信息
-     * @param array $config 验证参数
      * @return Validate
      */
-    public static function make($rules = [], $message = [], $config = [])
+    public static function make($rules = [], $message = [])
     {
         if (is_null(self::$instance)) {
-            self::$instance = new self($rules, $message, $config);
+            self::$instance = new self($rules, $message);
         }
         return self::$instance;
     }
