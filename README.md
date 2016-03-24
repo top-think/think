@@ -1,4 +1,4 @@
-thinkphp5.0.0 RC2
+ThinkPHP 5.0.0 RC2
 ===============
 
 [![Build Status](https://img.shields.io/travis/top-think/think.svg)](https://travis-ci.org/top-think/think)
