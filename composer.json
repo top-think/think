@@ -13,9 +13,6 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "topthink/framework": "*"
-    },
-    "config": {
-        "vendor-dir": "type:wordpress-plugin"
+        "topthink/framework": "dev-master"
     }
 }
