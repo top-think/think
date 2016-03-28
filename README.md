@@ -32,10 +32,6 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 
 ## 目录结构
 
-ThinkPHP5支持两种不同的运行模式，两种模式下目录结构略有不同。
-
-### 独立式
-
 初始的目录结构如下：
 
 ~~~
@@ -73,21 +69,19 @@ www  WEB部署目录（或者子目录）
 │  ├─mode               应用模式目录
 │  ├─tpl                系统模板目录
 │  ├─tests              单元测试文件目录
-│  ├─vendor             第三方类库目录（Composer依赖库）
 │  ├─base.php           基础定义文件
 │  ├─convention.php     框架惯例配置文件
 │  ├─helper.php         助手函数文件
 │  ├─phpunit.xml        phpunit配置文件
 │  └─start.php          框架入口文件
+│
+├─extend                扩展类库目录
+├─vendor                第三方类库目录（Composer依赖库）
 ~~~
 
 > router.php用于php自带webserver支持，可用于快速测试
 > 切换到public目录后，启动命令：php -S localhost:8888  router.php
 > 上面的目录结构和名称是可以改变的，这取决于你的入口文件和配置参数。
-
-### composer包模式
-
-此时目录结构与独立式类似，但是根目录没有 `thinkphp` 目录，取而代之的是 `vendor/topthink/framework`。
 
 ## 命名规范
 
