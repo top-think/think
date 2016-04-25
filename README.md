@@ -1,4 +1,4 @@
-ThinkPHP 5.0.0 RC2
+ThinkPHP 5.0.0 RC3
 ===============
 
 [![Downloads](https://img.shields.io/github/downloads/top-think/think/total.svg)](https://github.com/top-think/think/releases)
@@ -13,6 +13,7 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
  + 核心功能组件化
  + 强化路由功能
  + 更灵活的控制器
+ + 重构的模型和数据库类
  + 配置文件可分离
  + 重写的自动验证和完成
  + 简化扩展机制
@@ -63,8 +64,7 @@ www  WEB部署目录（或者子目录）
 │
 ├─public                WEB目录（对外访问目录）
 │  ├─index.php          入口文件
-│  ├─.htaccess          用于apache的重写
-│  └─router.php         快速测试文件（用于PHP内置webserver）
+│  └─.htaccess          用于apache的重写
 │
 ├─thinkphp              框架系统目录
 │  ├─lang               语言文件目录
