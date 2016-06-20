@@ -94,10 +94,8 @@ return [
     'url_domain_deploy'      => false,
     // 域名根，如.thinkphp.cn
     'url_domain_root'        => '',
-    // 是否自动转换URL中的控制器名
-    'url_controller_convert' => true,
-    // 是否自动转换URL中的操作名
-    'url_action_convert'     => true,
+    // 是否自动转换URL中的控制器和操作名
+    'url_convert'            => true,
     // 默认的访问控制器层
     'url_controller_layer'   => 'controller',
     // 表单请求类型伪装变量
@@ -149,7 +147,7 @@ return [
     // +----------------------------------------------------------------------
 
     'log'                    => [
-        // 日志记录方式，支持 file socket trace sae
+        // 日志记录方式，支持 file socket trace sae browser
         'type' => 'File',
         // 日志保存目录
         'path' => LOG_PATH,
