@@ -13,9 +13,5 @@
 // 定义项目路径
 define('APP_PATH', './application/');
 
-define('APP_AUTO_RUN', false);
 // 加载框架引导文件
-require './thinkphp/start.php';
-
-\think\App::initCommon();
-\think\Console::init();
+require './thinkphp/console.php';
