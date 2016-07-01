@@ -1,4 +1,4 @@
-ThinkPHP 5.0.0 RC3
+ThinkPHP 5.0 RC4
 ===============
 
 [![Downloads](https://img.shields.io/github/downloads/top-think/think/total.svg)](https://github.com/top-think/think/releases)
@@ -46,6 +46,7 @@ www  WEB部署目录（或者子目录）
 ├─composer.json         composer定义文件
 ├─README.md             README文件
 ├─LICENSE.txt           授权说明文件
+├─think                 命令行入口文件
 ├─application           应用目录
 │  ├─common             公共模块目录（可以更改）
 │  ├─runtime            应用的运行时目录（可写，可定制）
@@ -76,6 +77,7 @@ www  WEB部署目录（或者子目录）
 │  ├─tpl                系统模板目录
 │  ├─tests              单元测试文件目录
 │  ├─base.php           基础定义文件
+│  ├─console.php        控制台入口文件
 │  ├─convention.php     框架惯例配置文件
 │  ├─helper.php         助手函数文件
 │  ├─phpunit.xml        phpunit配置文件
