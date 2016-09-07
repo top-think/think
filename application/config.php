@@ -98,7 +98,7 @@ return [
     'url_route_must'         => false,
     // 域名部署
     'url_domain_deploy'      => false,
-    // 域名根，如.thinkphp.cn
+    // 域名根，如thinkphp.cn
     'url_domain_root'        => '',
     // 是否自动转换URL中的控制器和操作名
     'url_convert'            => true,
