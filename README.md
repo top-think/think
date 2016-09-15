@@ -1,9 +1,7 @@
 ThinkPHP 5.0
 ===============
 
-[![Github All Releases](https://img.shields.io/github/downloads/top-think/think/total.svg?maxAge=2592000)](https://github.com/top-think/think/releases)
 [![GitHub release](https://img.shields.io/github/release/top-think/think.svg?maxAge=2592000)](https://github.com/top-think/think/releases/latest)
-[![Github Releases](https://img.shields.io/github/downloads/top-think/think/latest/total.svg?maxAge=2592000)](https://github.com/top-think/think/releases/latest)
 [![Packagist](https://img.shields.io/packagist/v/topthink/think.svg?maxAge=2592000)](https://packagist.org/packages/topthink/think)
 [![Packagist](https://img.shields.io/packagist/dt/topthink/think.svg?maxAge=2592000)](https://packagist.org/packages/topthink/think)
 
