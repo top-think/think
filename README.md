@@ -1,4 +1,4 @@
-ThinkPHP 5.0 RC4
+ThinkPHP 5.0
 ===============
 
 [![Downloads](https://img.shields.io/github/downloads/top-think/think/total.svg)](https://github.com/top-think/think/releases)
@@ -30,12 +30,6 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 > ThinkPHP5的运行环境要求PHP5.4以上。
 
 详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancloud.cn/manual/thinkphp5)
-
-## 使用 Composer 安装 ThinkPHP5
-~~~
-composer create-project topthink/think tp5 dev-master --prefer-dist
-~~~
-> 因为目前 ThinkPHP 5 正处于高速发展阶段，所以目前只能通过 dev-master 分支来初始化项目
 
 ## 目录结构
 
