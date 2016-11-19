@@ -1,11 +1,10 @@
-ThinkPHP 5.0.0 RC2
+ThinkPHP 5.0
 ===============
 
-[![Downloads](https://img.shields.io/github/downloads/top-think/think/total.svg)](https://github.com/top-think/think/releases)
-[![Releases](https://img.shields.io/github/release/top-think/think.svg)](https://github.com/top-think/think/releases/latest)
-[![Releases Downloads](https://img.shields.io/github/downloads/top-think/think/latest/total.svg)](https://github.com/top-think/think/releases/latest)
-[![Packagist Status](https://img.shields.io/packagist/v/top-think/think.svg)](https://packagist.org/packages/topthink/think)
-[![Packagist Downloads](https://img.shields.io/packagist/dt/top-think/think.svg)](https://packagist.org/packages/topthink/think)
+[![Total Downloads](https://poser.pugx.org/topthink/think/downloads)](https://packagist.org/packages/topthink/think)
+[![Latest Stable Version](https://poser.pugx.org/topthink/think/v/stable)](https://packagist.org/packages/topthink/think)
+[![Latest Unstable Version](https://poser.pugx.org/topthink/think/v/unstable)](https://packagist.org/packages/topthink/think)
+[![License](https://poser.pugx.org/topthink/think/license)](https://packagist.org/packages/topthink/think)
 
 ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PHP版本要求提升到5.4，对已有的CBD模式做了更深的强化，优化核心，减少依赖，基于全新的架构思想和命名空间实现，是ThinkPHP突破原有框架思路的颠覆之作，其主要特性包括：
 
@@ -13,6 +12,7 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
  + 核心功能组件化
  + 强化路由功能
  + 更灵活的控制器
+ + 重构的模型和数据库类
  + 配置文件可分离
  + 重写的自动验证和完成
  + 简化扩展机制
@@ -32,20 +32,12 @@ ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PH
 
 ## 目录结构
 
-ThinkPHP5支持两种不同的运行模式，两种模式下目录结构略有不同。
-
-### 独立式
-
 初始的目录结构如下：
 
 ~~~
 www  WEB部署目录（或者子目录）
-├─composer.json         composer定义文件
-├─README.md             README文件
-├─LICENSE.txt           授权说明文件
 ├─application           应用目录
 │  ├─common             公共模块目录（可以更改）
-│  ├─runtime            应用的运行时目录（可写，可定制）
 │  ├─module_name        模块目录
 │  │  ├─config.php      模块配置文件
 │  │  ├─common.php      模块函数文件
@@ -54,15 +46,17 @@ www  WEB部署目录（或者子目录）
 │  │  ├─view            视图目录
 │  │  └─ ...            更多类库目录
 │  │
+│  ├─command.php        命令行工具配置文件
 │  ├─common.php         公共函数文件
 │  ├─config.php         公共配置文件
 │  ├─route.php          路由配置文件
+│  ├─tags.php           应用行为扩展定义文件
 │  └─database.php       数据库配置文件
 │
 ├─public                WEB目录（对外访问目录）
 │  ├─index.php          入口文件
-│  ├─.htaccess          用于apache的重写
-│  └─router.php         快速测试文件（用于PHP内置webserver）
+│  ├─router.php         快速测试文件
+│  └─.htaccess          用于apache的重写
 │
 ├─thinkphp              框架系统目录
 │  ├─lang               语言文件目录
@@ -70,28 +64,31 @@ www  WEB部署目录（或者子目录）
 │  │  ├─think           Think类库包目录
 │  │  └─traits          系统Trait目录
 │  │
-│  ├─mode               应用模式目录
 │  ├─tpl                系统模板目录
-│  ├─tests              单元测试文件目录
-│  ├─vendor             第三方类库目录（Composer依赖库）
 │  ├─base.php           基础定义文件
+│  ├─console.php        控制台入口文件
 │  ├─convention.php     框架惯例配置文件
 │  ├─helper.php         助手函数文件
 │  ├─phpunit.xml        phpunit配置文件
 │  └─start.php          框架入口文件
+│
+├─extend                扩展类库目录
+├─runtime               应用的运行时目录（可写，可定制）
+├─vendor                第三方类库目录（Composer依赖库）
+├─build.php             自动生成定义文件（参考）
+├─composer.json         composer 定义文件
+├─LICENSE.txt           授权说明文件
+├─README.md             README 文件
+├─think                 命令行入口文件
 ~~~
 
 > router.php用于php自带webserver支持，可用于快速测试
 > 切换到public目录后，启动命令：php -S localhost:8888  router.php
 > 上面的目录结构和名称是可以改变的，这取决于你的入口文件和配置参数。
 
-### composer包模式
-
-此时目录结构与独立式类似，但是根目录没有 `thinkphp` 目录，取而代之的是 `vendor/topthink/framework`。
-
 ## 命名规范
 
-ThinkPHP5的命名规范如下：
+`ThinkPHP5`遵循PSR-2命名规范和PSR-4自动加载规范，并且注意如下规范：
 
 ### 目录和文件
 
@@ -101,23 +98,21 @@ ThinkPHP5的命名规范如下：
 *   类名和类文件名保持一致，统一采用驼峰法命名（首字母大写）；
 
 ### 函数和类、属性命名
-*   类的命名采用驼峰法，并且首字母大写，例如 `User`、`UserType`，不需要添加后缀，例如UserController应该直接命名为User；
+*   类的命名采用驼峰法，并且首字母大写，例如 `User`、`UserType`，默认不需要添加后缀，例如`UserController`应该直接命名为`User`；
 *   函数的命名使用小写字母和下划线（小写字母开头）的方式，例如 `get_client_ip`；
-*   方法的命名使用驼峰法，并且首字母小写或者使用下划线“_”，例如 `getUserName`，`_parseType`，通常下划线开头的方法属于私有方法；
-*   属性的命名使用驼峰法，并且首字母小写或者使用下划线“_”，例如 `tableName`、`_instance`，通常下划线开头的属性属于私有属性；
+*   方法的命名使用驼峰法，并且首字母小写，例如 `getUserName`；
+*   属性的命名使用驼峰法，并且首字母小写，例如 `tableName`、`instance`；
 *   以双下划线“__”打头的函数或方法作为魔法方法，例如 `__call` 和 `__autoload`；
 
 ### 常量和配置
-*   常量以大写字母和下划线命名，例如 `APP_DEBUG`和 `APP_MODE`；
-*   配置参数以小写字母和下划线命名，例如 `url_route_on`；
+*   常量以大写字母和下划线命名，例如 `APP_PATH`和 `THINK_PATH`；
+*   配置参数以小写字母和下划线命名，例如 `url_route_on` 和`url_convert`；
 
 ### 数据表和字段
-*   数据表和字段采用小写加下划线方式命名，并注意字段名不要以下划线开头，例如 think_user 表和 user_name字段，类似 _username 这样的数据表字段可能会被过滤。
+*   数据表和字段采用小写加下划线方式命名，并注意字段名不要以下划线开头，例如 `think_user` 表和 `user_name`字段，不建议使用驼峰和中文作为数据表字段命名。
 
 ## 参与开发
-注册并登录 Github 帐号， fork 本项目并进行改动。
-
-更多细节参阅 [CONTRIBUTING.md](CONTRIBUTING.md)
+请参阅 [ThinkPHP5 核心框架包](https://github.com/top-think/framework)。
 
 ## 版权信息
 
