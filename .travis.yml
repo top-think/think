@@ -20,13 +20,12 @@ install:
   - composer require --update-no-dev --no-interaction "topthink/think-migration:^1.0"
   - composer require --update-no-dev --no-interaction "topthink/think-captcha:^1.0"
   - composer require --update-no-dev --no-interaction "topthink/think-mongo:^1.0"
-  - composer require --update-no-dev --no-interaction "topthink/think-testing:^1.0"
   - composer require --update-no-dev --no-interaction "topthink/think-worker:^1.0"
   - composer require --update-no-dev --no-interaction "topthink/think-helper:^1.0"
   - composer require --update-no-dev --no-interaction "topthink/think-queue:^1.0"
   - composer require --update-no-dev --no-interaction "topthink/think-angular:^1.0"
-  - zip -r --exclude='*.git*' --exclude='*.zip' --exclude='*.travis.yml' ThinkPHP_Full.zip .
   - composer require --dev --update-no-dev --no-interaction "topthink/think-testing:^1.0"
+  - zip -r --exclude='*.git*' --exclude='*.zip' --exclude='*.travis.yml' ThinkPHP_Full.zip .
 
 script:
   - php think unit
