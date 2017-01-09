@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /subdirpath/ #你的子目录
+
+RewriteCond $1 !^(index\.php|assets|robots\.txt) # 排除
+RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
