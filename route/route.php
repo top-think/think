@@ -9,14 +9,11 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-Route::get('/', function () {
+Route::get('think', function () {
     return 'hello,ThinkPHP5!';
 });
 
-Route::group('hello', function () {
-    Route::get(':id', 'index/hello');
-    Route::post(':name', 'index/hello');
-}, [], ['id' => '\d+', 'name' => '\w+']);
+Route::get('hello/:name', 'index/hello');
 
 return [
 
