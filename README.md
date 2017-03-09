@@ -16,7 +16,6 @@ ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特
 
 > ThinkPHP5的运行环境要求PHP5.6以上。
 
-详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancloud.cn/manual/thinkphp5)
 
 ## 目录结构
 
