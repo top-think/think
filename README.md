@@ -1,34 +1,21 @@
-ThinkPHP 5.0
+ThinkPHP 5.1Alpha
 ===============
 
-[![Total Downloads](https://poser.pugx.org/topthink/think/downloads)](https://packagist.org/packages/topthink/think)
-[![Latest Stable Version](https://poser.pugx.org/topthink/think/v/stable)](https://packagist.org/packages/topthink/think)
-[![Latest Unstable Version](https://poser.pugx.org/topthink/think/v/unstable)](https://packagist.org/packages/topthink/think)
-[![License](https://poser.pugx.org/topthink/think/license)](https://packagist.org/packages/topthink/think)
+ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特性包括：
 
-ThinkPHP5在保持快速开发和大道至简的核心理念不变的同时，PHP版本要求提升到5.4，对已有的CBD模式做了更深的强化，优化核心，减少依赖，基于全新的架构思想和命名空间实现，是ThinkPHP突破原有框架思路的颠覆之作，其主要特性包括：
+ + 采用容器统一管理对象
+ + 支持Facade
+ + 配置和路由目录独立
+ + 取消系统常量
+ + 助手函数增强
+ + 类库别名机制
+ + 增加条件查询
+ + 配置采用二级
+ + 依赖注入完善
 
- + 基于命名空间和众多PHP新特性
- + 核心功能组件化
- + 强化路由功能
- + 更灵活的控制器
- + 重构的模型和数据库类
- + 配置文件可分离
- + 重写的自动验证和完成
- + 简化扩展机制
- + API支持完善
- + 改进的Log类
- + 命令行访问支持
- + REST支持
- + 引导文件支持
- + 方便的自动生成定义
- + 真正惰性加载
- + 分布式环境支持
- + 更多的社交类库
 
-> ThinkPHP5的运行环境要求PHP5.4以上。
+> ThinkPHP5的运行环境要求PHP5.6以上。
 
-详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancloud.cn/manual/thinkphp5)
 
 ## 目录结构
 
@@ -39,19 +26,34 @@ www  WEB部署目录（或者子目录）
 ├─application           应用目录
 │  ├─common             公共模块目录（可以更改）
 │  ├─module_name        模块目录
-│  │  ├─config.php      模块配置文件
 │  │  ├─common.php      模块函数文件
 │  │  ├─controller      控制器目录
 │  │  ├─model           模型目录
 │  │  ├─view            视图目录
 │  │  └─ ...            更多类库目录
 │  │
-│  ├─command.php        命令行工具配置文件
+│  ├─command.php        命令行定义文件
 │  ├─common.php         公共函数文件
-│  ├─config.php         公共配置文件
-│  ├─route.php          路由配置文件
-│  ├─tags.php           应用行为扩展定义文件
-│  └─database.php       数据库配置文件
+│  └─tags.php           应用行为扩展定义文件
+│
+├─config                应用配置目录
+│  ├─module_name        模块配置目录
+│  │  ├─database.php    数据库配置
+│  │  ├─cache           缓存配置
+│  │  └─ ...            
+│  │
+│  ├─app.php            应用配置
+│  ├─cache.php          缓存配置
+│  ├─cookie.php         Cookie配置
+│  ├─database.php       数据库配置
+│  ├─log.php            日志配置
+│  ├─session.php        Session配置
+│  ├─template.php       模板引擎配置
+│  └─trace.php          Trace配置
+│
+├─route                 路由定义目录
+│  ├─route.php          路由定义
+│  └─...                更多
 │
 ├─public                WEB目录（对外访问目录）
 │  ├─index.php          入口文件
@@ -85,6 +87,27 @@ www  WEB部署目录（或者子目录）
 > router.php用于php自带webserver支持，可用于快速测试
 > 切换到public目录后，启动命令：php -S localhost:8888  router.php
 > 上面的目录结构和名称是可以改变的，这取决于你的入口文件和配置参数。
+
+## 升级指导
+
+原有下面系统类库的命名空间需要调整：
+
+* think\App      => think\facade\App （或者 App ）
+* think\Cache    => think\facade\Cache （或者 Cache ）
+* think\Config   => think\facade\Config （或者 Config ）
+* think\Cookie   => think\facade\Cookie （或者 Cookie ）
+* think\Debug    => think\facade\Debug （或者 Debug ）
+* think\Hook     => think\facade\Hook （或者 Hook ）
+* think\Lang     => think\facade\Lang （或者 Lang ）
+* think\Log      => think\facade\Log （或者 Log ）
+* think\Request  => think\facade\Request （或者 Request ）
+* think\Response => think\facade\Reponse （或者 Reponse ）
+* think\Route    => think\facade\Route （或者 Route ）
+* think\Session  => think\facade\Session （或者 Session ）
+* think\Url      => think\facade\Url （或者 Url ）
+
+原有的配置文件config.php 拆分为app.php cache.php 等独立配置文件 放入config目录。
+原有的路由定义文件route.php 移动到route目录
 
 ## 命名规范
 

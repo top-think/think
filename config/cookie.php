@@ -9,13 +9,22 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+// +----------------------------------------------------------------------
+// | Cookie设置
+// +----------------------------------------------------------------------
 return [
-    '__pattern__' => [
-        'name' => '\w+',
-    ],
-    '[hello]'     => [
-        ':id'   => ['index/hello', ['method' => 'get'], ['id' => '\d+']],
-        ':name' => ['index/hello', ['method' => 'post']],
-    ],
-
+    // cookie 名称前缀
+    'prefix'    => '',
+    // cookie 保存时间
+    'expire'    => 0,
+    // cookie 保存路径
+    'path'      => '/',
+    // cookie 有效域名
+    'domain'    => '',
+    //  cookie 启用安全传输
+    'secure'    => false,
+    // httponly设置
+    'httponly'  => '',
+    // 是否使用 setcookie
+    'setcookie' => true,
 ];
