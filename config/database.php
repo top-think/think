@@ -50,4 +50,6 @@ return [
     'datetime_format' => 'Y-m-d H:i:s',
     // 是否需要进行SQL性能分析
     'sql_explain'     => false,
+    // Query类
+    'query'           => '\\think\\db\\Query',
 ];
