@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2018 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -81,6 +81,8 @@ return [
     'route_complete_match'   => false,
     // 是否强制使用路由
     'url_route_must'         => false,
+    // 使用注解路由
+    'route_annotation'       => false,
     // 域名部署
     'url_domain_deploy'      => false,
     // 域名根，如thinkphp.cn
@@ -100,8 +102,6 @@ return [
     // 请求缓存有效期
     'request_cache_expire'   => null,
 
-    // 视图输出字符串内容替换
-    'view_replace_str'       => [],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => Env::get('think_path') . 'tpl/dispatch_jump.tpl',
     'dispatch_error_tmpl'    => Env::get('think_path') . 'tpl/dispatch_jump.tpl',

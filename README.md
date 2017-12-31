@@ -1,10 +1,12 @@
-ThinkPHP 5.1RC1
+ThinkPHP 5.1
 ===============
 
 ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特性包括：
 
  + 采用容器统一管理对象
  + 支持Facade
+ + 注解路由支持
+ + 路由跨域请求支持
  + 配置和路由目录独立
  + 取消系统常量
  + 助手函数增强
@@ -144,7 +146,7 @@ ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2006-2017 by ThinkPHP (http://thinkphp.cn)
+版权所有Copyright © 2006-2018 by ThinkPHP (http://thinkphp.cn)
 
 All rights reserved。
 
