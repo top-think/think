@@ -14,9 +14,12 @@
 // +----------------------------------------------------------------------
 
 return [
-
+    // 应用名称
+    'app_name'               => '',
+    // 应用地址
+    'app_host'               => '',
     // 应用调试模式
-    'app_debug'              => true,
+    'app_debug'              => false,
     // 应用Trace
     'app_trace'              => false,
     // 应用模式状态
@@ -48,6 +51,10 @@ return [
     // 控制器类后缀
     'controller_suffix'      => false,
 
+    // +----------------------------------------------------------------------
+    // | 模块设置
+    // +----------------------------------------------------------------------
+
     // 默认模块名
     'default_module'         => 'index',
     // 禁止访问模块
@@ -58,12 +65,20 @@ return [
     'default_action'         => 'index',
     // 默认验证器
     'default_validate'       => '',
+    // 默认的空模块名
+    'empty_module'           => '',
     // 默认的空控制器名
     'empty_controller'       => 'Error',
+    // 操作方法前缀
+    'use_action_prefix'      => false,
     // 操作方法后缀
     'action_suffix'          => '',
     // 自动搜索控制器
     'controller_auto_search' => false,
+
+    // +----------------------------------------------------------------------
+    // | URL设置
+    // +----------------------------------------------------------------------
 
     // PATHINFO变量名 用于兼容模式
     'var_pathinfo'           => 's',
@@ -71,20 +86,22 @@ return [
     'pathinfo_fetch'         => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
     // pathinfo分隔符
     'pathinfo_depr'          => '/',
+    // HTTPS代理标识
+    'https_agent_name'       => '',
     // URL伪静态后缀
     'url_html_suffix'        => 'html',
     // URL普通方式参数 用于自动生成
     'url_common_param'       => false,
     // URL参数方式 0 按名称成对解析 1 按顺序解析
     'url_param_type'         => 0,
-    // 路由使用完整匹配
-    'route_complete_match'   => false,
+    // 是否开启路由延迟解析
+    'url_lazy_route'         => false,
     // 是否强制使用路由
     'url_route_must'         => false,
+    // 路由是否完全匹配
+    'route_complete_match'   => false,
     // 使用注解路由
     'route_annotation'       => false,
-    // 域名部署
-    'url_domain_deploy'      => false,
     // 域名根，如thinkphp.cn
     'url_domain_root'        => '',
     // 是否自动转换URL中的控制器和操作名
@@ -101,6 +118,8 @@ return [
     'request_cache'          => false,
     // 请求缓存有效期
     'request_cache_expire'   => null,
+    // 全局请求缓存排除规则
+    'request_cache_except'   => [],
 
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => Env::get('think_path') . 'tpl/dispatch_jump.tpl',
