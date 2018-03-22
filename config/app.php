@@ -98,6 +98,8 @@ return [
     'url_lazy_route'         => false,
     // 是否强制使用路由
     'url_route_must'         => false,
+    // 合并路由规则
+    'route_rule_merge'       => false,
     // 路由是否完全匹配
     'route_complete_match'   => false,
     // 使用注解路由
