@@ -22,8 +22,6 @@ return [
     'app_debug'              => false,
     // 应用Trace
     'app_trace'              => false,
-    // 应用模式状态
-    'app_status'             => '',
     // 是否支持多模块
     'app_multi_module'       => true,
     // 入口自动绑定模块
