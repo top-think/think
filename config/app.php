@@ -86,6 +86,8 @@ return [
     'pathinfo_depr'          => '/',
     // HTTPS代理标识
     'https_agent_name'       => '',
+    // IP代理获取标识
+    'http_agent_ip'          => 'X-REAL-IP',
     // URL伪静态后缀
     'url_html_suffix'        => 'html',
     // URL普通方式参数 用于自动生成
