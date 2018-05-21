@@ -98,6 +98,7 @@ www  WEB部署目录（或者子目录）
 *   类名和类文件名保持一致，统一采用驼峰法命名（首字母大写）；
 
 ### 函数和类、属性命名
+
 *   类的命名采用驼峰法，并且首字母大写，例如 `User`、`UserType`，默认不需要添加后缀，例如`UserController`应该直接命名为`User`；
 *   函数的命名使用小写字母和下划线（小写字母开头）的方式，例如 `get_client_ip`；
 *   方法的命名使用驼峰法，并且首字母小写，例如 `getUserName`；
@@ -105,13 +106,16 @@ www  WEB部署目录（或者子目录）
 *   以双下划线“__”打头的函数或方法作为魔法方法，例如 `__call` 和 `__autoload`；
 
 ### 常量和配置
+
 *   常量以大写字母和下划线命名，例如 `APP_PATH`和 `THINK_PATH`；
 *   配置参数以小写字母和下划线命名，例如 `url_route_on` 和`url_convert`；
 
 ### 数据表和字段
+
 *   数据表和字段采用小写加下划线方式命名，并注意字段名不要以下划线开头，例如 `think_user` 表和 `user_name`字段，不建议使用驼峰和中文作为数据表字段命名。
 
 ## 参与开发
+
 请参阅 [ThinkPHP5 核心框架包](https://github.com/top-think/framework)。
 
 ## 版权信息
@@ -120,7 +124,7 @@ ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2006-2017 by ThinkPHP (http://thinkphp.cn)
+版权所有Copyright © 2006-2018 by ThinkPHP (http://thinkphp.cn)
 
 All rights reserved。
 
