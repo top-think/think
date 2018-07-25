@@ -22,6 +22,37 @@ ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特
 
 > ThinkPHP5的运行环境要求PHP5.6以上。
 
+## 安装
+
+使用composer安装
+
+~~~
+composer create-project topthink/think tp
+~~~
+
+启动服务
+
+~~~
+cd tp
+php think run
+~~~
+
+然后就可以在浏览器中访问
+
+~~~
+http://localhost:8000
+~~~
+
+更新框架
+~~~
+composer update topthink/framework
+~~~
+
+
+## 在线手册
+
++ [完全开发手册](https://www.kancloud.cn/manual/thinkphp5_1/content)
++ [升级指导](https://www.kancloud.cn/manual/thinkphp5_1/354155) 
 
 ## 目录结构
 
@@ -92,27 +123,6 @@ www  WEB部署目录（或者子目录）
 
 > 可以使用php自带webserver快速测试
 > 切换到根目录后，启动命令：php think run
-
-## 升级指导
-
-原有下面系统类库的命名空间需要调整：
-
-* think\App      => think\facade\App （或者 App ）
-* think\Cache    => think\facade\Cache （或者 Cache ）
-* think\Config   => think\facade\Config （或者 Config ）
-* think\Cookie   => think\facade\Cookie （或者 Cookie ）
-* think\Debug    => think\facade\Debug （或者 Debug ）
-* think\Hook     => think\facade\Hook （或者 Hook ）
-* think\Lang     => think\facade\Lang （或者 Lang ）
-* think\Log      => think\facade\Log （或者 Log ）
-* think\Request  => think\facade\Request （或者 Request ）
-* think\Response => think\facade\Reponse （或者 Reponse ）
-* think\Route    => think\facade\Route （或者 Route ）
-* think\Session  => think\facade\Session （或者 Session ）
-* think\Url      => think\facade\Url （或者 Url ）
-
-原有的配置文件config.php 拆分为app.php cache.php 等独立配置文件 放入config目录。
-原有的路由定义文件route.php 移动到route目录
 
 ## 命名规范
 
