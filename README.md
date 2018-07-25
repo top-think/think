@@ -17,7 +17,7 @@ ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特
  + 依赖注入完善
  + 支持`PSR-3`日志规范
  + 中间件支持（V5.1.6+）
- + 支持`Swoole`/`Workerman`运行（`V5.1.18+`）
+ + Swoole/Workerman支持（V5.1.18+）
 
 
 > ThinkPHP5的运行环境要求PHP5.6以上。
