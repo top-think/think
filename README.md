@@ -163,7 +163,7 @@ www  WEB部署目录（或者子目录）
 
 ## 参与开发
 
-请参阅 [ThinkPHP5 核心框架包](https://github.com/top-think/framework)。
+请参阅 [ThinkPHP5 核心框架包 - 如何贡献我的源代码](https://github.com/top-think/framework/blob/5.1/CONTRIBUTING.md)。
 
 ## 版权信息
 
