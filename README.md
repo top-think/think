@@ -7,7 +7,7 @@ ThinkPHP 5.1 —— 12载初心，你值得信赖的PHP框架
 [![Build Status](https://travis-ci.org/top-think/framework.svg?branch=master)](https://travis-ci.org/top-think/framework)
 [![Total Downloads](https://poser.pugx.org/topthink/framework/downloads)](https://packagist.org/packages/topthink/framework)
 [![Latest Stable Version](https://poser.pugx.org/topthink/framework/v/stable)](https://packagist.org/packages/topthink/framework)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D5.6-8892BF.svg)](http://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D7.0-8892BF.svg)](http://www.php.net/)
 [![License](https://poser.pugx.org/topthink/framework/license)](https://packagist.org/packages/topthink/framework)
 
 ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特性包括：
@@ -29,7 +29,9 @@ ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特
  + Swoole/Workerman支持（V5.1.18+）
 
 
-> ThinkPHP5的运行环境要求PHP5.6以上。
+> ThinkPHP5的运行环境要求PHP5.6+。
+
+> ThinkPHP5.1.22以上版本的运行环境要求PHP7.0+。
 
 ## 安装
 
