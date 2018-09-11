@@ -12,8 +12,12 @@
 // [ 应用入口文件 ]
 namespace think;
 
+// 使用composer自动加载
+require __DIR__ . '/../vendor/autoload.php';
+
+// 不使用composer自动加载
 // 加载基础文件
-require __DIR__ . '/../thinkphp/base.php';
+//require __DIR__ . '/../thinkphp/base.php';
 
 // 执行应用并响应
-App::getInstance()->run()->send();
+(new App())->run()->send();
