@@ -22,7 +22,10 @@
     "autoload": {
         "psr-4": {
             "app\\": "app"
-        }
+        },
+        "psr-0":{
+            "": "extend/"
+        }        
     },
     "config": {
         "preferred-install": "dist"
