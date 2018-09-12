@@ -12,15 +12,7 @@
 // [ 应用入口文件 ]
 namespace think;
 
-require __DIR__ . '/../vendor/topthink/framework/src/library/think/Loader.php';
-
-// 注册框架自动加载
-Loader::register();
-
-// 如果需要使用composer自动加载
-// Loader::register(true);
-// 或者纯粹使用composer自动加载
-// require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 // 执行应用并响应
 (new App())->run()->send();
