@@ -25,10 +25,8 @@ return [
     'app_trace'              => false,
     // 是否支持多模块
     'app_multi_module'       => true,
-    // 入口自动绑定模块
-    'auto_bind_module'       => false,
-    // 注册的根命名空间
-    'root_namespace'         => [],
+    // 注册的应用命名空间
+    'app_namespace'          => [],
     // 默认输出类型
     'default_return_type'    => 'html',
     // 默认AJAX 数据返回格式,可选json xml ...
@@ -49,13 +47,6 @@ return [
     'class_suffix'           => false,
     // 控制器类后缀
     'controller_suffix'      => false,
-
-    // +----------------------------------------------------------------------
-    // | 模块设置
-    // +----------------------------------------------------------------------
-
-    // 默认模块名
-    'default_module'         => 'index',
     // 禁止访问模块
     'deny_module_list'       => ['common'],
     // 默认控制器名
@@ -64,8 +55,6 @@ return [
     'default_action'         => 'index',
     // 默认验证器
     'default_validate'       => '',
-    // 默认的空模块名
-    'empty_module'           => '',
     // 默认的空控制器名
     'empty_controller'       => 'Error',
     // 操作方法前缀
