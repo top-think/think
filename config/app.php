@@ -23,10 +23,10 @@ return [
     'app_debug'              => false,
     // 应用Trace
     'app_trace'              => false,
-    // 是否支持多模块
-    'app_multi_module'       => true,
-    // 注册的应用命名空间
-    'app_namespace'          => [],
+    // 应用根命名空间
+    'root_namespace'         => 'app',
+    // 应用命名空间
+    'app_namespace'          => '',
     // 默认输出类型
     'default_return_type'    => 'html',
     // 默认AJAX 数据返回格式,可选json xml ...
