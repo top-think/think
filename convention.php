@@ -11,17 +11,13 @@ return [
         'app_name'               => '',
         // 应用地址
         'app_host'               => '',
-        // 应用调试模式
+        // 应用调试模式（环境变量优先）
         'app_debug'              => false,
-        // 应用Trace
+        // 应用Trace（环境变量优先）
         'app_trace'              => false,
-        // 应用模式状态
-        'app_status'             => '',
-        // 是否支持多模块
-        'app_multi'              => true,
         // 应用根命名空间
         'root_namespace'         => 'app',
-        // 应用命名空间
+        // 应用命名空间（仅在多应用架构有效 请在具体的应用配置中设置）
         'app_namespace'          => '',
         // 默认输出类型
         'default_return_type'    => 'html',
@@ -35,23 +31,14 @@ return [
         'default_timezone'       => 'Asia/Shanghai',
         // 是否开启多语言
         'lang_switch_on'         => false,
-        // 默认全局过滤方法 用逗号分隔多个
-        'default_filter'         => '',
+        // 默认全局过滤方法
+        'default_filter'         => [],
         // 默认语言
         'default_lang'           => 'zh-cn',
         // 应用类库后缀
         'class_suffix'           => false,
         // 控制器类后缀
         'controller_suffix'      => false,
-
-        // +----------------------------------------------------------------------
-        // | 模块设置
-        // +----------------------------------------------------------------------
-
-        // 允许访问模块
-        'allow_app_list'         => [],
-        // 禁止访问模块
-        'deny_app_list'          => ['base'],
         // 默认控制器名
         'default_controller'     => 'Index',
         // 默认操作名
@@ -60,15 +47,11 @@ return [
         'default_validate'       => '',
         // 默认的空控制器名
         'empty_controller'       => 'Error',
-        // 操作方法前缀
-        'use_action_prefix'      => false,
-        // 操作方法后缀
-        'action_suffix'          => '',
         // 自动搜索控制器
         'controller_auto_search' => false,
 
         // +----------------------------------------------------------------------
-        // | URL设置
+        // | URL及路由设置
         // +----------------------------------------------------------------------
 
         // PATHINFO变量名 用于兼容模式
@@ -171,12 +154,25 @@ return [
     'log'      => [
         // 日志记录方式，内置 file socket 支持扩展
         'type'         => 'File',
-        // 日志保存目录
-        //'path'  => LOG_PATH,
+
         // 日志记录级别
         'level'        => [],
         // 是否记录trace信息到日志
         'record_trace' => false,
+
+        // 以下配置仅对文件方式日志有效
+        // 是否为单日志文件
+        'single'       => false,
+        // 日志文件最大限制
+        'file_size'    => 2097152,
+        // 日志目录
+        'path'         => '',
+        // 独立日志文件类型
+        'apart_level'  => [],
+        // 最大日志数量
+        'max_files'    => 0,
+        // 是否JSON格式记录
+        'json'         => false,
     ],
 
     // +----------------------------------------------------------------------
