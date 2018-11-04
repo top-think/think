@@ -47,8 +47,6 @@ return [
     'class_suffix'           => false,
     // 控制器类后缀
     'controller_suffix'      => false,
-    // 禁止访问模块
-    'deny_module_list'       => ['common'],
     // 默认控制器名
     'default_controller'     => 'Index',
     // 默认操作名
