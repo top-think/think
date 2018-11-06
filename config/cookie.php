@@ -24,7 +24,7 @@ return [
     //  cookie 启用安全传输
     'secure'    => false,
     // httponly设置
-    'httponly'  => '',
+    'httponly'  => false,
     // 是否使用 setcookie
     'setcookie' => true,
 ];
