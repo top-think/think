@@ -16,7 +16,7 @@ namespace think;
 require __DIR__ . '/vendor/autoload.php';
 
 // 应用初始化
-(new App())->initialize();
+(new App())->multi(false)->initialize();
 
 // 控制台初始化
 Console::init();
