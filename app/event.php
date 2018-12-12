@@ -9,13 +9,18 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-// 应用行为扩展定义文件
+// 事件定义文件
 return [
     'bind'      => [
     ],
     'listen'    => [
-        'AppInit'      => [],
-        'AppBegin'     => [],
+        'AppInit'      => [
+            'think\listener\LoadLangPack',
+            'think\listener\RouteCheck',
+        ],
+        'AppBegin'     => [
+            'think\listener\CheckRequestCache',
+        ],
         'ActionBegin'  => [],
         'AppEnd'       => [],
         'LogLevel'     => [],
