@@ -15,10 +15,6 @@ return [
         'app_debug'             => false,
         // 应用Trace（环境变量优先）
         'app_trace'             => false,
-        // 应用根命名空间
-        'root_namespace'        => 'app',
-        // 应用命名空间（仅在多应用架构有效 请在具体的应用配置中设置）
-        'app_namespace'         => '',
         // 默认输出类型
         'default_return_type'   => 'html',
         // 默认AJAX 数据返回格式,可选json xml ...
@@ -35,16 +31,12 @@ return [
         'default_filter'        => [],
         // 默认语言
         'default_lang'          => 'zh-cn',
-        // 应用类库后缀
-        'class_suffix'          => false,
         // 默认控制器名
         'default_controller'    => 'Index',
         // 默认操作名
         'default_action'        => 'index',
         // 默认验证器
         'default_validate'      => '',
-        // 默认的空控制器名
-        'empty_controller'      => 'Error',
 
         // +----------------------------------------------------------------------
         // | URL及路由设置

@@ -25,7 +25,6 @@ return [
         'AppEnd'       => [],
         'LogLevel'     => [],
         'LogWrite'     => [],
-        'ViewFilter'   => [],
         'ResponseSend' => [],
         'ResponseEnd'  => [],
     ],
