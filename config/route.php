@@ -15,47 +15,55 @@
 
 return [
     // PATHINFO变量名 用于兼容模式
-    'var_pathinfo'         => 's',
+    'var_pathinfo'          => 's',
     // 兼容PATH_INFO获取
-    'pathinfo_fetch'       => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
+    'pathinfo_fetch'        => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
     // pathinfo分隔符
-    'pathinfo_depr'        => '/',
+    'pathinfo_depr'         => '/',
     // HTTPS代理标识
-    'https_agent_name'     => '',
+    'https_agent_name'      => '',
     // URL伪静态后缀
-    'url_html_suffix'      => 'html',
+    'url_html_suffix'       => 'html',
     // URL普通方式参数 用于自动生成
-    'url_common_param'     => false,
+    'url_common_param'      => false,
     // 是否开启路由延迟解析
-    'url_lazy_route'       => false,
+    'url_lazy_route'        => false,
     // 是否强制使用路由
-    'url_route_must'       => false,
+    'url_route_must'        => false,
     // 合并路由规则
-    'route_rule_merge'     => false,
+    'route_rule_merge'      => false,
     // 路由是否完全匹配
-    'route_complete_match' => false,
+    'route_complete_match'  => false,
     // 使用注解路由
-    'route_annotation'     => false,
+    'route_annotation'      => false,
     // 域名根，如thinkphp.cn
-    'url_domain_root'      => '',
+    'url_domain_root'       => '',
     // 是否自动转换URL中的控制器和操作名
-    'url_convert'          => true,
+    'url_convert'           => true,
     // 表单请求类型伪装变量
-    'var_method'           => '_method',
+    'var_method'            => '_method',
     // 表单ajax伪装变量
-    'var_ajax'             => '_ajax',
+    'var_ajax'              => '_ajax',
     // 表单pjax伪装变量
-    'var_pjax'             => '_pjax',
+    'var_pjax'              => '_pjax',
     // 是否开启请求缓存 true自动缓存 支持设置请求缓存规则
-    'request_cache'        => false,
+    'request_cache'         => false,
     // 请求缓存有效期
-    'request_cache_expire' => null,
+    'request_cache_expire'  => null,
     // 全局请求缓存排除规则
-    'request_cache_except' => [],
+    'request_cache_except'  => [],
     // 默认控制器名
-    'default_controller'   => 'Index',
+    'default_controller'    => 'Index',
     // 默认操作名
-    'default_action'       => 'index',
+    'default_action'        => 'index',
     // 操作方法后缀
-    'action_suffix'        => '',
+    'action_suffix'         => '',
+    // 默认输出类型
+    'default_return_type'   => 'html',
+    // 默认AJAX 数据返回格式,可选json xml ...
+    'default_ajax_return'   => 'json',
+    // 默认JSONP格式返回的处理方法
+    'default_jsonp_handler' => 'jsonpReturn',
+    // 默认JSONP处理方法
+    'var_jsonp_handler'     => 'callback',
 ];
