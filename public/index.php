@@ -19,4 +19,4 @@ $app = (new App())->initialize();
 
 /** @var Web $web */
 $web = $app->make(Web::class);
-$web->controllerSuffix()->run()->send();
+$web->run()->send();
