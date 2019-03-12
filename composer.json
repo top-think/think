@@ -18,16 +18,16 @@
     "require": {
         "php": ">=7.1.0",
         "topthink/framework": "5.2.*-dev",
-        "topthink/think-view":"^1.0",
-	"topthink/think-template":"^2.0"
+        "topthink/think-view": "^1.0",
+        "topthink/think-template": "^2.0"
     },
     "autoload": {
         "psr-4": {
             "app\\": "app"
         },
-        "psr-0":{
+        "psr-0": {
             "": "extend/"
-        }        
+        }
     },
     "config": {
         "preferred-install": "dist"
