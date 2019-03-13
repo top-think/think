@@ -12,6 +12,9 @@
 
 namespace think;
 
+// 切换工作目录
+chdir(__DIR__);
+
 // 加载基础文件
 require __DIR__ . '/thinkphp/base.php';
 
