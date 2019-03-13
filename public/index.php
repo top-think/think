@@ -17,6 +17,6 @@ require __DIR__ . '/../vendor/autoload.php';
 // 执行应用并响应
 $app = (new App())->initialize();
 
-/** @var Web $web */
-$web = $app->make(Web::class);
-$web->run()->send();
+/** @var Http $http */
+$http = $app->make(Http::class);
+$http->run()->send();

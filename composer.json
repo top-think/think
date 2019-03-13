@@ -31,5 +31,10 @@
     },
     "config": {
         "preferred-install": "dist"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php think service:discover"
+        ]
     }
 }
