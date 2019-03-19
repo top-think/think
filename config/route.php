@@ -36,6 +36,8 @@ return [
     'route_complete_match'  => false,
     // 使用注解路由
     'route_annotation'      => false,
+    // 默认的路由变量规则
+    'default_route_pattern' => '[\w\.]+',
     // 域名根，如thinkphp.cn
     'url_domain_root'       => '',
     // 是否自动转换URL中的控制器和操作名
