@@ -14,14 +14,20 @@
 // +----------------------------------------------------------------------
 
 return [
-    // 应用名称
-    'app_name'                => '',
     // 应用地址
     'app_host'                => '',
-    // 应用调试模式
-    'app_debug'               => false,
     // 应用Trace
     'app_trace'               => false,
+    // 是否启用路由
+    'with_route'              => true,
+    // 自动多应用模式
+    'auto_multi_app'          => false,
+    // 应用映射
+    'app_map'                 => [],
+    // 域名绑定
+    'domain_bind'             => [],
+    // 默认应用
+    'default_app'             => 'index',
     // 默认时区
     'default_timezone'        => 'Asia/Shanghai',
     // 是否开启多语言

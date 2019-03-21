@@ -36,6 +36,18 @@ return [
     'route_complete_match'  => false,
     // 使用注解路由
     'route_annotation'      => false,
+    // 是否开启路由缓存
+    'route_check_cache'     => false,
+    // 路由缓存连接参数
+    'route_cache_option'    => [],
+    // 路由缓存Key
+    'route_check_cache_key' => '',
+    // 访问控制器层名称
+    'controller_layer'      => 'controller',
+    // 空控制器名
+    'empty_controller'      => 'Error',
+    // 是否使用控制器后缀
+    'controller_suffix'     => false,
     // 默认的路由变量规则
     'default_route_pattern' => '[\w\.]+',
     // 域名根，如thinkphp.cn
