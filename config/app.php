@@ -18,6 +18,8 @@ return [
     'app_host'                => '',
     // 应用Trace
     'app_trace'               => false,
+    // 应用的命名空间
+    'app_namespace'           => '',
     // 是否启用路由
     'with_route'              => true,
     // 自动多应用模式
