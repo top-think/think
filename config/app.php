@@ -15,41 +15,41 @@
 
 return [
     // 应用地址
-    'app_host'                => '',
-    // 应用Trace
-    'app_trace'               => false,
+    'app_host'              => '',
+    // 应用Trace（环境变量优先读取）
+    'app_trace'             => false,
     // 应用的命名空间
-    'app_namespace'           => '',
+    'app_namespace'         => '',
     // 是否启用路由
-    'with_route'              => true,
+    'with_route'            => true,
+    // 是否启用事件
+    'with_event'            => true,
     // 自动多应用模式
-    'auto_multi_app'          => false,
-    // 应用映射
-    'app_map'                 => [],
-    // 域名绑定
-    'domain_bind'             => [],
+    'auto_multi_app'        => false,
+    // 应用映射（自动多应用模式有效）
+    'app_map'               => [],
+    // 域名绑定（自动多应用模式有效）
+    'domain_bind'           => [],
     // 默认应用
-    'default_app'             => 'index',
+    'default_app'           => 'index',
     // 默认时区
-    'default_timezone'        => 'Asia/Shanghai',
+    'default_timezone'      => 'Asia/Shanghai',
     // 是否开启多语言
-    'lang_switch_on'          => false,
+    'lang_switch_on'        => false,
     // 默认语言
-    'default_lang'            => 'zh-cn',
+    'default_lang'          => 'zh-cn',
     // 默认验证器
-    'default_validate'        => '',
+    'default_validate'      => '',
 
     // 默认跳转页面对应的模板文件
-    'dispatch_success_tmpl'   => app()->getThinkPath() . 'tpl/dispatch_jump.tpl',
-    'dispatch_error_tmpl'     => app()->getThinkPath() . 'tpl/dispatch_jump.tpl',
+    'dispatch_success_tmpl' => app()->getThinkPath() . 'tpl/dispatch_jump.tpl',
+    'dispatch_error_tmpl'   => app()->getThinkPath() . 'tpl/dispatch_jump.tpl',
 
     // 异常页面的模板文件
-    'exception_tmpl'          => app()->getThinkPath() . 'tpl/think_exception.tpl',
+    'exception_tmpl'        => app()->getThinkPath() . 'tpl/think_exception.tpl',
 
     // 错误显示信息,非调试模式有效
-    'error_message'           => '页面错误！请稍后再试～',
+    'error_message'         => '页面错误！请稍后再试～',
     // 显示错误信息
-    'show_error_msg'          => false,
-    // 异常响应输出类型
-    'exception_response_type' => 'html',
+    'show_error_msg'        => false,
 ];
