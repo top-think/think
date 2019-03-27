@@ -15,4 +15,10 @@ namespace think;
 require __DIR__ . '/../vendor/autoload.php';
 
 // 执行HTTP应用并响应
-(new App())->http->run()->send();
+$http = (new App())->http;
+
+$response = $http->run();
+
+$response->send();
+
+$http->end($response);
