@@ -15,10 +15,10 @@ return [
     ],
     'listen'    => [
         'AppInit'      => [
-            'think\listener\LoadLangPack',
+            //  'think\listener\LoadLangPack',
         ],
         'AppBegin'     => [
-            'think\listener\CheckRequestCache',
+            //'think\listener\CheckRequestCache',
         ],
         'AppEnd'       => [],
         'LogLevel'     => [],
