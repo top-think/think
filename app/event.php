@@ -14,12 +14,8 @@ return [
     'bind'      => [
     ],
     'listen'    => [
-        'AppInit'      => [
-            //  'think\listener\LoadLangPack',
-        ],
-        'AppBegin'     => [
-            //'think\listener\CheckRequestCache',
-        ],
+        'AppInit'      => [],
+        'AppBegin'     => [],
         'AppEnd'       => [],
         'LogLevel'     => [],
         'LogWrite'     => [],
