@@ -25,7 +25,7 @@ return [
     // URL伪静态后缀
     'url_html_suffix'       => 'html',
     // URL普通方式参数 用于自动生成
-    'url_common_param'      => false,
+    'url_common_param'      => true,
     // 是否开启路由延迟解析
     'url_lazy_route'        => false,
     // 是否强制使用路由
