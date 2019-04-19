@@ -13,15 +13,15 @@
 return [
     'bind'      => [
     ],
+
     'listen'    => [
-        'AppInit'      => [],
-        'AppBegin'     => [],
-        'AppEnd'       => [],
-        'LogLevel'     => [],
-        'LogWrite'     => [],
-        'ResponseSend' => [],
-        'ResponseEnd'  => [],
+        'AppInit'  => [],
+        'HttpRun'  => [],
+        'HttpEnd'  => [],
+        'LogLevel' => [],
+        'LogWrite' => [],
     ],
+
     'subscribe' => [
     ],
 ];
