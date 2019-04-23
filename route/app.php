@@ -11,7 +11,7 @@
 use think\facade\Route;
 
 Route::get('think', function () {
-    return 'hello,ThinkPHP5!';
+    return 'hello,ThinkPHP6!';
 });
 
 Route::get('hello/:name', 'index/hello');
