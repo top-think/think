@@ -64,25 +64,6 @@ abstract class BaseController
 
         // 控制器初始化
         $this->initialize();
-        $this->registerMiddleware();
-    }
-
-    // 注册控制器中间件
-    private function registerMiddleware()
-    {
-        foreach ($this->middleware as $key => $val) {
-            if (!is_int($key)) {
-                if (isset($val['only']) && !in_array($this->request->action(), $val['only'])) {
-                    continue;
-                } elseif (isset($val['except']) && in_array($this->request->action(), $val['except'])) {
-                    continue;
-                } else {
-                    $val = $key;
-                }
-            }
-
-            $this->app->middleware->controller($val);
-        }
     }
 
     // 初始化
@@ -274,6 +255,6 @@ abstract class BaseController
      */
     protected function getResponseType()
     {
-        return $this->request->isJson() ? 'json' : 'html';
+        return $this->request->isJson() || $this->request->isAjax() ? 'json' : 'html';
     }
 }
