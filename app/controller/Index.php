@@ -1,7 +1,7 @@
 <?php
 namespace app\controller;
 
-class Index
+class Index extends BaseController
 {
     public function index()
     {
