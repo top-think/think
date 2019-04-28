@@ -14,7 +14,6 @@ namespace think;
 
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
-use think\Response;
 use think\response\Redirect;
 
 /**
