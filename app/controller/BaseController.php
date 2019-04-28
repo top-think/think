@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace think;
+namespace app\controller;
 
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
