@@ -34,12 +34,6 @@ abstract class BaseController
     protected $app;
 
     /**
-     * 验证失败是否抛出异常
-     * @var bool
-     */
-    protected $failException = false;
-
-    /**
      * 是否批量验证
      * @var bool
      */
@@ -68,19 +62,6 @@ abstract class BaseController
     // 初始化
     protected function initialize()
     {}
-
-    /**
-     * 设置验证失败后是否抛出异常
-     * @access protected
-     * @param  bool $fail 是否抛出异常
-     * @return $this
-     */
-    protected function validateFailException(bool $fail = true)
-    {
-        $this->failException = $fail;
-
-        return $this;
-    }
 
     /**
      * 验证数据
@@ -116,14 +97,7 @@ abstract class BaseController
             $v->batch(true);
         }
 
-        if (!$v->check($data)) {
-            if ($this->failException) {
-                throw new ValidateException($v->getError());
-            }
-            return $v->getError();
-        }
-
-        return true;
+        return $v->failException(true)->check($data);
     }
 
 }
