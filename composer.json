@@ -18,7 +18,8 @@
     "require": {
         "php": ">=7.1.0",
         "topthink/framework": "6.0.*-dev",
-        "topthink/think-view": "^1.0"
+        "topthink/think-view": "^1.0",
+        "symfony/var-dumper":"^4.2"
     },
     "autoload": {
         "psr-4": {
