@@ -14,14 +14,8 @@
 // +----------------------------------------------------------------------
 
 return [
-    // PATHINFO变量名 用于兼容模式
-    'var_pathinfo'          => 's',
-    // 兼容PATH_INFO获取
-    'pathinfo_fetch'        => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
     // pathinfo分隔符
     'pathinfo_depr'         => '/',
-    // HTTPS代理标识
-    'https_agent_name'      => '',
     // URL伪静态后缀
     'url_html_suffix'       => 'html',
     // URL普通方式参数 用于自动生成
@@ -52,12 +46,6 @@ return [
     'default_route_pattern' => '[\w\.]+',
     // 是否自动转换URL中的控制器和操作名
     'url_convert'           => true,
-    // 表单请求类型伪装变量
-    'var_method'            => '_method',
-    // 表单ajax伪装变量
-    'var_ajax'              => '_ajax',
-    // 表单pjax伪装变量
-    'var_pjax'              => '_pjax',
     // 是否开启请求缓存 true自动缓存 支持设置请求缓存规则
     'request_cache'         => false,
     // 请求缓存有效期

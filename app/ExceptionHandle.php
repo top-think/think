@@ -11,7 +11,12 @@
 
 namespace app;
 
+use think\exception\DataNotFoundException;
 use think\exception\Handle;
+use think\exception\HttpException;
+use think\exception\HttpResponseException;
+use think\exception\ModelNotFoundException;
+use think\exception\ValidateException;
 use think\Response;
 use Throwable;
 
@@ -20,6 +25,18 @@ use Throwable;
  */
 class ExceptionHandle extends Handle
 {
+    /**
+     * 不需要记录信息（日志）的异常类列表
+     * @var array
+     */
+    protected $ignoreReport = [
+        HttpException::class,
+        HttpResponseException::class,
+        ModelNotFoundException::class,
+        DataNotFoundException::class,
+        ValidateException::class,
+    ];
+
     /**
      * 记录异常信息（包括日志或者其它方式记录）
      *

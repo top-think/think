@@ -22,4 +22,6 @@ return [
     'type'           => 'file',
     // 过期时间
     'expire'         => 0,
+    // 前缀
+    'prefix'         => '',
 ];
