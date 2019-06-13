@@ -11,11 +11,11 @@
 
 namespace app;
 
-use think\exception\DataNotFoundException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 use think\exception\Handle;
 use think\exception\HttpException;
 use think\exception\HttpResponseException;
-use think\exception\ModelNotFoundException;
 use think\exception\ValidateException;
 use think\Response;
 use Throwable;
