@@ -32,4 +32,6 @@ return [
     'accept_language' => [
         'zh-hans-cn' => 'zh-cn',
     ],
+    // 是否支持语言分组
+    'allow_group'     => false,
 ];
