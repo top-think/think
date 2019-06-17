@@ -35,7 +35,7 @@ return [
     // 默认应用
     'default_app'      => 'index',
     // 默认时区
-    'default_timezone' => 'Asia/Shanghai',
+    'default_timezone' => Env::get('app.default_timezone', 'Asia/Shanghai'),
 
     // 异常页面的模板文件
     'exception_tmpl'   => app()->getThinkPath() . 'tpl/think_exception.tpl',
