@@ -63,7 +63,7 @@ return [
         // 更多的数据库配置信息
     ],
     // 自动写入时间戳字段
-    'auto_timestamp'  => false,
+    'auto_timestamp'  => 'timestamp',
     // 时间字段取出后的默认时间格式
     'datetime_format' => 'Y-m-d H:i:s',
 ];
