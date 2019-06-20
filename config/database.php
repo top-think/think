@@ -62,6 +62,9 @@ return [
 
         // 更多的数据库配置信息
     ],
+
+    // 自定义时间查询规则
+    'time_query_rule' => [],
     // 自动写入时间戳字段
     'auto_timestamp'  => 'timestamp',
     // 时间字段取出后的默认时间格式
