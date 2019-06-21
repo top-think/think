@@ -6,11 +6,11 @@ return [
     'default' => Env::get('filesystem.driver', 'local'),
     'disks'   => [
         'local'  => [
-            'driver' => 'local',
-            'root'   => app()->getRuntimePath() . 'storage',
+            'type' => 'local',
+            'root' => app()->getRuntimePath() . 'storage',
         ],
         'public' => [
-            'driver'     => 'local',
+            'type'       => 'local',
             'root'       => app()->getRootPath() . 'public/storage',
             'url'        => '/storage',
             'visibility' => 'public',
