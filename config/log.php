@@ -38,6 +38,8 @@ return [
             'apart_level' => [],
             // 最大日志文件数量
             'max_files'   => 0,
+            // 使用JSON格式记录
+            'json'        => false,
             // 日志处理
             'processor'   => null,
         ],
