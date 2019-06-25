@@ -22,6 +22,8 @@ return [
     'type_channel' => [],
     // 是否关闭日志写入
     'close'        => false,
+    // 全局日志处理 支持闭包
+    'processor'    => null,
 
     // 日志通道列表
     'channels'     => [
@@ -36,7 +38,10 @@ return [
             'apart_level' => [],
             // 最大日志文件数量
             'max_files'   => 0,
+            // 日志处理
+            'processor'   => null,
         ],
         // 其它日志通道配置
     ],
+
 ];
