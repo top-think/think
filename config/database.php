@@ -15,6 +15,17 @@ return [
     // 默认使用的数据库连接配置
     'default'         => Env::get('database.driver', 'mysql'),
 
+    // 自定义时间查询规则
+    'time_query_rule' => [],
+
+    // 自动写入时间戳字段
+    // true为自动识别类型 false关闭
+    // 字符串则明确指定时间字段类型 支持 int timestamp datetime date
+    'auto_timestamp'  => true,
+
+    // 时间字段取出后的默认时间格式
+    'datetime_format' => 'Y-m-d H:i:s',
+
     // 数据库连接配置信息
     'connections'     => [
         'mysql' => [
@@ -30,8 +41,6 @@ return [
             'password'        => Env::get('database.password', ''),
             // 端口
             'hostport'        => Env::get('database.hostport', '3306'),
-            // 连接dsn
-            'dsn'             => '',
             // 数据库连接参数
             'params'          => [],
             // 数据库编码默认采用utf8
@@ -52,21 +61,10 @@ return [
             'fields_strict'   => true,
             // 是否需要进行SQL性能分析
             'sql_explain'     => false,
-            // Builder类
-            'builder'         => '',
-            // Query类
-            'query'           => '',
             // 是否需要断线重连
             'break_reconnect' => false,
         ],
 
         // 更多的数据库配置信息
     ],
-
-    // 自定义时间查询规则
-    'time_query_rule' => [],
-    // 自动写入时间戳字段
-    'auto_timestamp'  => 'timestamp',
-    // 时间字段取出后的默认时间格式
-    'datetime_format' => 'Y-m-d H:i:s',
 ];
