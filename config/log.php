@@ -44,6 +44,8 @@ return [
             'processor'   => null,
             // 关闭通道日志写入
             'close'       => false,
+            // 日志输出格式化
+            'format'      => '[%s][%s] %s',
         ],
         // 其它日志通道配置
     ],
