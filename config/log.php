@@ -29,23 +29,25 @@ return [
     'channels'     => [
         'file' => [
             // 日志记录方式
-            'type'        => 'File',
+            'type'           => 'File',
             // 日志保存目录
-            'path'        => '',
+            'path'           => '',
             // 单文件日志写入
-            'single'      => false,
+            'single'         => false,
             // 独立日志级别
-            'apart_level' => [],
+            'apart_level'    => [],
             // 最大日志文件数量
-            'max_files'   => 0,
+            'max_files'      => 0,
             // 使用JSON格式记录
-            'json'        => false,
+            'json'           => false,
             // 日志处理
-            'processor'   => null,
+            'processor'      => null,
             // 关闭通道日志写入
-            'close'       => false,
+            'close'          => false,
             // 日志输出格式化
-            'format'      => '[%s][%s] %s',
+            'format'         => '[%s][%s] %s',
+            // 是否实时写入
+            'realtime_write' => false,
         ],
         // 其它日志通道配置
     ],
