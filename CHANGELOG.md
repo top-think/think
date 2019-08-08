@@ -1,3 +1,25 @@
+## V5.1.38 LTS（2019-8-8）
+
+本次更新为常规更新，主要包括：
+
+* `Request`类增加`isJson`方法
+* 改进浮点型查询
+* 修正关联查询关联外键为空的查询错误
+* 远程一对多支持关联统计和预载入查询
+* 远程一对多关联支持`has`/`hasWhere`查询
+* 优化`parseIn`解析
+* 改进`parseLike`查询
+* 改进Url生成
+* 改进模型的`toArray`方法
+* 修正`notIn`查询
+* 改进`JSON`字段查询
+* 改进Controller类`display`/`fetch`方法返回`ViewResponse`对象
+* 改进`param`方法
+* 改进`mysql`驱动`getExplain`方法
+* 改进时间查询
+* 改进模型关联的`has`/`hasWhere`方法对软删除的支持
+* 修正社区反馈的BUG
+
 ## V5.1.37 LTS（2019-5-26）
 
 本次更新为常规更新，主要更新如下：
