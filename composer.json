@@ -18,6 +18,7 @@
     "require": {
         "php": ">=7.1.0",
         "topthink/framework": "6.0.*-dev",
+        "topthink/think-orm": "2.0.*-dev",
         "topthink/think-view": "^1.0"
     },
     "require-dev": {
