@@ -1,6 +1,5 @@
 <?php
 
-
 return [
     'default' => env('filesystem.driver', 'local'),
     'disks'   => [
