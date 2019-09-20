@@ -3,9 +3,8 @@ declare (strict_types = 1);
 
 namespace app;
 
-use think\App;
-use think\exception\ValidateException;
-use think\Validate;
+use think\{ App, Validate, Response };
+use think\exception\{ ValidateException, HttpResponseException };
 
 /**
  * 控制器基础类
@@ -35,6 +34,12 @@ abstract class BaseController
      * @var array
      */
     protected $middleware = [];
+    
+    /**
+     * 控制器请求类型限制
+     * @var array
+     */
+    protected $method = [];
 
     /**
      * 构造方法
@@ -48,12 +53,28 @@ abstract class BaseController
 
         // 控制器初始化
         $this->initialize();
+        
+        if($this->method){
+            $this->verifyMethod();
+        }
     }
 
     // 初始化
     protected function initialize()
     {}
 
+    /**
+     * 请求类型验证
+     */
+    protected function verifyMethod(){
+        $request = $this->app->request;
+        $method = $this->method;
+        if(isset($method[$request->action()]) and !in_array($request->method(),$method[$request->action()])){
+            $response = Response::create()->code(404)->header([]);
+            throw new HttpResponseException($response);
+        }
+    }
+    
     /**
      * 验证数据
      * @access protected
