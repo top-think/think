@@ -10,8 +10,6 @@ return [
     'auto_rule'     => 1,
     // 模板目录名
     'view_dir_name' => 'view',
-    // 模板路径
-    'view_path'     => '',
     // 模板后缀
     'view_suffix'   => 'html',
     // 模板文件名分隔符
