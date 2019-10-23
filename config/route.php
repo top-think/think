@@ -18,12 +18,6 @@ return [
     'route_rule_merge'      => false,
     // 路由是否完全匹配
     'route_complete_match'  => false,
-    // 是否开启路由缓存
-    'route_check_cache'     => false,
-    // 路由缓存连接参数
-    'route_cache_option'    => [],
-    // 路由缓存Key
-    'route_check_cache_key' => '',
     // 访问控制器层名称
     'controller_layer'      => 'controller',
     // 空控制器名
