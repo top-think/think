@@ -13,7 +13,7 @@
 if (is_file($_SERVER["DOCUMENT_ROOT"] . $_SERVER["SCRIPT_NAME"])) {
     return false;
 } else {
-    if ($_SERVER["SCRIPT_NAME"] == $_SERVER["REQUEST_URI"]) {
+    if (0 === strpos($_SERVER["REQUEST_URI"], $_SERVER["SCRIPT_NAME"])) {
         $_SERVER["SCRIPT_FILENAME"] = __DIR__ . '/index.php';
     }
 
