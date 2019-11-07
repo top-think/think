@@ -1,5 +1,4 @@
 <?php
-use think\facade\Env;
 
 // +----------------------------------------------------------------------
 // | 缓存设置
@@ -7,7 +6,7 @@ use think\facade\Env;
 
 return [
     // 默认缓存驱动
-    'default' => Env::get('cache.driver', 'file'),
+    'default' => env('cache.driver', 'file'),
 
     // 缓存连接方式配置
     'stores'  => [

@@ -3,11 +3,9 @@
 // | 应用设置
 // +----------------------------------------------------------------------
 
-use think\facade\Env;
-
 return [
     // 应用地址
-    'app_host'         => Env::get('app.host', ''),
+    'app_host'         => env('app.host', ''),
     // 应用的命名空间
     'app_namespace'    => '',
     // 是否启用路由
