@@ -1,3 +1,26 @@
+## V5.1.39 LTS（2019-11-18）
+
+本次更新为常规更新，主要包括：
+
+* 修正`memcached`驱动
+* 改进`HasManyThrough`关联查询
+* 改进`Request`类`isJson`方法
+* 改进关联查询
+* 改进`redis`驱动
+* 增加 Model类`getWhere`方法对复合主键的支持
+* 改进`newQuery`方法
+* 改进闭包查询的参数绑定
+* 修正`Validate`
+* 修复某些情况下URL会多一个冒号
+* 调整composer.json
+* 修复使用`Cache::clear()`时，报错缓存文件不存在问题
+* 使用File类的unlink方法进行文件删除
+* 改进`paraseData`方法
+* 修正image验证方法
+* 改进Url生成
+* 改进空操作对数字的支持
+* 改进一处PHP7.4兼容性问题
+
 ## V5.1.38 LTS（2019-8-8）
 
 本次更新为常规更新，主要包括：
