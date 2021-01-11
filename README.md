@@ -29,7 +29,7 @@ ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特
  + Swoole/Workerman支持（V5.1.18+）
 
 
-> ThinkPHP5的运行环境要求PHP5.6以上。
+> ThinkPHP5的运行环境要求PHP5.6以上，兼容PHP8.0。
 
 ## 安装
 
@@ -62,6 +62,12 @@ composer update topthink/framework
 
 + [完全开发手册](https://www.kancloud.cn/manual/thinkphp5_1/content)
 + [升级指导](https://www.kancloud.cn/manual/thinkphp5_1/354155) 
+
+
+## 官方服务
+
++ [应用服务市场](https://market.topthink.com/)
++ [ThinkAPI——统一API服务](https://docs.topthink.com/think-api) 
 
 ## 目录结构
 
