@@ -15,6 +15,9 @@ return [
     // 时间字段取出后的默认时间格式
     'datetime_format' => 'Y-m-d H:i:s',
 
+    // 时间字段配置 配置格式：create_time,update_time
+    'datetime_field'  => '',
+
     // 数据库连接配置信息
     'connections'     => [
         'mysql' => [
