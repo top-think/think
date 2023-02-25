@@ -22,8 +22,7 @@
     "require": {
         "php": ">=8.0.0",
         "topthink/framework": "8.0.x-dev",
-        "topthink/think-orm": "3.0.x-dev",
-        "topthink/think-filesystem": "^1.0"
+        "topthink/think-orm": "^3.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
