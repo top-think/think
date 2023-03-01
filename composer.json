@@ -25,7 +25,7 @@
         "topthink/think-orm": "^3.0"
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.2",
+        "symfony/var-dumper": ">=4.2",
         "topthink/think-trace": "^1.0"
     },
     "autoload": {
