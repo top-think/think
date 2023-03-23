@@ -2,7 +2,7 @@
 
 return [
     // 默认使用的数据库连接配置
-    'default'         => env('database.driver', 'mysql'),
+    'default'         => env('DB_DRIVER', 'mysql'),
 
     // 自定义时间查询规则
     'time_query_rule' => [],
@@ -22,23 +22,23 @@ return [
     'connections'     => [
         'mysql' => [
             // 数据库类型
-            'type'            => env('database.type', 'mysql'),
+            'type'            => env('DB_TYPE', 'mysql'),
             // 服务器地址
-            'hostname'        => env('database.hostname', '127.0.0.1'),
+            'hostname'        => env('DB_HOST', '127.0.0.1'),
             // 数据库名
-            'database'        => env('database.database', ''),
+            'database'        => env('DB_NAME', ''),
             // 用户名
-            'username'        => env('database.username', 'root'),
+            'username'        => env('DB_USER', 'root'),
             // 密码
-            'password'        => env('database.password', ''),
+            'password'        => env('DB_PASS', ''),
             // 端口
-            'hostport'        => env('database.hostport', '3306'),
+            'hostport'        => env('DB_PORT', '3306'),
             // 数据库连接参数
             'params'          => [],
             // 数据库编码默认采用utf8
-            'charset'         => env('database.charset', 'utf8'),
+            'charset'         => env('DB_CHARSET', 'utf8'),
             // 数据库表前缀
-            'prefix'          => env('database.prefix', ''),
+            'prefix'          => env('DB_PREFIX', ''),
 
             // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
             'deploy'          => 0,
@@ -53,7 +53,7 @@ return [
             // 是否需要断线重连
             'break_reconnect' => false,
             // 监听SQL
-            'trigger_sql'     => env('app_debug', true),
+            'trigger_sql'     => env('APP_DEBUG', true),
             // 开启字段缓存
             'fields_cache'    => false,
         ],
