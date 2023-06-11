@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThinkPHP 8.0</title>
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class='banner'>
+        <div class='container'>
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <h2><span>大道至简</span></h2>
+                    <h3>出色性能和优雅易用</h3>
+                    <p class="my-5 fs-2">17年专注WEB应用开发<br />与300万+专业开发者一起快速开发</p>
+                    <div class="d-flex gap-3">
+                        <a href="https://www.thinkphp.cn/doc" target="_blank"
+                            class="rounded-pill btn btn-lg btn-primary">
+                            <span class="mx-2 mx-lg-4">开始使用</span>
+                        </a>
+                        <a href="https://www.thinkphp.cn/app" target="_blank"
+                            class="rounded-pill btn btn-lg btn-outline-primary">
+                            <span class="mx-2 mx-lg-4">应用中心</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="services">
+        <div class="container">
+            <div class="row py-4">
+                {volist name="services" id="service"}
+                    <div class="col-12 col-md-6 col-lg-3 d-flex">
+                        <div class="card border-0 overflow-hidden shadow-sm mb-3">
+                            <a class="card-img-top" target="_blank" href="{$service.url}">
+                                <img class="w-100" src="{$service.image}">
+                            </a>
+                            <a class="card-body" target="_blank" href="{$service.url}">
+                                <h4 class="card-title">{$service.title}</h4>
+                                <p class="card-text fs-5">{$service.description}</p>
+                            </a>
+                        </div>
+                    </div>
+                {/volist}
+            </div>
+        </div>
+    </div>
+    <div class='ecology'>
+        <div class='container'>
+            <h2 data-title='ECOLOGY'>生态精选服务</h2>
+            <div class='apps row g-4'>
+                {volist name="ecologies" id="ecology"}
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <a class='app shadow-sm rounded' href='{$ecology.url}' target='_blank'>
+                            <img class='logo' src='{$ecology.logo}' />
+                            <div class='content'>
+                                <div class='info'>
+                                    <h4>{$ecology.name}</h4>
+                                    <p class='text-truncate-2'>{$ecology.description}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
