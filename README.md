@@ -6,14 +6,12 @@ ThinkPHP 8.0
 > 运行环境要求PHP8.0+
 
 
-## 主要新特性
+## 特性
 
 * 基于PHP`8.0+`重构
-* 增加`startWith`、`endWith`及`contain`验证规则
-* 简化验证类的正则
-* 优化路由检测
 * 升级`PSR`依赖
 * 依赖`think-orm`3.0版本
+* `6.0`/`6.1`无缝升级
 
 
 > ThinkPHP8.0的运行环境要求PHP8.0.0+
@@ -25,12 +23,12 @@ ThinkPHP 8.0
 
 [完全开发手册](https://doc.thinkphp.cn)
 
-## 官方服务
+## 服务
 
 ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）提供，为生态提供专业的开发者服务和价值之选。
 
 ## 赞助
-赞助ThinkPHP可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
+全新的[赞助计划](https://www.thinkphp.cn/sponsor)可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
 
 [![](https://www.thinkphp.cn/uploads/images/20230630/48396092a0515886a3da6bd268131c8f.png)](http://github.crmeb.net/u/TPSY)
 
