@@ -32,13 +32,11 @@ ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）
 ## 赞助
 赞助ThinkPHP可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
 
-### 特别赞助
-
-[![](https://www.thinkphp.cn/asset/imgs/crmeb.png)](http://github.crmeb.net/u/TPSY)
+[![](https://www.thinkphp.cn/uploads/images/20230630/48396092a0515886a3da6bd268131c8f.png)](http://github.crmeb.net/u/TPSY)
 
 [![](https://www.thinkphp.cn/uploads/images/20230630/a12bd248beee0e7491dd0f79dc4dd5e9.png)](https://www.thinkphp.cn/sponsor)
 
-[![](/uploads/images/20230630/e7f48d909d41dd5ebaf4a5aa982d0455.png)](https://www.thinkphp.cn/sponsor)
+[![](https://www.thinkphp.cn/uploads/images/20230630/e7f48d909d41dd5ebaf4a5aa982d0455.png)](https://www.thinkphp.cn/sponsor)
 
 ## 安装
 
