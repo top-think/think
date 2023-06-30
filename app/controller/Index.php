@@ -28,10 +28,10 @@ class Index extends BaseController
                 'url' => 'https://doc.topthink.com/think-api/default.html',
             ],
             [
-                'title' => 'CRMEB  TP6开源商城系统',
-                'description' => '基于TP6 + uniapp开发，文档齐全，方便二开，可免费商用',
-                'image' => 'images/services/4.png',
-                'url' => 'http://github.crmeb.net/u/TPH1',
+                'title' => '官方云市场',
+                'description' => '为ThinkPHP开发者和爱好者精选的官方以及第三方的产品和服务',
+                'image' => 'images/services/4.jpg',
+                'url' => 'http://market.topthink.com',
             ],
         ];
 
@@ -39,24 +39,24 @@ class Index extends BaseController
             'special' => [
                 'url'         => 'http://github.crmeb.net/u/TPSY',
                 'name'        => 'CEMEB',
-                'logo'        => 'https://www.thinkphp.cn/uploads/images/20230630/33e1089da8c500bce9b27658da9c2306.png',
+                'logo'        => 'images/sponsors/crmeb.png',
                 'title'       => '高品质开源商城系统40w+开发者的选择，值得托付',
             ],
             'platinum' => [
                 [
                     'url'         => 'https://www.niushop.com',
                     'name'        => 'NiuShop电商系统',
-                    'logo'        => 'https://www.thinkphp.cn/uploads/images/20230629/0728817651b219055c3393b4988187fa.png',
+                    'logo'        => 'images/sponsors/niushop.png',
                 ],
                 [
                     'url'         => 'https://www.likeshop.cn/?utm_source=thinkphp&s',
                     'name'        => 'LikeShop电商系统',
-                    'logo'        => 'https://www.thinkphp.cn/uploads/images/20230629/81b98332a39d32d1e30e306da4415bd0.png',
+                    'logo'        => 'images/sponsors/likeshop.svg',
                 ],
                 [
                     'url'         => 'https://www.niucloud-admin.com/',
                     'name'        => 'niucloud-admin开发框架',
-                    'logo'        => 'https://www.thinkphp.cn/uploads/images/20230629/76104be7e16b260476005d51558270f6.png',
+                    'logo'        => 'images/sponsors/niucloud.png',
                 ],
                 [
                     'url'         => 'https://doc.topthink.com/',
