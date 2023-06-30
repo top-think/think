@@ -115,6 +115,16 @@ p {
     margin-bottom: 0;
 }
 
+.sponsor-special {
+    background-color: #fff;
+    padding-bottom: 2rem;
+}
+
+.sponsor-special img {
+    height: 48px;
+    margin: 0 1rem;
+}
+
 .services {
     position: relative;
     background-color: #eee;
@@ -139,13 +149,12 @@ p {
     box-shadow: 0 0 0.35rem var(--bs-primary) !important;
 }
 
-.ecology {
-    padding-top: 100px;
-    padding-bottom: 60px;
+.sponsor {
+    padding: 100px 0;
     background-color: #eee;
 }
 
-.ecology h2 {
+.sponsor h2 {
     font-size: 40px;
     text-align: center;
     position: relative;
@@ -153,7 +162,7 @@ p {
     z-index: 1;
 }
 
-.ecology h2:before {
+.sponsor h2:before {
     content: attr(data-title);
     color: #333333;
     font-size: 60px;
@@ -166,47 +175,20 @@ p {
     opacity: 0.1;
 }
 
-.ecology .apps .app {
-    background: #fff;
+.sponsor .sponsor-item {
     display: flex;
+    justify-content: center;
     align-items: center;
-    padding: 1rem;
-    color: inherit;
+    width: 100%;
+    aspect-ratio: 3/1;
 }
 
-.ecology .apps .app:hover {
+.sponsor .sponsor-item:hover {
     box-shadow: 0 0 0.35rem var(--bs-primary) !important;
 }
 
-.ecology .apps .app .logo {
-    max-height: 80px;
-    max-width: 80px;
-    margin-right: 1rem;
-}
-
-.ecology .apps .app .content {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.ecology .apps .app .content .info {
-    flex: 1;
-    overflow: hidden;
-}
-
-.ecology .apps .app .content h4 {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1.3rem;
-}
-
-.ecology .apps .app .content p {
-    margin-bottom: 0;
-    color: #666666;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 3rem;
+.sponsor .sponsor-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }

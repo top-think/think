@@ -30,6 +30,19 @@
             </div>
         </div>
     </div>
+    <div class="sponsor-special">
+        <div class='container'>
+            <div class="row">
+                <div class="d-flex flex-row align-items-center">
+                    <strong>特别赞助</strong>
+                    <a href="{$sponsors.special.url}" target="_blank">
+                        <img src="{$sponsors.special.logo}" alt="{$sponsors.special.name}" />
+                    </a>
+                    <span>{$sponsors.special.title}</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="services">
         <div class="container">
             <div class="row py-4">
@@ -49,20 +62,14 @@
             </div>
         </div>
     </div>
-    <div class='ecology'>
+    <div class='sponsor'>
         <div class='container'>
-            <h2 data-title='ECOLOGY'>生态精选服务</h2>
-            <div class='apps row g-4'>
-                {volist name="ecologies" id="ecology"}
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a class='app shadow-sm rounded' href='{$ecology.url}' target='_blank'>
-                            <img class='logo' src='{$ecology.logo}' />
-                            <div class='content'>
-                                <div class='info'>
-                                    <h4>{$ecology.name}</h4>
-                                    <p class='text-truncate-2'>{$ecology.description}</p>
-                                </div>
-                            </div>
+            <h2 data-title='PLATINUM'>铂金赞助商</h2>
+            <div class='row g-4'>
+                {volist name="sponsors.platinum" id="platinum"}
+                    <div class="col-6 col-lg-3">
+                        <a class="sponsor-item text-bg-light p-4 shadow-sm rounded" href="{$platinum.url}" target="_blank">
+                            <img class="w-100" src="{$platinum.logo}" alt="{$platinum.name}"></img>
                         </a>
                     </div>
                 {/volist}
