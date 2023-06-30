@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=8.0.0",
-        "topthink/framework": "8.0.x-dev",
+        "topthink/framework": "^8.0",
         "topthink/think-orm": "^3.0",
         "topthink/think-filesystem": "^2.0"
     },
