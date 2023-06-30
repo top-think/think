@@ -35,48 +35,40 @@ class Index extends BaseController
             ],
         ];
 
-        $ecologies = [
-            [
-                'url'         => 'https://www.niushop.com',
-                'name'        => 'NIUSHOP开源商城系统',
-                'description' => '帮助商家快速锁定私域流量的电商平台系统,助力商家轻松获客、裂变',
-                'logo'        => 'images/ecologies/1.jpg',
+        $sponsors = [
+            'special' => [
+                'url'         => 'http://github.crmeb.net/u/TPSY',
+                'name'        => 'CEMEB',
+                'logo'        => 'https://www.thinkphp.cn/uploads/images/20230630/33e1089da8c500bce9b27658da9c2306.png',
+                'title'       => '高品质开源商城系统40w+开发者的选择，值得托付',
             ],
-            [
-                'url'         => 'https://gitee.likeshop.cn/thinkphp',
-                'name'        => 'likeshop 全开源商城系统',
-                'description' => '致力打造源码行业最具性价比产品，免去开发者重复造轮子',
-                'logo'        => 'images/ecologies/2.png',
-            ],
-            [
-                'url'         => 'https://www.topthink.com/product/knowledge',
-                'name'        => '顶想云文档',
-                'description' => '快速搭建企业文档中心和内部知识库，支持私有化部署',
-                'logo'        => 'images/ecologies/3.png',
-            ],
-            [
-                'url'         => 'https://www.thinkphp.cn/app/28',
-                'name'        => 'niucloud-admin开发框架',
-                'description' => '一款快速开发SAAS通用管理系统后台框架',
-                'logo'        => 'images/ecologies/4.png',
-            ],
-            [
-                'url'         => 'https://www.upyun.com',
-                'name'        => '又拍云',
-                'description' => '致力于为客户提供一站式的在线业务加速服务',
-                'logo'        => 'images/ecologies/5.png',
-            ],
-            [
-                'url'         => 'https://www.thinkphp.cn/app/60',
-                'name'        => '运营助理',
-                'description' => '快速构建产品支持服务，自定义悬浮按钮，免费使用',
-                'logo'        => 'images/ecologies/6.png',
+            'platinum' => [
+                [
+                    'url'         => 'https://www.niushop.com',
+                    'name'        => 'NiuShop电商系统',
+                    'logo'        => 'https://www.thinkphp.cn/uploads/images/20230629/0728817651b219055c3393b4988187fa.png',
+                ],
+                [
+                    'url'         => 'https://www.likeshop.cn/?utm_source=thinkphp&s',
+                    'name'        => 'LikeShop电商系统',
+                    'logo'        => 'https://www.thinkphp.cn/uploads/images/20230629/81b98332a39d32d1e30e306da4415bd0.png',
+                ],
+                [
+                    'url'         => 'https://www.niucloud-admin.com/',
+                    'name'        => 'niucloud-admin开发框架',
+                    'logo'        => 'https://www.thinkphp.cn/uploads/images/20230629/76104be7e16b260476005d51558270f6.png',
+                ],
+                [
+                    'url'         => 'https://doc.topthink.com/',
+                    'name'        => '顶想云服务',
+                    'logo'        => 'images/sponsors/topthink-cloud.svg',
+                ],
             ],
         ];
 
         return view('index')
             ->assign('services', $services)
-            ->assign('ecologies', $ecologies)
+            ->assign('sponsors', $sponsors)
             ->assign('version', App::version());
     }
 
