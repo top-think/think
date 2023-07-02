@@ -27,7 +27,7 @@ ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）
 
 全新的[赞助计划](https://www.thinkphp.cn/sponsor)可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
 
-[![](https://www.thinkphp.cn/uploads/images/20230630/48396092a0515886a3da6bd268131c8f.png)](https://www.crmeb.com/?from=thinkphp)
+[![](https://www.thinkphp.cn/sponsor/special.svg)](https://www.thinkphp.cn/sponsor/special)
 
 [![](https://www.thinkphp.cn/sponsor.svg)](https://www.thinkphp.cn/sponsor)
 
