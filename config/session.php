@@ -16,4 +16,6 @@ return [
     'expire'         => 1440,
     // 前缀
     'prefix'         => '',
+    // 路径 当type使用file的时候有效，设置则session跨应用，留空则只在当前应用有效
+    'path' => app()->getRootPath() . 'runtime',
 ];
